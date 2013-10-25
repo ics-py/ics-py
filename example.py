@@ -1,6 +1,6 @@
 from utils import parser, unfold
 
-cal = """
+cal1 = """
 BEGIN:VCALENDAR
 METHOD:PUBLISH
 VERSION:2.0
@@ -68,4 +68,7 @@ END:VCALENDAR
 cal4 = """BEGIN:VCALENDAR"""
 
 if __name__ == '__main__':
-    print parser(unfold(cal))
+    cal = unfold(cal3)+"\n"
+    print cal
+    print parser(cal)
+    #print(repr(unfold(cal)))

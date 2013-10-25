@@ -21,7 +21,8 @@ def unfold(text):
 
 
 grammar = """
-contentline   = name (";" param )* ":" value crlf
+calendar      = (contentline)+
+contentline   = name (";" param )* ":" value '\n'
 name          = (iana_token | x_name)
 iana_token    = (alpha | digit | "-")+
 alpha         = letter
@@ -46,8 +47,6 @@ value_char    = (wsp | ascii21_7e | non_ascii)
 
 non_ascii     = 'ç'
 
-crlf          = '\r\n'
-
 ascii21_7e    = ('!' | '"' | sharp_to_slash | digit | alpha | colon_to_tilde)
 ascii2d_39    = ('-' | '.' | '/' | digit)
 ascii23_2b    = sharp_to_plus
@@ -67,5 +66,5 @@ Example = makeGrammar(grammar, {})
 
 def parser(text):
     g = Example(unfold(text))
-    result = g.contentline()
+    result = g.calendar()
     return result
