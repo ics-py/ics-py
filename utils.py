@@ -38,7 +38,7 @@ paramtext     = safe_char*
 value         = value_char*
 
 dquote        = '"'
-wsp           = (" " | "\t")*
+wsp           = (" " | "\t")+
 
 qsafe_char    = (wsp | "!" | ascii23_7e | non_ascii)
 safe_char     = (wsp | "!" | ascii23_2b | ascii2d_39 | ascii3c_7e)
