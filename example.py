@@ -68,4 +68,4 @@ END:VCALENDAR
 cal4 = """BEGIN:VCALENDAR"""
 
 if __name__ == '__main__':
-    print parser(unfold(cal3))
+    print parser(unfold(cal))

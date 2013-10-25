@@ -38,7 +38,7 @@ paramtext     = safe_char*
 value         = value_char*
 
 dquote        = '"'
-wsp           = (" " | "\t")+
+wsp           = (" " | "\t")
 
 qsafe_char    = (wsp | "!" | ascii23_7e | non_ascii)
 safe_char     = (wsp | "!" | ascii23_2b | ascii2d_39 | ascii3c_7e)
@@ -58,7 +58,7 @@ ascii0a_1f    = ('\x0a' | '\x0b' | '\x0c' | '\x0d' | '\x0e' | '\x0f' | '\x10' | 
 
 crochet_to_tilde  = ('[' | '\\\\' | ']' | '^' | '_' | '`' | '{' | '|' | '}' | '~')
 colon_to_tilde    = (':' | ';' | '<' | '=' | '>' | '?' | '@' | crochet_to_tilde)
-sharp_to_plus     = ('#' | '$' | '%' | '&' | "'" | '(' | ')' | '*' | '+')
+sharp_to_plus     = ('#' | '$' | '%' | '&' | '\\\'' | '(' | ')' | '*' | '+')
 sharp_to_slash    = (sharp_to_plus | ',' | '-' | '.' | '/')
 """
 # TODO : fix non ascii
