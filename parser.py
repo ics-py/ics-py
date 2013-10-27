@@ -66,7 +66,7 @@ class ICSReader:
         self.cur_line = self.next_line
         if self.__get_line():
             while self.next_line[0] == ' ':
-                self.cur_line = self.cur_line.strip() + self.next_line
+                self.cur_line = self.cur_line.strip('\n') + self.next_line[1:]
                 if not self.__get_line():
                     break
         return ContentLine.parse(self.cur_line)
