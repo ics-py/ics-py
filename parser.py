@@ -8,7 +8,7 @@ class ContentLine:
 	
 	__ne__ = lambda a,b: not a.__eq__(b)
 	
-	def __init__(self, name, params, value):
+	def __init__(self, name, params={}, value=''):
 		self.name = name
 		self.params = params
 		self.value = value
