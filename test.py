@@ -1,5 +1,6 @@
 import unittest
-from parser import ParseError, ContentLine
+from parser import ParseError, ContentLine, ICSReader
+from fixture import cal1, cal2, cal3, cal4
 
 class TestContentLine(unittest.TestCase):
 	dataset = {
@@ -30,6 +31,12 @@ class TestContentLine(unittest.TestCase):
 			expected = test
 			got = str(self.dataset[test])
 			self.assertEqual(expected, got, "To string")
+
+class TestICSReader(unittest.TestCase):
+	def test_one_line(self):
+		ics = 'DTSTART;TZID=Europe/Brussels:20131029T103000'
+		reader = ICSReader([ics])
+		self.assertEqual(iter(reader).next(), TestContentLine.dataset[ics])
 
 if __name__ == '__main__':
 	unittest.main()

@@ -42,3 +42,35 @@ class ContentLine:
 			params[pname] = pvals.split(',')
 		return klass(name, params, value)
 	
+class ICSReader:
+	def __init__(self, filep):
+		self.filep = iter(filep)
+		self.feof = False
+
+	def __get_line(self):
+		try:
+			self.next_line = self.filep.next()
+			#ignore empty lines
+			while not self.next_line:
+				self.next_line = self.filep.next()
+		except StopIteration:
+			self.feof = True
+			return False
+		return True
+
+	def next(self):
+		if self.feof:
+			raise StopIteration()
+		self.cur_line = self.next_line
+		if self.__get_line():
+			while self.next_line[0] == ' ':
+				self.cur_line = self.cur_line.strip() + self.next_line
+				if not self.__get_line():
+					break
+		return ContentLine.parse(self.cur_line)
+
+	def __iter__(self):
+		self.__get_line()
+		return self
+
+
