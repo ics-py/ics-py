@@ -25,10 +25,10 @@ class ContentLine:
 	@classmethod
 	def parse(klass, line):
 		if ':' not in line:
-			raise ParseError("No ':' in line")	
+			raise ParseError("No ':' in line '%s'"%(line))
 		#Separe key and value
 		splitted = line.split(':')
-		key, value = splitted[0], ':'.join(splitted[1:])
+		key, value = splitted[0], ':'.join(splitted[1:]).strip()
 		#Separe name and params
 		splitted = key.split(';')
 		name, params_strings = splitted[0], splitted[1:]
@@ -36,7 +36,7 @@ class ContentLine:
 		params = {}
 		for paramstr in params_strings:
 			if '=' not in paramstr:
-				raise ParseError("No '=' in ")
+				raise ParseError("No '=' in line '%s'"%(line))
 			splitted = paramstr.split('=')
 			pname, pvals = splitted[0], '='.join(splitted[1:])
 			params[pname] = pvals.split(',')
