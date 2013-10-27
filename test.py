@@ -41,5 +41,15 @@ class TestICSReader(unittest.TestCase):
         reader = ICSReader([ics])
         self.assertEqual(iter(reader).next(), TestContentLine.dataset[ics])
 
+    def test_many_lines(self):
+        i = 0
+        for line in ICSReader(cal1.split('\n')):
+            self.assertNotEqual('', line.name)
+            self.assertNotEqual('', line.value)
+            if i == 34:
+                self.assertEqual('DESCRIPTION', line.name)
+                self.assertEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae facilisis enim. Morbi blandit et lectus venenatis tristique. Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, quam dolor luctus augue, id cursus purus justo vel lorem. Ut feugiat enim ipsum, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id sem vel, vehicula nullam.', line.value)
+            i += 1
+
 if __name__ == '__main__':
     unittest.main()
