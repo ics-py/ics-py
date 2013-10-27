@@ -3,6 +3,7 @@
 
 from parsley import makeGrammar
 
+
 def unfold(text):
     lines = text.split('\n')
     new_lines = []
@@ -63,6 +64,7 @@ sharp_to_slash    = (sharp_to_plus | ',' | '-' | '.' | '/')
 # TODO : fix non ascii
 
 Example = makeGrammar(grammar, {})
+
 
 def parser(text):
     g = Example(unfold(text))
