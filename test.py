@@ -47,12 +47,16 @@ class Test_unfold_lines(unittest.TestCase):
 
     def test_simple(self):
         dataset = {
-            'a': ('a',),
-            'ab': ('ab',),
-            'a\nb': ('a', 'b',),
-            'a\n b': ('ab',),
-            'a\n b\nc': ('ab', 'c',),
-            'a\nb\n c': ('a', 'bc',),
+            'a'          : ('a',),
+            'ab'         : ('ab',),
+            'a\nb'       : ('a', 'b',),
+            'a\n b'      : ('ab',),
+            'a \n b'     : ('a b',),
+            'a\n b\nc'   : ('ab', 'c',),
+            'a\nb\n c'   : ('a', 'bc',),
+            'a\nb\nc'    : ('a', 'b', 'c',),
+            'a\n b\n c'  : ('abc',),
+            'a \n b \n c': ('a b c',),
         }
         for line in dataset:
             expected = dataset[line]
