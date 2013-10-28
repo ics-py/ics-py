@@ -80,7 +80,7 @@ def unfold_lines(physical_lines):
             yield win[0]
             break
         cur, next = win
-        if len(next) > 0 and next[0] != " ":
+        if len(next.strip()) > 0 and next[0] != " ":
             y = buffer + cur[remove_space:]
             remove_space = 0
             buffer = ""

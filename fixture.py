@@ -78,6 +78,18 @@ DESCRIPTION:a
  b
 """
 
+cal7 = """
+BEGIN:VCALENDAR
+
+END:VCALENDAR
+"""
+
+cal8 = """
+BEGIN:VCALENDAR
+\t
+END:VCALENDAR
+"""
+
 
 unfolded_cal2 = [
 'BEGIN:VCALENDAR',
