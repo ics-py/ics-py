@@ -118,13 +118,15 @@ class ICSReader:
         return klass(open(filename))
 
 if __name__ == "__main__":
-    def printRecursive(cal, lvl=0):
+    from fixture import cal1
+    
+    def printTree(cal, lvl=0):
         if isinstance(cal, Container):
             print '   '*lvl, cal.name
             for elem in cal:
-                printRecursive(elem, lvl+1)
+                printTree(elem, lvl+1)
         else:
             print '   '*lvl, cal.name, cal.params, cal.value
-
-    cal = ICSReader.open('cal1.ics').parse().pop()
-    printRecursive(cal)
+	
+    cal = ICSReader(cal1).parse().pop()
+    printTree(cal)
