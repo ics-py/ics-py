@@ -87,25 +87,20 @@ class Container(list):
 
 
 def unfold_lines(physical_lines):
-    buffer = ""
-    remove_space = 0
-    for win in utils.window(physical_lines,2):
-        if not len(win) == 2:
-            yield win[0]
-            break
-        cur, next = win
-        if len(next.strip()) > 0 and next[0] != " ":
-            y = buffer + cur[remove_space:]
-            remove_space = 0
-            buffer = ""
-            if len(y) > 0:
-                yield y.strip('\n')
+    current_line = ''
+    for line in physical_lines:
+        if len(line.strip()) == 0:
+            continue
+        elif not current_line:
+            current_line = line
+        elif line[0] == ' ':
+            current_line += line[1:]
         else:
-            buffer += cur[remove_space:]
-            remove_space = 1
-    if len(buffer) > 0:
-        yield buffer
-
+            yield(current_line)
+            current_line = line
+    if current_line:
+        yield(current_line)
+    
 def tokenize_line(unfolded_lines):
     for line in unfolded_lines:
         yield ContentLine.parse(line)
