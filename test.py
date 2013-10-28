@@ -60,6 +60,15 @@ class TestICSReader(unittest.TestCase):
             if line.name == 'DESCRIPTION':
                 self.assertEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae facilisis enim. Morbi blandit et lectus venenatis tristique. Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, quam dolor luctus augue, id cursus purus justo vel lorem. Ut feugiat enim ipsum, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id sem vel, vehicula nullam.', line.value)
             i += 1
+    
+    def test_multiline_string(self):
+        i = 0
+        for line in ICSReader(cal1):
+            self.assertNotEqual('', line.name)
+            self.assertNotEqual('', line.value)
+            if line.name == 'DESCRIPTION':
+                self.assertEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae facilisis enim. Morbi blandit et lectus venenatis tristique. Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, quam dolor luctus augue, id cursus purus justo vel lorem. Ut feugiat enim ipsum, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id sem vel, vehicula nullam.', line.value)
+            i += 1
 
 
 if __name__ == '__main__':
