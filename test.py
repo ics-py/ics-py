@@ -1,6 +1,6 @@
 import unittest
 from ics_parser import ParseError, ContentLine, Container, unfold_lines, string_to_container, lines_to_container
-from fixture import cal1, cal2, cal3, cal4, cal5, cal6, cal7, cal8, unfolded_cal1, unfolded_cal2, unfolded_cal6
+from fixture import cal1, cal2, cal3, cal4, cal5, cal6, cal7, cal8, cal9, unfolded_cal1, unfolded_cal2, unfolded_cal6
 from urllib import urlopen
 
 
@@ -59,6 +59,9 @@ class Test_unfold_lines(unittest.TestCase):
 
     def test_no_whitespace_lines(self):
         self.assertEqual(list(unfold_lines(cal8.split('\n'))),['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+
+    def test_first_line_empty(self):
+        self.assertEqual(list(unfold_lines(cal9.split('\n'))),['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
 
 class Test_parse(unittest.TestCase):

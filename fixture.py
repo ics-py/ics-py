@@ -90,6 +90,12 @@ BEGIN:VCALENDAR
 END:VCALENDAR
 """
 
+cal9 = """
+
+BEGIN:VCALENDAR
+END:VCALENDAR
+"""
+
 
 unfolded_cal2 = [
 'BEGIN:VCALENDAR',
