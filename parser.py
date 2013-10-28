@@ -65,6 +65,8 @@ class Container(list):
 class ICSReader:
 
     def __init__(self, lines):
+        if isinstance(lines, str):
+            lines = lines.split('\n')
         self.lines = iter(lines)
         self.feof = False
         self.isiter = False
