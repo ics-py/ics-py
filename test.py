@@ -1,6 +1,6 @@
 import unittest
-from parser import ParseError, ContentLine, Container, ICSReader
-from fixture import cal1, cal2, cal3, cal4, cal5
+from ics_parser import ParseError, ContentLine, Container, unfold_lines, string_to_container, lines_to_container
+from fixture import cal1, cal2, cal3, cal4, cal5, cal6, unfolded_cal1, unfolded_cal2, unfolded_cal6
 from urllib import urlopen
 
 
@@ -34,11 +34,31 @@ class TestContentLine(unittest.TestCase):
             got = str(self.dataset[test])
             self.assertEqual(expected, got, "To string")
 
+class Test_unfold_lines(unittest.TestCase):
 
-class TestICSReader(unittest.TestCase):
+    def test_no_folded_lines(self):
+        self.assertEqual(list(unfold_lines(cal2.split('\n'))),unfolded_cal2)
+
+    def test_simple_folded_lines(self):
+        self.assertEqual(list(unfold_lines(cal1.split('\n'))),unfolded_cal1)
+
+    def test_last_line_folded(self):
+        self.assertEqual(list(unfold_lines(cal6.split('\n'))),unfolded_cal6)
+
+    def test_empty(self):
+        self.assertEqual(list(unfold_lines([])),[])
+
+    def test_one_line(self):
+        self.assertEqual(list(unfold_lines(cal6.split('\n'))),unfolded_cal6)
+
+    def test_two_lines(self):
+         self.assertEqual(list(unfold_lines(cal3.split('\n'))),['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+
+
+class Test_parse(unittest.TestCase):
 
     def test_parse(self):
-        content = ICSReader(cal5.split('\n')).parse()
+        content = string_to_container(cal5)
         self.assertEqual(1, len(content))
         
         cal = content.pop()
@@ -50,33 +70,26 @@ class TestICSReader(unittest.TestCase):
 
     def test_one_line(self):
         ics = 'DTSTART;TZID=Europe/Brussels:20131029T103000'
-        reader = ICSReader([ics])
+        reader = lines_to_container([ics])
         self.assertEqual(iter(reader).next(), TestContentLine.dataset[ics])
-    
-    def test_gehol(self):
-        url = "http://scientia-web.ulb.ac.be/gehol/index.php?Student/Calendar/%23SPLUS35F0F0/1-14.ics"
-        ics = ICSReader(urlopen(url)).parse()
-        self.assertTrue(ics)
         
     
     def test_many_lines(self):
         i = 0
-        for line in ICSReader(cal1.split('\n')):
+        for line in string_to_container(cal1)[0]:
             self.assertNotEqual('', line.name)
-            self.assertNotEqual('', line.value)
-            if line.name == 'DESCRIPTION':
-                self.assertEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae facilisis enim. Morbi blandit et lectus venenatis tristique. Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, quam dolor luctus augue, id cursus purus justo vel lorem. Ut feugiat enim ipsum, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id sem vel, vehicula nullam.', line.value)
-            i += 1
-    
-    def test_multiline_string(self):
-        i = 0
-        for line in ICSReader(cal1):
-            self.assertNotEqual('', line.name)
-            self.assertNotEqual('', line.value)
+            if isinstance(line, ContentLine):
+                self.assertNotEqual('', line.value)
             if line.name == 'DESCRIPTION':
                 self.assertEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae facilisis enim. Morbi blandit et lectus venenatis tristique. Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, quam dolor luctus augue, id cursus purus justo vel lorem. Ut feugiat enim ipsum, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id sem vel, vehicula nullam.', line.value)
             i += 1
 
+class Test_functional(unittest.TestCase):
+
+    def test_gehol(self):
+        url = "http://scientia-web.ulb.ac.be/gehol/index.php?Student/Calendar/%23SPLUS35F0F0/1-14.ics"
+        ics = lines_to_container(urlopen(url))[0]
+        self.assertTrue(ics)
 
 if __name__ == '__main__':
     unittest.main()
