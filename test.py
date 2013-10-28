@@ -1,6 +1,7 @@
 import unittest
 from parser import ParseError, ContentLine, Container, ICSReader
 from fixture import cal1, cal2, cal3, cal4, cal5
+from urllib import urlopen
 
 
 class TestContentLine(unittest.TestCase):
@@ -51,7 +52,13 @@ class TestICSReader(unittest.TestCase):
         ics = 'DTSTART;TZID=Europe/Brussels:20131029T103000'
         reader = ICSReader([ics])
         self.assertEqual(iter(reader).next(), TestContentLine.dataset[ics])
-
+    
+    def test_gehol(self):
+        url = "http://scientia-web.ulb.ac.be/gehol/index.php?Student/Calendar/%23SPLUS35F0F0/1-14.ics"
+        ics = ICSReader(urlopen(url)).parse()
+        self.assertTrue(ics)
+        
+    
     def test_many_lines(self):
         i = 0
         for line in ICSReader(cal1.split('\n')):
