@@ -1,7 +1,11 @@
 import unittest
 from ics.parser import ParseError, ContentLine, Container, unfold_lines, string_to_container, lines_to_container
 from fixture import cal1, cal2, cal3, cal4, cal5, cal6, cal7, cal8, cal9, unfolded_cal1, unfolded_cal2, unfolded_cal6
-from urllib import urlopen
+
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 
 class TestContentLine(unittest.TestCase):
@@ -11,28 +15,34 @@ class TestContentLine(unittest.TestCase):
         'haha:hoho': ContentLine('haha', {}, 'hoho'),
         'haha:hoho:hihi': ContentLine('haha', {}, 'hoho:hihi'),
         'haha;hoho=1:hoho': ContentLine('haha', {'hoho': ['1']}, 'hoho'),
-        'haha;p2=v2;p1=v1:': ContentLine('haha', {'p1': ['v1'], 'p2': ['v2']}, ''),
-        'haha;hihi=p3,p4,p5;hoho=p1,p2:blabla:blublu': ContentLine('haha', {'hoho': ['p1', 'p2'], 'hihi': ['p3', 'p4', 'p5']}, 'blabla:blublu'),
         'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU': ContentLine('RRULE', {}, 'FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU'),
         'SUMMARY:dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs': ContentLine('SUMMARY', {}, 'dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs'),
         'DTSTART;TZID=Europe/Brussels:20131029T103000': ContentLine('DTSTART', {'TZID': ['Europe/Brussels']}, '20131029T103000'),
+    }
+
+    dataset2 = {
+        'haha;p2=v2;p1=v1:': ContentLine('haha', {'p1': ['v1'], 'p2': ['v2']}, ''),
+        'haha;hihi=p3,p4,p5;hoho=p1,p2:blabla:blublu': ContentLine('haha', {'hoho': ['p1', 'p2'], 'hihi': ['p3', 'p4', 'p5']}, 'blabla:blublu'),
     }
 
     def test_errors(self):
         self.assertRaises(ParseError, ContentLine.parse, 'haha;p1=v1')
         self.assertRaises(ParseError, ContentLine.parse, 'haha;p1:')
 
-    def test_parse(self):
-        for test in self.dataset:
-            expected = self.dataset[test]
-            got = ContentLine.parse(test)
-            self.assertEqual(expected, got, "Parse")
-
     def test_str(self):
         for test in self.dataset:
             expected = test
             got = str(self.dataset[test])
             self.assertEqual(expected, got, "To string")
+
+    def test_parse(self):
+        self.dataset2.update(self.dataset)
+        for test in self.dataset2:
+            expected = self.dataset2[test]
+            got = ContentLine.parse(test)
+            self.assertEqual(expected, got, "Parse")
+
+    
 
 class Test_unfold_lines(unittest.TestCase):
 
@@ -98,7 +108,7 @@ class Test_parse(unittest.TestCase):
     def test_one_line(self):
         ics = 'DTSTART;TZID=Europe/Brussels:20131029T103000'
         reader = lines_to_container([ics])
-        self.assertEqual(iter(reader).next(), TestContentLine.dataset[ics])
+        self.assertEqual(next(iter(reader)), TestContentLine.dataset[ics])
         
     
     def test_many_lines(self):
@@ -115,7 +125,7 @@ class Test_functional(unittest.TestCase):
 
     def test_gehol(self):
         url = "http://scientia-web.ulb.ac.be/gehol/index.php?Student/Calendar/%23SPLUS35F0F0/1-14.ics"
-        ics = string_to_container(urlopen(url).read())[0]
+        ics = string_to_container(urlopen(url).read().decode('iso-8859-1'   ))[0]
         self.assertTrue(ics)
 
 if __name__ == '__main__':

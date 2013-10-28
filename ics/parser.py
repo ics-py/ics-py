@@ -21,8 +21,8 @@ class ContentLine:
     def __str__(self):
         params_str = ''
         for pname in self.params:
-            params_str += ';%s=%s' % (pname, ','.join(self.params[pname]))
-        return "%s%s:%s" % (self.name, params_str, self.value)
+            params_str += ';{}={}'.format(pname, ','.join(self.params[pname]))
+        return "{}{}:{}".format(self.name, params_str, self.value)
 
     def __repr__(self):
         return "<ContentLine '{}' with {} parameters. Value='{}'>".format(self.name, len(self.params), self.value)
@@ -50,7 +50,7 @@ class ContentLine:
         params = {}
         for paramstr in params_strings:
             if '=' not in paramstr:
-                raise ParseError("No '=' in line '%s'" % (line))
+                raise ParseError("No '=' in line '{}'".format(line))
             splitted = paramstr.split('=')
             pname, pvals = splitted[0], '='.join(splitted[1:])
             params[pname] = pvals.split(',')
@@ -66,7 +66,7 @@ class Container(list):
         content_str = '\n'.join(map(str, self))
         if content_str:
             content_str = '\n' + content_str
-        return 'BEGIN:%s'%(self.name) + content_str + '\nEND:%s'%(self.name)
+        return 'BEGIN:{}{}\nEND:{}'.format(self.name, content_str, self.name)
 
     def  __repr__(self):
         return "<Container '{}' with {} elements>".format(self.name, len(self))
@@ -79,7 +79,7 @@ class Container(list):
                 items.append(Container.parse(line.value, tokenized_lines))
             elif line.name == 'END':
                 if line.value != name:
-                    raise ParseError("Expected END:%s, got END:%s"%(name, line.value))
+                    raise ParseError("Expected END:{}, got END:{}".format(name, line.value))
                 break
             else:
                 items.append(line)
@@ -127,13 +127,13 @@ if __name__ == "__main__":
     def printTree(elem, lvl=0):
         if isinstance(elem, list) or isinstance(elem, Container):
             if isinstance(elem, Container):
-                print '   '*lvl, elem.name
+                print('   '*lvl, elem.name)
             for sub_elem in elem:
                 printTree(sub_elem, lvl+1)
         elif isinstance(elem, ContentLine):
-            print '   '*lvl, elem.name, elem.params, elem.value
+            print('   '*lvl, elem.name, elem.params, elem.value)
         else:
-            print "Wuuut ?"
+            print("Wuuut ?")
 
     cal = string_to_container(cal1)
     printTree(cal)
