@@ -45,16 +45,16 @@ class ContentLine:
 
 class ICSReader:
 
-    def __init__(self, filep):
-        self.filep = iter(filep)
+    def __init__(self, lines):
+        self.lines = iter(lines)
         self.feof = False
 
     def __get_line(self):
         try:
-            self.next_line = self.filep.next()
+            self.next_line = self.lines.next()
             # ignore empty lines
             while not self.next_line:
-                self.next_line = self.filep.next()
+                self.next_line = self.lines.next()
         except StopIteration:
             self.feof = True
             return False
@@ -74,3 +74,4 @@ class ICSReader:
     def __iter__(self):
         self.__get_line()
         return self
+
