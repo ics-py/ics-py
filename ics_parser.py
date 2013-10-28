@@ -71,6 +71,20 @@ class Container(list):
     def  __repr__(self):
         return "<Container '{}' with {} elements>".format(self.name, len(self))
 
+    @classmethod
+    def parse(klass, name, tokenized_lines):
+        items = []
+        for line in tokenized_lines:
+            if line.name == 'BEGIN':
+                items.append(Container.parse(line.value, tokenized_lines))
+            elif line.name == 'END':
+                if line.value != name:
+                    raise ParseError("Expected END:%s, got END:%s"%(name, line.value))
+                break
+            else:
+                items.append(line)
+        return klass(name, *items)
+
 
 def unfold_lines(physical_lines):
     buffer = ""
@@ -101,12 +115,7 @@ def parse(tokenized_lines, block_name=None):
     res = []
     for line in tokenized_lines:
         if line.name == 'BEGIN':
-            item = Container(line.value, *parse(tokenized_lines, line.value))
-            res.append(item)
-        elif line.name == 'END':
-            if line.value != block_name:
-                raise ParseError("Expected %s, got %s"%(block_name, line.value))
-            return res
+            res.append(Container.parse(line.value, tokenized_lines))
         else:
             res.append(line)
     return res
