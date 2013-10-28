@@ -97,7 +97,7 @@ class Test_functional(unittest.TestCase):
 
     def test_gehol(self):
         url = "http://scientia-web.ulb.ac.be/gehol/index.php?Student/Calendar/%23SPLUS35F0F0/1-14.ics"
-        ics = lines_to_container(urlopen(url))[0]
+        ics = string_to_container(urlopen(url).read())[0]
         self.assertTrue(ics)
 
 if __name__ == '__main__':
