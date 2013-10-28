@@ -1,6 +1,6 @@
 import unittest
-from parser import ParseError, ContentLine, ICSReader
-from fixture import cal1, cal2, cal3, cal4
+from parser import ParseError, ContentLine, Container, ICSReader
+from fixture import cal1, cal2, cal3, cal4, cal5
 
 
 class TestContentLine(unittest.TestCase):
@@ -36,6 +36,17 @@ class TestContentLine(unittest.TestCase):
 
 class TestICSReader(unittest.TestCase):
 
+    def test_parse(self):
+        content = ICSReader(cal5.split('\n')).parse()
+        self.assertEqual(1, len(content))
+        
+        cal = content.pop()
+        self.assertEqual('VCALENDAR', cal.name)
+        self.assertTrue(isinstance(cal, Container))
+        self.assertEqual('VERSION', cal[0].name)
+        self.assertEqual('2.0', cal[0].value)
+        self.assertEqual(cal5.strip(), str(cal).strip())
+
     def test_one_line(self):
         ics = 'DTSTART;TZID=Europe/Brussels:20131029T103000'
         reader = ICSReader([ics])
@@ -49,6 +60,7 @@ class TestICSReader(unittest.TestCase):
             if line.name == 'DESCRIPTION':
                 self.assertEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae facilisis enim. Morbi blandit et lectus venenatis tristique. Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, quam dolor luctus augue, id cursus purus justo vel lorem. Ut feugiat enim ipsum, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id sem vel, vehicula nullam.', line.value)
             i += 1
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -22,6 +22,12 @@ class ContentLine:
 
     __repr__ = __str__
 
+    def __getitem__(self, item):
+        return self.params[item]
+
+    def __setitem__(self, item, *values):
+        self.params[item] = [val for val in values]
+
     @classmethod
     def parse(klass, line):
         if ':' not in line:
@@ -43,11 +49,25 @@ class ContentLine:
         return klass(name, params, value)
 
 
+class Container(list):
+    def __init__(self, name, *items):
+        super(Container, self).__init__(items)
+        self.name = name
+
+    def __str__(self):
+        content_str = '\n'.join(map(str, self))
+        if content_str:
+            content_str = '\n' + content_str
+        return 'BEGIN:%s'%(self.name) + content_str + '\nEND:%s'%(self.name)
+
+    __repr__ = __str__
+
 class ICSReader:
 
     def __init__(self, lines):
         self.lines = iter(lines)
         self.feof = False
+        self.isiter = False
 
     def __get_line(self):
         try:
@@ -72,6 +92,37 @@ class ICSReader:
         return ContentLine.parse(self.cur_line)
 
     def __iter__(self):
-        self.__get_line()
+        if not self.isiter:
+            self.__get_line()
+            self.isiter = True
         return self
 
+    def parse(self, block_name=None):
+        res = []
+        for line in self:
+            if line.name == 'BEGIN':
+                item = Container(line.value, *self.parse(line.value))
+                res.append(item)
+            elif line.name == 'END':
+                if line.value != block_name:
+                    raise ParseError("Expected %s, got %s"%(block_name, line.value))
+                return res
+            else:
+                res.append(line)
+        return res
+
+    @classmethod
+    def open(klass, filename):
+        return klass(open(filename))
+
+if __name__ == "__main__":
+    def printRecursive(cal, lvl=0):
+        if isinstance(cal, Container):
+            print '   '*lvl, cal.name
+            for elem in cal:
+                printRecursive(elem, lvl+1)
+        else:
+            print '   '*lvl, cal.name, cal.params, cal.value
+
+    cal = ICSReader.open('cal1.ics').parse().pop()
+    printRecursive(cal)
