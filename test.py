@@ -45,6 +45,20 @@ class Test_unfold_lines(unittest.TestCase):
     def test_last_line_folded(self):
         self.assertEqual(list(unfold_lines(cal6.split('\n'))),unfolded_cal6)
 
+    def test_simple(self):
+        dataset = {
+            'a': ('a',),
+            'ab': ('ab',),
+            'a\nb': ('a', 'b',),
+            'a\n b': ('ab',),
+            'a\n b\nc': ('ab', 'c',),
+            'a\nb\n c': ('a', 'bc',),
+        }
+        for line in dataset:
+            expected = dataset[line]
+            got = tuple(unfold_lines(line.split('\n')))
+            self.assertEqual(expected, got)
+
     def test_empty(self):
         self.assertEqual(list(unfold_lines([])),[])
 
