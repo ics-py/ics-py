@@ -61,13 +61,13 @@ class Calendar(object):
         else:
             self.scale = 'georgian'
             self.scale_params = {}
-            
+
         #METHOD
         method = get_optional_line(container,'METHOD')
         if method:
             self.method = method.value
             self.method_params = method.params
-        else: 
+        else:
             self.method = None
             self.method_params = {}
 
@@ -85,18 +85,53 @@ class Event(object):
     @classmethod
     def from_container(klass, container):
         k = klass()
-        
+
         if container.name != "VEVENT":
             raise parse.ParseError("container isn't an Event")
-        k.created = get_optional_line(container, 'CREATED')
-        k.begin_date = get_line(container, 'DTSTART')
-        # TODO work with timezone
-        k.name = get_optional_line(container, 'SUMMARY')
 
+        #CREATED
+        created = get_optional_line(container, 'CREATED')
+        if created:
+            k.created_params = created.params
+            k.created = created.value
+        else:
+            k.created = None
+            k.created_params = {}
+
+        #DTSTART
+        # TODO work with timezone
+        begin_date = get_line(container, 'DTSTART')
+        k.begin_date = begin_date.value
+        k.begin_date_params = begin_date.params
+
+        #SUMMARY
+        name = get_optional_line(container, 'SUMMARY')
+        if name:
+            k.name = name.value
+            k.name_params = name.params
+        else:
+            k.name = None
+            k.name_params = {}
+
+        #UID
         # TODO : raise if uid not present
         # TODO : add option somwhere to ignore some errors
-        k.description = get_optional_line(container,'DESCRIPTION')
-        k.uid = None
-        k.uid =  get_optional_line(container,'UID')
+        uid =  get_optional_line(container,'UID')
+        if uid:
+            k.uid = uid.value
+            k.uid_params = uid.params
+        else:
+            k.uid = None
+            k.uid_params = {}
+
+        #DESCRIPTION
+        description = get_optional_line(container,'DESCRIPTION')
+        if description:
+            k.description = description.value
+            k.description_params = description.params
+        else:
+            k.description = None
+            k.description_params = {}
 
         return k
+
