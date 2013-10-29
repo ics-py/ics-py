@@ -1,19 +1,20 @@
 import parse
 
+#TODO replace len(list())
 def get_line(container,name):
     lines = filter(lambda x: x.name == name, container)
-    if len(lines) != 1:
+    if len(list(lines)) != 1:
         raise parse.ParseError('A {} must have one and only one {}'.format(container.name,name))
-    return lines[0]
+    return list(lines)[0]
 
 def get_optional_line(container,name):
     lines = filter(lambda x: x.name == name, container)
-    if len(lines) < 1:
+    if len(list(lines)) > 1:
         raise parse.ParseError('A {} must have at most one {}'.format(container.name,name))
     elif len(lines) == 0:
         return None
-    else
-        return lines[0]
+    else:
+        return list(lines)[0]
 
 class Calendar(object):
     """docstring for Calendar"""
@@ -28,7 +29,7 @@ class Calendar(object):
             # TODO : make a better API for multiple calendars
             if len(container) != 1:
                 raise NotImplementedError('Multiple calendars in one file are not supported')
-            
+
             self.populate(container[0])
 
     @classmethod
@@ -57,7 +58,7 @@ class Calendar(object):
             _, self.version = version.value.split(';')
         else:
             self.version = version.value
-        
+
 
         #CALSCALE
         calscale = filter(lambda x: x.name == 'CALSCALE', container)
@@ -84,5 +85,18 @@ class Calendar(object):
         #VEVENT
         events = filter(lambda x: x.name == 'VEVENT', container)
         self.events = map(lambda x: Event.from_container(x),events)
+        self.creator = creators[0].value
 
+class Event(object):
+    """Docstring for Event """
+
+    def __init__(self, container):
+        if container.name != "VEVENT":
+            raise parse.ParseError("container isn't an Event")
+        self.created = get_optional_line(container, 'CREATED')
+        self.begin_date = get_line(container, 'DTSTART')
+# TODO work with timezone
+        self.name = get_optional_line(container, 'SUMMARY')
+        self.description = get_optional_line(container,'DESCRIPTION')
+        self.uid =  get_line(container,'UID')
 
