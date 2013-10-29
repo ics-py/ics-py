@@ -127,11 +127,11 @@ if __name__ == "__main__":
     def printTree(elem, lvl=0):
         if isinstance(elem, list) or isinstance(elem, Container):
             if isinstance(elem, Container):
-                print('   '*lvl, elem.name)
+                print("{}{}".format('   '*lvl, elem.name))
             for sub_elem in elem:
                 printTree(sub_elem, lvl+1)
         elif isinstance(elem, ContentLine):
-            print('   '*lvl, elem.name, elem.params, elem.value)
+            print("{}{}{}".format('   '*lvl, elem.name, elem.params, elem.value))
         else:
             print("Wuuut ?")
 
