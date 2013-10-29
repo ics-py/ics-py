@@ -39,18 +39,12 @@ class Calendar(object):
 
     def populate(self, container):
         #PRODID
-        creators = filter(lambda x: x.name == 'PRODID', container)
-        if len(creators) != 1:
-            raise parse.ParseError('A calendar must have one and only one PRODID')
-        prodid = creators[0]
+        prodid = get_line(container,'PRODID')
         self.creator = prodid.value
         self.creator_params = prodid.params
 
         #VERSION
-        version = filter(lambda x: x.name == 'VERSION', container)
-        if len(version) != 1:
-            raise parse.ParseError('A calendar must have one and only one VERSION')
-        version = version[0]
+        version = get_line(container,'VERSION')
         self.creator_params = prodid.params
         #TODO : should take care of minver/maxver
         if ';' in version.value:
@@ -60,29 +54,25 @@ class Calendar(object):
         
 
         #CALSCALE
-        calscale = filter(lambda x: x.name == 'CALSCALE', container)
-        if len(calscale) > 1:
-            raise parse.ParseError('A calendar must have at most one CALSCALE')
-
-        self.scale = 'georgian'
-        self.scale_params = {}
-        if len(calscale) == 1:
-            self.scale = calscale[0].value
-            self.scale_params[0].update(calscale.params)
-
+        calscale = get_optional_line(container,'CALSCALE')
+        if calscale:
+            self.scale = calscale.value
+            self.scale_params = calscale.params
+        else:
+            self.scale = 'georgian'
+            self.scale_params = {}
+            
         #METHOD
-        method = filter(lambda x: x.name == 'METHOD', container)
-        if len(method) > 1:
-            raise parse.ParseError('A calendar must have at most one METHOD')
-
-        self.method = None
-        self.method_params = {}
-        if len(method) == 1:
-            self.method = method[0].value
-            self.method_params[0].update(method.params)
+        method = get_optional_line(container,'METHOD')
+        if method:
+            self.method = method.value
+            self.method_params = method.params
+        else: 
+            self.method = None
+            self.method_params = {}
 
         #VEVENT
-        events = filter(lambda x: x.name == 'VEVENT', container)
-        self.events = map(lambda x: Event.from_container(x),events)
+        # events = filter(lambda x: x.name == 'VEVENT', container)
+        # self.events = map(lambda x: Event.from_container(x),events)
 
 
