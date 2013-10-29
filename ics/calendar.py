@@ -21,4 +21,3 @@ class Calendar(object):
         if len(creators) != 1:
             raise parse.ParseError('A calendar must have one and only one PRODID')
         self.creator = creators[0].value
-        
