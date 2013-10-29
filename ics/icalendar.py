@@ -1,10 +1,11 @@
 import parse
 
+#TODO replace len(list())
 def get_line(container,name):
     lines = list(filter(lambda x: x.name == name, container))
     if len(lines) != 1:
         raise parse.ParseError('A {} must have one and only one {}'.format(container.name,name))
-    return lines[0]
+    return list(lines)[0]
 
 def get_optional_line(container,name):
     lines = list(filter(lambda x: x.name == name, container))
@@ -28,7 +29,7 @@ class Calendar(object):
             # TODO : make a better API for multiple calendars
             if len(container) != 1:
                 raise NotImplementedError('Multiple calendars in one file are not supported')
-            
+
             self.populate(container[0])
 
     @classmethod
@@ -51,7 +52,6 @@ class Calendar(object):
             _, self.version = version.value.split(';')
         else:
             self.version = version.value
-        
 
         #CALSCALE
         calscale = get_optional_line(container,'CALSCALE')
@@ -72,7 +72,19 @@ class Calendar(object):
             self.method_params = {}
 
         #VEVENT
-        # events = filter(lambda x: x.name == 'VEVENT', container)
-        # self.events = map(lambda x: Event.from_container(x),events)
+        events = filter(lambda x: x.name == 'VEVENT', container)
+        self.events = map(lambda x: Event.from_container(x),events)
 
 
+class Event(object):
+    """Docstring for Event """
+
+    def __init__(self, container):
+        if container.name != "VEVENT":
+            raise parse.ParseError("container isn't an Event")
+        self.created = get_optional_line(container, 'CREATED')
+        self.begin_date = get_line(container, 'DTSTART')
+        # TODO work with timezone
+        self.name = get_optional_line(container, 'SUMMARY')
+        self.description = get_optional_line(container,'DESCRIPTION')
+        self.uid =  get_line(container,'UID')
