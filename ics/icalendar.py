@@ -79,12 +79,24 @@ class Calendar(object):
 class Event(object):
     """Docstring for Event """
 
-    def __init__(self, container):
+    def __init__(self):
+        pass
+
+    @classmethod
+    def from_container(klass, container):
+        k = klass()
+        
         if container.name != "VEVENT":
             raise parse.ParseError("container isn't an Event")
-        self.created = get_optional_line(container, 'CREATED')
-        self.begin_date = get_line(container, 'DTSTART')
+        k.created = get_optional_line(container, 'CREATED')
+        k.begin_date = get_line(container, 'DTSTART')
         # TODO work with timezone
-        self.name = get_optional_line(container, 'SUMMARY')
-        self.description = get_optional_line(container,'DESCRIPTION')
-        self.uid =  get_line(container,'UID')
+        k.name = get_optional_line(container, 'SUMMARY')
+
+        # TODO : raise if uid not present
+        # TODO : add option somwhere to ignore some errors
+        k.description = get_optional_line(container,'DESCRIPTION')
+        k.uid = None
+        k.uid =  get_optional_line(container,'UID')
+
+        return k
