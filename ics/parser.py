@@ -122,7 +122,7 @@ def string_to_container(txt):
     return lines_to_container(txt.split('\n'))
 
 if __name__ == "__main__":
-    from fixture import cal1
+    from tests.fixture import cal1
     
     def printTree(elem, lvl=0):
         if isinstance(elem, list) or isinstance(elem, Container):

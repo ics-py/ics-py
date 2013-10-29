@@ -1,0 +1,5 @@
+__title__ = 'ics'
+__version__ = 'indev'
+__author__ = 'Titouan Christophe & Nikita Marchant'
+__license__ = 'WTFPL'
+__copyright__ = 'Copyright 2013 Titouan Christophe & Nikita Marchant'
