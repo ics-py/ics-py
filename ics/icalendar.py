@@ -13,6 +13,7 @@ class Calendar(object):
             # TODO : make a better API for multiple calendars
             if len(container) != 1:
                 raise NotImplementedError('Multiple calendars in one file are not supported')
+            
             self.populate(container[0])
 
     def populate(self, container):
