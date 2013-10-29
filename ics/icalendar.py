@@ -16,6 +16,12 @@ class Calendar(object):
             
             self.populate(container[0])
 
+    @classmethod
+    def from_container(klass, container):
+        k = klass()
+        k.populate(container)
+        return k
+
     def populate(self, container):
         creators = filter(lambda x: x.name == 'PRODID', container)
         if len(creators) != 1:
