@@ -2,19 +2,19 @@ import parse
 
 #TODO replace len(list())
 def get_line(container,name):
-    lines = filter(lambda x: x.name == name, container)
-    if len(list(lines)) != 1:
+    lines = list(filter(lambda x: x.name == name, container))
+    if len(lines) != 1:
         raise parse.ParseError('A {} must have one and only one {}'.format(container.name,name))
     return list(lines)[0]
 
 def get_optional_line(container,name):
-    lines = filter(lambda x: x.name == name, container)
-    if len(list(lines)) > 1:
+    lines = list(filter(lambda x: x.name == name, container))
+    if len(lines) > 1:
         raise parse.ParseError('A {} must have at most one {}'.format(container.name,name))
     elif len(lines) == 0:
         return None
     else:
-        return list(lines)[0]
+        return lines[0]
 
 class Calendar(object):
     """docstring for Calendar"""
