@@ -16,7 +16,6 @@ class Calendar(object):
             self.populate(container[0])
 
     def populate(self, container):
-
         creators = filter(lambda x: x.name == 'PRODID', container)
         if len(creators) != 1:
             raise parse.ParseError('A calendar must have one and only one PRODID')
