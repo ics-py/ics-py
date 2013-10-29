@@ -1,5 +1,20 @@
 import parse
 
+def get_line(container,name):
+    lines = filter(lambda x: x.name == name, container)
+    if len(lines) != 1:
+        raise parse.ParseError('A {} must have one and only one {}'.format(container.name,name))
+    return lines[0]
+
+def get_optional_line(container,name):
+    lines = filter(lambda x: x.name == name, container)
+    if len(lines) < 1:
+        raise parse.ParseError('A {} must have at most one {}'.format(container.name,name))
+    elif len(lines) == 0:
+        return None
+    else
+        return lines[0]
+
 class Calendar(object):
     """docstring for Calendar"""
 
