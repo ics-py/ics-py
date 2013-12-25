@@ -3,8 +3,8 @@
 
 from itertools import islice
 import arrow
-import parse
 import re
+import parse
 
 
 def window(iterable, size):
@@ -56,23 +56,56 @@ def iso_precision(string):
         return 'day'
 
 
-def get_line(container, name):
-    #TODO replace len(list())
-    lines = list(filter(lambda x: x.name == name, container))
-    if len(lines) != 1:
-        raise parse.ParseError('A {} must have one and only one {}'.format(container.name, name))
-    return list(lines)[0]
-
-
-def get_optional_line(container, name):
-    lines = list(filter(lambda x: x.name == name, container))
-    if len(lines) > 1:
-        raise parse.ParseError('A {} must have at most one {}'.format(container.name, name))
-    elif len(lines) == 0:
-        return None
-    else:
-        return lines[0]
+def get_lines(container, name):
+    lines = []
+    for i in reversed(range(len(container))):
+        item = container[i]
+        if item.name == name:
+            lines.append(item)
+            del container[i]
+    return lines
 
 
 def parse_duration(duration):
     return None
+
+
+class Node(object):
+    _TYPE = "ABSTRACT"
+
+    @classmethod
+    def _from_container(klass, container):
+        k = klass()
+        if k._TYPE == "ABSTRACT":
+            raise NotImplementedError('Abstract clss')
+        k._populate(container)
+        return k
+
+    def _populate(self, container):
+        if container.name != self._TYPE:
+            raise parse.ParseError("container isn't an {}".format(), self.TYPE)
+
+        for extractor, line_type, required, multiple in self._EXTRACTORS:
+            lines = get_lines(container, line_type)
+            if lines is None and required:
+                raise parse.ParseError('A {} must have at least one {}'.format(container.name, line_type))
+
+            if not multiple and len(lines) > 1:
+                raise parse.ParseError('A {} must have at most one {}'.format(container.name, line_type))
+
+            if multiple:
+                extractor(self, lines)
+            else:
+                if len(lines) == 1:
+                    extractor(self, lines[0])
+                else:
+                    extractor(self, None)
+
+        self._unused = container
+
+    @classmethod
+    def _extracts(klass, line_type, required=False, multiple=False):
+        def decorator(fn):
+            klass._EXTRACTORS.append((fn, line_type, required, multiple))
+            return fn
+        return decorator
