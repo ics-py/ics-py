@@ -12,6 +12,7 @@ class Calendar(Node):
 
     def __init__(self, string=None):
         self._timezones = {}
+        self.events = []
         if string is not None:
             if isinstance(string, (str, unicode)):
                 container = parse.string_to_container(string)
@@ -130,7 +131,6 @@ def summary(event, line):
 @Event._extracts('DESCRIPTION')
 def description(event, line):
     event.description = line.value if line else None
-
 
 
 # TODO : make uid required ?

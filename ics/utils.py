@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from itertools import islice
 import arrow
 import re
 import parse
@@ -14,21 +13,10 @@ def remove_x(container):
             del container[i]
 
 
-def window(iterable, size):
-    if not size > 0:
-        raise ValueError("Window size must be greater than 0")
-
-    i = 0
-    while True:
-        l = list(islice(iterable, i, i + size))
-        if len(l) < size and i > 0 or len(l) == 0:
-            raise StopIteration()
-
-        yield l
-        i += 1
-
-
 def iso_to_arrow(time_container, available_tz={}):
+    if time_container is None:
+        return None
+
     # TODO : raise if not iso date
     tz_list = time_container.params.get('TZID')
     # TODO : raise if len(tz_list) > 1 or if tz is not a valid tz
