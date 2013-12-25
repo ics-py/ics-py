@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 import parse
 from utils import iso_to_arrow, iso_precision, parse_duration, Node, remove_x
 from dateutil.tz import tzical
@@ -24,6 +29,9 @@ class Calendar(Node):
                 raise NotImplementedError('Multiple calendars in one file are not supported')
 
             self._populate(container[0])
+
+    def __repr__(self):
+        return "<Calendar with {} events>".format(len(self.events))
 
 
 @Calendar._extracts('PRODID', required=True)
@@ -96,7 +104,13 @@ class Event(Node):
             return self._end_time
         else:
             # TODO : ask a .add() method to arrow devs
-            return self.begin.replace(**{self._begin_precision: +1})
+            return self.begin.replace(**{self._begin_precision + 's': +1})
+
+    def __repr__(self):
+        if self._begin_precision == 'day':
+            return "<Event '{}' begin:{} end:{}>".format(self.name, self.begin.strftime("%F"), self.end.strftime("%F"))
+        else:
+            return "<Event '{}' begin:{} end:{}>".format(self.name, self.begin.strftime("%F %X"), self.end.strftime("%F %X"))
 
 
 @Event._extracts('CREATED')
