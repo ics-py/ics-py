@@ -11,7 +11,7 @@ except ImportError:
 class TestContentLine(unittest.TestCase):
     dataset = {
         'haha:': ContentLine('haha'),
-        ':hoho': ContentLine('',  {}, 'hoho'),
+        ':hoho': ContentLine('', {}, 'hoho'),
         'haha:hoho': ContentLine('haha', {}, 'hoho'),
         'haha:hoho:hihi': ContentLine('haha', {}, 'hoho:hihi'),
         'haha;hoho=1:hoho': ContentLine('haha', {'hoho': ['1']}, 'hoho'),
@@ -42,18 +42,17 @@ class TestContentLine(unittest.TestCase):
             got = ContentLine.parse(test)
             self.assertEqual(expected, got, "Parse")
 
-    
 
 class Test_unfold_lines(unittest.TestCase):
 
     def test_no_folded_lines(self):
-        self.assertEqual(list(unfold_lines(cal2.split('\n'))),unfolded_cal2)
+        self.assertEqual(list(unfold_lines(cal2.split('\n'))), unfolded_cal2)
 
     def test_simple_folded_lines(self):
-        self.assertEqual(list(unfold_lines(cal1.split('\n'))),unfolded_cal1)
+        self.assertEqual(list(unfold_lines(cal1.split('\n'))), unfolded_cal1)
 
     def test_last_line_folded(self):
-        self.assertEqual(list(unfold_lines(cal6.split('\n'))),unfolded_cal6)
+        self.assertEqual(list(unfold_lines(cal6.split('\n'))), unfolded_cal6)
 
     def test_simple(self):
         dataset = {
@@ -125,7 +124,7 @@ class Test_functional(unittest.TestCase):
 
     def test_gehol(self):
         url = "http://scientia-web.ulb.ac.be/gehol/index.php?Student/Calendar/%23SPLUS35F0F0/1-14.ics"
-        ics = string_to_container(urlopen(url).read().decode('iso-8859-1'   ))[0]
+        ics = string_to_container(urlopen(url).read().decode('iso-8859-1'))[0]
         self.assertTrue(ics)
 
 if __name__ == '__main__':
