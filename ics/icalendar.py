@@ -33,8 +33,8 @@ class EventList(list):
 
             if key.step is None:  # Empty step
                 step = 'both'
-            elif not key.step in ('start', 'stop', 'both', 'one', 'inc'):  # invalid step
-                raise ValueError("The step must be 'start', 'stop', 'both', 'one' or 'inc' not '{}'".format(key.step))
+            elif not key.step in ('start', 'stop', 'both', 'any', 'inc'):  # invalid step
+                raise ValueError("The step must be 'start', 'stop', 'both', 'any' or 'inc' not '{}'".format(key.step))
             else:  # valid step
                 step = key.step
 
@@ -54,7 +54,7 @@ class EventList(list):
                 return list(filter(lambda x: start < x.begin < x.end < stop, self))
             if step == 'inc':
                 return list(filter(lambda x: x.begin < start < stop < x.end, self))
-            if step == 'one':
+            if step == 'any':
                 return list(filter(lambda x: (start < x.begin < stop) or (start < x.end < stop), self))
         elif start:  # only start provided
             if step in ('start', 'both'):
