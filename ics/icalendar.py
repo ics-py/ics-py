@@ -2,12 +2,66 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-from six import PY2, PY3, StringIO
+from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
 import parse
 from utils import iso_to_arrow, iso_precision, parse_duration, Node, remove_x
 from dateutil.tz import tzical
+from arrow.arrow import Arrow
+import arrow
+
+
+class EventList(list):
+    # def __init__(self, *args, **kwargs):
+    #     super(EventList, self).__init__(*args, **kwargs)
+
+    def __getitem__(self, key):
+        # Integer slice
+        if isinstance(key, integer_types):
+            return super(EventList, self).__getitem__(key)
+
+        if isinstance(key, Arrow):  # Single arrow slice
+            start, stop = key.floor('day').span('day')
+            step = 'both'
+        elif not isinstance(key, slice):  # not a slice, not an int
+            start, stop = arrow.get(key).floor('day').span('day')
+            step = 'both'
+        else:  # slice object
+            if isinstance(key.start, integer_types):  # classical int slice
+                return super(EventList, self).__getitem__(key)
+
+            if key.step is None:  # Empty step
+                step = 'both'
+            elif not key.step in ('start', 'stop', 'both'):  # invalid step
+                raise ValueError("The step must be 'start', 'stop' or 'both' not '{}'".format(key.step))
+            else:  # valid step
+                step = key.step
+
+            start, stop = key.start, key.stop
+
+            if not isinstance(start, Arrow) and not start is None:
+                start = arrow.get(start)
+            if not isinstance(stop, Arrow) and not stop is None:
+                stop = arrow.get(stop)
+
+        if start and stop:  # start and stop provided
+            if step == 'start':
+                return list(filter(lambda x: start < x.begin < stop, self))
+            if step == 'stop':
+                return list(filter(lambda x: start < x.end < stop, self))
+            if step == 'both':
+                return list(filter(lambda x: start < x.begin < x.end < stop, self))
+        elif start:  # only start provided
+            if step in ('start', 'both'):
+                return list(filter(lambda x: x.begin > start, self))
+            if step == 'stop':
+                return list(filter(lambda x: x.end > start, self))
+        elif stop:  # only stop provided
+            if step in ('stop', 'both'):
+                return list(filter(lambda x: x.end < stop, self))
+            if step == 'start':
+                return list(filter(lambda x: x.begin > stop, self))
 
 
 class Calendar(Node):
@@ -16,9 +70,10 @@ class Calendar(Node):
     _TYPE = "VCALENDAR"
     _EXTRACTORS = []
 
-    def __init__(self, string=None):
+    def __init__(self, string=None, events=EventList(), creator=None):
         self._timezones = {}
-        self.events = []
+        self._events = EventList()
+        self._events.today = lambda: 1
         if string is not None:
             if isinstance(string, (str, unicode)):
                 container = parse.string_to_container(string)
@@ -30,16 +85,48 @@ class Calendar(Node):
                 raise NotImplementedError('Multiple calendars in one file are not supported')
 
             self._populate(container[0])
+        else:
+            if events:
+                self.events = events
+            if creator:
+                self.creator = creator
 
     def __unicode__(self):
         return "<Calendar with {} events>".format(len(self.events))
 
+    @property
+    def events(self):
+        return self._events
+
+    @events.setter
+    def events(self, value):
+        if isinstance(value, list):
+            self._events = EventList(value)
+        elif isinstance(value, EventList):
+            self._events = value
+        else:
+            raise ValueError('Calendar.events must be a list or a EventList')
+
+    @property
+    def creator(self):
+        return self._creator
+
+    @creator.setter
+    def creator(self, value):
+        if isinstance(value, string_types) and PY2:
+            self._creator = unicode(value)
+        elif isinstance(value, text_type):
+            self._creator = value
+        else:
+            value = str(value)
+            if PY2:
+                value = unicode(value)
+            self._creator = value
+
 
 @Calendar._extracts('PRODID', required=True)
-def prodid(calendar, line):
-    prodid = line
-    calendar.creator = prodid.value
-    calendar.creator_params = prodid.params
+def prodid(calendar, prodid):
+    calendar._creator = prodid.value
 
 
 @Calendar._extracts('VERSION', required=True)
