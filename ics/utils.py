@@ -7,6 +7,13 @@ import re
 import parse
 
 
+def remove_x(container):
+    for i in reversed(range(len(container))):
+        item = container[i]
+        if item.name.startswith('X-'):
+            del container[i]
+
+
 def window(iterable, size):
     if not size > 0:
         raise ValueError("Window size must be greater than 0")
@@ -21,10 +28,11 @@ def window(iterable, size):
         i += 1
 
 
-def iso_to_arrow(time_container):
+def iso_to_arrow(time_container, available_tz={}):
     # TODO : raise if not iso date
     tz_list = time_container.params.get('TZID')
     # TODO : raise if len(tz_list) > 1 or if tz is not a valid tz
+    # TODO : see if timezone is registered as a VTIMEZONE
     if tz_list and len(tz_list) > 0:
         tz = tz_list[0]
     else:
@@ -32,7 +40,8 @@ def iso_to_arrow(time_container):
 
     if tz and not (time_container.value[-1].upper() == 'Z'):
         naive = arrow.get(time_container.value).naive
-        return arrow.get(naive, tz)
+        selected_tz = available_tz.get(tz, 'UTC')
+        return arrow.get(naive, selected_tz)
     else:
         return arrow.get(time_container.value)
 
@@ -74,8 +83,11 @@ class Node(object):
     _TYPE = "ABSTRACT"
 
     @classmethod
-    def _from_container(klass, container):
+    def _from_container(klass, container, *args, **kwargs):
         k = klass()
+        k._classmethod_args = args
+        k._classmethod_kwargs = kwargs
+
         if k._TYPE == "ABSTRACT":
             raise NotImplementedError('Abstract clss')
         k._populate(container)
@@ -87,7 +99,7 @@ class Node(object):
 
         for extractor, line_type, required, multiple in self._EXTRACTORS:
             lines = get_lines(container, line_type)
-            if lines is None and required:
+            if not lines and required:
                 raise parse.ParseError('A {} must have at least one {}'.format(container.name, line_type))
 
             if not multiple and len(lines) > 1:

@@ -1,5 +1,7 @@
 import parse
-from utils import iso_to_arrow, iso_precision, parse_duration, Node
+from utils import iso_to_arrow, iso_precision, parse_duration, Node, remove_x
+from dateutil.tz import tzical
+import StringIO
 
 
 class Calendar(Node):
@@ -9,6 +11,7 @@ class Calendar(Node):
     _EXTRACTORS = []
 
     def __init__(self, string=None):
+        self._timezones = {}
         if string is not None:
             if isinstance(string, (str, unicode)):
                 container = parse.string_to_container(string)
@@ -61,9 +64,21 @@ def method(calendar, line):
         calendar.method_params = {}
 
 
+@Calendar._extracts('VTIMEZONE', multiple=True)
+def timezone(calendar, lines):
+    for isotz in lines:
+        remove_x(isotz)
+        fake_file = StringIO.StringIO()
+        fake_file.write(str(isotz))
+        fake_file.seek(0)
+        timezones = tzical(fake_file)
+        for key in timezones.keys():
+            calendar._timezones[key] = timezones.get(key)
+
+
 @Calendar._extracts('VEVENT', multiple=True)
 def events(calendar, lines):
-    calendar.events = map(lambda x: Event._from_container(x), lines)
+    calendar.events = map(lambda x: Event._from_container(x, tz=calendar._timezones), lines)
 
 
 class Event(Node):
@@ -90,7 +105,9 @@ def created(event, line):
 
 @Event._extracts('DTSTART')
 def start(event, line):
-    event.begin = iso_to_arrow(line)
+    # TODO : check if line != None
+    tz_dict = event._classmethod_kwargs['tz']
+    event.begin = iso_to_arrow(line, tz_dict)
     event._begin_precision = iso_precision(line.value)
 
 
@@ -101,17 +118,19 @@ def duration(event, line):
 
 @Event._extracts('DTEND')
 def end(event, line):
-    event._end_time = iso_to_arrow(line)
+    tz_dict = event._classmethod_kwargs['tz']
+    event._end_time = iso_to_arrow(line, tz_dict)
 
 
 @Event._extracts('SUMMARY')
 def summary(event, line):
-    event.name = line.value
+    event.name = line.value if line else None
 
 
 @Event._extracts('DESCRIPTION')
 def description(event, line):
-    event.description = line.value
+    event.description = line.value if line else None
+
 
 
 # TODO : make uid required ?
