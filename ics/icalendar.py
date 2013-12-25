@@ -33,8 +33,8 @@ class EventList(list):
 
             if key.step is None:  # Empty step
                 step = 'both'
-            elif not key.step in ('start', 'stop', 'both'):  # invalid step
-                raise ValueError("The step must be 'start', 'stop' or 'both' not '{}'".format(key.step))
+            elif not key.step in ('start', 'stop', 'both', 'one', 'inc'):  # invalid step
+                raise ValueError("The step must be 'start', 'stop', 'both', 'one' or 'inc' not '{}'".format(key.step))
             else:  # valid step
                 step = key.step
 
@@ -52,6 +52,10 @@ class EventList(list):
                 return list(filter(lambda x: start < x.end < stop, self))
             if step == 'both':
                 return list(filter(lambda x: start < x.begin < x.end < stop, self))
+            if step == 'inc':
+                return list(filter(lambda x: x.begin < start < stop < x.end, self))
+            if step == 'one':
+                return list(filter(lambda x: (start < x.begin < stop) or (start < x.end < stop), self))
         elif start:  # only start provided
             if step in ('start', 'both'):
                 return list(filter(lambda x: x.begin > start, self))
@@ -62,6 +66,22 @@ class EventList(list):
                 return list(filter(lambda x: x.end < stop, self))
             if step == 'start':
                 return list(filter(lambda x: x.begin > stop, self))
+
+    def today(self):
+        return self[arrow.now()]
+
+    def on(self, time):
+        if not isinstance(time, Arrow):
+            time = arrow.get(time)
+        return self[time]
+
+    def now(self):
+        return self[arrow.now():arrow.now().ceil('microsecond')]
+
+    def at(self, time):
+        if not isinstance(time, Arrow):
+            time = arrow.get(time)
+        return self[time:time.ceil('microsecond'):'one']
 
 
 class Calendar(Node):
