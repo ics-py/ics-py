@@ -22,6 +22,7 @@ setup(name='ics',
     install_requires=[
         "python-dateutil",
         "arrow",
+        "six",
     ],
     license='WTFPL',
     packages=['ics'],

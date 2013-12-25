@@ -1,3 +1,7 @@
+from __future__ import unicode_literals
+from six import PY2, PY3
+from six.moves import filter, map, range
+
 cal1 = """
 BEGIN:VCALENDAR
 METHOD:PUBLISH

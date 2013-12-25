@@ -1,3 +1,4 @@
 python-dateutil
 arrow
 nose
+six

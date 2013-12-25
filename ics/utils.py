@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+from six import PY2, PY3
+from six.moves import filter, map, range
 
 import arrow
 import re
@@ -115,3 +117,9 @@ class Node(object):
             klass._EXTRACTORS.append((fn, line_type, required, multiple))
             return fn
         return decorator
+
+    def __repr__(self):
+        if PY2:
+            return self.__unicode__().encode('utf-8')
+        else:
+            return self.__unicode__()

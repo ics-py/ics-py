@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+from six import PY2, PY3, StringIO
+from six.moves import filter, map, range
 
 import parse
 from utils import iso_to_arrow, iso_precision, parse_duration, Node, remove_x
 from dateutil.tz import tzical
-import StringIO
 
 
 class Calendar(Node):
@@ -30,7 +31,7 @@ class Calendar(Node):
 
             self._populate(container[0])
 
-    def __repr__(self):
+    def __unicode__(self):
         return "<Calendar with {} events>".format(len(self.events))
 
 
@@ -77,7 +78,7 @@ def method(calendar, line):
 def timezone(calendar, lines):
     for isotz in lines:
         remove_x(isotz)
-        fake_file = StringIO.StringIO()
+        fake_file = StringIO()
         fake_file.write(str(isotz))
         fake_file.seek(0)
         timezones = tzical(fake_file)
@@ -87,7 +88,7 @@ def timezone(calendar, lines):
 
 @Calendar._extracts('VEVENT', multiple=True)
 def events(calendar, lines):
-    calendar.events = map(lambda x: Event._from_container(x, tz=calendar._timezones), lines)
+    calendar.events = list(map(lambda x: Event._from_container(x, tz=calendar._timezones), lines))
 
 
 class Event(Node):
@@ -106,7 +107,7 @@ class Event(Node):
             # TODO : ask a .add() method to arrow devs
             return self.begin.replace(**{self._begin_precision + 's': +1})
 
-    def __repr__(self):
+    def __unicode__(self):
         if self._begin_precision == 'day':
             return "<Event '{}' begin:{} end:{}>".format(self.name, self.begin.strftime("%F"), self.end.strftime("%F"))
         else:
