@@ -204,6 +204,38 @@ class Event(Node):
     _TYPE = "VEVENT"
     _EXTRACTORS = []
 
+    def __init__(self, name=None, begin=None, end=None, duration=None):
+        self._duration = None
+        self._end_time = None
+        self._begin = None
+        self._begin_precision = 'day'
+
+        self.name = name
+        self.begin = begin
+        if duration and end:
+            raise ValueError('Event() may not specify an end and a duration at the same time')
+        elif end:
+            self.end = end
+        elif duration:
+            self.duration = duration
+
+    def has_end(self):
+        return bool(self._end_time or self._duration)
+
+    @property
+    def begin(self):
+        return self._begin
+
+    @begin.setter
+    def begin(self, value):
+        '''removes and and duration as well'''
+        if not isinstance(value, Arrow) and not value is None:
+                value = arrow.get(value)
+        if value and self._end_time and value > self._end_time:
+            raise ValueError('Begin must be before than end')
+        self._begin = value
+        self._begin_precision = 'second'
+
     @property
     def end(self):
         if self._duration:
@@ -214,11 +246,33 @@ class Event(Node):
             # TODO : ask a .add() method to arrow devs
             return self.begin.replace(**{self._begin_precision + 's': +1})
 
+    @end.setter
+    def end(self, value):
+        if not isinstance(value, Arrow) and not value is None:
+                value = arrow.get(value)
+        if value and value < self._begin:
+            raise ValueError('End must be after than begin')
+
+        self._end_time = value
+        if value:
+            self._duration = None
+
+    @property
+    def all_day(self):
+        return self._begin_precision == 'day' and not self.has_end()
+
+    def make_all_day(self):
+        self._begin_precision = 'day'
+        self._begin = self._begin.floor('day')
+        self._duration = None
+        self._end_time = None
+
     def __unicode__(self):
-        if self._begin_precision == 'day':
-            return "<Event '{}' begin:{} end:{}>".format(self.name, self.begin.strftime("%F"), self.end.strftime("%F"))
+        name = "'{}' ".format(self.name) if self.name else ''
+        if self.all_day:
+            return "<Event {}whole-day:{}>".format(name, self.begin.strftime("%F"))
         else:
-            return "<Event '{}' begin:{} end:{}>".format(self.name, self.begin.strftime("%F %X"), self.end.strftime("%F %X"))
+            return "<Event {}begin:{} end:{}>".format(name, self.begin.strftime("%F %X"), self.end.strftime("%F %X"))
 
 
 @Event._extracts('CREATED')
