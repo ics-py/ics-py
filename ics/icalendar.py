@@ -13,7 +13,7 @@ import arrow
 from .component import Component
 from .event import Event
 from .eventlist import EventList
-from .parse import lines_to_container, string_to_container
+from .parse import lines_to_container, string_to_container, ContentLine
 from .utils import remove_x
 
 
@@ -95,6 +95,9 @@ class Calendar(Component):
             self._creator = value
 
 
+######################
+####### Inputs #######
+
 @Calendar._extracts('PRODID', required=True)
 def prodid(calendar, prodid):
     calendar._creator = prodid.value
@@ -154,6 +157,32 @@ def events(calendar, lines):
     calendar.events = list(map(event_factory, lines))
 
 
+######################
+###### Outputs #######
+
 @Calendar._outputs
-def caca(calendar, container):
-    return 1
+def o_prodid(calendar, container):
+    container.append(ContentLine('PRODID', value=calendar.creator))
+
+
+@Calendar._outputs
+def o_version(calendar, container):
+    container.append(ContentLine('VERSION', value='2.0'))
+
+
+@Calendar._outputs
+def o_scale(calendar, container):
+    if calendar.scale:
+        container.append(ContentLine('CALSCALE', value=calendar.scale.upper()))
+
+
+@Calendar._outputs
+def o_method(calendar, container):
+    if calendar.method:
+        container.append(ContentLine('METHOD', value=calendar.method.upper()))
+
+
+@Calendar._outputs
+def o_events(calendar, container):
+    for event in calendar.events:
+        container.append(str(event))

@@ -8,6 +8,8 @@ from six.moves import filter, map, range
 
 import arrow
 from arrow.arrow import Arrow
+tzutc = arrow.utcnow().tzinfo
+
 import re
 
 from . import parse
@@ -89,3 +91,9 @@ def get_arrow(value):
         return arrow.get(**value)
     else:
         return arrow.get(value)
+
+
+def arrow_to_iso(instant):
+    # set to utc, make iso, remove timzone
+    instant = instant.astimezone(tzutc).isoformat()[:-9]
+    return instant + 'Z'

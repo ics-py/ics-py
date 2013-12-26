@@ -31,7 +31,7 @@ class ContentLine:
         params_str = ''
         for pname in self.params:
             params_str += ';{}={}'.format(pname, ','.join(self.params[pname]))
-        return "{}{}:{}".format(self.name, params_str, self.value)
+        return "{}{}:{}".format(self.name, params_str, self.value).encode('utf-8')
 
     def __repr__(self):
         return "<ContentLine '{}' with {} parameters. Value='{}'>".format(self.name, len(self.params), self.value)
@@ -76,10 +76,10 @@ class Container(list):
         self.name = name
 
     def __str__(self):
-        content_str = '\n'.join(map(str, self))
+        content_str = '\n'.join(map(lambda x: str(x).decode('utf-8'), self))
         if content_str:
             content_str = '\n' + content_str
-        return 'BEGIN:{}{}\nEND:{}'.format(self.name, content_str, self.name)
+        return 'BEGIN:{}{}\nEND:{}'.format(self.name, content_str, self.name).encode('utf-8')
 
     def __repr__(self):
         return "<Container '{}' with {} elements>".format(self.name, len(self))

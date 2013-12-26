@@ -6,8 +6,12 @@ from __future__ import unicode_literals, absolute_import
 from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
+import arrow
+from uuid import uuid4
+
 from .component import Component
-from .utils import parse_duration, iso_to_arrow, iso_precision, get_arrow
+from .utils import parse_duration, iso_to_arrow, iso_precision, get_arrow, arrow_to_iso
+from .parse import ContentLine
 
 
 class Event(Component):
@@ -32,6 +36,9 @@ class Event(Component):
         self._end_time = None
         self._begin = None
         self._begin_precision = 'day'
+        self.summary = None
+        self.uid = str(uuid4())
+        self.description = None
 
         self.name = name
         self.begin = begin
@@ -110,7 +117,10 @@ class Event(Component):
             return "<Event {}begin:{} end:{}>".format(name, self.begin.strftime("%F %X"), self.end.strftime("%F %X"))
 
 
-@Event._extracts('CREATED')
+######################
+####### Inputs #######
+
+@Event._extracts('DTSTAMP')
 def created(event, line):
     event.created = line
 
@@ -151,3 +161,56 @@ def description(event, line):
 @Event._extracts('UID')
 def uid(event, line):
     event.uid = line
+
+
+######################
+###### Outputs #######
+@Event._outputs
+def o_created(event, container):
+    if event.created:
+        instant = arrow_to_iso(event.created)
+    else:
+        instant = arrow.now()
+
+    container.append(ContentLine('DTSTAMP', value=arrow_to_iso(instant)))
+
+
+@Event._outputs
+def o_start(event, container):
+    if event.begin:
+        container.append(ContentLine('DTSTART', value=arrow_to_iso(event.begin)))
+
+    # TODO : take care of precision
+
+
+@Event._outputs
+def o_duration(event, container):
+    # TODO : DURATION
+    pass
+
+
+@Event._outputs
+def o_end(event, container):
+    if event.end:
+        container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
+
+
+@Event._outputs
+def o_summary(event, container):
+    if event.summary:
+        container.append(ContentLine('SUMMARY', value=event.summary))
+
+
+@Event._outputs
+def o_description(event, container):
+    if event.description:
+        container.append(ContentLine('SUMMARY', value=event.description))
+
+
+@Event._outputs
+def o_uid(event, container):
+    if event.uid:
+        uid = event.uid
+    else:
+        uid = str(uuid4())
+    container.append(ContentLine('UID', value=uid))
