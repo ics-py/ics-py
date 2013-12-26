@@ -57,6 +57,10 @@ class Calendar(Component):
         Should not be used directly. Use self.__repr__ instead'''
         return "<Calendar with {} events>".format(len(self.events))
 
+    def __iter__(self):
+        for line in str(self).decode('utf-8').split('\n'):
+            yield (line + '\n').encode('utf-8')
+
     @property
     def events(self):
         '''Get or set the list of calendar's events.
