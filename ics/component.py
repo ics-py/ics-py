@@ -6,8 +6,12 @@ from __future__ import unicode_literals, absolute_import
 from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
-from .parse import ParseError
+from collections import namedtuple
+
 from .utils import get_lines
+
+
+Extractor = namedtuple('Extractor', ['function', 'type', 'required', 'multiple'])
 
 
 class Component(object):
@@ -15,46 +19,48 @@ class Component(object):
 
     @classmethod
     def _from_container(klass, container, *args, **kwargs):
+        if klass._TYPE == "ABSTRACT":
+            raise NotImplementedError('Abstract class, cannot instaciate')
+
         k = klass()
         k._classmethod_args = args
         k._classmethod_kwargs = kwargs
-
-        if k._TYPE == "ABSTRACT":
-            raise NotImplementedError('Abstract clss')
         k._populate(container)
+
         return k
 
     def _populate(self, container):
         if container.name != self._TYPE:
-            raise ParseError("container isn't an {}".format(), self.TYPE)
+            raise ValueError("container isn't an {}".format(), self.TYPE)
 
-        for extractor, line_type, required, multiple in self._EXTRACTORS:
-            lines = get_lines(container, line_type)
-            if not lines and required:
-                raise ParseError('A {} must have at least one {}'.format(container.name, line_type))
+        for extractor in self._EXTRACTORS:
+            lines = get_lines(container, extractor.type)
+            if not lines and extractor.required:
+                raise ValueError('A {} must have at least one {}'.format(container.name, extractor.type))
 
-            if not multiple and len(lines) > 1:
-                raise ParseError('A {} must have at most one {}'.format(container.name, line_type))
+            if not extractor.multiple and len(lines) > 1:
+                raise ValueError('A {} must have at most one {}'.format(container.name, extractor.type))
 
-            if multiple:
-                extractor(self, lines)
+            if extractor.multiple:
+                extractor.function(self, lines) # Send a list or empty list
             else:
                 if len(lines) == 1:
-                    extractor(self, lines[0])
+                    extractor.function(self, lines[0]) # Send the element
                 else:
-                    extractor(self, None)
+                    extractor.function(self, None) # Send None
 
-        self._unused = container
+        self._unused = container # Store unused lines
 
     @classmethod
     def _extracts(klass, line_type, required=False, multiple=False):
         def decorator(fn):
-            klass._EXTRACTORS.append((fn, line_type, required, multiple))
+            extractor = Extractor(function=fn, type=line_type, required=required, multiple=multiple)
+            klass._EXTRACTORS.append(extractor)
             return fn
         return decorator
 
     def __repr__(self):
-        if PY2:
-            return self.__unicode__().encode('utf-8')
+        if hasattr(self, '__unicode__'):
+            return self.__unicode__().encode('utf-8') if PY2 else self.__unicode__()
         else:
-            return self.__unicode__()
+            super(Component, self).__repr__()

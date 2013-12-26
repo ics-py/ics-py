@@ -7,6 +7,7 @@ from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
 import arrow
+from arrow.arrow import Arrow
 import re
 
 from . import parse
@@ -75,3 +76,16 @@ def get_lines(container, name):
 
 def parse_duration(duration):
     return None
+
+
+def get_arrow(value):
+    if value is None:
+        return None
+    elif isinstance(value, Arrow):
+        return value
+    elif isinstance(value, tuple):
+        return arrow.get(*value)
+    elif isinstance(value, dict):
+        return arrow.get(**value)
+    else:
+        return arrow.get(value)
