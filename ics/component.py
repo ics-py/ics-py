@@ -59,8 +59,19 @@ class Component(object):
             return fn
         return decorator
 
+    @classmethod
+    def _outputs(klass, fn):
+        klass._OUTPUTS.append(fn)
+        return fn
+
     def __repr__(self):
         if hasattr(self, '__unicode__'):
             return self.__unicode__().encode('utf-8') if PY2 else self.__unicode__()
         else:
             super(Component, self).__repr__()
+
+    def __str__(self):
+        container = self._unused.clone()
+        for output in self._OUTPUTS:
+            output(self, container)
+        return str(container)

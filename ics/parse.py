@@ -65,6 +65,10 @@ class ContentLine:
             params[pname] = pvals.split(',')
         return klass(name, params, value)
 
+    def clone(self):
+        # dict(self.params) -> Make a copy of the dict
+        return self.__class__(self.name, dict(self.params), self.value)
+
 
 class Container(list):
     def __init__(self, name, *items):
@@ -93,6 +97,12 @@ class Container(list):
             else:
                 items.append(line)
         return klass(name, *items)
+
+    def clone(self):
+        c = self.__class__(self.name)
+        for elem in self:
+            c.append(elem.clone())
+        return c
 
 
 def unfold_lines(physical_lines):

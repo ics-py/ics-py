@@ -17,6 +17,7 @@ class Event(Component):
     # TODO : order events
     _TYPE = "VEVENT"
     _EXTRACTORS = []
+    _OUTPUTS = []
 
     def __init__(self, name=None, begin=None, end=None, duration=None):
         '''Instanciates a new Event.

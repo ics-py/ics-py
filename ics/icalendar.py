@@ -22,6 +22,7 @@ class Calendar(Component):
 
     _TYPE = "VCALENDAR"
     _EXTRACTORS = []
+    _OUTPUTS = []
 
     def __init__(self, imports=None, events=EventList(), creator=None):
         '''Instanciates a new Calendar.
@@ -151,3 +152,8 @@ def events(calendar, lines):
     # tz=calendar._timezones gives access to the event factory to the timezones list
     event_factory = lambda x: Event._from_container(x, tz=calendar._timezones)
     calendar.events = list(map(event_factory, lines))
+
+
+@Calendar._outputs
+def caca(calendar, container):
+    return 1
