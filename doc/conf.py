@@ -18,7 +18,7 @@ import os
 sys.path.append(os.path.abspath('../ics'))
 sys.path.append(os.path.abspath('_themes'))
 
-from ..ics import __version__
+from ics import __version__
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
