@@ -172,7 +172,8 @@ def events(calendar, lines):
 
 @Calendar._outputs
 def o_prodid(calendar, container):
-    container.append(ContentLine('PRODID', value=calendar.creator))
+    creator = calendar.creator if calendar.creator else 'ics.py - http://git.io/lLljaA'
+    container.append(ContentLine('PRODID', value=creator))
 
 
 @Calendar._outputs
