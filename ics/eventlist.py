@@ -11,13 +11,23 @@ import arrow
 
 
 class EventList(list):
-    '''PLop'''
+    '''EventList is a subclass of the standard list.
+    It can be used as a list but also has super slicing capabilities and some helpers.'''
+
     def __init__(self, *args, **kwargs):
-        '''PLop'''
+        '''Instanciates a new EventList. Accepts same arguments as list() and pass them all to list()'''
         super(EventList, self).__init__(*args, **kwargs)
 
     def __getitem__(self, key):
-        '''Plop'''
+        '''Slices EventList.
+        If the slice is conventional (like [10], [4:12], [3:100:2], [::-1], etc) it slices the EventList like a classical list().
+        If one of the 3 arguments ([start:stop:step]) is not None or an int, slicing differs.
+
+        In that case, 'start' and 'stop' are considerated like instants (or None) and 'step' like a modificator.
+        'start' and 'stop' will be converted to Arrow objects (or None) with arrow.get().
+
+        ... MOARZ info coming soon ...
+        '''
         # Integer slice
         if isinstance(key, integer_types):
             return super(EventList, self).__getitem__(key)
@@ -68,18 +78,26 @@ class EventList(list):
             if step == 'start':
                 return list(filter(lambda x: x.begin > stop, self))
 
-    def today(self):
+    def today(self, strict=False):
+        '''Return all events that occurs today.
+        If strict is True, events will be returned only if they are strictly *included* in today'''
         return self[arrow.now()]
 
-    def on(self, time):
-        if not isinstance(time, Arrow):
-            time = arrow.get(time)
-        return self[time]
+    def on(self, day, strict=False):
+        '''Return all events that occurs on 'day'.
+        If strict is True, events will be returned only if they are strictly *included* in 'day'.
+        'day' will be parsed by arrow.get() is it's not an Arrow object.'''
+        if not isinstance(day, Arrow):
+            day = arrow.get(day)
+        return self[day]
 
     def now(self):
+        '''Return all events that occurs now.'''
         return self[arrow.now():arrow.now().ceil('microsecond')]
 
-    def at(self, time):
-        if not isinstance(time, Arrow):
-            time = arrow.get(time)
-        return self[time:time.ceil('microsecond'):'one']
+    def at(self, instant):
+        '''Return all events that are occuring at that instant.
+        'instant' will be parsed by arrow.get() is it's not an Arrow object'''
+        if not isinstance(instant, Arrow):
+            instant = arrow.get(instant)
+        return self[instant:instant.ceil('microsecond'):'one']

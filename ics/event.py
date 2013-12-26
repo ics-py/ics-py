@@ -14,7 +14,7 @@ class Event(Component):
     '''A calendar event.
     Can be full-day or between to instants.
     Can be defined by a begin instant and a {duration,end instant}'''
-
+    # TODO : order events
     _TYPE = "VEVENT"
     _EXTRACTORS = []
 
