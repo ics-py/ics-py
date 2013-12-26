@@ -210,7 +210,8 @@ def o_description(event, container):
 def o_uid(event, container):
     if event.uid:
         uid = event.uid
-        container.append(ContentLine('UID', value=uid))
-    # else:
-    #     uid = str(uuid4())
+    else:
+        uid = str(uuid4())
+        uid = "{}@{}.org".format(uid, uid[:4])
+    container.append(ContentLine('UID', value=uid))
     
