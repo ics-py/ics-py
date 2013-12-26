@@ -64,7 +64,7 @@ class Event(Component):
     def end(self):
         '''Get or set the end of the event.
         Will return an Arrow object. May be setted to anything that arrow.get() understands.
-        If setted to a non null value, removes any already existing duration
+        If setted to a non null value, removes any already existing duration.
         Setting to None will have unexpected behavior if begin is not None.
         Must not be setted to an inferior value than self.begin'''
 
@@ -92,8 +92,8 @@ class Event(Component):
         return self._begin_precision == 'day' and not self.has_end()
 
     def make_all_day(self):
-        '''Transforms an event to a all-day event
-        The day will be the day of self.begin'''
+        '''Transforms an event to a all-day event.
+        The day will be the day of self.begin.'''
         self._begin_precision = 'day'
         self._begin = self._begin.floor('day')
         self._duration = None
@@ -101,7 +101,7 @@ class Event(Component):
 
     def __unicode__(self):
         '''Return a unicode representation (__repr__) of the event.
-        Should not be used directly. Use self.__repr__ instead'''
+        Should not be used directly. Use self.__repr__ instead.'''
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
             return "<all-day Event {} :{}>".format(name, self.begin.strftime("%F"))
