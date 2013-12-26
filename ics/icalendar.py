@@ -71,7 +71,7 @@ class Calendar(Component):
     def events(self):
         '''Get or set the list of calendar's events.
         Will return an EventList object (similar to python list).
-        May be setted to a list or an EventList (otherwise will raise a ValueError).
+        May be set to a list or an EventList (otherwise will raise a ValueError).
         If setted, will override all pre-existing events.'''
         return self._events
 
@@ -88,7 +88,7 @@ class Calendar(Component):
     def creator(self):
         '''Get or set the calendar's creator.
         Will return a string.
-        May be setted to a string.
+        May be set to a string.
         Creator is the PRODID icalendar property. It uniquely identifies the program that created the calendar.'''
         return self._creator
 

@@ -29,7 +29,7 @@ Inspiration and 3-party code
 Thanks to :
 	- `arrow <http://crsmithdev.com/arrow/>`_ which provides a nice API for dates, times and deltas.
 	- `python-dateutil <http://labix.org/python-dateutil>`_ for parsing timezones from VTIMEZONE blocks
-	- `requests <http://python-requests.org/>`_ for giving me inspiration from it's beautiful and pythonic API (and your doc too).
+	- `requests <http://python-requests.org/>`_ for giving me inspiration from it's beautiful and pythonic API (and it's doc too).
 	- `six <http://pythonhosted.org/six/>`_ to make the python3 transition easier
 	- `#urlab <irc://freenode.org#urlab>`_ for help and advices.
 
@@ -40,7 +40,7 @@ Contribute
 
 Wanna contribute ? I would love your help :)
 
-Feel free to submit patches, issues, feature requests, pull requests on the `GitHub repo <http://github.com/C4ptainCrunch/ics.py>`_, i'll be glad to fix and merge all thoses.
+Feel free to submit patches, issues, feature requests, pull requests on the `GitHub repo <http://github.com/C4ptainCrunch/ics.py>`_, I'll be glad to fix and merge all thoses.
 
 Also feel free to send me an `email <mailto:nikita.marchant@gmail.com>`_
 

@@ -86,7 +86,7 @@ class EventList(list):
     def on(self, day, strict=False):
         '''Return all events that occurs on 'day'.
         If strict is True, events will be returned only if they are strictly *included* in 'day'.
-        'day' will be parsed by arrow.get() is it's not an Arrow object.'''
+        'day' will be parsed by arrow.get() if it's not an Arrow object.'''
         if not isinstance(day, Arrow):
             day = arrow.get(day)
         return self[day]
@@ -97,7 +97,7 @@ class EventList(list):
 
     def at(self, instant):
         '''Return all events that are occuring at that instant.
-        'instant' will be parsed by arrow.get() is it's not an Arrow object'''
+        'instant' will be parsed by arrow.get() if it's not an Arrow object'''
         if not isinstance(instant, Arrow):
             instant = arrow.get(instant)
         return self[instant:instant.ceil('microsecond'):'one']

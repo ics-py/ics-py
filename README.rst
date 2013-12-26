@@ -63,4 +63,4 @@ ics.py is under the Apache 2 software license because... bah ! Why not ?
 
 ics.py uses heavily arrow (Apache license) and python-dateutil (GPL licensed).
 
-ics.py includes also something like 10 lines of arrow's code (in utils.iso_precision) witch are ©Chris Smith. Thanks to him!
+ics.py includes also something like 10 lines of arrow's code (in utils.iso_precision) which are ©Chris Smith. Thanks to him!

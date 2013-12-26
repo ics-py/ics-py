@@ -16,7 +16,7 @@ from .parse import ContentLine
 
 class Event(Component):
     '''A calendar event.
-    Can be full-day or between to instants.
+    Can be full-day or between two instants.
     Can be defined by a begin instant and a {duration,end instant}'''
     # TODO : order events
     _TYPE = "VEVENT"
@@ -55,8 +55,8 @@ class Event(Component):
     @property
     def begin(self):
         '''Get or set the beginning of the event.
-        Will return an Arrow object. May be setted to anything that arrow.get() understands.
-        If an end is defined (not a duration), .begin must not be setted to an superior value.'''
+        Will return an Arrow object. May be set to anything that arrow.get() understands.
+        If an end is defined (not a duration), .begin must not be set to an superior value.'''
         return self._begin
 
     @begin.setter
@@ -70,7 +70,7 @@ class Event(Component):
     @property
     def end(self):
         '''Get or set the end of the event.
-        Will return an Arrow object. May be setted to anything that arrow.get() understands.
+        Will return an Arrow object. May be set to anything that arrow.get() understands.
         If setted to a non null value, removes any already existing duration.
         Setting to None will have unexpected behavior if begin is not None.
         Must not be setted to an inferior value than self.begin'''
@@ -95,7 +95,7 @@ class Event(Component):
 
     @property
     def all_day(self):
-        '''Bool : avent is an all-day event'''
+        '''Bool : event is an all-day event'''
         return self._begin_precision == 'day' and not self.has_end()
 
     def make_all_day(self):
@@ -218,4 +218,3 @@ def o_uid(event, container):
         uid = str(uuid4())
         uid = "{}@{}.org".format(uid, uid[:4])
     container.append(ContentLine('UID', value=uid))
-    
