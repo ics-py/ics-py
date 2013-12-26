@@ -6,47 +6,56 @@
 Ics.py : iCalendar for Humans
 =============================
 
-ics.py is a Python (2 and 3) icalendar (rfc5545) parser.
+(Release |version|)
 
-examples
-========
+Ics.py is an :ref:`Apache2 Licensed <apache2>` iCalendar (rfc5545) library, written in Python 2 & 3, for human beings.
+
+Quickstart
+----------
+
+
+Install using `pip <http://www.pip-installer.org/>`_ (or :ref:`another method <installation>`).
+::
+
+    $ pip install requests
+
+
+Import a calendar from a file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. code-block:: python
 
-	from icalendar import Calendar
+	from ics import Calendar
 	from urllib2 import urlopen
 	url = "http://hackeragenda.urlab.be/events/events.ics"
 	c = Calendar(urlopen(url).read().decode('iso-8859-1'))
 	c
-	>>> <icalendar.Calendar at 0x10c00e210>
+	>>> <Calendar with 42 events>
 
 	c.events
-	>>> [<icalendar.Event at 0x10c00e350>,
-	>>> <icalendar.Event at 0x10c00e3d0>,
-	>>> <icalendar.Event at 0x10c00e490>]
+	>>> [<Event 'SmartMonday #1' begin:2013-12-13 20:00:00 end:2013-12-13 23:00:00>,
+ 	>>> <Event 'RFID workshop' begin:2013-12-06 12:00:00 end:2013-12-06 19:00:00>,
+ 	>>> ...]
 
 	e = c.events[10]
 
-	e.begin, e.end
-	>>> (<Arrow [2012-11-28T19:00:00+00:00]>,
-	>>> <Arrow [2012-11-28T12:00:00+00:00]>)
-
 	"Event '{}' started {}".format(e.name, e.begin.humanize())
-	>>> "Event 'Mitch Altman @voidwarranties' started a year ago"
+	>>> "Event 'Mitch Altman soldering workshop' started 6 days ago"
 
 
-You may also create new calendars and events
+Create a new calendar and add events
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
 	c = Calendar()
-	c.creator =  "ics.py by C4"
-
 	e = Event()
 	e.name = "My cool event"
+	e.begin = '20140101 00:00:00'
 	c.events.append(e)
 
 	c.events
-	>>> [<icalendar.Event at 0x10573b390>]
+	>>> [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
 
 
 .. Contents:
