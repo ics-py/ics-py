@@ -16,7 +16,7 @@ Quickstart
 Install using `pip <http://www.pip-installer.org/>`_.
 ::
 
-    $ pip install requests
+    $ pip install ics
 
 
 Import a calendar from a file
