@@ -36,7 +36,6 @@ class Event(Component):
         self._end_time = None
         self._begin = None
         self._begin_precision = 'day'
-        self.summary = None
         self.uid = str(uuid4())
         self.description = None
 
@@ -197,20 +196,21 @@ def o_end(event, container):
 
 @Event._outputs
 def o_summary(event, container):
-    if event.summary:
-        container.append(ContentLine('SUMMARY', value=event.summary))
+    if event.name:
+        container.append(ContentLine('SUMMARY', value=event.name))
 
 
 @Event._outputs
 def o_description(event, container):
     if event.description:
-        container.append(ContentLine('SUMMARY', value=event.description))
+        container.append(ContentLine('DESCRIPTION', value=event.description))
 
 
 @Event._outputs
 def o_uid(event, container):
     if event.uid:
         uid = event.uid
-    else:
-        uid = str(uuid4())
-    container.append(ContentLine('UID', value=uid))
+        container.append(ContentLine('UID', value=uid))
+    # else:
+    #     uid = str(uuid4())
+    
