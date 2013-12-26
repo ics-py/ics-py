@@ -61,13 +61,22 @@ Create a new calendar and add events
 API
 ===
 
+Calendar
+--------
+
 .. autoclass:: ics.icalendar.Calendar
     :members:
     :special-members: __unicode__, __init__
 
+Event
+-----
+
 .. autoclass:: ics.event.Event
     :members:
     :special-members: __unicode__, __init__
+
+EventList
+---------
 
 .. autoclass:: ics.eventlist.EventList
     :members:
