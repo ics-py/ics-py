@@ -132,17 +132,22 @@ def method(calendar, line):
 
 
 @Calendar._extracts('VTIMEZONE', multiple=True)
-def timezone(calendar, lines):
-    for isotz in lines:
-        remove_x(isotz)
+def timezone(calendar, vtimezones):
+    '''Recieves a list of VTIMEZONE blocks.
+    Parses them and add them to calendar._timezones'''
+    for vtimezone in vtimezones:
+        remove_x(vtimezone) # Remove non standard lines from the block
         fake_file = StringIO()
-        fake_file.write(str(isotz))
+        fake_file.write(str(vtimezone)) # Represent the block as a string
         fake_file.seek(0)
-        timezones = tzical(fake_file)
+        timezones = tzical(fake_file) # tzical does not like strings
+        # timezones is a tzical object and could contain multiple timezones
         for key in timezones.keys():
             calendar._timezones[key] = timezones.get(key)
 
 
 @Calendar._extracts('VEVENT', multiple=True)
 def events(calendar, lines):
-    calendar.events = list(map(lambda x: Event._from_container(x, tz=calendar._timezones), lines))
+    # tz=calendar._timezones gives access to the event factory to the timezones list
+    event_factory = lambda x: Event._from_container(x, tz=calendar._timezones)
+    calendar.events = list(map(event_factory, lines))
