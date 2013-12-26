@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 from six import PY2, PY3
 from six.moves import filter, map, range
 
@@ -15,8 +15,8 @@ class ParseError(Exception):
 class ContentLine:
 
     def __eq__(self, other):
-        ret = (self.name == other.name 
-            and self.params == other.params 
+        ret = (self.name == other.name
+            and self.params == other.params
             and self.value == other.value)
         return ret
 
@@ -46,15 +46,15 @@ class ContentLine:
     def parse(klass, line):
         if ':' not in line:
             raise ParseError("No ':' in line '{}'".format(line))
-        
+
         # Separe key and value
         splitted = line.split(':')
         key, value = splitted[0], ':'.join(splitted[1:]).strip()
-        
+
         # Separe name and params
         splitted = key.split(';')
         name, params_strings = splitted[0], splitted[1:]
-        
+
         # Separe key and values for params
         params = {}
         for paramstr in params_strings:
@@ -77,7 +77,7 @@ class Container(list):
             content_str = '\n' + content_str
         return 'BEGIN:{}{}\nEND:{}'.format(self.name, content_str, self.name)
 
-    def  __repr__(self):
+    def __repr__(self):
         return "<Container '{}' with {} elements>".format(self.name, len(self))
 
     @classmethod
@@ -112,7 +112,8 @@ def unfold_lines(physical_lines):
             current_line = line
     if current_line:
         yield(current_line)
-    
+
+
 def tokenize_line(unfolded_lines):
     for line in unfolded_lines:
         yield ContentLine.parse(line)
@@ -127,23 +128,25 @@ def parse(tokenized_lines, block_name=None):
             res.append(line)
     return res
 
+
 def lines_to_container(lines):
     return parse(tokenize_line(unfold_lines(lines)))
+
 
 def string_to_container(txt):
     return lines_to_container(txt.split('\n'))
 
 if __name__ == "__main__":
     from tests.fixture import cal1
-    
+
     def printTree(elem, lvl=0):
         if isinstance(elem, list) or isinstance(elem, Container):
             if isinstance(elem, Container):
-                print("{}{}".format('   '*lvl, elem.name))
+                print("{}{}".format('   ' * lvl, elem.name))
             for sub_elem in elem:
-                printTree(sub_elem, lvl+1)
+                printTree(sub_elem, lvl + 1)
         elif isinstance(elem, ContentLine):
-            print("{}{}{}".format('   '*lvl, elem.name, elem.params, elem.value))
+            print("{}{}{}".format('   ' * lvl, elem.name, elem.params, elem.value))
         else:
             print("Wuuut ?")
 

@@ -7,7 +7,7 @@ examples
 ========
 .. code-block:: python
 
-	from icalendar import Calendar
+	from ics import Calendar
 	from urllib2 import urlopen
 	url = "http://hackeragenda.urlab.be/events/events.ics"
 	c = Calendar(urlopen(url).read().decode('iso-8859-1'))
