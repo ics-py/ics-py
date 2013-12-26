@@ -18,37 +18,50 @@ from .utils import remove_x
 
 
 class Calendar(Component):
-    """docstring for Calendar"""
+    '''Represents a unique rfc5545 icalendar.'''
 
     _TYPE = "VCALENDAR"
     _EXTRACTORS = []
 
-    def __init__(self, string=None, events=EventList(), creator=None):
+    def __init__(self, imports=None, events=EventList(), creator=None):
+        '''Instanciates a new Calendar.
+        Optional arguments:
+            - imports (string or list of lines/strings) : data to be imported into the Calendar()
+            - events (list of Events or EventList) : if Events: will use to construct internal EventList. If EventList : will use event in place of creating a new internal EventList
+            - creator (string) : uid of the creator program
+        If 'imports' is specified, __init__ ignores every other argument.'''
+        # TODO : implement a file-descriptor import and a filename import
+
         self._timezones = {}
         self._events = EventList()
-        self._events.today = lambda: 1
-        if string is not None:
-            if isinstance(string, (str, unicode)):
-                container = string_to_container(string)
+
+        if imports is not None:
+            # TODO : Check python3 types
+            if isinstance(imports, (str, unicode)):
+                container = string_to_container(imports)
             else:
-                container = lines_to_container(string)
+                container = lines_to_container(imports)
 
             # TODO : make a better API for multiple calendars
             if len(container) != 1:
                 raise NotImplementedError('Multiple calendars in one file are not supported')
 
-            self._populate(container[0])
+            self._populate(container[0]) # Use first calendar
         else:
-            if events:
-                self.events = events
-            if creator:
-                self.creator = creator
+            self._events = events
+            self._creator = creator
 
     def __unicode__(self):
+        '''Return a unicode representation (__repr__) of the calendar.
+        Should not be used directly. Use self.__repr__ instead'''
         return "<Calendar with {} events>".format(len(self.events))
 
     @property
     def events(self):
+        '''Get or set the list of calendar's events.
+        Will return an EventList object (similar to python list).
+        May be setted to a list or an EventList (otherwise will raise a ValueError).
+        If setted, will override all pre-existing events.'''
         return self._events
 
     @events.setter
@@ -62,6 +75,10 @@ class Calendar(Component):
 
     @property
     def creator(self):
+        '''Get or set the calendar's creator.
+        Will return a string.
+        May be setted to a string.
+        Creator is the PRODID icalendar property. It uniquely identifies the program that created the calendar.'''
         return self._creator
 
     @creator.setter

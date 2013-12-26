@@ -11,7 +11,9 @@ from .utils import parse_duration, iso_to_arrow, iso_precision, get_arrow
 
 
 class Event(Component):
-    '''Leu caka sé bons'''
+    '''A calendar event.
+    Can be full-day or between to instants.
+    Can be defined by a begin instant and a {duration,end instant}'''
 
     _TYPE = "VEVENT"
     _EXTRACTORS = []
@@ -99,7 +101,7 @@ class Event(Component):
 
     def __unicode__(self):
         '''Return a unicode representation (__repr__) of the event.
-        Must not be used directly. Use self.__repr__ instead'''
+        Should not be used directly. Use self.__repr__ instead'''
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
             return "<all-day Event {} :{}>".format(name, self.begin.strftime("%F"))
