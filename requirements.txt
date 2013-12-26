@@ -2,3 +2,4 @@ python-dateutil
 arrow
 nose
 six
+sphinx
