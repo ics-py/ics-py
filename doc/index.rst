@@ -33,6 +33,8 @@ Import a calendar from a file
     from urllib2 import urlopen
     url = "http://hackeragenda.urlab.be/events/events.ics"
     c = Calendar(urlopen(url).read().decode('iso-8859-1'))
+    # could also use 'requests' here
+    # c = Calendar(requests.get(url).text)
     c
     >>> <Calendar with 42 events>
 
