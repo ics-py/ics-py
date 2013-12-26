@@ -1,0 +1,9 @@
+0.1:
+	- First version
+
+0.1.1 :
+	- FIX : wrong super() and add output documentation
+
+0.2:
+	- ADD : changelog
+	- FIX : missing PRODID in case of empty Calendar.creator
