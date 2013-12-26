@@ -32,6 +32,7 @@ class Calendar(Component):
             - creator (string) : uid of the creator program
         If 'imports' is specified, __init__ ignores every other argument.'''
         # TODO : implement a file-descriptor import and a filename import
+        # TODO __add__ to merge 2 Calendars
 
         self._timezones = {}
         self._events = EventList()
