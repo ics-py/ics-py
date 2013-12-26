@@ -58,8 +58,14 @@ class Calendar(Component):
         return "<Calendar with {} events>".format(len(self.events))
 
     def __iter__(self):
+        '''Returns an iterable version of __str__, line per line (with line-endings).
+        Can be used to wite calendar to a file : open('my.ics').writelines(calendar)'''
         for line in str(self).decode('utf-8').split('\n'):
             yield (line + '\n').encode('utf-8')
+
+    def __str__(self):
+        '''Return the calendar as an iCalendar formatted string'''
+        return super(Event, self).__str__()
 
     @property
     def events(self):

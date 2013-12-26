@@ -115,6 +115,10 @@ class Event(Component):
         else:
             return "<Event {}begin:{} end:{}>".format(name, self.begin.strftime("%F %X"), self.end.strftime("%F %X"))
 
+    def __str__(self):
+        '''Return the event as an iCalendar formatted string'''
+        return super(Event, self).__str__()
+
 
 ######################
 ####### Inputs #######

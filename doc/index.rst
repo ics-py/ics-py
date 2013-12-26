@@ -72,14 +72,14 @@ Calendar
 
 .. autoclass:: ics.icalendar.Calendar
     :members:
-    :special-members: __unicode__, __init__
+    :special-members: __init__, __str__, __iter__
 
 Event
 -----
 
 .. autoclass:: ics.event.Event
     :members:
-    :special-members: __unicode__, __init__
+    :special-members: __init__, __str__
 
 EventList
 ---------
