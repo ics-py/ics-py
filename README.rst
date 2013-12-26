@@ -1,46 +1,78 @@
-ics.py
-======
+Ics.py : iCalendar for Humans
+=============================
 
-ics.py is a Python (2 and 3) icalendar (rfc5545) parser.
+(Release 0.1.1)
 
-examples
-========
-.. code-block:: python
+Ics.py is a pythonic and easy iCalendar (rfc5545) library. It's goals are to read and write ics data in a developper-friendly way.
 
-	from ics import Calendar
-	from urllib2 import urlopen
-	url = "http://hackeragenda.urlab.be/events/events.ics"
-	c = Calendar(urlopen(url).read().decode('iso-8859-1'))
-	c
-	>>> <icalendar.Calendar at 0x10c00e210>
+It is written in Python (>=2.7 and >=3.3) and is Apache2 Licensed .
 
-	c.events
-	>>> [<icalendar.Event at 0x10c00e350>,
-	>>> <icalendar.Event at 0x10c00e3d0>,
-	>>> <icalendar.Event at 0x10c00e490>]
+iCalendar is complicated, you don't like RFCs but you want/have to use the ics format and you love pythonic APIs ? ics.py is for you !
 
-	e = c.events[10]
-
-	e.begin, e.end
-	>>> (<Arrow [2012-11-28T19:00:00+00:00]>, <Arrow [2012-11-28T12:00:00+00:00]>)
-
-	"Event '{}' started {}".format(e.name, e.begin.humanize())
-	>>> "Event 'Special guest: Mitch Altman [voidwarranties]' started a year ago"
+Quickstart
+----------
 
 
-You may also create new calendars and events
+Install using `pip <http://www.pip-installer.org/>`_.
+::
+
+    $ pip install requests
+
+
+Import a calendar from a file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-	c = Calendar()
-	c.creator =  "ics.py by C4"
+    from ics import Calendar
+    from urllib2 import urlopen # import requests
+    url = "http://hackeragenda.urlab.be/events/events.ics"
+    c = Calendar(urlopen(url).read().decode('iso-8859-1'))
+    # could also use 'requests' here
+    # c = Calendar(requests.get(url).text)
+    c
+    >>> <Calendar with 42 events>
 
-	e = Event()
-	e.name = "My cool event"
-	c.events.append(e)
+    c.events
+    >>> [<Event 'SmartMonday #1' begin:2013-12-13 20:00:00 end:2013-12-13 23:00:00>,
+    >>> <Event 'RFID workshop' begin:2013-12-06 12:00:00 end:2013-12-06 19:00:00>,
+    >>> ...]
 
-	c.events
-	>>> [<icalendar.Event at 0x10573b390>]
+    e = c.events[10]
+
+    "Event '{}' started {}".format(e.name, e.begin.humanize())
+    >>> "Event 'Mitch Altman soldering workshop' started 6 days ago"
+
+
+Create a new calendar and add events
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    c = Calendar()
+    e = Event()
+    e.name = "My cool event"
+    e.begin = '20140101 00:00:00'
+    c.events.append(e)
+
+    c.events
+    >>> [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
+
+Export a Calendar to a file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    with open('my.ics', 'w') as f:
+        f.writelines(c)
+    # And it's done !
+
+iCalendar-formatted data is also available in a string
+
+.. code-block:: python
+
+    str(c)
+    >>> 'BEGIN:VCALENDAR\nPRODID:...
 
 
 License

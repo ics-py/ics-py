@@ -65,7 +65,7 @@ class Calendar(Component):
 
     def __str__(self):
         '''Return the calendar as an iCalendar formatted string'''
-        return super(Event, self).__str__()
+        return super(Calendar, self).__str__()
 
     @property
     def events(self):

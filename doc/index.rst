@@ -63,6 +63,23 @@ Create a new calendar and add events
     c.events
     >>> [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
 
+Export a Calendar to a file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    with open('my.ics', 'w') as f:
+        f.writelines(c)
+    # And it's done !
+
+iCalendar-formatted data is also available in a string
+
+.. code-block:: python
+
+    str(c)
+    >>> 'BEGIN:VCALENDAR\nPRODID:...
+
+
 
 API
 ===
