@@ -11,3 +11,6 @@
 # Virtualenvs
 ve
 ve3
+
+# doc builds
+doc/_build/*
