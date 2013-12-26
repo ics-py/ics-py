@@ -24,6 +24,17 @@ ics.py is under the Apache 2 software license because... bah ! Why not ?
     Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 
+Inspiration and 3-party code
+----------------------------
+Thanks to :
+	- `arrow <http://crsmithdev.com/arrow/>`_ which provides a nice API for dates, times and deltas.
+	- `python-dateutil <http://labix.org/python-dateutil>`_ for parsing timezones from VTIMEZONE blocks
+	- `requests <http://python-requests.org/>`_ for giving me inspiration from it's beautiful and pythonic API (and your doc too).
+	- `six <http://pythonhosted.org/six/>`_ to make the python3 transition easier
+	- `#urlab <irc://freenode.org#urlab>`_ for help and advices.
+
+ics.py includes something like 10 lines of arrow's code (in utils.iso_precision) witch are ©Chris Smith under Apache license, thanks!
+
 Contribute
 ----------
 

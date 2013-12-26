@@ -10,7 +10,7 @@ Ics.py : iCalendar for Humans
 
 Ics.py is a pythonic and easy iCalendar (rfc5545) library. It's goals are to read and write ics data in a developper-friendly way.
 
-It is witten in Python (>=2.7 and >=3.3) and is  :ref:`Apache2 Licensed <apache2>`.
+It is written in Python (>=2.7 and >=3.3) and is  :ref:`Apache2 Licensed <apache2>`.
 
 iCalendar is complicated, you don't like RFCs but you want/have to use the ics format and you love pythonic APIs ? ics.py is for you !
 
@@ -30,7 +30,7 @@ Import a calendar from a file
 .. code-block:: python
 
     from ics import Calendar
-    from urllib2 import urlopen
+    from urllib2 import urlopen # import requests
     url = "http://hackeragenda.urlab.be/events/events.ics"
     c = Calendar(urlopen(url).read().decode('iso-8859-1'))
     # could also use 'requests' here
