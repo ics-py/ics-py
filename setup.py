@@ -1,12 +1,13 @@
 from setuptools import setup
+from ics import __version__, __title__, __license__, __author__
 
 
 def readme():
     with open('README.rst') as f:
         return f.read()
 
-setup(name='ics',
-    version='indev',
+setup(name=__title__,
+    version=__version__,
     description='Python icalendar (rfc5545) parser',
     long_description=readme(),
     keywords='ics icalendar calendar event todo rfc5545 parser pythonic',
@@ -17,14 +18,14 @@ setup(name='ics',
         'Topic :: Office/Business :: Scheduling',
     ],
     url='http://github.com/C4ptainCrunch/ics.py',
-    author='Nikita Marchant',
+    author=__author__,
     author_email='nikita.marchant@gmail.com',
     install_requires=[
         "python-dateutil",
         "arrow",
         "six",
     ],
-    license='Apache License, Version 2.0',
+    license=__license__,
     packages=['ics'],
     include_package_data=True,
     test_suite='nose.collector',
