@@ -15,11 +15,11 @@
 import sys
 import os
 
-#sys.path.append(os.path.abspath('../ics'))
-sys.path.append(os.path.abspath('_themes'))
+sys.path.insert(0, os.path.abspath('..'))
 
-#from ics import __version__
-__version__ = 'indev'
+import ics
+from ics import __version__
+#__version__ = 'indev'
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -37,11 +37,13 @@ __version__ = 'indev'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
 ]
+
+autodoc_member_order = 'groupwise'
+autoclass_content = 'class'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

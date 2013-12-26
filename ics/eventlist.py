@@ -11,10 +11,13 @@ import arrow
 
 
 class EventList(list):
-    # def __init__(self, *args, **kwargs):
-    #     super(EventList, self).__init__(*args, **kwargs)
+    '''PLop'''
+    def __init__(self, *args, **kwargs):
+        '''PLop'''
+        super(EventList, self).__init__(*args, **kwargs)
 
     def __getitem__(self, key):
+        '''Plop'''
         # Integer slice
         if isinstance(key, integer_types):
             return super(EventList, self).__getitem__(key)

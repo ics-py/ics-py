@@ -11,6 +11,7 @@ from .utils import parse_duration, iso_to_arrow, iso_precision, get_arrow
 
 
 class Event(Component):
+    '''Leu caka sé bons'''
 
     _TYPE = "VEVENT"
     _EXTRACTORS = []
