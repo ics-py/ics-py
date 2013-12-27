@@ -49,6 +49,7 @@ Create a new calendar and add events
 
 .. code-block:: python
 
+    from ics import Calendar, Event
     c = Calendar()
     e = Event()
     e.name = "My cool event"
@@ -94,5 +95,6 @@ ics.py is under the Apache 2 software license because... bah ! Why not ?
 	limitations under the License.
 
 ics.py uses heavily arrow (Apache license) and python-dateutil (GPL licensed).
+
 
 ics.py includes also something like 10 lines of arrow's code (in utils.iso_precision) which are ©Chris Smith. Thanks to him!
