@@ -1,5 +1,5 @@
 from setuptools import setup
-from ics import __version__, __title__, __license__, __author__
+from meta import __version__, __title__, __license__, __author__
 
 
 def readme():
