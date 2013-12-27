@@ -26,7 +26,7 @@ class EventList(list):
         In that case, 'start' and 'stop' are considerated like instants (or None) and 'step' like a modificator.
         'start' and 'stop' will be converted to Arrow objects (or None) with arrow.get().
 
-        ... MOARZ info coming soon…
+        ... MOARZ info coming soon ...
         '''
         # Integer slice
         if isinstance(key, integer_types):
