@@ -18,7 +18,7 @@ from .utils import remove_x
 
 
 class Calendar(Component):
-    '''Represents a unique rfc5545 icalendar.'''
+    '''Represents an unique rfc5545 iCalendar.'''
 
     _TYPE = "VCALENDAR"
     _EXTRACTORS = []
@@ -27,9 +27,9 @@ class Calendar(Component):
     def __init__(self, imports=None, events=EventList(), creator=None):
         '''Instanciates a new Calendar.
         Optional arguments:
-            - imports (string or list of lines/strings) : data to be imported into the Calendar()
-            - events (list of Events or EventList) : if Events: will use to construct internal EventList. If EventList : will use event in place of creating a new internal EventList
-            - creator (string) : uid of the creator program
+            - imports (string or list of lines/strings): data to be imported into the Calendar()
+            - events (list of Events or EventList): if Events: will use to construct internal EventList. If EventList : will use event in place of creating a new internal EventList
+            - creator (string): uid of the creator program
         If 'imports' is specified, __init__ ignores every other argument.'''
         # TODO : implement a file-descriptor import and a filename import
         # TODO __add__ to merge 2 Calendars
@@ -60,7 +60,7 @@ class Calendar(Component):
 
     def __iter__(self):
         '''Returns an iterable version of __str__, line per line (with line-endings).
-        Can be used to wite calendar to a file : open('my.ics').writelines(calendar)'''
+        Can be used to write calendar to a file: open('my.ics').writelines(calendar)'''
         for line in str(self).decode('utf-8').split('\n'):
             yield (line + '\n').encode('utf-8')
 
@@ -90,7 +90,7 @@ class Calendar(Component):
         '''Get or set the calendar's creator.
         Will return a string.
         May be set to a string.
-        Creator is the PRODID icalendar property. It uniquely identifies the program that created the calendar.'''
+        Creator is the PRODID iCalendar property. It uniquely identifies the program that created the calendar.'''
         return self._creator
 
     @creator.setter
@@ -148,8 +148,8 @@ def method(calendar, line):
 
 @Calendar._extracts('VTIMEZONE', multiple=True)
 def timezone(calendar, vtimezones):
-    '''Recieves a list of VTIMEZONE blocks.
-    Parses them and add them to calendar._timezones'''
+    '''Receives a list of VTIMEZONE blocks.
+    Parses them and adds them to calendar._timezones'''
     for vtimezone in vtimezones:
         remove_x(vtimezone) # Remove non standard lines from the block
         fake_file = StringIO()
