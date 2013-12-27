@@ -65,15 +65,15 @@ class Component(object):
         return fn
 
     def __repr__(self):
-        '''    - In python2 : returns self.__unicode__() encoded into utf-8.
-            - In python3 : returns self.__unicode__()'''
+        '''    - In python2: returns self.__unicode__() encoded into utf-8.
+            - In python3: returns self.__unicode__()'''
         if hasattr(self, '__unicode__'):
             return self.__unicode__().encode('utf-8') if PY2 else self.__unicode__()
         else:
             super(Component, self).__repr__()
 
     def __str__(self):
-        '''Returns the component in a iCalendar format.'''
+        '''Returns the component in an iCalendar format.'''
         container = self._unused.clone()
         for output in self._OUTPUTS:
             output(self, container)

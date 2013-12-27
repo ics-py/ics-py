@@ -56,7 +56,7 @@ class Event(Component):
     def begin(self):
         '''Get or set the beginning of the event.
         Will return an Arrow object. May be set to anything that arrow.get() understands.
-        If an end is defined (not a duration), .begin must not be set to an superior value.'''
+        If an end is defined (not a duration), .begin must not be set to a superior value.'''
         return self._begin
 
     @begin.setter
@@ -95,7 +95,7 @@ class Event(Component):
 
     @property
     def all_day(self):
-        '''Bool : event is an all-day event'''
+        '''Bool: event is an all-day event'''
         return self._begin_precision == 'day' and not self.has_end()
 
     def make_all_day(self):
@@ -160,7 +160,7 @@ def description(event, line):
 
 
 # TODO : make uid required ?
-# TODO : add option somwhere to ignore some errors
+# TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
 def uid(event, line):
     event.uid = line
