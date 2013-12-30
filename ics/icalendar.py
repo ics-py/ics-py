@@ -13,7 +13,7 @@ import arrow
 from .component import Component
 from .event import Event
 from .eventlist import EventList
-from .parse import lines_to_container, string_to_container, ContentLine
+from .parse import lines_to_container, string_to_container, ContentLine, Container
 from .utils import remove_x
 
 
@@ -36,6 +36,9 @@ class Calendar(Component):
 
         self._timezones = {}
         self._events = EventList()
+        self._unused = Container(name='VCALENDAR')
+        self.scale = None
+        self.method = None
 
         if imports is not None:
             # TODO : Check python3 types

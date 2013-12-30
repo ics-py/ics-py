@@ -37,6 +37,8 @@ class Event(Component):
         self._begin_precision = 'day'
         self.uid = uid_gen()
         self.description = None
+        self.created = None
+        self._unused = Container(name='VEVENT')
 
         self.name = name
         self.begin = begin
@@ -195,7 +197,9 @@ def o_duration(event, container):
 
 @Event._outputs
 def o_end(event, container):
-    if event.end:
+    if not event.begin:
+        raise ValueError('An event with a end but no start cannot be exported')
+    if event._end_time:
         container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
 
 
