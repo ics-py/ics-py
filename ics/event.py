@@ -7,11 +7,10 @@ from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
 import arrow
-from uuid import uuid4
 
 from .component import Component
-from .utils import parse_duration, iso_to_arrow, iso_precision, get_arrow, arrow_to_iso
-from .parse import ContentLine
+from .utils import parse_duration, iso_to_arrow, iso_precision, get_arrow, arrow_to_iso, uid_gen
+from .parse import ContentLine, Container
 
 
 class Event(Component):
@@ -36,7 +35,7 @@ class Event(Component):
         self._end_time = None
         self._begin = None
         self._begin_precision = 'day'
-        self.uid = str(uuid4())
+        self.uid = uid_gen()
         self.description = None
 
         self.name = name
@@ -165,7 +164,7 @@ def description(event, line):
 # TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
 def uid(event, line):
-    event.uid = line
+    event.uid = line.value
 
 
 ######################
@@ -217,6 +216,5 @@ def o_uid(event, container):
     if event.uid:
         uid = event.uid
     else:
-        uid = str(uuid4())
-        uid = "{}@{}.org".format(uid, uid[:4])
+        uid = uid_gen()
     container.append(ContentLine('UID', value=uid))

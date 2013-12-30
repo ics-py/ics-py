@@ -9,6 +9,7 @@ from six.moves import filter, map, range
 import arrow
 from arrow.arrow import Arrow
 tzutc = arrow.utcnow().tzinfo
+from uuid import uuid4
 
 import re
 
@@ -97,3 +98,8 @@ def arrow_to_iso(instant):
     # set to utc, make iso, remove timzone
     instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDDTHHmmss')
     return instant + 'Z'
+
+
+def uid_gen():
+    uid = str(uuid4())
+    return "{}@{}.org".format(uid, uid[:4])
