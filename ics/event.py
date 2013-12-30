@@ -243,7 +243,7 @@ def uid(event, line):
 @Event._outputs
 def o_created(event, container):
     if event.created:
-        instant = arrow_to_iso(event.created)
+        instant = event.created
     else:
         instant = arrow.now()
 
