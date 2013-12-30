@@ -42,7 +42,7 @@ class Calendar(Component):
 
         if imports is not None:
             # TODO : Check python3 types
-            if isinstance(imports, (str, unicode)):
+            if isinstance(imports, text_type):
                 container = string_to_container(imports)
             else:
                 container = lines_to_container(imports)
@@ -64,8 +64,12 @@ class Calendar(Component):
     def __iter__(self):
         '''Returns an iterable version of __str__, line per line (with line-endings).
         Can be used to write calendar to a file: open('my.ics').writelines(calendar)'''
-        for line in str(self).decode('utf-8').split('\n'):
-            yield (line + '\n').encode('utf-8')
+        if PY2:
+            for line in str(self).decode('utf-8').split('\n'):
+                yield (line + '\n').encode('utf-8')
+        else:
+            for line in str(self).split('\n'):
+                yield (line + '\n')
 
     def __str__(self):
         '''Return the calendar as an iCalendar formatted string'''
