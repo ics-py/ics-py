@@ -189,7 +189,9 @@ class Event(Component):
 
 @Event._extracts('DTSTAMP')
 def created(event, line):
-    event.created = line
+    if line:
+        tz_dict = event._classmethod_kwargs['tz'] # get the dict of vtimezeones passed to the classmethod
+        event.created = iso_to_arrow(line, tz_dict)
 
 
 @Event._extracts('DTSTART')

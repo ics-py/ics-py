@@ -63,7 +63,7 @@ class Calendar(Component):
 
     def __iter__(self):
         '''Returns an iterable version of __str__, line per line (with line-endings).
-        Can be used to write calendar to a file: open('my.ics').writelines(calendar)'''
+        Can be used to write calendar to a file: open('my.ics', 'w').writelines(calendar)'''
         if PY2:
             for line in str(self).decode('utf-8').split('\n'):
                 yield (line + '\n').encode('utf-8')
