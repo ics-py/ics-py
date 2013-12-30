@@ -116,7 +116,7 @@ class Event(Component):
         elif self.begin is None:
             return "<Event '{}'>".format(self.name) if self.name else "<Event>"
         else:
-            return "<Event {}begin:{} end:{}>".format(name, self.begin.strftime("%F %X"), self.end.strftime("%F %X"))
+            return "<Event {}begin:{} end:{}>".format(name, self.begin, self.end)
 
     def __str__(self):
         '''Return the event as an iCalendar formatted string'''
@@ -149,6 +149,18 @@ class Event(Component):
         if self.begin is None and other.begin is None:
             return self.name >= other.name
         return self.begin >= other.begin
+
+    def __or__(self, other):
+        if self.begin <= other.begin <= self.end <= other.end:
+            return other.begin, self.end
+        elif other.begin <= self.begin <= other.end <= self.end:
+            return self.begin, other.end
+        elif other.begin <= self.begin <= self.end <= other.end:
+            return self.begin, self.end
+        elif self.begin <= other.begin <= other.end <= self.begin:
+            return other.begin, other.end
+        else:
+            return None, None
 
 
 ######################
