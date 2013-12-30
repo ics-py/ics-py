@@ -1,10 +1,10 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 from six import PY2, PY3
 from six.moves import filter, map, range
 
 import unittest
 from ics.parse import ParseError, ContentLine, Container, unfold_lines, string_to_container, lines_to_container
-from fixture import cal1, cal2, cal3, cal4, cal5, cal6, cal7, cal8, cal9, unfolded_cal1, unfolded_cal2, unfolded_cal6
+from .fixture import cal1, cal2, cal3, cal4, cal5, cal6, cal7, cal8, cal9, unfolded_cal1, unfolded_cal2, unfolded_cal6
 
 
 if PY3:
