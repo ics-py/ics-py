@@ -126,12 +126,13 @@ def unfold_lines(physical_lines):
         if len(line.strip()) == 0:
             continue
         elif not current_line:
-            current_line = line
+            current_line = line.strip('\r')
         elif line[0] == ' ':
-            current_line += line[1:]
+            # TODO : remove more spaces if needed
+            current_line += line[1:].strip('\r')
         else:
             yield(current_line)
-            current_line = line
+            current_line = line.strip('\r')
     if current_line:
         yield(current_line)
 
