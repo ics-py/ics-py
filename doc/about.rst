@@ -12,7 +12,7 @@ A big part of the code was written at `UrLab <http://urlab.be>`_, an awesome hac
 License
 -------
 
-ics.py is under the Apache 2 software license because... bah ! Why not ?
+ics.py is under the Apache 2 software license because… bah! Why not?
 
 
     Copyright 2013 Nikita Marchant
@@ -26,11 +26,11 @@ ics.py is under the Apache 2 software license because... bah ! Why not ?
 
 Inspiration and 3-party code
 ----------------------------
-Thanks to :
-	- `arrow <http://crsmithdev.com/arrow/>`_ which provides a nice API for dates, times and deltas.
-	- `python-dateutil <http://labix.org/python-dateutil>`_ for parsing timezones from VTIMEZONE blocks
-	- `requests <http://python-requests.org/>`_ for giving me inspiration from it's beautiful and pythonic API (and it's doc too).
-	- `six <http://pythonhosted.org/six/>`_ to make the python3 transition easier
+Thanks to:
+	- `arrow <http://crsmithdev.com/arrow/>`_ which provides a nice API for dates, times and deltas,
+	- `python-dateutil <http://labix.org/python-dateutil>`_ for parsing timezones from VTIMEZONE blocks,
+	- `requests <http://python-requests.org/>`_ for giving me inspiration from it's beautiful and pythonic API (and it's doc too),
+	- `six <http://pythonhosted.org/six/>`_ to make the python3 transition easier,
 	- `#urlab <irc://freenode.org#urlab>`_ for help and advices.
 
 ics.py includes something like 10 lines of arrow's code (in utils.iso_precision) witch are ©Chris Smith under Apache license, thanks!
@@ -38,7 +38,7 @@ ics.py includes something like 10 lines of arrow's code (in utils.iso_precision)
 Contribute
 ----------
 
-Wanna contribute ? I would love your help :)
+Wanna contribute? I would love your help :)
 
 Feel free to submit patches, issues, feature requests, pull requests on the `GitHub repo <http://github.com/C4ptainCrunch/ics.py>`_, I'll be glad to fix and merge all thoses.
 
@@ -47,8 +47,8 @@ Also feel free to send me an `email <mailto:nikita.marchant@gmail.com>`_
 
 Misc
 ----
-Here is a pizza for you !
+Here is a pizza for you!
 
 .. image:: https://farm4.staticflickr.com/3618/3495871394_b779997772.jpg
 
-(`Source <https://secure.flickr.com/photos/rdpeyton/3495871394/>`_  ©rdpeyton, CC by-nc-sa )
+(`Source <https://secure.flickr.com/photos/rdpeyton/3495871394/>`_  ©rdpeyton, CC by-nc-sa)
