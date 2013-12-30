@@ -34,7 +34,6 @@ class Calendar(Component):
             - creator (string): uid of the creator program
         If 'imports' is specified, __init__ ignores every other argument.'''
         # TODO : implement a file-descriptor import and a filename import
-        # TODO __add__ to merge 2 Calendars
 
         self._timezones = {}
         self._events = EventList()
@@ -43,7 +42,6 @@ class Calendar(Component):
         self.method = None
 
         if imports is not None:
-            # TODO : Check python3 types
             if isinstance(imports, text_type):
                 container = string_to_container(imports)
             else:

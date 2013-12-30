@@ -17,8 +17,8 @@ from .parse import ContentLine, Container
 class Event(Component):
     '''A calendar event.
     Can be full-day or between two instants.
-    Can be defined by a begin instant and a {duration,end instant}'''
-    # TODO : order events
+    Can be defined by a beginning instant and a {duration,end instant}'''
+
     _TYPE = "VEVENT"
     _EXTRACTORS = []
     _OUTPUTS = []

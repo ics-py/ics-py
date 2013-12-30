@@ -120,8 +120,7 @@ class Container(list):
 
 def unfold_lines(physical_lines):
     if not isinstance(physical_lines, collections.Iterable):
-        # TODO : better error
-        raise ParseError('Not an iterable')
+        raise ParseError('Parameter `physical_lines` must be an iterable')
     current_line = ''
     for line in physical_lines:
         if len(line.strip()) == 0:
