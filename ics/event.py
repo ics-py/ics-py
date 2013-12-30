@@ -7,6 +7,7 @@ from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
 import arrow
+import copy
 
 from .component import Component
 from .utils import parse_duration, iso_to_arrow, iso_precision, get_arrow, arrow_to_iso, uid_gen
@@ -170,6 +171,12 @@ class Event(Component):
     def __eq__(self, other):
         '''Two events are considered equal if they have the same uid.'''
         return self.uid == other.uid
+
+    def clone(self):
+        '''Make an exact copy of self.'''
+        clone = copy.copy(self)
+        clone._unused = clone._unused.clone()
+        return clone
 
 
 ######################

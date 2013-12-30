@@ -9,6 +9,8 @@ from six.moves import filter, map, range
 from dateutil.tz import tzical
 from arrow.arrow import Arrow
 import arrow
+import copy
+import collections
 
 from .component import Component
 from .event import Event
@@ -85,12 +87,12 @@ class Calendar(Component):
 
     @events.setter
     def events(self, value):
-        if isinstance(value, list):
+        if isinstance(value, collections.Iterable):
             self._events = EventList(value)
         elif isinstance(value, EventList):
             self._events = value
         else:
-            raise ValueError('Calendar.events must be a list or a EventList')
+            raise ValueError('Calendar.events must be an EventList or an iterable')
 
     @property
     def creator(self):
@@ -111,6 +113,14 @@ class Calendar(Component):
             if PY2:
                 value = unicode(value)
             self._creator = value
+
+    def clone(self):
+        '''Make an exact copy of self.'''
+        clone = copy.copy(self)
+        clone._unused = clone._unused.clone()
+        clone.events = map(lambda x: x.clone(), self.events)
+        clone._timezones = copy.copy(self._timezones)
+        return clone
 
 
 ######################
