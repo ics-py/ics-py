@@ -122,6 +122,34 @@ class Event(Component):
         '''Return the event as an iCalendar formatted string'''
         return super(Event, self).__str__()
 
+    def __lt__(self, other):
+        if not isinstance(other, Event):
+            raise NotImplementedError('Cannot comprare Event and {}'.format(type(other)))
+        if self.begin is None and other.begin is None:
+            return self.name < other.name
+        return self.begin < other.begin
+
+    def __gt__(self, other):
+        if not isinstance(other, Event):
+            raise NotImplementedError('Cannot comprare Event and {}'.format(type(other)))
+        if self.begin is None and other.begin is None:
+            return self.name >= other.name
+        return self.begin > other.begin
+
+    def __le__(self, other):
+        if not isinstance(other, Event):
+            raise NotImplementedError('Cannot comprare Event and {}'.format(type(other)))
+        if self.begin is None and other.begin is None:
+            return self.name >= other.name
+        return self.begin <= other.begin
+
+    def __ge__(self, other):
+        if not isinstance(other, Event):
+            raise NotImplementedError('Cannot comprare Event and {}'.format(type(other)))
+        if self.begin is None and other.begin is None:
+            return self.name >= other.name
+        return self.begin >= other.begin
+
 
 ######################
 ####### Inputs #######
