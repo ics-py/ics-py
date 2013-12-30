@@ -12,7 +12,7 @@ Ics.py is a pythonic and easy iCalendar (rfc5545) library. It's goals are to rea
 
 It is written in Python (>=2.7 and >=3.3) and is  :ref:`Apache2 Licensed <apache2>`.
 
-iCalendar is complicated, you don't like RFCs but you want/have to use the ics format and you love pythonic APIs ? ics.py is for you !
+iCalendar is complicated, you don't like RFCs but you want/have to use the ics format and you love pythonic APIs? ics.py is for you!
 
 Quickstart
 ----------
