@@ -22,23 +22,27 @@ class Event(Component):
     _EXTRACTORS = []
     _OUTPUTS = []
 
-    def __init__(self, name=None, begin=None, end=None, duration=None):
+    def __init__(self, name=None, begin=None, end=None, duration=None, uid=None, description=None, created=None, location=None):
         '''Instanciates a new Event.
         Optional arguments:
             - name (string)
             - begin (arrow.get() compatible or Arrow)
             - end (arrow.get() compatible or Arrow)
             - duration
+            - uid (must be _unique_)
+            - description
+            - created (arrow.get() compatible or Arrow)
+            - location
         'end' and 'duration' may not be specified at the same time (raises ValueError)'''
 
         self._duration = None
         self._end_time = None
         self._begin = None
         self._begin_precision = 'day'
-        self.uid = uid_gen()
-        self.description = None
-        self.created = None
-        self.location = None
+        self.uid = uid_gen() if not uid else uid
+        self.description = description
+        self.created = get_arrow(created)
+        self.location = location
         self._unused = Container(name='VEVENT')
 
         self.name = name
