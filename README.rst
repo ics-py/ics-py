@@ -76,6 +76,30 @@ iCalendar-formatted data is also available in a string
     >>> 'BEGIN:VCALENDAR\nPRODID:...
 
 
+Test
+----
+
+::
+
+    $ pip install virtualenv nose
+    $ virtualenv ve
+    $ virtualenv ve3
+
+    $ ./test
+    ========Python 2========
+    .................
+    ----------------------------------------------------------------------
+    Ran 17 tests in 3.149s
+
+    OK
+    ========Python 3========
+    .................
+    ----------------------------------------------------------------------
+    Ran 17 tests in 0.984s
+
+    OK
+
+
 License
 -------
 ics.py is under the Apache 2 software license because… bah! Why not?
