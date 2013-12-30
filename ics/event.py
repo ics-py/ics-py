@@ -38,6 +38,7 @@ class Event(Component):
         self.uid = uid_gen()
         self.description = None
         self.created = None
+        self.location = None
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -202,6 +203,11 @@ def description(event, line):
     event.description = line.value if line else None
 
 
+@Event._extracts('LOCATION')
+def location(event, line):
+    event.location = line.value if line else None
+
+
 # TODO : make uid required ?
 # TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
@@ -253,6 +259,12 @@ def o_summary(event, container):
 def o_description(event, container):
     if event.description:
         container.append(ContentLine('DESCRIPTION', value=event.description))
+
+
+@Event._outputs
+def o_location(event, container):
+    if event.location:
+        container.append(ContentLine('LOCATION', value=event.location))
 
 
 @Event._outputs
