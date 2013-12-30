@@ -125,3 +125,17 @@ class EventList(list):
         b = self[None:event.begin:'start']
         c = self[event.end:None:'stop']
         return list(set(a) | (set(b) & set(c)))
+
+    def _remove_duplicates(self):
+        seen = set()
+        for i in reversed(range(len(self))):
+            if self[i] in seen:
+                del self[i]
+            else:
+                seen.add(self[i])
+
+    def __add__(self, *args, **kwargs):
+        ret = super(EventList, self).__add__(*args, **kwargs)
+        ret = EventList(ret)
+        ret._remove_duplicates()
+        return ret

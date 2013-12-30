@@ -178,6 +178,11 @@ class Event(Component):
         clone._unused = clone._unused.clone()
         return clone
 
+    def __hash__(self):
+        '''Return a hash of self based on self.uid'''
+        ord3 = lambda x: '%.3d' % ord(x)
+        return int(''.join(map(ord3, self.uid)))
+
 
 ######################
 ####### Inputs #######

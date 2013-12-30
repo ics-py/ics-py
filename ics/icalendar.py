@@ -122,6 +122,10 @@ class Calendar(Component):
         clone._timezones = copy.copy(self._timezones)
         return clone
 
+    def __add__(self, other):
+        events = self.events + other.events
+        return Calendar(events)
+
 
 ######################
 ####### Inputs #######
