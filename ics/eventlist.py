@@ -9,6 +9,8 @@ from six.moves import filter, map, range
 from arrow.arrow import Arrow
 import arrow
 
+from .utils import get_arrow
+
 
 class EventList(list):
     '''EventList is a subclass of the standard list.
@@ -18,10 +20,7 @@ class EventList(list):
         '''Instanciates a new EventList. Accepts same arguments as list() and pass them all to list()'''
         super(EventList, self).__init__(*args, **kwargs)
 
-    def __getitem__(self, slice):
-        return self._slice(slice)
-
-    def _slice(self, key):
+    def __getitem__(self, sl):
         '''Slices EventList.
         If the slice is conventional (like [10], [4:12], [3:100:2], [::-1], etc) it slices the EventList like a classical list().
         If one of the 3 arguments ([start:stop:step]) is not None or an int, slicing differs.
@@ -32,54 +31,69 @@ class EventList(list):
         ... MOARZ info coming soon ...
         '''
         # Integer slice
-        if isinstance(key, integer_types):
-            return super(EventList, self).__getitem__(key)
+        if isinstance(sl, integer_types):
+            return super(EventList, self).__getitem__(sl)
 
-        if isinstance(key, Arrow):  # Single arrow slice
-            start, stop = key.floor('day').span('day')
+        if isinstance(sl, Arrow):  # Single arrow slice
+            begin, end = sl.floor('day').span('day')
+            return self[begin:end:'both']
+
+        # not a slice, not an int, try to convert it to an Arrow
+        if not isinstance(sl, slice):
+            begin, end = get_arrow(sl).floor('day').span('day')
+            return self[begin:end:'both']
+
+        # now it has to be a slice
+        int_or_none = integer_types + (type(None), )
+        if isinstance(sl.start, int_or_none) and isinstance(sl.stop, int_or_none) and isinstance(sl.step, int_or_none):
+            # classical slice
+            return super(EventList, self).__getitem__(sl)
+
+        # now we have a slice and it's a special one
+        if sl.step is None:  # Empty step -> default value
             step = 'both'
-        elif not isinstance(key, slice):  # not a slice, not an int
-            start, stop = arrow.get(key).floor('day').span('day')
-            step = 'both'
-        else:  # slice object
-            if isinstance(key.start, integer_types):  # classical int slice
-                return super(EventList, self).__getitem__(key)
+        elif not sl.step in ('begin', 'end', 'both', 'any', 'inc'):  # invalid step
+            raise ValueError("The step must be 'begin', 'enf', 'both', 'any', 'inc' or None not '{}'".format(sl.step))
+        else:  # valid step
+            step = sl.step
 
-            if key.step is None:  # Empty step
-                step = 'both'
-            elif not key.step in ('start', 'stop', 'both', 'any', 'inc'):  # invalid step
-                raise ValueError("The step must be 'start', 'stop', 'both', 'any' or 'inc' not '{}'".format(key.step))
-            else:  # valid step
-                step = key.step
+        begin, end = get_arrow(sl.start), get_arrow(sl.stop)
+        condition0 = lambda x: True
 
-            start, stop = key.start, key.stop
+        if begin:
+            condition_begin1 = lambda x: condition0(x) and x.begin > begin
+            condition_end1 = lambda x: condition0(x) and x.end > begin
+            if step == 'begin':
+                condition1 = condition_begin1
+            elif step == 'end':
+                condition1 = condition_end1
+            elif step == 'any':
+                condition1 = lambda x: condition_begin1(x) or condition_end1(x)
+            elif step == 'both':
+                condition1 = lambda x: condition_begin1(x) and condition_end1(x)
+        else:
+            condition1 = condition0
 
-            if not isinstance(start, Arrow) and not start is None:
-                start = arrow.get(start)
-            if not isinstance(stop, Arrow) and not stop is None:
-                stop = arrow.get(stop)
+        if end:
+            condition_begin2 = lambda x: condition1(x) and x.begin < end
+            condition_end2 = lambda x: condition1(x) and x.end < end
+            if step == 'begin':
+                condition2 = condition_begin2
+            elif step == 'end':
+                condition2 = condition_end2
+            elif step == 'any':
+                condition2 = lambda x: condition_begin2(x) or condition_end2(x)
+            elif step == 'both':
+                condition2 = lambda x: condition_begin2(x) and condition_end2(x)
+        else:
+            condition2 = condition1
 
-        if start and stop:  # start and stop provided
-            if step == 'start':
-                return list(filter(lambda x: start < x.begin < stop, self))
-            if step == 'stop':
-                return list(filter(lambda x: start < x.end < stop, self))
-            if step == 'both':
-                return list(filter(lambda x: start < x.begin < x.end < stop, self))
-            if step == 'inc':
-                return list(filter(lambda x: x.begin < start < stop < x.end, self))
-            if step == 'any':
-                return list(filter(lambda x: (start < x.begin < stop) or (start < x.end < stop), self))
-        elif start:  # only start provided
-            if step in ('start', 'both'):
-                return list(filter(lambda x: x.begin > start, self))
-            if step == 'stop':
-                return list(filter(lambda x: x.end > start, self))
-        elif stop:  # only stop provided
-            if step in ('stop', 'both'):
-                return list(filter(lambda x: x.end < stop, self))
-            if step == 'start':
-                return list(filter(lambda x: x.begin > stop, self))
+        if step == 'inc':
+            if not begin or not end:
+                return []
+            condition2 = lambda x: x.begin < begin and end < x.end
+
+        return list(filter(condition2, self))
 
     def today(self, strict=False):
         '''Return all events that occurs today.
@@ -107,7 +121,7 @@ class EventList(list):
 
     def concurrent(self, event):
         '''Return all events that are overlapping `event`'''
-        a = self._slice(slice(event.begin, event.start, 'any'))
-        b = self._slice(slice(None, event.begin, 'start'))
-        c = self._slice(slice(event.end, None, 'stop'))
-        return a | (b & c)
+        a = self[event.begin:event.start:'any']
+        b = self[None:event.begin:'start']
+        c = self[event.end:None:'stop']
+        return list(set(a) | (set(b) & set(c)))
