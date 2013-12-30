@@ -18,7 +18,10 @@ class EventList(list):
         '''Instanciates a new EventList. Accepts same arguments as list() and pass them all to list()'''
         super(EventList, self).__init__(*args, **kwargs)
 
-    def __getitem__(self, key):
+    def __getitem__(self, slice):
+        return self._slice(slice)
+
+    def _slice(self, key):
         '''Slices EventList.
         If the slice is conventional (like [10], [4:12], [3:100:2], [::-1], etc) it slices the EventList like a classical list().
         If one of the 3 arguments ([start:stop:step]) is not None or an int, slicing differs.
@@ -101,3 +104,10 @@ class EventList(list):
         if not isinstance(instant, Arrow):
             instant = arrow.get(instant)
         return self[instant:instant.ceil('microsecond'):'one']
+
+    def concurrent(self, event):
+        '''Return all events that are overlapping `event`'''
+        a = self._slice(slice(event.begin, event.start, 'any'))
+        b = self._slice(slice(None, event.begin, 'start'))
+        c = self._slice(slice(event.end, None, 'stop'))
+        return a | (b & c)
