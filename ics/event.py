@@ -164,7 +164,7 @@ def description(event, line):
 # TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
 def uid(event, line):
-    event.uid = line.value
+    event.uid = line.value if line else None
 
 
 ######################
