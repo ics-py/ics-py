@@ -94,7 +94,7 @@ class Event(Component):
     def end(self, value):
         value = get_arrow(value)
         if value and value < self._begin:
-            raise ValueError('End must be after than begin')
+            raise ValueError('End must be after begin')
 
         self._end_time = value
         if value:
@@ -106,7 +106,7 @@ class Event(Component):
         return self._begin_precision == 'day' and not self.has_end()
 
     def make_all_day(self):
-        '''Transforms an event to a all-day event.
+        '''Transforms an event to an all-day event.
         The day will be the day of self.begin.'''
         self._begin_precision = 'day'
         self._begin = self._begin.floor('day')
@@ -114,7 +114,7 @@ class Event(Component):
         self._end_time = None
 
     def __unicode__(self):
-        '''Return a unicode representation (__repr__) of the event.
+        '''Returns a unicode representation (__repr__) of the event.
         Should not be used directly. Use self.__repr__ instead.'''
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
@@ -125,33 +125,33 @@ class Event(Component):
             return "<Event {}begin:{} end:{}>".format(name, self.begin, self.end)
 
     def __str__(self):
-        '''Return the event as an iCalendar formatted string'''
+        '''Returns the event as an iCalendar formatted string'''
         return super(Event, self).__str__()
 
     def __lt__(self, other):
         if not isinstance(other, Event):
-            raise NotImplementedError('Cannot comprare Event and {}'.format(type(other)))
+            raise NotImplementedError('Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             return self.name < other.name
         return self.begin < other.begin
 
     def __gt__(self, other):
         if not isinstance(other, Event):
-            raise NotImplementedError('Cannot comprare Event and {}'.format(type(other)))
+            raise NotImplementedError('Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             return self.name >= other.name
         return self.begin > other.begin
 
     def __le__(self, other):
         if not isinstance(other, Event):
-            raise NotImplementedError('Cannot comprare Event and {}'.format(type(other)))
+            raise NotImplementedError('Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             return self.name >= other.name
         return self.begin <= other.begin
 
     def __ge__(self, other):
         if not isinstance(other, Event):
-            raise NotImplementedError('Cannot comprare Event and {}'.format(type(other)))
+            raise NotImplementedError('Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             return self.name >= other.name
         return self.begin >= other.begin
@@ -179,7 +179,7 @@ class Event(Component):
         return clone
 
     def __hash__(self):
-        '''Return a hash of self based on self.uid'''
+        '''Returns a hash of self based on self.uid'''
         ord3 = lambda x: '%.3d' % ord(x)
         return int(''.join(map(ord3, self.uid)))
 
@@ -267,7 +267,7 @@ def o_duration(event, container):
 @Event._outputs
 def o_end(event, container):
     if not event.begin:
-        raise ValueError('An event with a end but no start cannot be exported')
+        raise ValueError('An event with an end but no start cannot be exported')
     if event._end_time:
         container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
 
