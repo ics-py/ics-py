@@ -28,7 +28,15 @@ class EventList(list):
         In that case, 'start' and 'stop' are considerated like instants (or None) and 'step' like a modificator.
         'start' and 'stop' will be converted to Arrow objects (or None) with arrow.get().
 
-        ... MOARZ info coming soon ...
+            - start (arrow.get() compatible or Arrow or None) : lower included bond
+            - stop (arrow.get() compatible or Arrow or None) : upper, non included, bond
+
+        Modificators :
+            - begin : the beginning of the events has to be between the bonds.
+            - end : the end of the events has to be between the bonds.
+            - both : both the end and the beginning have to be between the bonds.
+            - any : either (or both) the start of the beginning has to be between the bonds.
+            - inc : the events have to include be bonds (start < event.begin < envent.end < stop)
         '''
         # Integer slice
         if isinstance(sl, integer_types):
@@ -53,7 +61,7 @@ class EventList(list):
         if sl.step is None:  # Empty step -> default value
             step = 'both'
         elif not sl.step in ('begin', 'end', 'both', 'any', 'inc'):  # invalid step
-            raise ValueError("The step must be 'begin', 'enf', 'both', 'any', 'inc' or None not '{}'".format(sl.step))
+            raise ValueError("The step must be 'begin', 'end', 'both', 'any', 'inc' or None not '{}'".format(sl.step))
         else:  # valid step
             step = sl.step
 
