@@ -163,6 +163,10 @@ class Event(Component):
         else:
             return None, None
 
+    def __eq__(self, other):
+        '''Two events are considered equal if they have the same uid.'''
+        return self.uid == other.uid
+
 
 ######################
 ####### Inputs #######
@@ -212,7 +216,8 @@ def location(event, line):
 # TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
 def uid(event, line):
-    event.uid = line.value if line else None
+    if line:
+        event.uid = line.value
 
 
 ######################
