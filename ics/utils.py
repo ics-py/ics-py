@@ -95,7 +95,7 @@ def get_arrow(value):
 
 
 def arrow_to_iso(instant):
-    # set to utc, make iso, remove timzone
+    # set to utc, make iso, remove timezone
     instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDDTHHmmss')
     return instant + 'Z'
 
