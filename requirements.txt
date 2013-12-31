@@ -1,7 +1,3 @@
 python-dateutil
 arrow
 six
-sphinx
-pytest
-pytest-cov
-pytest-flakes
