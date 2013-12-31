@@ -14,3 +14,7 @@ ve3
 
 # doc builds
 doc/_build/*
+
+#tests
+.cache/
+.coverage
