@@ -1,5 +1,7 @@
 python-dateutil
 arrow
-nose
 six
 sphinx
+pytest
+pytest-cov
+pytest-flakes

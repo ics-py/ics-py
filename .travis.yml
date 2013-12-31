@@ -1,13 +1,16 @@
 language: python
 python:
   - "2.7"
-  - "3.2"
   - "3.3"
 # command to install dependencies
-install: "pip install -r requirements.txt"
+install: 
+  - "pip install python-dateutil arrow six"
+  - "pip install python-coveralls pytest pytest-cov pytest-flakes"
 # command to run tests
-script: "nosetests && sphinx-build doc doc/_build"
-
+script: 
+  - "py.test --flakes --cov ics tests/test.py"
+after_success:
+  - "coveralls"
 notifications:
   irc:
     channels:
