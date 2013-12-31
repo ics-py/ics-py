@@ -4,10 +4,15 @@ python:
   - "3.2"
   - "3.3"
 # command to install dependencies
-install: "pip install -r requirements.txt"
+install: 
+  -"pip install -r requirements.txt"
+  -"pip install python-coveralls"
 # command to run tests
-script: "nosetests && sphinx-build doc doc/_build"
-
+script: 
+  -"py.test --flakes --cov ics tests/test.py"
+  -"sphinx-build doc doc/_build"
+after_success:
+  -"coveralls"
 notifications:
   irc:
     channels:
