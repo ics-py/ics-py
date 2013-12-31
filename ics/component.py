@@ -11,7 +11,8 @@ from collections import namedtuple
 from .utils import get_lines
 
 
-Extractor = namedtuple('Extractor', ['function', 'type', 'required', 'multiple'])
+Extractor = namedtuple(
+    'Extractor', ['function', 'type', 'required', 'multiple'])
 
 
 class Component(object):
@@ -36,25 +37,28 @@ class Component(object):
         for extractor in self._EXTRACTORS:
             lines = get_lines(container, extractor.type)
             if not lines and extractor.required:
-                raise ValueError('A {} must have at least one {}'.format(container.name, extractor.type))
+                raise ValueError(
+                    'A {} must have at least one {}'.format(container.name, extractor.type))
 
             if not extractor.multiple and len(lines) > 1:
-                raise ValueError('A {} must have at most one {}'.format(container.name, extractor.type))
+                raise ValueError(
+                    'A {} must have at most one {}'.format(container.name, extractor.type))
 
             if extractor.multiple:
-                extractor.function(self, lines) # Send a list or empty list
+                extractor.function(self, lines)  # Send a list or empty list
             else:
                 if len(lines) == 1:
-                    extractor.function(self, lines[0]) # Send the element
+                    extractor.function(self, lines[0])  # Send the element
                 else:
-                    extractor.function(self, None) # Send None
+                    extractor.function(self, None)  # Send None
 
-        self._unused = container # Store unused lines
+        self._unused = container  # Store unused lines
 
     @classmethod
     def _extracts(klass, line_type, required=False, multiple=False):
         def decorator(fn):
-            extractor = Extractor(function=fn, type=line_type, required=required, multiple=multiple)
+            extractor = Extractor(
+                function=fn, type=line_type, required=required, multiple=multiple)
             klass._EXTRACTORS.append(extractor)
             return fn
         return decorator

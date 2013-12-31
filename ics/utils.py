@@ -47,7 +47,8 @@ def iso_to_arrow(time_container, available_tz={}):
     else:
         return arrow.get(val)
 
-    # TODO : support floating (ie not bound to any time zone) times (cf http://www.kanzaki.com/docs/ical/dateTime.html)
+    # TODO : support floating (ie not bound to any time zone) times (cf
+    # http://www.kanzaki.com/docs/ical/dateTime.html)
 
 
 def iso_precision(string):

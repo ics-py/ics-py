@@ -16,8 +16,8 @@ class ContentLine:
 
     def __eq__(self, other):
         ret = (self.name == other.name
-            and self.params == other.params
-            and self.value == other.value)
+               and self.params == other.params
+               and self.value == other.value)
         return ret
 
     __ne__ = lambda self, other: not self.__eq__(other)
@@ -75,6 +75,7 @@ class ContentLine:
 
 
 class Container(list):
+
     def __init__(self, name, *items):
         super(Container, self).__init__(items)
         self.name = name
@@ -105,7 +106,8 @@ class Container(list):
                 items.append(Container.parse(line.value, tokenized_lines))
             elif line.name == 'END':
                 if line.value != name:
-                    raise ParseError("Expected END:{}, got END:{}".format(name, line.value))
+                    raise ParseError(
+                        "Expected END:{}, got END:{}".format(name, line.value))
                 break
             else:
                 items.append(line)
@@ -169,7 +171,8 @@ if __name__ == "__main__":
             for sub_elem in elem:
                 printTree(sub_elem, lvl + 1)
         elif isinstance(elem, ContentLine):
-            print("{}{}{}".format('   ' * lvl, elem.name, elem.params, elem.value))
+            print("{}{}{}".format('   ' * lvl,
+                  elem.name, elem.params, elem.value))
         else:
             print("Wuuut ?")
 

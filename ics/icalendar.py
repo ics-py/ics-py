@@ -20,6 +20,7 @@ from .utils import remove_x
 
 
 class Calendar(Component):
+
     '''Represents an unique rfc5545 iCalendar.'''
 
     _TYPE = "VCALENDAR"
@@ -49,9 +50,10 @@ class Calendar(Component):
 
             # TODO : make a better API for multiple calendars
             if len(container) != 1:
-                raise NotImplementedError('Multiple calendars in one file are not supported')
+                raise NotImplementedError(
+                    'Multiple calendars in one file are not supported')
 
-            self._populate(container[0]) # Use first calendar
+            self._populate(container[0])  # Use first calendar
         else:
             self._events = events
             self._creator = creator
@@ -90,7 +92,8 @@ class Calendar(Component):
         elif isinstance(value, EventList):
             self._events = value
         else:
-            raise ValueError('Calendar.events must be an EventList or an iterable')
+            raise ValueError(
+                'Calendar.events must be an EventList or an iterable')
 
     @property
     def creator(self):
@@ -136,7 +139,7 @@ def prodid(calendar, prodid):
 @Calendar._extracts('VERSION', required=True)
 def version(calendar, line):
     version = line
-    #TODO : should take care of minver/maxver
+    # TODO : should take care of minver/maxver
     if ';' in version.value:
         _, calendar.version = version.value.split(';')
     else:
@@ -170,11 +173,11 @@ def timezone(calendar, vtimezones):
     '''Receives a list of VTIMEZONE blocks.
     Parses them and adds them to calendar._timezones'''
     for vtimezone in vtimezones:
-        remove_x(vtimezone) # Remove non standard lines from the block
+        remove_x(vtimezone)  # Remove non standard lines from the block
         fake_file = StringIO()
-        fake_file.write(str(vtimezone)) # Represent the block as a string
+        fake_file.write(str(vtimezone))  # Represent the block as a string
         fake_file.seek(0)
-        timezones = tzical(fake_file) # tzical does not like strings
+        timezones = tzical(fake_file)  # tzical does not like strings
         # timezones is a tzical object and could contain multiple timezones
         for key in timezones.keys():
             calendar._timezones[key] = timezones.get(key)
@@ -182,7 +185,8 @@ def timezone(calendar, vtimezones):
 
 @Calendar._extracts('VEVENT', multiple=True)
 def events(calendar, lines):
-    # tz=calendar._timezones gives access to the event factory to the timezones list
+    # tz=calendar._timezones gives access to the event factory to the
+    # timezones list
     event_factory = lambda x: Event._from_container(x, tz=calendar._timezones)
     calendar.events = list(map(event_factory, lines))
 
