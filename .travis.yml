@@ -5,14 +5,14 @@ python:
   - "3.3"
 # command to install dependencies
 install: 
-  -"pip install -r requirements.txt"
-  -"pip install python-coveralls"
+  - "pip install -r requirements.txt"
+  - "pip install python-coveralls"
 # command to run tests
 script: 
-  -"py.test --flakes --cov ics tests/test.py"
-  -"sphinx-build doc doc/_build"
+  - "py.test --flakes --cov ics tests/test.py"
+  - "sphinx-build doc doc/_build"
 after_success:
-  -"coveralls"
+  - "coveralls"
 notifications:
   irc:
     channels:
