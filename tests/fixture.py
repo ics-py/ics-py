@@ -154,11 +154,11 @@ unfolded_cal1 = [
     'DTSTAMP:20131024T204741Z',
     'SEQUENCE:3',
     'DESCRIPTION:Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
-    Sed vitae facilisis enim. Morbi blandit et lectus venenatis tristique. \
-    Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, \
-    quam dolor luctus augue, id cursus purus justo vel lorem. \
-    Ut feugiat enim ipsum, quis porta nibh ultricies congue. \
-    Pellentesque nisl mi, molestie id sem vel, vehicula nullam.',
+Sed vitae facilisis enim. Morbi blandit et lectus venenatis tristique. \
+Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, \
+quam dolor luctus augue, id cursus purus justo vel lorem. \
+Ut feugiat enim ipsum, quis porta nibh ultricies congue. \
+Pellentesque nisl mi, molestie id sem vel, vehicula nullam.',
     'END:VEVENT',
     'END:VCALENDAR',
 ]
