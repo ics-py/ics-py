@@ -15,6 +15,7 @@ from .parse import ContentLine, Container
 
 
 class Event(Component):
+
     '''A calendar event.
     Can be full-day or between two instants.
     Can be defined by a beginning instant and a {duration,end instant}'''
@@ -49,10 +50,11 @@ class Event(Component):
         self.name = name
         self.begin = begin
         if duration and end:
-            raise ValueError('Event() may not specify an end and a duration at the same time')
-        elif end: # End was specified
+            raise ValueError(
+                'Event() may not specify an end and a duration at the same time')
+        elif end:  # End was specified
             self.end = end
-        elif duration: # Duration was specified
+        elif duration:  # Duration was specified
             self.duration = duration
 
     def has_end(self):
@@ -82,11 +84,12 @@ class Event(Component):
         Setting to None will have unexpected behavior if begin is not None.
         Must not be setted to an inferior value than self.begin'''
 
-        if self._duration: # if end is duration defined
-            return self.begin.replace(**self._duration) # return the beginning + duration
-        elif self._end_time: # if end is time defined
+        if self._duration:  # if end is duration defined
+            # return the beginning + duration
+            return self.begin.replace(**self._duration)
+        elif self._end_time:  # if end is time defined
             return self._end_time
-        else: # if end is not defined
+        else:  # if end is not defined
             # return beginning + precision
             return self.begin.replace(**{self._begin_precision + 's': +1})
 
@@ -130,28 +133,32 @@ class Event(Component):
 
     def __lt__(self, other):
         if not isinstance(other, Event):
-            raise NotImplementedError('Cannot compare Event and {}'.format(type(other)))
+            raise NotImplementedError(
+                'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             return self.name < other.name
         return self.begin < other.begin
 
     def __gt__(self, other):
         if not isinstance(other, Event):
-            raise NotImplementedError('Cannot compare Event and {}'.format(type(other)))
+            raise NotImplementedError(
+                'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             return self.name >= other.name
         return self.begin > other.begin
 
     def __le__(self, other):
         if not isinstance(other, Event):
-            raise NotImplementedError('Cannot compare Event and {}'.format(type(other)))
+            raise NotImplementedError(
+                'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             return self.name >= other.name
         return self.begin <= other.begin
 
     def __ge__(self, other):
         if not isinstance(other, Event):
-            raise NotImplementedError('Cannot compare Event and {}'.format(type(other)))
+            raise NotImplementedError(
+                'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             return self.name >= other.name
         return self.begin >= other.begin
@@ -190,14 +197,16 @@ class Event(Component):
 @Event._extracts('DTSTAMP')
 def created(event, line):
     if line:
-        tz_dict = event._classmethod_kwargs['tz'] # get the dict of vtimezeones passed to the classmethod
+        # get the dict of vtimezeones passed to the classmethod
+        tz_dict = event._classmethod_kwargs['tz']
         event.created = iso_to_arrow(line, tz_dict)
 
 
 @Event._extracts('DTSTART')
 def start(event, line):
     if line:
-        tz_dict = event._classmethod_kwargs['tz'] # get the dict of vtimezeones passed to the classmethod
+        # get the dict of vtimezeones passed to the classmethod
+        tz_dict = event._classmethod_kwargs['tz']
         event.begin = iso_to_arrow(line, tz_dict)
         event._begin_precision = iso_precision(line.value)
 
@@ -211,7 +220,8 @@ def duration(event, line):
 @Event._extracts('DTEND')
 def end(event, line):
     if line:
-        tz_dict = event._classmethod_kwargs['tz'] # get the dict of vtimezeones passed to the classmethod
+        # get the dict of vtimezeones passed to the classmethod
+        tz_dict = event._classmethod_kwargs['tz']
         event._end_time = iso_to_arrow(line, tz_dict)
 
 
@@ -253,7 +263,8 @@ def o_created(event, container):
 @Event._outputs
 def o_start(event, container):
     if event.begin:
-        container.append(ContentLine('DTSTART', value=arrow_to_iso(event.begin)))
+        container.append(
+            ContentLine('DTSTART', value=arrow_to_iso(event.begin)))
 
     # TODO : take care of precision
 
@@ -267,7 +278,8 @@ def o_duration(event, container):
 @Event._outputs
 def o_end(event, container):
     if not event.begin:
-        raise ValueError('An event with an end but no start cannot be exported')
+        raise ValueError(
+            'An event with an end but no start cannot be exported')
     if event._end_time:
         container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
 

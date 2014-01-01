@@ -13,6 +13,7 @@ from .utils import get_arrow
 
 
 class EventList(list):
+
     '''EventList is a subclass of the standard list.
     It can be used as a list but also has super slicing capabilities and some helpers.'''
 
@@ -60,8 +61,10 @@ class EventList(list):
         # now we have a slice and it's a special one
         if sl.step is None:  # Empty step -> default value
             step = 'both'
-        elif not sl.step in ('begin', 'end', 'both', 'any', 'inc'):  # invalid step
-            raise ValueError("The step must be 'begin', 'end', 'both', 'any', 'inc' or None not '{}'".format(sl.step))
+        # invalid step
+        elif not sl.step in ('begin', 'end', 'both', 'any', 'inc'):
+            raise ValueError(
+                "The step must be 'begin', 'end', 'both', 'any', 'inc' or None not '{}'".format(sl.step))
         else:  # valid step
             step = sl.step
 
@@ -78,7 +81,8 @@ class EventList(list):
             elif step == 'any':
                 condition1 = lambda x: condition_begin1(x) or condition_end1(x)
             elif step == 'both':
-                condition1 = lambda x: condition_begin1(x) and condition_end1(x)
+                condition1 = lambda x: condition_begin1(
+                    x) and condition_end1(x)
         else:
             condition1 = condition0
 
@@ -92,7 +96,8 @@ class EventList(list):
             elif step == 'any':
                 condition2 = lambda x: condition_begin2(x) or condition_end2(x)
             elif step == 'both':
-                condition2 = lambda x: condition_begin2(x) and condition_end2(x)
+                condition2 = lambda x: condition_begin2(
+                    x) and condition_end2(x)
         else:
             condition2 = condition1
 
