@@ -26,7 +26,7 @@ class Calendar(Component):
     _EXTRACTORS = []
     _OUTPUTS = []
 
-    def __init__(self, imports=None, events=EventList(), creator=None):
+    def __init__(self, imports=None, events=None, creator=None):
         '''Instanciates a new Calendar.
         Optional arguments:
             - imports (string or list of lines/strings): data to be imported into the Calendar()
@@ -40,6 +40,9 @@ class Calendar(Component):
         self._unused = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
+
+        if events is None:
+            events = EventList()
 
         if imports is not None:
             if isinstance(imports, text_type):
