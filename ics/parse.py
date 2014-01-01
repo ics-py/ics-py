@@ -38,7 +38,8 @@ class ContentLine:
             return ret
 
     def __repr__(self):
-        return "<ContentLine '{}' with {} parameters. Value='{}'>".format(self.name, len(self.params), self.value)
+        return "<ContentLine '{}' with {} parameters. Value='{}'>" \
+            .format(self.name, len(self.params), self.value)
 
     def __getitem__(self, item):
         return self.params[item]

@@ -10,7 +10,14 @@ import arrow
 import copy
 
 from .component import Component
-from .utils import parse_duration, iso_to_arrow, iso_precision, get_arrow, arrow_to_iso, uid_gen
+from .utils import (
+    parse_duration,
+    iso_to_arrow,
+    iso_precision,
+    get_arrow,
+    arrow_to_iso,
+    uid_gen,
+)
 from .parse import ContentLine, Container
 
 
@@ -24,7 +31,15 @@ class Event(Component):
     _EXTRACTORS = []
     _OUTPUTS = []
 
-    def __init__(self, name=None, begin=None, end=None, duration=None, uid=None, description=None, created=None, location=None):
+    def __init__(self,
+                 name=None,
+                 begin=None,
+                 end=None,
+                 duration=None,
+                 uid=None,
+                 description=None,
+                 created=None,
+                 location=None):
         '''Instanciates a new Event.
         Optional arguments:
             - name (string)
@@ -35,7 +50,8 @@ class Event(Component):
             - description
             - created (arrow.get() compatible or Arrow)
             - location
-        'end' and 'duration' may not be specified at the same time (raises ValueError)'''
+        'end' and 'duration' may not be specified at the same time
+        (raises ValueError)'''
 
         self._duration = None
         self._end_time = None
@@ -51,7 +67,8 @@ class Event(Component):
         self.begin = begin
         if duration and end:
             raise ValueError(
-                'Event() may not specify an end and a duration at the same time')
+                'Event() may not specify an end and a duration \
+                at the same time')
         elif end:  # End was specified
             self.end = end
         elif duration:  # Duration was specified
@@ -64,8 +81,10 @@ class Event(Component):
     @property
     def begin(self):
         '''Get or set the beginning of the event.
-        Will return an Arrow object. May be set to anything that arrow.get() understands.
-        If an end is defined (not a duration), .begin must not be set to a superior value.'''
+        Will return an Arrow object. May be set to anything that
+        arrow.get() understands.
+        If an end is defined (not a duration), .begin must not be set
+        to a superior value.'''
         return self._begin
 
     @begin.setter
@@ -79,7 +98,8 @@ class Event(Component):
     @property
     def end(self):
         '''Get or set the end of the event.
-        Will return an Arrow object. May be set to anything that arrow.get() understands.
+        Will return an Arrow object. May be set to anything that
+        arrow.get() understands.
         If setted to a non null value, removes any already existing duration.
         Setting to None will have unexpected behavior if begin is not None.
         Must not be setted to an inferior value than self.begin'''
@@ -121,11 +141,13 @@ class Event(Component):
         Should not be used directly. Use self.__repr__ instead.'''
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
-            return "<all-day Event {} :{}>".format(name, self.begin.strftime("%F"))
+            return "<all-day Event {} :{}>".format(name,
+                                                   self.begin.strftime("%F"))
         elif self.begin is None:
             return "<Event '{}'>".format(self.name) if self.name else "<Event>"
         else:
-            return "<Event {}begin:{} end:{}>".format(name, self.begin, self.end)
+            return "<Event {}begin:{} end:{}>".format(name,
+                                                      self.begin, self.end)
 
     def __str__(self):
         '''Returns the event as an iCalendar formatted string'''

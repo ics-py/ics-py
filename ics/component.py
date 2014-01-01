@@ -38,11 +38,13 @@ class Component(object):
             lines = get_lines(container, extractor.type)
             if not lines and extractor.required:
                 raise ValueError(
-                    'A {} must have at least one {}'.format(container.name, extractor.type))
+                    'A {} must have at least one {}'
+                    .format(container.name, extractor.type))
 
             if not extractor.multiple and len(lines) > 1:
                 raise ValueError(
-                    'A {} must have at most one {}'.format(container.name, extractor.type))
+                    'A {} must have at most one {}'
+                    .format(container.name, extractor.type))
 
             if extractor.multiple:
                 extractor.function(self, lines)  # Send a list or empty list
@@ -58,7 +60,10 @@ class Component(object):
     def _extracts(klass, line_type, required=False, multiple=False):
         def decorator(fn):
             extractor = Extractor(
-                function=fn, type=line_type, required=required, multiple=multiple)
+                function=fn,
+                type=line_type,
+                required=required,
+                multiple=multiple)
             klass._EXTRACTORS.append(extractor)
             return fn
         return decorator
@@ -72,7 +77,8 @@ class Component(object):
         '''    - In python2: returns self.__unicode__() encoded into utf-8.
             - In python3: returns self.__unicode__()'''
         if hasattr(self, '__unicode__'):
-            return self.__unicode__().encode('utf-8') if PY2 else self.__unicode__()
+            return self.__unicode__().encode('utf-8') \
+                if PY2 else self.__unicode__()
         else:
             super(Component, self).__repr__()
 

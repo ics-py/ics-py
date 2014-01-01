@@ -15,29 +15,39 @@ from .utils import get_arrow
 class EventList(list):
 
     '''EventList is a subclass of the standard list.
-    It can be used as a list but also has super slicing capabilities and some helpers.'''
+    It can be used as a list but also has super slicing capabilities
+    and some helpers.'''
 
     def __init__(self, *args, **kwargs):
-        '''Instanciates a new EventList. Accepts same arguments as list() and pass them all to list()'''
+        '''Instanciates a new EventList. Accepts same arguments as list()
+        and pass them all to list()'''
         super(EventList, self).__init__(*args, **kwargs)
 
     def __getitem__(self, sl):
         '''Slices EventList.
-        If the slice is conventional (like [10], [4:12], [3:100:2], [::-1], etc) it slices the EventList like a classical list().
-        If one of the 3 arguments ([start:stop:step]) is not None or an int, slicing differs.
+        If the slice is conventional (like [10], [4:12], [3:100:2], [::-1], …),
+        it slices the EventList like a classical list().
+        If one of the 3 arguments ([start:stop:step]) is not None or an int,
+        slicing differs.
 
-        In that case, 'start' and 'stop' are considerated like instants (or None) and 'step' like a modificator.
-        'start' and 'stop' will be converted to Arrow objects (or None) with arrow.get().
+        In that case, 'start' and 'stop' are considerated like instants
+        (or None) and 'step' like a modificator.
+        'start' and 'stop' will be converted to Arrow objects (or None)
+        with arrow.get().
 
-            - start (arrow.get() compatible or Arrow or None) : lower included bond
-            - stop (arrow.get() compatible or Arrow or None) : upper, non included, bond
+        - start (arrow.get() compatible or Arrow or None):
+            lower included bond
+        - stop (arrow.get() compatible or Arrow or None):
+            upper, non included, bond
 
         Modificators :
-            - begin : the beginning of the events has to be between the bonds.
-            - end : the end of the events has to be between the bonds.
-            - both : both the end and the beginning have to be between the bonds.
-            - any : either (or both) the start of the beginning has to be between the bonds.
-            - inc : the events have to include be bonds (start < event.begin < envent.end < stop)
+        - begin : the beginning of the events has to be between the bonds.
+        - end : the end of the events has to be between the bonds.
+        - both : both the end and the beginning have to be between the bonds.
+        - any : either (or both) the start of the beginning has to be
+                between the bonds.
+        - inc : the events have to include be bonds
+                (start < event.begin < envent.end < stop)
         '''
         # Integer slice
         if isinstance(sl, integer_types):
@@ -54,7 +64,9 @@ class EventList(list):
 
         # now it has to be a slice
         int_or_none = integer_types + (type(None), )
-        if isinstance(sl.start, int_or_none) and isinstance(sl.stop, int_or_none) and isinstance(sl.step, int_or_none):
+        if isinstance(sl.start, int_or_none) \
+            and isinstance(sl.stop, int_or_none) \
+                and isinstance(sl.step, int_or_none):
             # classical slice
             return super(EventList, self).__getitem__(sl)
 
@@ -64,7 +76,8 @@ class EventList(list):
         # invalid step
         elif not sl.step in ('begin', 'end', 'both', 'any', 'inc'):
             raise ValueError(
-                "The step must be 'begin', 'end', 'both', 'any', 'inc' or None not '{}'".format(sl.step))
+                "The step must be 'begin', 'end', 'both', 'any', 'inc' \
+                or None not '{}'".format(sl.step))
         else:  # valid step
             step = sl.step
 
@@ -81,8 +94,7 @@ class EventList(list):
             elif step == 'any':
                 condition1 = lambda x: condition_begin1(x) or condition_end1(x)
             elif step == 'both':
-                condition1 = lambda x: condition_begin1(
-                    x) and condition_end1(x)
+                condition1 = lambda x: condition_begin1(x) and condition_end1(x)
         else:
             condition1 = condition0
 
@@ -110,12 +122,14 @@ class EventList(list):
 
     def today(self, strict=False):
         '''Return all events that occurs today.
-        If strict is True, events will be returned only if they are strictly *included* in today'''
+        If strict is True, events will be returned only if they are
+        strictly *included* in today'''
         return self[arrow.now()]
 
     def on(self, day, strict=False):
         '''Return all events that occurs on 'day'.
-        If strict is True, events will be returned only if they are strictly *included* in 'day'.
+        If strict is True, events will be returned only if they are
+        strictly *included* in 'day'.
         'day' will be parsed by arrow.get() if it's not an Arrow object.'''
         if not isinstance(day, Arrow):
             day = arrow.get(day)
