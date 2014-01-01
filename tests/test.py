@@ -40,27 +40,39 @@ class TestContentLine(unittest.TestCase):
         'haha:hoho': ContentLine('haha', {}, 'hoho'),
         'haha:hoho:hihi': ContentLine('haha', {}, 'hoho:hihi'),
         'haha;hoho=1:hoho': ContentLine('haha', {'hoho': ['1']}, 'hoho'),
-        'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU': ContentLine('RRULE',
+        'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU':
+        ContentLine(
+            'RRULE',
             {},
-            'FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU'),
+            'FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU'
+        ),
         'SUMMARY:dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs':
-        ContentLine('SUMMARY',
+        ContentLine(
+            'SUMMARY',
             {},
-            'dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs'),
-        'DTSTART;TZID=Europe/Brussels:20131029T103000': ContentLine('DTSTART',
+            'dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs'
+        ),
+        'DTSTART;TZID=Europe/Brussels:20131029T103000':
+        ContentLine(
+            'DTSTART',
             {'TZID': ['Europe/Brussels']},
-            '20131029T103000'),
+            '20131029T103000'
+        ),
     }
 
     dataset2 = {
-        'haha;p2=v2;p1=v1:': ContentLine('haha',
-                                        {'p1': ['v1'],
-                                        'p2': ['v2']},
-                                        ''),
+        'haha;p2=v2;p1=v1:':
+        ContentLine(
+            'haha',
+            {'p1': ['v1'], 'p2': ['v2']},
+            ''
+        ),
         'haha;hihi=p3,p4,p5;hoho=p1,p2:blabla:blublu':
-        ContentLine('haha',
-                   {'hoho': ['p1', 'p2'], 'hihi': ['p3', 'p4', 'p5']},
-                   'blabla:blublu'),
+        ContentLine(
+            'haha',
+            {'hoho': ['p1', 'p2'], 'hihi': ['p3', 'p4', 'p5']},
+            'blabla:blublu'
+        ),
     }
 
     def test_errors(self):
@@ -118,19 +130,19 @@ class Test_unfold_lines(unittest.TestCase):
 
     def test_two_lines(self):
         self.assertEqual(list(unfold_lines(cal3.split('\n'))),
-                        ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+                         ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
     def test_no_empty_lines(self):
         self.assertEqual(list(unfold_lines(cal7.split('\n'))),
-                        ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+                         ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
     def test_no_whitespace_lines(self):
         self.assertEqual(list(unfold_lines(cal8.split('\n'))),
-                        ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+                         ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
     def test_first_line_empty(self):
         self.assertEqual(list(unfold_lines(cal9.split('\n'))),
-                        ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+                         ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
 
 class Test_parse(unittest.TestCase):
