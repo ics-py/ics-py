@@ -15,8 +15,12 @@ import collections
 from .component import Component
 from .event import Event
 from .eventlist import EventList
-from .parse import lines_to_container, string_to_container
-from .parse import ContentLine, Container
+from .parse import (
+    lines_to_container,
+    string_to_container,
+    ContentLine,
+    Container,
+)
 from .utils import remove_x
 
 

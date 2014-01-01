@@ -10,8 +10,14 @@ import arrow
 import copy
 
 from .component import Component
-from .utils import parse_duration, iso_to_arrow, iso_precision
-from .utils import get_arrow, arrow_to_iso, uid_gen
+from .utils import (
+    parse_duration,
+    iso_to_arrow,
+    iso_precision,
+    get_arrow,
+    arrow_to_iso,
+    uid_gen,
+)
 from .parse import ContentLine, Container
 
 

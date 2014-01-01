@@ -94,8 +94,7 @@ class EventList(list):
             elif step == 'any':
                 condition1 = lambda x: condition_begin1(x) or condition_end1(x)
             elif step == 'both':
-                condition1 = lambda x: condition_begin1(
-                    x) and condition_end1(x)
+                condition1 = lambda x: condition_begin1(x) and condition_end1(x)
         else:
             condition1 = condition0
 
