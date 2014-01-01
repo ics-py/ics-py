@@ -1,5 +1,21 @@
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
+import sys
+
 from meta import __version__, __title__, __license__, __author__
+
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = ['--flakes', '--cov', 'ics', 'tests/test.py']
+        self.test_suite = True
+
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
 
 
 def readme():
@@ -12,10 +28,17 @@ setup(name=__title__,
     long_description=readme(),
     keywords='ics icalendar calendar event todo rfc5545 parser pythonic',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
         'Intended Audience :: Developers',
         'Topic :: Office/Business :: Scheduling',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
     ],
     url='http://github.com/C4ptainCrunch/ics.py',
     author=__author__,
@@ -28,7 +51,7 @@ setup(name=__title__,
     license=__license__,
     packages=['ics'],
     include_package_data=True,
-    test_suite='nose.collector',
-    tests_require=['nose'],
+    cmdclass={'test': PyTest},
+    tests_require=['pytest', 'pytest-cov', 'pytest-flakes', 'pytest-pep8'],
     zip_safe=False
 )

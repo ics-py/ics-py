@@ -1,9 +1,0 @@
-#!/bin/sh
-echo "========Python 2========"
-source ve/bin/activate
-nosetests
-deactivate
-echo "========Python 3========"
-source ve3/bin/activate
-nosetests
-deactivate

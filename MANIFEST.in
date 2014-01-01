@@ -1,4 +1,7 @@
 include README.rst
+include CHANGELOG
 include LICENSE
 include AUTHORS
 include meta.py
+
+recursive-include tests *.py
