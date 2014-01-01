@@ -4,11 +4,10 @@ python:
   - "3.3"
 # command to install dependencies
 install: 
-  - "pip install -r requirements.txt"
-  - "pip install -r requirements-test.txt"
+  - ""
 # command to run tests
 script: 
-  - "py.test --pep8 --flakes --cov ics tests/test.py"
+  - "python setup.py test"
 after_success:
   - "coveralls"
 notifications:
