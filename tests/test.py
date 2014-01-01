@@ -3,8 +3,28 @@ from six import PY2, PY3
 from six.moves import filter, map, range
 
 import unittest
-from ics.parse import ParseError, ContentLine, Container, unfold_lines, string_to_container, lines_to_container
-from .fixture import cal1, cal2, cal3, cal4, cal5, cal6, cal7, cal8, cal9, unfolded_cal1, unfolded_cal2, unfolded_cal6
+from ics.parse import (
+    ParseError,
+    ContentLine,
+    Container,
+    unfold_lines,
+    string_to_container,
+    lines_to_container,
+)
+from .fixture import (
+    cal1,
+    cal2,
+    cal3,
+    cal4,
+    cal5,
+    cal6,
+    cal7,
+    cal8,
+    cal9,
+    unfolded_cal1,
+    unfolded_cal2,
+    unfolded_cal6,
+)
 
 
 if PY3:
@@ -20,14 +40,27 @@ class TestContentLine(unittest.TestCase):
         'haha:hoho': ContentLine('haha', {}, 'hoho'),
         'haha:hoho:hihi': ContentLine('haha', {}, 'hoho:hihi'),
         'haha;hoho=1:hoho': ContentLine('haha', {'hoho': ['1']}, 'hoho'),
-        'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU': ContentLine('RRULE', {}, 'FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU'),
-        'SUMMARY:dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs': ContentLine('SUMMARY', {}, 'dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs'),
-        'DTSTART;TZID=Europe/Brussels:20131029T103000': ContentLine('DTSTART', {'TZID': ['Europe/Brussels']}, '20131029T103000'),
+        'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU': ContentLine('RRULE',
+            {},
+            'FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU'),
+        'SUMMARY:dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs':
+        ContentLine('SUMMARY',
+            {},
+            'dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs'),
+        'DTSTART;TZID=Europe/Brussels:20131029T103000': ContentLine('DTSTART',
+            {'TZID': ['Europe/Brussels']},
+            '20131029T103000'),
     }
 
     dataset2 = {
-        'haha;p2=v2;p1=v1:': ContentLine('haha', {'p1': ['v1'], 'p2': ['v2']}, ''),
-        'haha;hihi=p3,p4,p5;hoho=p1,p2:blabla:blublu': ContentLine('haha', {'hoho': ['p1', 'p2'], 'hihi': ['p3', 'p4', 'p5']}, 'blabla:blublu'),
+        'haha;p2=v2;p1=v1:': ContentLine('haha',
+                                        {'p1': ['v1'],
+                                        'p2': ['v2']},
+                                        ''),
+        'haha;hihi=p3,p4,p5;hoho=p1,p2:blabla:blublu':
+        ContentLine('haha',
+                   {'hoho': ['p1', 'p2'], 'hihi': ['p3', 'p4', 'p5']},
+                   'blabla:blublu'),
     }
 
     def test_errors(self):
@@ -84,16 +117,20 @@ class Test_unfold_lines(unittest.TestCase):
         self.assertEqual(list(unfold_lines(cal6.split('\n'))), unfolded_cal6)
 
     def test_two_lines(self):
-        self.assertEqual(list(unfold_lines(cal3.split('\n'))), ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+        self.assertEqual(list(unfold_lines(cal3.split('\n'))),
+                        ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
     def test_no_empty_lines(self):
-        self.assertEqual(list(unfold_lines(cal7.split('\n'))), ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+        self.assertEqual(list(unfold_lines(cal7.split('\n'))),
+                        ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
     def test_no_whitespace_lines(self):
-        self.assertEqual(list(unfold_lines(cal8.split('\n'))), ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+        self.assertEqual(list(unfold_lines(cal8.split('\n'))),
+                        ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
     def test_first_line_empty(self):
-        self.assertEqual(list(unfold_lines(cal9.split('\n'))), ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
+        self.assertEqual(list(unfold_lines(cal9.split('\n'))),
+                        ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
 
 class Test_parse(unittest.TestCase):
@@ -121,14 +158,24 @@ class Test_parse(unittest.TestCase):
             if isinstance(line, ContentLine):
                 self.assertNotEqual('', line.value)
             if line.name == 'DESCRIPTION':
-                self.assertEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae facilisis enim. Morbi blandit et lectus venenatis tristique. Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, quam dolor luctus augue, id cursus purus justo vel lorem. Ut feugiat enim ipsum, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id sem vel, vehicula nullam.', line.value)
+                self.assertEqual('Lorem ipsum dolor sit amet, \
+                    consectetur adipiscing elit. \
+                    Sed vitae facilisis enim. \
+                    Morbi blandit et lectus venenatis tristique. \
+                    Donec sit amet egestas lacus. \
+                    Donec ullamcorper, mi vitae congue dictum, \
+                    quam dolor luctus augue, id cursus purus justo vel lorem. \
+                    Ut feugiat enim ipsum, quis porta nibh ultricies congue. \
+                    Pellentesque nisl mi, molestie id sem vel, \
+                    vehicula nullam.', line.value)
             i += 1
 
 
 class Test_functional(unittest.TestCase):
 
     def test_gehol(self):
-        url = "http://scientia-web.ulb.ac.be/gehol/index.php?Student/Calendar/%23SPLUS35F0F0/1-14.ics"
+        url = "http://scientia-web.ulb.ac.be/gehol/index.php? \
+        Student/Calendar/%23SPLUS35F0F0/1-14.ics"
         ics = string_to_container(urlopen(url).read().decode('iso-8859-1'))[0]
         self.assertTrue(ics)
 
