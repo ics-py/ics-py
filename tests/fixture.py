@@ -37,11 +37,11 @@ SUMMARY:dfqsdfjqkshflqsjdfhqs fqsfhlqs dfkqsldfkqsdfqsfqsfqsfs
 DTSTART;TZID=Europe/Brussels:20131029T103000
 DTSTAMP:20131024T204741Z
 SEQUENCE:3
-DESCRIPTION:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed 
- vitae facilisis enim. Morbi blandit et lectus venenatis tristique. Donec 
- sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, quam 
+DESCRIPTION:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+ vitae facilisis enim. Morbi blandit et lectus venenatis tristique. Donec
+ sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, quam
  dolor luctus augue, id cursus purus justo vel lorem. Ut feugiat enim ips
- um, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id 
+ um, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id
  sem vel, vehicula nullam.
 END:VEVENT
 END:VCALENDAR
