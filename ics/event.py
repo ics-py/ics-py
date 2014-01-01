@@ -26,14 +26,14 @@ class Event(Component):
     _OUTPUTS = []
 
     def __init__(self,
-                name=None,
-                begin=None,
-                end=None,
-                duration=None,
-                uid=None,
-                description=None,
-                created=None,
-                location=None):
+                 name=None,
+                 begin=None,
+                 end=None,
+                 duration=None,
+                 uid=None,
+                 description=None,
+                 created=None,
+                 location=None):
         '''Instanciates a new Event.
         Optional arguments:
             - name (string)
