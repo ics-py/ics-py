@@ -155,10 +155,10 @@ unfolded_cal1 = [
     'SEQUENCE:3',
     'DESCRIPTION:Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
 Sedvitae facilisis enim. Morbi blandit et lectus venenatis tristique. \
-Donec sit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, \
-quam dolor luctus augue, id cursus purus justo vel lorem. \
+Donecsit amet egestas lacus. Donec ullamcorper, mi vitae congue dictum, \
+quamdolor luctus augue, id cursus purus justo vel lorem. \
 Ut feugiat enim ipsum, quis porta nibh ultricies congue. \
-Pellentesque nisl mi, molestie id sem vel, vehicula nullam.',
+Pellentesque nisl mi, molestie idsem vel, vehicula nullam.',
     'END:VEVENT',
     'END:VCALENDAR',
 ]
