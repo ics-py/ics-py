@@ -244,6 +244,12 @@ class TestCalendar(unittest.TestCase):
         c = Calendar(cal1)
         d = Calendar(str(c))
         self.assertEqual(c, d)
+        for i in range(len(c.events)):
+            e, f = c.events[i], d.events[i]
+            self.assertEqual(e, f)
+            self.assertEqual(e.begin, f.begin)
+            self.assertEqual(e.end, f.end)
+            self.assertEqual(e.name, f.name)
 
 class TestFunctional(unittest.TestCase):
 
