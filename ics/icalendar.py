@@ -36,7 +36,7 @@ class Calendar(Component):
         """Instanciates a new Calendar.
 
         Optional arguments:
-        - imports (string or list of lines/strings): 
+        - imports (string or list of lines/strings):
         data to be imported into the Calendar()
         - events (list of Events or EventList):
         If Events: will use to construct internal EventList.
