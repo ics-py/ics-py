@@ -40,19 +40,19 @@ class EventList(list):
         `start` and `stop` will be converted to Arrow objects (or None)
         with arrow.get().
 
-        - start (arrow.get() compatible or Arrow or None):
-            lower included bond
-        - stop (arrow.get() compatible or Arrow or None):
-            upper, non included, bond
+        - start (arrow.get() compatible or Arrow or None): \
+        lower included bond
+        - stop (arrow.get() compatible or Arrow or None): \
+        upper, non included, bond
 
-        Modificators :
+        Modificators:
         - begin: the beginning of the events has to be between the bonds.
         - end: the end of the events has to be between the bonds.
         - both: both the end and the beginning have to be between the bonds.
-        - any: either (or both) the start of the beginning has to be
-                between the bonds.
-        - inc: the events have to include be bonds
-                (start < event.begin < envent.end < stop)
+        - any: either (or both) the start of the beginning has to be \
+        between the bonds.
+        - inc: the events have to include be bonds \
+        (start < event.begin < envent.end < stop)
         """
         # Integer slice
         if isinstance(sl, integer_types):

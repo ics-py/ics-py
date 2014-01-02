@@ -53,6 +53,7 @@ class Event(Component):
             - description
             - created (arrow.get() compatible or Arrow)
             - location
+            
         'end' and 'duration' may not be specified at the same time
         (raises ValueError)
         """

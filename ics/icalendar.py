@@ -36,13 +36,14 @@ class Calendar(Component):
         """Instanciates a new Calendar.
 
         Optional arguments:
-            - imports (string or list of lines/strings): data to be imported
-                                                         into the Calendar()
-            - events (list of Events or EventList):
-                If Events: will use to construct internal EventList.
-                If EventList: will use event in place of creating
-                              a new internal EventList
-            - creator (string): uid of the creator program
+        - imports (string or list of lines/strings): 
+        data to be imported into the Calendar()
+        - events (list of Events or EventList):
+        If Events: will use to construct internal EventList.
+        If EventList: will use event in place of creating
+        a new internal EventList
+        - creator (string): uid of the creator program
+
         If 'imports' is specified, __init__ ignores every other argument.
         """
         # TODO : implement a file-descriptor import and a filename import
