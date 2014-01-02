@@ -165,12 +165,12 @@ def string_to_container(txt):
 if __name__ == "__main__":
     from tests.fixture import cal1
 
-    def printTree(elem, lvl=0):
+    def print_tree(elem, lvl=0):
         if isinstance(elem, list) or isinstance(elem, Container):
             if isinstance(elem, Container):
                 print("{}{}".format('   ' * lvl, elem.name))
             for sub_elem in elem:
-                printTree(sub_elem, lvl + 1)
+                print_tree(sub_elem, lvl + 1)
         elif isinstance(elem, ContentLine):
             print("{}{}{}".format('   ' * lvl,
                   elem.name, elem.params, elem.value))
@@ -178,4 +178,4 @@ if __name__ == "__main__":
             print("Wuuut ?")
 
     cal = string_to_container(cal1)
-    printTree(cal)
+    print_tree(cal)
