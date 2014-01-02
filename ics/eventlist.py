@@ -14,17 +14,22 @@ from .utils import get_arrow
 
 class EventList(list):
 
-    '''EventList is a subclass of the standard list.
+    """EventList is a subclass of the standard list.
+
     It can be used as a list but also has super slicing capabilities
-    and some helpers.'''
+    and some helpers.
+    """
 
     def __init__(self, *args, **kwargs):
-        '''Instanciates a new EventList. Accepts same arguments as list()
-        and pass them all to list()'''
+        """Instanciates a new EventList.
+
+        Accepts same arguments as list() and pass them all to list().
+        """
         super(EventList, self).__init__(*args, **kwargs)
 
     def __getitem__(self, sl):
-        '''Slices EventList.
+        """Slices EventList.
+
         If the slice is conventional (like [10], [4:12], [3:100:2], [::-1], …),
         it slices the EventList like a classical list().
         If one of the 3 arguments ([start:stop:step]) is not None or an int,
@@ -48,7 +53,7 @@ class EventList(list):
                 between the bonds.
         - inc : the events have to include be bonds
                 (start < event.begin < envent.end < stop)
-        '''
+        """
         # Integer slice
         if isinstance(sl, integer_types):
             return super(EventList, self).__getitem__(sl)
@@ -121,33 +126,39 @@ class EventList(list):
         return list(filter(condition2, self))
 
     def today(self, strict=False):
-        '''Return all events that occurs today.
+        """Returns all events that occurs today.
+
         If strict is True, events will be returned only if they are
-        strictly *included* in today'''
+        strictly *included* in today
+        """
         return self[arrow.now()]
 
     def on(self, day, strict=False):
-        '''Return all events that occurs on 'day'.
+        """Returns all events that occurs on 'day'.
+
         If strict is True, events will be returned only if they are
         strictly *included* in 'day'.
-        'day' will be parsed by arrow.get() if it's not an Arrow object.'''
+        'day' will be parsed by arrow.get() if it's not an Arrow object.
+        """
         if not isinstance(day, Arrow):
             day = arrow.get(day)
         return self[day]
 
     def now(self):
-        '''Return all events that occurs now.'''
+        """Returns all events that occurs now."""
         return self[arrow.now():arrow.now().ceil('microsecond')]
 
     def at(self, instant):
-        '''Return all events that are occuring at that instant.
-        'instant' will be parsed by arrow.get() if it's not an Arrow object'''
+        """Returns all events that are occuring at that instant.
+
+        'instant' will be parsed by arrow.get() if it's not an Arrow object
+        """
         if not isinstance(instant, Arrow):
             instant = arrow.get(instant)
         return self[instant:instant.ceil('microsecond'):'one']
 
     def concurrent(self, event):
-        '''Return all events that are overlapping `event`'''
+        """Returns all events that are overlapping `event`."""
         a = self[event.begin:event.start:'any']
         b = self[None:event.begin:'start']
         c = self[event.end:None:'stop']
