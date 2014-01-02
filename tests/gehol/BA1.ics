@@ -1,0 +1,1636 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
+
+BEGIN:VTIMEZONE
+TZID:Europe/Brussels
+X-LIC-LOCATION:Europe/Brussels
+BEGIN:STANDARD
+DTSTART:20111030T020000
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZNAME:CET
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20120325T030000
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3
+TZNAME:CEST
+END:DAYLIGHT
+END:VTIMEZONE
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130930T120000
+DTEND;TZID=Europe/Brussels:20130930T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131007T120000
+DTEND;TZID=Europe/Brussels:20131007T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131014T120000
+DTEND;TZID=Europe/Brussels:20131014T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131021T120000
+DTEND;TZID=Europe/Brussels:20131021T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131028T120000
+DTEND;TZID=Europe/Brussels:20131028T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T120000
+DTEND;TZID=Europe/Brussels:20131104T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T120000
+DTEND;TZID=Europe/Brussels:20131118T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T120000
+DTEND;TZID=Europe/Brussels:20131125T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T120000
+DTEND;TZID=Europe/Brussels:20131202T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T120000
+DTEND;TZID=Europe/Brussels:20131209T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131216T120000
+DTEND;TZID=Europe/Brussels:20131216T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.506, P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130923T100000
+DTEND;TZID=Europe/Brussels:20130923T120000
+SUMMARY: Programmation
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130930T100000
+DTEND;TZID=Europe/Brussels:20130930T120000
+SUMMARY: Programmation
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131014T100000
+DTEND;TZID=Europe/Brussels:20131014T120000
+SUMMARY: Programmation
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131021T100000
+DTEND;TZID=Europe/Brussels:20131021T120000
+SUMMARY: Programmation
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T100000
+DTEND;TZID=Europe/Brussels:20131118T120000
+SUMMARY: Programmation
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T100000
+DTEND;TZID=Europe/Brussels:20131125T120000
+SUMMARY: Programmation
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T100000
+DTEND;TZID=Europe/Brussels:20131202T120000
+SUMMARY: Programmation
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T100000
+DTEND;TZID=Europe/Brussels:20131209T120000
+SUMMARY: Programmation
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T120000
+DTEND;TZID=Europe/Brussels:20131118T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130923T140000
+DTEND;TZID=Europe/Brussels:20130923T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130930T140000
+DTEND;TZID=Europe/Brussels:20130930T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131007T140000
+DTEND;TZID=Europe/Brussels:20131007T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131014T140000
+DTEND;TZID=Europe/Brussels:20131014T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131021T140000
+DTEND;TZID=Europe/Brussels:20131021T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130916T090000
+DTEND;TZID=Europe/Brussels:20130916T120000
+SUMMARY: Accueil Facultaire Sciences
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T120000
+DTEND;TZID=Europe/Brussels:20131104T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T120000
+DTEND;TZID=Europe/Brussels:20131118T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T120000
+DTEND;TZID=Europe/Brussels:20131125T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T120000
+DTEND;TZID=Europe/Brussels:20131202T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T120000
+DTEND;TZID=Europe/Brussels:20131209T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131216T120000
+DTEND;TZID=Europe/Brussels:20131216T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140203T120000
+DTEND;TZID=Europe/Brussels:20140203T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140210T120000
+DTEND;TZID=Europe/Brussels:20140210T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140217T120000
+DTEND;TZID=Europe/Brussels:20140217T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140224T120000
+DTEND;TZID=Europe/Brussels:20140224T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140303T120000
+DTEND;TZID=Europe/Brussels:20140303T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140310T120000
+DTEND;TZID=Europe/Brussels:20140310T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140317T120000
+DTEND;TZID=Europe/Brussels:20140317T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140324T120000
+DTEND;TZID=Europe/Brussels:20140324T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140331T120000
+DTEND;TZID=Europe/Brussels:20140331T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140428T120000
+DTEND;TZID=Europe/Brussels:20140428T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140505T120000
+DTEND;TZID=Europe/Brussels:20140505T140000
+SUMMARY: Guidance en Physique
+LOCATION: S.K.3.201
+DESCRIPTION: Professeur: Tlidi, Mustapha \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130916T140000
+DTEND;TZID=Europe/Brussels:20130916T180000
+SUMMARY: Accueil Facultaire Sciences
+LOCATION: P.2N3.208b
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130917T100000
+DTEND;TZID=Europe/Brussels:20130917T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130924T100000
+DTEND;TZID=Europe/Brussels:20130924T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131001T100000
+DTEND;TZID=Europe/Brussels:20131001T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131008T100000
+DTEND;TZID=Europe/Brussels:20131008T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131015T100000
+DTEND;TZID=Europe/Brussels:20131015T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131022T100000
+DTEND;TZID=Europe/Brussels:20131022T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131105T100000
+DTEND;TZID=Europe/Brussels:20131105T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131112T100000
+DTEND;TZID=Europe/Brussels:20131112T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131119T100000
+DTEND;TZID=Europe/Brussels:20131119T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131126T100000
+DTEND;TZID=Europe/Brussels:20131126T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131203T100000
+DTEND;TZID=Europe/Brussels:20131203T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131210T100000
+DTEND;TZID=Europe/Brussels:20131210T120000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T120000
+DTEND;TZID=Europe/Brussels:20130918T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UB2.252A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T120000
+DTEND;TZID=Europe/Brussels:20130925T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UB2.252A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T140000
+DTEND;TZID=Europe/Brussels:20131023T160000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T120000
+DTEND;TZID=Europe/Brussels:20131002T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T120000
+DTEND;TZID=Europe/Brussels:20131009T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T120000
+DTEND;TZID=Europe/Brussels:20131016T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T120000
+DTEND;TZID=Europe/Brussels:20131023T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131030T120000
+DTEND;TZID=Europe/Brussels:20131030T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T120000
+DTEND;TZID=Europe/Brussels:20131106T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T120000
+DTEND;TZID=Europe/Brussels:20131113T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T120000
+DTEND;TZID=Europe/Brussels:20131127T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T120000
+DTEND;TZID=Europe/Brussels:20131204T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T120000
+DTEND;TZID=Europe/Brussels:20131211T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T120000
+DTEND;TZID=Europe/Brussels:20131218T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.607, P.2NO.707
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T140000
+DTEND;TZID=Europe/Brussels:20131009T160000
+SUMMARY: Mathématiques 1
+LOCATION: P.2NO906
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T140000
+DTEND;TZID=Europe/Brussels:20131113T160000
+SUMMARY: Mathématiques 1
+LOCATION: P.2NO906
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T080000
+DTEND;TZID=Europe/Brussels:20130918T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T080000
+DTEND;TZID=Europe/Brussels:20130925T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T080000
+DTEND;TZID=Europe/Brussels:20131002T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T080000
+DTEND;TZID=Europe/Brussels:20131009T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T080000
+DTEND;TZID=Europe/Brussels:20131016T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T080000
+DTEND;TZID=Europe/Brussels:20131023T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T080000
+DTEND;TZID=Europe/Brussels:20131106T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T080000
+DTEND;TZID=Europe/Brussels:20131113T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T080000
+DTEND;TZID=Europe/Brussels:20131127T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T080000
+DTEND;TZID=Europe/Brussels:20131204T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T080000
+DTEND;TZID=Europe/Brussels:20131211T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T080000
+DTEND;TZID=Europe/Brussels:20131218T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T100000
+DTEND;TZID=Europe/Brussels:20130918T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T100000
+DTEND;TZID=Europe/Brussels:20130925T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T100000
+DTEND;TZID=Europe/Brussels:20131002T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T100000
+DTEND;TZID=Europe/Brussels:20131009T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T100000
+DTEND;TZID=Europe/Brussels:20131016T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T100000
+DTEND;TZID=Europe/Brussels:20131023T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T100000
+DTEND;TZID=Europe/Brussels:20131106T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T100000
+DTEND;TZID=Europe/Brussels:20131113T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T100000
+DTEND;TZID=Europe/Brussels:20131127T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T100000
+DTEND;TZID=Europe/Brussels:20131204T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T100000
+DTEND;TZID=Europe/Brussels:20131211T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T120000
+DTEND;TZID=Europe/Brussels:20131009T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T120000
+DTEND;TZID=Europe/Brussels:20131023T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T120000
+DTEND;TZID=Europe/Brussels:20131106T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T120000
+DTEND;TZID=Europe/Brussels:20131113T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T120000
+DTEND;TZID=Europe/Brussels:20131127T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T120000
+DTEND;TZID=Europe/Brussels:20131204T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T120000
+DTEND;TZID=Europe/Brussels:20131211T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T120000
+DTEND;TZID=Europe/Brussels:20131218T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T140000
+DTEND;TZID=Europe/Brussels:20131211T160000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T080000
+DTEND;TZID=Europe/Brussels:20131128T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T080000
+DTEND;TZID=Europe/Brussels:20131205T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131003T140000
+DTEND;TZID=Europe/Brussels:20131003T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131010T140000
+DTEND;TZID=Europe/Brussels:20131010T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T080000
+DTEND;TZID=Europe/Brussels:20131121T100000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T080000
+DTEND;TZID=Europe/Brussels:20131212T100000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T120000
+DTEND;TZID=Europe/Brussels:20131128T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T120000
+DTEND;TZID=Europe/Brussels:20131205T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T120000
+DTEND;TZID=Europe/Brussels:20131212T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130919T140000
+DTEND;TZID=Europe/Brussels:20130919T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.E
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130919T080000
+DTEND;TZID=Europe/Brussels:20130919T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130926T080000
+DTEND;TZID=Europe/Brussels:20130926T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131003T080000
+DTEND;TZID=Europe/Brussels:20131003T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131010T080000
+DTEND;TZID=Europe/Brussels:20131010T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131017T080000
+DTEND;TZID=Europe/Brussels:20131017T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131024T080000
+DTEND;TZID=Europe/Brussels:20131024T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131107T080000
+DTEND;TZID=Europe/Brussels:20131107T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T080000
+DTEND;TZID=Europe/Brussels:20131114T100000
+SUMMARY: Programmation
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131031T113000
+DTEND;TZID=Europe/Brussels:20131031T133000
+SUMMARY: Programmation
+LOCATION: P.FORUM.C, P.FORUM.A, P.FORUM.B
+DESCRIPTION: Professeur: Massart, Thierry \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130926T140000
+DTEND;TZID=Europe/Brussels:20130926T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131017T140000
+DTEND;TZID=Europe/Brussels:20131017T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131024T140000
+DTEND;TZID=Europe/Brussels:20131024T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131107T140000
+DTEND;TZID=Europe/Brussels:20131107T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T140000
+DTEND;TZID=Europe/Brussels:20131114T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T140000
+DTEND;TZID=Europe/Brussels:20131121T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T140000
+DTEND;TZID=Europe/Brussels:20131128T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T140000
+DTEND;TZID=Europe/Brussels:20131205T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T140000
+DTEND;TZID=Europe/Brussels:20131212T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131219T140000
+DTEND;TZID=Europe/Brussels:20131219T160000
+SUMMARY: Fonctionnement des ordinateurs
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130919T160000
+DTEND;TZID=Europe/Brussels:20130919T180000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130920T120000
+DTEND;TZID=Europe/Brussels:20130920T140000
+SUMMARY: Didactique de la réussite
+LOCATION: S.UA2.220
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131004T120000
+DTEND;TZID=Europe/Brussels:20131004T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131011T120000
+DTEND;TZID=Europe/Brussels:20131011T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131018T120000
+DTEND;TZID=Europe/Brussels:20131018T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131025T120000
+DTEND;TZID=Europe/Brussels:20131025T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131108T120000
+DTEND;TZID=Europe/Brussels:20131108T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131115T120000
+DTEND;TZID=Europe/Brussels:20131115T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131122T120000
+DTEND;TZID=Europe/Brussels:20131122T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131129T120000
+DTEND;TZID=Europe/Brussels:20131129T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131206T120000
+DTEND;TZID=Europe/Brussels:20131206T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131213T120000
+DTEND;TZID=Europe/Brussels:20131213T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131220T120000
+DTEND;TZID=Europe/Brussels:20131220T140000
+SUMMARY: Guidance en Mathématique
+LOCATION: P.OF.2070, P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131011T120000
+DTEND;TZID=Europe/Brussels:20131011T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131018T120000
+DTEND;TZID=Europe/Brussels:20131018T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131025T120000
+DTEND;TZID=Europe/Brussels:20131025T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131108T120000
+DTEND;TZID=Europe/Brussels:20131108T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131115T120000
+DTEND;TZID=Europe/Brussels:20131115T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131122T120000
+DTEND;TZID=Europe/Brussels:20131122T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131129T120000
+DTEND;TZID=Europe/Brussels:20131129T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131206T120000
+DTEND;TZID=Europe/Brussels:20131206T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131213T120000
+DTEND;TZID=Europe/Brussels:20131213T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131220T120000
+DTEND;TZID=Europe/Brussels:20131220T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140214T120000
+DTEND;TZID=Europe/Brussels:20140214T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140221T120000
+DTEND;TZID=Europe/Brussels:20140221T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140228T120000
+DTEND;TZID=Europe/Brussels:20140228T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140307T120000
+DTEND;TZID=Europe/Brussels:20140307T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140314T120000
+DTEND;TZID=Europe/Brussels:20140314T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140321T120000
+DTEND;TZID=Europe/Brussels:20140321T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140328T120000
+DTEND;TZID=Europe/Brussels:20140328T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140404T120000
+DTEND;TZID=Europe/Brussels:20140404T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140425T120000
+DTEND;TZID=Europe/Brussels:20140425T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140502T120000
+DTEND;TZID=Europe/Brussels:20140502T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20140509T120000
+DTEND;TZID=Europe/Brussels:20140509T140000
+SUMMARY: Guidance en Physique
+LOCATION: P.2NO.506
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130920T140000
+DTEND;TZID=Europe/Brussels:20130920T160000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.E
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131004T140000
+DTEND;TZID=Europe/Brussels:20131004T160000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.E
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131011T140000
+DTEND;TZID=Europe/Brussels:20131011T160000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.E
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131018T140000
+DTEND;TZID=Europe/Brussels:20131018T160000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.E
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131025T140000
+DTEND;TZID=Europe/Brussels:20131025T160000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.E
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131108T130000
+DTEND;TZID=Europe/Brussels:20131108T150000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131115T130000
+DTEND;TZID=Europe/Brussels:20131115T150000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131122T130000
+DTEND;TZID=Europe/Brussels:20131122T150000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131129T130000
+DTEND;TZID=Europe/Brussels:20131129T150000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131206T130000
+DTEND;TZID=Europe/Brussels:20131206T150000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131213T130000
+DTEND;TZID=Europe/Brussels:20131213T150000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131220T130000
+DTEND;TZID=Europe/Brussels:20131220T150000
+SUMMARY: Mathématiques 1
+LOCATION: P.FORUM.D
+DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
+END:VEVENT
+
+
+END:VCALENDAR

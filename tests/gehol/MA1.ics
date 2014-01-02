@@ -1,0 +1,1510 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
+
+BEGIN:VTIMEZONE
+TZID:Europe/Brussels
+X-LIC-LOCATION:Europe/Brussels
+BEGIN:STANDARD
+DTSTART:20111030T020000
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZNAME:CET
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20120325T030000
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3
+TZNAME:CEST
+END:DAYLIGHT
+END:VTIMEZONE
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130923T080000
+DTEND;TZID=Europe/Brussels:20130923T100000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131007T080000
+DTEND;TZID=Europe/Brussels:20131007T100000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131021T080000
+DTEND;TZID=Europe/Brussels:20131021T100000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T080000
+DTEND;TZID=Europe/Brussels:20131104T100000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T080000
+DTEND;TZID=Europe/Brussels:20131125T100000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T080000
+DTEND;TZID=Europe/Brussels:20131209T100000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130923T100000
+DTEND;TZID=Europe/Brussels:20130923T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131007T100000
+DTEND;TZID=Europe/Brussels:20131007T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131014T100000
+DTEND;TZID=Europe/Brussels:20131014T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131021T100000
+DTEND;TZID=Europe/Brussels:20131021T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131028T100000
+DTEND;TZID=Europe/Brussels:20131028T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T100000
+DTEND;TZID=Europe/Brussels:20131104T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T100000
+DTEND;TZID=Europe/Brussels:20131118T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T100000
+DTEND;TZID=Europe/Brussels:20131125T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T100000
+DTEND;TZID=Europe/Brussels:20131202T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T100000
+DTEND;TZID=Europe/Brussels:20131209T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131216T100000
+DTEND;TZID=Europe/Brussels:20131216T130000
+SUMMARY: Computability and complexity
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T140000
+DTEND;TZID=Europe/Brussels:20131104T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Langerman, Stefan \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T140000
+DTEND;TZID=Europe/Brussels:20131118T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Langerman, Stefan \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T140000
+DTEND;TZID=Europe/Brussels:20131125T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Langerman, Stefan \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T140000
+DTEND;TZID=Europe/Brussels:20131202T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Langerman, Stefan \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T140000
+DTEND;TZID=Europe/Brussels:20131209T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Langerman, Stefan \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131216T140000
+DTEND;TZID=Europe/Brussels:20131216T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Langerman, Stefan \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130917T160000
+DTEND;TZID=Europe/Brussels:20130917T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130924T160000
+DTEND;TZID=Europe/Brussels:20130924T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131001T160000
+DTEND;TZID=Europe/Brussels:20131001T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131008T160000
+DTEND;TZID=Europe/Brussels:20131008T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131015T160000
+DTEND;TZID=Europe/Brussels:20131015T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131022T160000
+DTEND;TZID=Europe/Brussels:20131022T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131105T160000
+DTEND;TZID=Europe/Brussels:20131105T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131112T160000
+DTEND;TZID=Europe/Brussels:20131112T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131119T160000
+DTEND;TZID=Europe/Brussels:20131119T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131126T160000
+DTEND;TZID=Europe/Brussels:20131126T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131203T160000
+DTEND;TZID=Europe/Brussels:20131203T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131210T160000
+DTEND;TZID=Europe/Brussels:20131210T180000
+SUMMARY: Data structures and algorithms
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur: Cardinal, Jean \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130924T160000
+DTEND;TZID=Europe/Brussels:20130924T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131001T160000
+DTEND;TZID=Europe/Brussels:20131001T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131008T160000
+DTEND;TZID=Europe/Brussels:20131008T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131015T160000
+DTEND;TZID=Europe/Brussels:20131015T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131022T160000
+DTEND;TZID=Europe/Brussels:20131022T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131105T160000
+DTEND;TZID=Europe/Brussels:20131105T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131112T160000
+DTEND;TZID=Europe/Brussels:20131112T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131119T160000
+DTEND;TZID=Europe/Brussels:20131119T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131126T160000
+DTEND;TZID=Europe/Brussels:20131126T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131203T160000
+DTEND;TZID=Europe/Brussels:20131203T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131210T160000
+DTEND;TZID=Europe/Brussels:20131210T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131217T160000
+DTEND;TZID=Europe/Brussels:20131217T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant VUB10F720
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131105T160000
+DTEND;TZID=Europe/Brussels:20131105T180000
+SUMMARY: Decision Engineering
+LOCATION: S.P4.1.10 (P4.1.303)
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131119T160000
+DTEND;TZID=Europe/Brussels:20131119T180000
+SUMMARY: Decision Engineering
+LOCATION: S.P4.1.10 (P4.1.303)
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131126T160000
+DTEND;TZID=Europe/Brussels:20131126T180000
+SUMMARY: Decision Engineering
+LOCATION: S.P4.1.10 (P4.1.303)
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131203T160000
+DTEND;TZID=Europe/Brussels:20131203T180000
+SUMMARY: Decision Engineering
+LOCATION: S.P4.1.10 (P4.1.303)
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131210T160000
+DTEND;TZID=Europe/Brussels:20131210T180000
+SUMMARY: Decision Engineering
+LOCATION: S.P4.1.10 (P4.1.303)
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131217T160000
+DTEND;TZID=Europe/Brussels:20131217T180000
+SUMMARY: Decision Engineering
+LOCATION: S.P4.1.10 (P4.1.303)
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T150000
+DTEND;TZID=Europe/Brussels:20131218T170000
+SUMMARY: Decision Engineering
+LOCATION: S.UB4.132
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T150000
+DTEND;TZID=Europe/Brussels:20131106T170000
+SUMMARY: Decision Engineering
+LOCATION: S.C4.219
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T150000
+DTEND;TZID=Europe/Brussels:20131113T170000
+SUMMARY: Decision Engineering
+LOCATION: S.C4.219
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T140000
+DTEND;TZID=Europe/Brussels:20131211T160000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.OF.2066
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T160000
+DTEND;TZID=Europe/Brussels:20131023T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant 2NO4.009
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131030T160000
+DTEND;TZID=Europe/Brussels:20131030T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant 2NO4.009
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T160000
+DTEND;TZID=Europe/Brussels:20131106T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant 2NO4.009
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T160000
+DTEND;TZID=Europe/Brussels:20131113T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant 2NO4.009
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131120T160000
+DTEND;TZID=Europe/Brussels:20131120T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant 2NO4.009
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T160000
+DTEND;TZID=Europe/Brussels:20131127T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant 2NO4.009
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T160000
+DTEND;TZID=Europe/Brussels:20131204T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant 2NO4.009
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T160000
+DTEND;TZID=Europe/Brussels:20131211T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant 2NO4.009
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T160000
+DTEND;TZID=Europe/Brussels:20131218T180000
+SUMMARY: Structure and interpretation of computer programs
+LOCATION: 
+DESCRIPTION: Professeur: De Meuter, Wolfgang \n Assistant 2NO4.009
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T080000
+DTEND;TZID=Europe/Brussels:20131002T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T080000
+DTEND;TZID=Europe/Brussels:20131009T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T080000
+DTEND;TZID=Europe/Brussels:20131016T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T080000
+DTEND;TZID=Europe/Brussels:20131023T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131030T080000
+DTEND;TZID=Europe/Brussels:20131030T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T080000
+DTEND;TZID=Europe/Brussels:20131106T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T080000
+DTEND;TZID=Europe/Brussels:20131113T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T080000
+DTEND;TZID=Europe/Brussels:20131127T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T080000
+DTEND;TZID=Europe/Brussels:20131204T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T080000
+DTEND;TZID=Europe/Brussels:20131211T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T080000
+DTEND;TZID=Europe/Brussels:20131218T100000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T150000
+DTEND;TZID=Europe/Brussels:20131127T170000
+SUMMARY: Decision Engineering
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T150000
+DTEND;TZID=Europe/Brussels:20131204T170000
+SUMMARY: Decision Engineering
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T150000
+DTEND;TZID=Europe/Brussels:20131211T170000
+SUMMARY: Decision Engineering
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131030T150000
+DTEND;TZID=Europe/Brussels:20131030T170000
+SUMMARY: Decision Engineering
+LOCATION: S.UB5.230
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T100000
+DTEND;TZID=Europe/Brussels:20130918T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T100000
+DTEND;TZID=Europe/Brussels:20130925T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T100000
+DTEND;TZID=Europe/Brussels:20131002T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T100000
+DTEND;TZID=Europe/Brussels:20131009T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T100000
+DTEND;TZID=Europe/Brussels:20131016T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T100000
+DTEND;TZID=Europe/Brussels:20131023T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131030T100000
+DTEND;TZID=Europe/Brussels:20131030T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T100000
+DTEND;TZID=Europe/Brussels:20131106T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T100000
+DTEND;TZID=Europe/Brussels:20131113T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T100000
+DTEND;TZID=Europe/Brussels:20131127T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T100000
+DTEND;TZID=Europe/Brussels:20131204T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T100000
+DTEND;TZID=Europe/Brussels:20131211T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T100000
+DTEND;TZID=Europe/Brussels:20131218T120000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Geeraerts, Gilles \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T140000
+DTEND;TZID=Europe/Brussels:20130918T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T140000
+DTEND;TZID=Europe/Brussels:20130925T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T140000
+DTEND;TZID=Europe/Brussels:20131009T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T140000
+DTEND;TZID=Europe/Brussels:20131016T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T140000
+DTEND;TZID=Europe/Brussels:20131023T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131030T140000
+DTEND;TZID=Europe/Brussels:20131030T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T140000
+DTEND;TZID=Europe/Brussels:20131106T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T140000
+DTEND;TZID=Europe/Brussels:20131113T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T140000
+DTEND;TZID=Europe/Brussels:20131127T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T140000
+DTEND;TZID=Europe/Brussels:20131204T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T140000
+DTEND;TZID=Europe/Brussels:20131211T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T140000
+DTEND;TZID=Europe/Brussels:20131218T160000
+SUMMARY: Computer security
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Markowitch, Olivier \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T160000
+DTEND;TZID=Europe/Brussels:20130918T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T160000
+DTEND;TZID=Europe/Brussels:20130925T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T160000
+DTEND;TZID=Europe/Brussels:20131002T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T160000
+DTEND;TZID=Europe/Brussels:20131009T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T160000
+DTEND;TZID=Europe/Brussels:20131016T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T160000
+DTEND;TZID=Europe/Brussels:20131023T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131030T160000
+DTEND;TZID=Europe/Brussels:20131030T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T160000
+DTEND;TZID=Europe/Brussels:20131106T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T160000
+DTEND;TZID=Europe/Brussels:20131113T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T160000
+DTEND;TZID=Europe/Brussels:20131127T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T160000
+DTEND;TZID=Europe/Brussels:20131204T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T160000
+DTEND;TZID=Europe/Brussels:20131211T180000
+SUMMARY: Introduction to language theory and compilation
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T110000
+DTEND;TZID=Europe/Brussels:20131121T130000
+SUMMARY: Decision Engineering
+LOCATION: S.H1308
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T110000
+DTEND;TZID=Europe/Brussels:20131128T130000
+SUMMARY: Decision Engineering
+LOCATION: S.H1308
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T110000
+DTEND;TZID=Europe/Brussels:20131212T130000
+SUMMARY: Decision Engineering
+LOCATION: S.H1308
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130926T150000
+DTEND;TZID=Europe/Brussels:20130926T170000
+SUMMARY: Operating systems II
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T110000
+DTEND;TZID=Europe/Brussels:20131114T130000
+SUMMARY: Decision Engineering
+LOCATION: S.Salle.Baugniet (S.S.01.326)
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130919T150000
+DTEND;TZID=Europe/Brussels:20130919T170000
+SUMMARY: Operating systems II
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131107T080000
+DTEND;TZID=Europe/Brussels:20131107T100000
+SUMMARY: Decision Engineering
+LOCATION: S.UB4.136
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T080000
+DTEND;TZID=Europe/Brussels:20131114T100000
+SUMMARY: Decision Engineering
+LOCATION: S.UB4.136
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T080000
+DTEND;TZID=Europe/Brussels:20131121T100000
+SUMMARY: Decision Engineering
+LOCATION: S.UB4.136
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T080000
+DTEND;TZID=Europe/Brussels:20131128T100000
+SUMMARY: Decision Engineering
+LOCATION: S.UB4.136
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T080000
+DTEND;TZID=Europe/Brussels:20131205T100000
+SUMMARY: Decision Engineering
+LOCATION: S.UB4.136
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130926T130000
+DTEND;TZID=Europe/Brussels:20130926T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131003T130000
+DTEND;TZID=Europe/Brussels:20131003T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131010T130000
+DTEND;TZID=Europe/Brussels:20131010T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131017T130000
+DTEND;TZID=Europe/Brussels:20131017T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131024T130000
+DTEND;TZID=Europe/Brussels:20131024T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131031T130000
+DTEND;TZID=Europe/Brussels:20131031T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131107T130000
+DTEND;TZID=Europe/Brussels:20131107T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T130000
+DTEND;TZID=Europe/Brussels:20131114T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T130000
+DTEND;TZID=Europe/Brussels:20131121T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T130000
+DTEND;TZID=Europe/Brussels:20131128T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T130000
+DTEND;TZID=Europe/Brussels:20131205T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T130000
+DTEND;TZID=Europe/Brussels:20131212T170000
+SUMMARY: Learning dynamics
+LOCATION: 
+DESCRIPTION: Professeur: Lenaerts, Tom, Nowe, Ann \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131107T120000
+DTEND;TZID=Europe/Brussels:20131107T140000
+SUMMARY: Decision Engineering
+LOCATION: P.FORUM.G
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131107T140000
+DTEND;TZID=Europe/Brussels:20131107T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T140000
+DTEND;TZID=Europe/Brussels:20131114T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T140000
+DTEND;TZID=Europe/Brussels:20131121T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T140000
+DTEND;TZID=Europe/Brussels:20131128T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T140000
+DTEND;TZID=Europe/Brussels:20131205T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T140000
+DTEND;TZID=Europe/Brussels:20131212T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131219T140000
+DTEND;TZID=Europe/Brussels:20131219T160000
+SUMMARY: Computational geometry
+LOCATION: P.OF.2078
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131004T080000
+DTEND;TZID=Europe/Brussels:20131004T100000
+SUMMARY: Computer security
+LOCATION: P.NO3.07A
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131004T100000
+DTEND;TZID=Europe/Brussels:20131004T120000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2070
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131018T100000
+DTEND;TZID=Europe/Brussels:20131018T120000
+SUMMARY: Operating systems II
+LOCATION: P.OF.2070
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130920T080000
+DTEND;TZID=Europe/Brussels:20130920T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131011T080000
+DTEND;TZID=Europe/Brussels:20131011T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131018T080000
+DTEND;TZID=Europe/Brussels:20131018T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131025T080000
+DTEND;TZID=Europe/Brussels:20131025T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131108T080000
+DTEND;TZID=Europe/Brussels:20131108T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131115T080000
+DTEND;TZID=Europe/Brussels:20131115T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131122T080000
+DTEND;TZID=Europe/Brussels:20131122T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131206T080000
+DTEND;TZID=Europe/Brussels:20131206T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131213T080000
+DTEND;TZID=Europe/Brussels:20131213T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131220T080000
+DTEND;TZID=Europe/Brussels:20131220T100000
+SUMMARY: Computer security
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131115T100000
+DTEND;TZID=Europe/Brussels:20131115T120000
+SUMMARY: Operating systems II
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131122T100000
+DTEND;TZID=Europe/Brussels:20131122T120000
+SUMMARY: Operating systems II
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131206T100000
+DTEND;TZID=Europe/Brussels:20131206T120000
+SUMMARY: Operating systems II
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+END:VCALENDAR
