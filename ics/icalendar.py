@@ -127,7 +127,7 @@ class Calendar(Component):
 
         |  Will return a string.
         |  May be set to a string.
-        |  Creator is the PRODID iCalendar property. 
+        |  Creator is the PRODID iCalendar property.
         |  It uniquely identifies the program that created the calendar.
         """
         return self._creator

@@ -1,0 +1,2239 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
+
+BEGIN:VTIMEZONE
+TZID:Europe/Brussels
+X-LIC-LOCATION:Europe/Brussels
+BEGIN:STANDARD
+DTSTART:20111030T020000
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZNAME:CET
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20120325T030000
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3
+TZNAME:CEST
+END:DAYLIGHT
+END:VTIMEZONE
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130930T120000
+DTEND;TZID=Europe/Brussels:20130930T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2213
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131007T120000
+DTEND;TZID=Europe/Brussels:20131007T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2213
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131014T120000
+DTEND;TZID=Europe/Brussels:20131014T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2213
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131021T120000
+DTEND;TZID=Europe/Brussels:20131021T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2213
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131216T180000
+DTEND;TZID=Europe/Brussels:20131216T200000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.K.1.105, S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant interro récap
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T120000
+DTEND;TZID=Europe/Brussels:20131104T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H1309
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T120000
+DTEND;TZID=Europe/Brussels:20131118T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H1309
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T120000
+DTEND;TZID=Europe/Brussels:20131125T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H1309
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T120000
+DTEND;TZID=Europe/Brussels:20131202T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H1309
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131007T140000
+DTEND;TZID=Europe/Brussels:20131007T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.R42.5.103
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T120000
+DTEND;TZID=Europe/Brussels:20131209T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.R42.4.502
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130930T140000
+DTEND;TZID=Europe/Brussels:20130930T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.R42.5.107
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130923T080000
+DTEND;TZID=Europe/Brussels:20130923T100000
+SUMMARY: Algorithmique 2
+LOCATION: P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130930T080000
+DTEND;TZID=Europe/Brussels:20130930T100000
+SUMMARY: Algorithmique 2
+LOCATION: P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131007T080000
+DTEND;TZID=Europe/Brussels:20131007T100000
+SUMMARY: Algorithmique 2
+LOCATION: P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131014T080000
+DTEND;TZID=Europe/Brussels:20131014T100000
+SUMMARY: Algorithmique 2
+LOCATION: P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131021T080000
+DTEND;TZID=Europe/Brussels:20131021T100000
+SUMMARY: Algorithmique 2
+LOCATION: P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131028T080000
+DTEND;TZID=Europe/Brussels:20131028T100000
+SUMMARY: Algorithmique 2
+LOCATION: P.2NO.607
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130923T100000
+DTEND;TZID=Europe/Brussels:20130923T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130930T100000
+DTEND;TZID=Europe/Brussels:20130930T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131007T100000
+DTEND;TZID=Europe/Brussels:20131007T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131014T100000
+DTEND;TZID=Europe/Brussels:20131014T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131021T100000
+DTEND;TZID=Europe/Brussels:20131021T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131028T100000
+DTEND;TZID=Europe/Brussels:20131028T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T100000
+DTEND;TZID=Europe/Brussels:20131104T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T100000
+DTEND;TZID=Europe/Brussels:20131118T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T100000
+DTEND;TZID=Europe/Brussels:20131125T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T100000
+DTEND;TZID=Europe/Brussels:20131202T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T100000
+DTEND;TZID=Europe/Brussels:20131209T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131216T100000
+DTEND;TZID=Europe/Brussels:20131216T120000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T120000
+DTEND;TZID=Europe/Brussels:20131118T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130923T160000
+DTEND;TZID=Europe/Brussels:20130923T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130930T160000
+DTEND;TZID=Europe/Brussels:20130930T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131007T160000
+DTEND;TZID=Europe/Brussels:20131007T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131014T160000
+DTEND;TZID=Europe/Brussels:20131014T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131021T160000
+DTEND;TZID=Europe/Brussels:20131021T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131028T160000
+DTEND;TZID=Europe/Brussels:20131028T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T160000
+DTEND;TZID=Europe/Brussels:20131104T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T160000
+DTEND;TZID=Europe/Brussels:20131118T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T160000
+DTEND;TZID=Europe/Brussels:20131125T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T160000
+DTEND;TZID=Europe/Brussels:20131202T180000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T080000
+DTEND;TZID=Europe/Brussels:20131104T100000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T080000
+DTEND;TZID=Europe/Brussels:20131118T100000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T080000
+DTEND;TZID=Europe/Brussels:20131125T100000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T080000
+DTEND;TZID=Europe/Brussels:20131202T100000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T080000
+DTEND;TZID=Europe/Brussels:20131209T100000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131216T080000
+DTEND;TZID=Europe/Brussels:20131216T100000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131104T133000
+DTEND;TZID=Europe/Brussels:20131104T153000
+SUMMARY: Algorithmique 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131118T133000
+DTEND;TZID=Europe/Brussels:20131118T153000
+SUMMARY: Algorithmique 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131125T133000
+DTEND;TZID=Europe/Brussels:20131125T153000
+SUMMARY: Algorithmique 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131202T133000
+DTEND;TZID=Europe/Brussels:20131202T153000
+SUMMARY: Algorithmique 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131209T133000
+DTEND;TZID=Europe/Brussels:20131209T153000
+SUMMARY: Algorithmique 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131216T133000
+DTEND;TZID=Europe/Brussels:20131216T153000
+SUMMARY: Algorithmique 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131022T093000
+DTEND;TZID=Europe/Brussels:20131022T103000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.A2.122
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131008T093000
+DTEND;TZID=Europe/Brussels:20131008T103000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.A2.120
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131105T080000
+DTEND;TZID=Europe/Brussels:20131105T100000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.2NO4.008.PC
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131029T080000
+DTEND;TZID=Europe/Brussels:20131029T100000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131112T080000
+DTEND;TZID=Europe/Brussels:20131112T100000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131119T080000
+DTEND;TZID=Europe/Brussels:20131119T100000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131126T080000
+DTEND;TZID=Europe/Brussels:20131126T100000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131203T080000
+DTEND;TZID=Europe/Brussels:20131203T100000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131210T080000
+DTEND;TZID=Europe/Brussels:20131210T100000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131217T080000
+DTEND;TZID=Europe/Brussels:20131217T100000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130917T170000
+DTEND;TZID=Europe/Brussels:20130917T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130924T170000
+DTEND;TZID=Europe/Brussels:20130924T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131001T170000
+DTEND;TZID=Europe/Brussels:20131001T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131008T170000
+DTEND;TZID=Europe/Brussels:20131008T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131015T170000
+DTEND;TZID=Europe/Brussels:20131015T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131022T170000
+DTEND;TZID=Europe/Brussels:20131022T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131105T170000
+DTEND;TZID=Europe/Brussels:20131105T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131112T170000
+DTEND;TZID=Europe/Brussels:20131112T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131119T170000
+DTEND;TZID=Europe/Brussels:20131119T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131126T170000
+DTEND;TZID=Europe/Brussels:20131126T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131203T170000
+DTEND;TZID=Europe/Brussels:20131203T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131210T170000
+DTEND;TZID=Europe/Brussels:20131210T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131015T090000
+DTEND;TZID=Europe/Brussels:20131015T100000
+SUMMARY: Projets d'informatique 2
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130924T103000
+DTEND;TZID=Europe/Brussels:20130924T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131001T103000
+DTEND;TZID=Europe/Brussels:20131001T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131008T103000
+DTEND;TZID=Europe/Brussels:20131008T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131015T103000
+DTEND;TZID=Europe/Brussels:20131015T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131022T103000
+DTEND;TZID=Europe/Brussels:20131022T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131105T103000
+DTEND;TZID=Europe/Brussels:20131105T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131112T103000
+DTEND;TZID=Europe/Brussels:20131112T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131119T103000
+DTEND;TZID=Europe/Brussels:20131119T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131126T103000
+DTEND;TZID=Europe/Brussels:20131126T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131203T103000
+DTEND;TZID=Europe/Brussels:20131203T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131210T103000
+DTEND;TZID=Europe/Brussels:20131210T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131217T103000
+DTEND;TZID=Europe/Brussels:20131217T123000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.2NO.708
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130917T133000
+DTEND;TZID=Europe/Brussels:20130917T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130924T133000
+DTEND;TZID=Europe/Brussels:20130924T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131001T133000
+DTEND;TZID=Europe/Brussels:20131001T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131008T133000
+DTEND;TZID=Europe/Brussels:20131008T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131022T133000
+DTEND;TZID=Europe/Brussels:20131022T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131029T133000
+DTEND;TZID=Europe/Brussels:20131029T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131105T133000
+DTEND;TZID=Europe/Brussels:20131105T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131112T133000
+DTEND;TZID=Europe/Brussels:20131112T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131119T133000
+DTEND;TZID=Europe/Brussels:20131119T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131126T133000
+DTEND;TZID=Europe/Brussels:20131126T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131203T133000
+DTEND;TZID=Europe/Brussels:20131203T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Goossens, Joël \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T080000
+DTEND;TZID=Europe/Brussels:20131218T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109
+DESCRIPTION: Professeur: Lucy, Gillian \n Assistant Rattrapage Mme Lucy
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T120000
+DTEND;TZID=Europe/Brussels:20130918T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UB2.252A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T120000
+DTEND;TZID=Europe/Brussels:20130925T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UB2.252A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T160000
+DTEND;TZID=Europe/Brussels:20131106T180000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T080000
+DTEND;TZID=Europe/Brussels:20130925T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T080000
+DTEND;TZID=Europe/Brussels:20131002T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T080000
+DTEND;TZID=Europe/Brussels:20131009T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T080000
+DTEND;TZID=Europe/Brussels:20131016T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T080000
+DTEND;TZID=Europe/Brussels:20131023T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T080000
+DTEND;TZID=Europe/Brussels:20131106T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T080000
+DTEND;TZID=Europe/Brussels:20131113T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T080000
+DTEND;TZID=Europe/Brussels:20131127T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T080000
+DTEND;TZID=Europe/Brussels:20131204T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T080000
+DTEND;TZID=Europe/Brussels:20131211T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T120000
+DTEND;TZID=Europe/Brussels:20131009T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T120000
+DTEND;TZID=Europe/Brussels:20131023T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T120000
+DTEND;TZID=Europe/Brussels:20131106T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T120000
+DTEND;TZID=Europe/Brussels:20131113T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T120000
+DTEND;TZID=Europe/Brussels:20131127T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T120000
+DTEND;TZID=Europe/Brussels:20131204T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T120000
+DTEND;TZID=Europe/Brussels:20131211T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T120000
+DTEND;TZID=Europe/Brussels:20131218T140000
+SUMMARY: Introduction aux sciences de la terre
+LOCATION: S.UD2.218A
+DESCRIPTION: Professeur: Regnier, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T160000
+DTEND;TZID=Europe/Brussels:20131211T170000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UB2.147
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T080000
+DTEND;TZID=Europe/Brussels:20130918T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T080000
+DTEND;TZID=Europe/Brussels:20130925T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T080000
+DTEND;TZID=Europe/Brussels:20131002T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T080000
+DTEND;TZID=Europe/Brussels:20131009T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T080000
+DTEND;TZID=Europe/Brussels:20131016T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T080000
+DTEND;TZID=Europe/Brussels:20131023T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T080000
+DTEND;TZID=Europe/Brussels:20131106T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T080000
+DTEND;TZID=Europe/Brussels:20131113T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T080000
+DTEND;TZID=Europe/Brussels:20131127T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T080000
+DTEND;TZID=Europe/Brussels:20131204T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T080000
+DTEND;TZID=Europe/Brussels:20131211T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T080000
+DTEND;TZID=Europe/Brussels:20131218T100000
+SUMMARY: Histoire des sciences
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Marage, Pierre \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T100000
+DTEND;TZID=Europe/Brussels:20130918T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T100000
+DTEND;TZID=Europe/Brussels:20130925T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T100000
+DTEND;TZID=Europe/Brussels:20131002T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T100000
+DTEND;TZID=Europe/Brussels:20131009T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T100000
+DTEND;TZID=Europe/Brussels:20131016T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T100000
+DTEND;TZID=Europe/Brussels:20131023T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T100000
+DTEND;TZID=Europe/Brussels:20131106T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T100000
+DTEND;TZID=Europe/Brussels:20131113T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T100000
+DTEND;TZID=Europe/Brussels:20131127T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T100000
+DTEND;TZID=Europe/Brussels:20131204T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T100000
+DTEND;TZID=Europe/Brussels:20131211T120000
+SUMMARY: Société et environnement
+LOCATION: P.FORUM.A
+DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130918T120000
+DTEND;TZID=Europe/Brussels:20130918T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130925T120000
+DTEND;TZID=Europe/Brussels:20130925T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T120000
+DTEND;TZID=Europe/Brussels:20131002T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T120000
+DTEND;TZID=Europe/Brussels:20131009T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T120000
+DTEND;TZID=Europe/Brussels:20131016T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T120000
+DTEND;TZID=Europe/Brussels:20131023T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T120000
+DTEND;TZID=Europe/Brussels:20131106T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T120000
+DTEND;TZID=Europe/Brussels:20131113T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T120000
+DTEND;TZID=Europe/Brussels:20131127T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T120000
+DTEND;TZID=Europe/Brussels:20131204T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.JANSON
+DESCRIPTION: Professeur: Castanheira De Moura, Micael \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131002T140000
+DTEND;TZID=Europe/Brussels:20131002T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131009T140000
+DTEND;TZID=Europe/Brussels:20131009T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131016T140000
+DTEND;TZID=Europe/Brussels:20131016T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131023T140000
+DTEND;TZID=Europe/Brussels:20131023T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131106T140000
+DTEND;TZID=Europe/Brussels:20131106T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131113T140000
+DTEND;TZID=Europe/Brussels:20131113T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131127T140000
+DTEND;TZID=Europe/Brussels:20131127T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131204T140000
+DTEND;TZID=Europe/Brussels:20131204T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131211T140000
+DTEND;TZID=Europe/Brussels:20131211T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131218T140000
+DTEND;TZID=Europe/Brussels:20131218T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.UD2.208
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131219T080000
+DTEND;TZID=Europe/Brussels:20131219T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109
+DESCRIPTION: Professeur: Lucy, Gillian \n Assistant Rattrapage Mme Lucy
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130926T100000
+DTEND;TZID=Europe/Brussels:20130926T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Berten, Vandy, Roggeman, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131003T100000
+DTEND;TZID=Europe/Brussels:20131003T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Berten, Vandy, Roggeman, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131010T100000
+DTEND;TZID=Europe/Brussels:20131010T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Berten, Vandy, Roggeman, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131017T100000
+DTEND;TZID=Europe/Brussels:20131017T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Berten, Vandy, Roggeman, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131024T100000
+DTEND;TZID=Europe/Brussels:20131024T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.H
+DESCRIPTION: Professeur: Berten, Vandy, Roggeman, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T140000
+DTEND;TZID=Europe/Brussels:20131114T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.Salle PC NO 4
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T140000
+DTEND;TZID=Europe/Brussels:20131121T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.Salle PC NO 4
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T140000
+DTEND;TZID=Europe/Brussels:20131128T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.Salle PC NO 4
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T140000
+DTEND;TZID=Europe/Brussels:20131205T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.Salle PC NO 4
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T140000
+DTEND;TZID=Europe/Brussels:20131212T160000
+SUMMARY: Systèmes d'exploitation
+LOCATION: P.Salle PC NO 4
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130919T160000
+DTEND;TZID=Europe/Brussels:20130919T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131003T160000
+DTEND;TZID=Europe/Brussels:20131003T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131010T160000
+DTEND;TZID=Europe/Brussels:20131010T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131017T160000
+DTEND;TZID=Europe/Brussels:20131017T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131024T160000
+DTEND;TZID=Europe/Brussels:20131024T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131107T160000
+DTEND;TZID=Europe/Brussels:20131107T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T160000
+DTEND;TZID=Europe/Brussels:20131114T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T160000
+DTEND;TZID=Europe/Brussels:20131121T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T160000
+DTEND;TZID=Europe/Brussels:20131128T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T160000
+DTEND;TZID=Europe/Brussels:20131205T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T160000
+DTEND;TZID=Europe/Brussels:20131212T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.B
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130926T080000
+DTEND;TZID=Europe/Brussels:20130926T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131003T080000
+DTEND;TZID=Europe/Brussels:20131003T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131010T080000
+DTEND;TZID=Europe/Brussels:20131010T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131017T080000
+DTEND;TZID=Europe/Brussels:20131017T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131024T080000
+DTEND;TZID=Europe/Brussels:20131024T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131107T080000
+DTEND;TZID=Europe/Brussels:20131107T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T080000
+DTEND;TZID=Europe/Brussels:20131114T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T080000
+DTEND;TZID=Europe/Brussels:20131121T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T080000
+DTEND;TZID=Europe/Brussels:20131128T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T080000
+DTEND;TZID=Europe/Brussels:20131205T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T080000
+DTEND;TZID=Europe/Brussels:20131212T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.2.115, S.P1.1.111
+DESCRIPTION: Professeur: Maitland, Leah, Lucy, Gillian, Essex, Richard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130919T100000
+DTEND;TZID=Europe/Brussels:20130919T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Roggeman, Yves, Berten, Vandy \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131107T100000
+DTEND;TZID=Europe/Brussels:20131107T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Roggeman, Yves, Berten, Vandy \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131114T100000
+DTEND;TZID=Europe/Brussels:20131114T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Roggeman, Yves, Berten, Vandy \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131121T100000
+DTEND;TZID=Europe/Brussels:20131121T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Roggeman, Yves, Berten, Vandy \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131128T100000
+DTEND;TZID=Europe/Brussels:20131128T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Roggeman, Yves, Berten, Vandy \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131205T100000
+DTEND;TZID=Europe/Brussels:20131205T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Roggeman, Yves, Berten, Vandy \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131212T100000
+DTEND;TZID=Europe/Brussels:20131212T130000
+SUMMARY: Langages de programmation 2
+LOCATION: P.FORUM.C
+DESCRIPTION: Professeur: Roggeman, Yves, Berten, Vandy \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130926T160000
+DTEND;TZID=Europe/Brussels:20130926T170000
+SUMMARY: Calcul des probabilités et statistiques
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: De Smet, Yves \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130919T170000
+DTEND;TZID=Europe/Brussels:20130919T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130926T170000
+DTEND;TZID=Europe/Brussels:20130926T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131003T170000
+DTEND;TZID=Europe/Brussels:20131003T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131010T170000
+DTEND;TZID=Europe/Brussels:20131010T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131017T170000
+DTEND;TZID=Europe/Brussels:20131017T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131024T170000
+DTEND;TZID=Europe/Brussels:20131024T190000
+SUMMARY: Analyse et méthodes
+LOCATION: P.FORUM.F
+DESCRIPTION: Professeur: Hernalsteen, Christian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131004T080000
+DTEND;TZID=Europe/Brussels:20131004T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131011T080000
+DTEND;TZID=Europe/Brussels:20131011T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131018T080000
+DTEND;TZID=Europe/Brussels:20131018T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131025T080000
+DTEND;TZID=Europe/Brussels:20131025T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131108T080000
+DTEND;TZID=Europe/Brussels:20131108T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131115T080000
+DTEND;TZID=Europe/Brussels:20131115T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131122T080000
+DTEND;TZID=Europe/Brussels:20131122T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131129T080000
+DTEND;TZID=Europe/Brussels:20131129T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131206T080000
+DTEND;TZID=Europe/Brussels:20131206T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131213T080000
+DTEND;TZID=Europe/Brussels:20131213T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.P3.3.109, S.P1.1.111
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131115T140000
+DTEND;TZID=Europe/Brussels:20131115T160000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.DC2.206
+DESCRIPTION: Professeur:  \n Assistant Gr Sciences
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130920T080000
+DTEND;TZID=Europe/Brussels:20130920T100000
+SUMMARY: Anglais scientifique I
+LOCATION: S.UD2.120
+DESCRIPTION: Professeur: Essex, Richard, Lucy, Gillian \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20130920T100000
+DTEND;TZID=Europe/Brussels:20130920T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131004T100000
+DTEND;TZID=Europe/Brussels:20131004T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131011T100000
+DTEND;TZID=Europe/Brussels:20131011T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131018T100000
+DTEND;TZID=Europe/Brussels:20131018T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131025T100000
+DTEND;TZID=Europe/Brussels:20131025T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131108T100000
+DTEND;TZID=Europe/Brussels:20131108T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131115T100000
+DTEND;TZID=Europe/Brussels:20131115T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131122T100000
+DTEND;TZID=Europe/Brussels:20131122T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131129T100000
+DTEND;TZID=Europe/Brussels:20131129T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131206T100000
+DTEND;TZID=Europe/Brussels:20131206T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131213T100000
+DTEND;TZID=Europe/Brussels:20131213T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131220T100000
+DTEND;TZID=Europe/Brussels:20131220T120000
+SUMMARY: Algorithmique 2
+LOCATION: P.OF.2072
+DESCRIPTION: Professeur: Fortz, Bernard \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131004T120000
+DTEND;TZID=Europe/Brussels:20131004T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131011T120000
+DTEND;TZID=Europe/Brussels:20131011T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131018T120000
+DTEND;TZID=Europe/Brussels:20131018T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131025T120000
+DTEND;TZID=Europe/Brussels:20131025T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131108T120000
+DTEND;TZID=Europe/Brussels:20131108T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131115T120000
+DTEND;TZID=Europe/Brussels:20131115T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131122T120000
+DTEND;TZID=Europe/Brussels:20131122T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131129T120000
+DTEND;TZID=Europe/Brussels:20131129T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131206T120000
+DTEND;TZID=Europe/Brussels:20131206T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Brussels:20131213T120000
+DTEND;TZID=Europe/Brussels:20131213T140000
+SUMMARY: Introduction à la microéconomie
+LOCATION: S.H2214
+DESCRIPTION: Professeur:  \n Assistant 
+END:VEVENT
+
+
+END:VCALENDAR

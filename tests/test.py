@@ -191,7 +191,8 @@ Student/Calendar/%23SPLUS35F0F0/1-14.ics"
         ics = None
         while not ics:
             try:
-                ics = string_to_container(urlopen(url).read().decode('iso-8859-1'))[0]
+                ics = urlopen(url).read().decode('iso-8859-1')
+                ics = string_to_container(ics)[0]
             except HTTPError:
                 pass
         self.assertTrue(ics)
