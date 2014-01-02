@@ -23,9 +23,12 @@ from .parse import ContentLine, Container
 
 class Event(Component):
 
-    '''A calendar event.
-    Can be full-day or between two instants.
-    Can be defined by a beginning instant and a {duration,end instant}'''
+    """A calendar event.
+
+    |  Can be full-day or between two instants.
+    |  Can be defined by a beginning instant and 
+        a {duration,end instant}.
+    """
 
     _TYPE = "VEVENT"
     _EXTRACTORS = []
@@ -40,18 +43,21 @@ class Event(Component):
                  description=None,
                  created=None,
                  location=None):
-        '''Instanciates a new Event.
+        """Instanciates a new Event.
+
         Optional arguments:
-            - name (string)
-            - begin (arrow.get() compatible or Arrow)
-            - end (arrow.get() compatible or Arrow)
-            - duration
-            - uid (must be _unique_)
-            - description
-            - created (arrow.get() compatible or Arrow)
-            - location
-        'end' and 'duration' may not be specified at the same time
-        (raises ValueError)'''
+            - name (string),
+            - begin (arrow.get() compatible or Arrow),
+            - end (arrow.get() compatible or Arrow),
+            - duration,
+            - uid (must be _unique_),
+            - description,
+            - created (arrow.get() compatible or Arrow),
+            - location.
+
+        `end` and `duration` may not be specified at the same time
+        (raises ValueError).
+        """
 
         self._duration = None
         self._end_time = None
@@ -75,16 +81,18 @@ class Event(Component):
             self.duration = duration
 
     def has_end(self):
-        '''bool. Event has an end.'''
+        """Bool: Event has an end."""
         return bool(self._end_time or self._duration)
 
     @property
     def begin(self):
-        '''Get or set the beginning of the event.
-        Will return an Arrow object. May be set to anything that
-        arrow.get() understands.
-        If an end is defined (not a duration), .begin must not be set
-        to a superior value.'''
+        """Get or set the beginning of the event.
+
+        |  Will return an Arrow object.
+        |  May be set to anything that arrow.get() understands.
+        |  If an end is defined (not a duration), .begin must not 
+            be set to a superior value.
+        """
         return self._begin
 
     @begin.setter
@@ -97,12 +105,16 @@ class Event(Component):
 
     @property
     def end(self):
-        '''Get or set the end of the event.
-        Will return an Arrow object. May be set to anything that
-        arrow.get() understands.
-        If setted to a non null value, removes any already existing duration.
-        Setting to None will have unexpected behavior if begin is not None.
-        Must not be setted to an inferior value than self.begin'''
+        """Get or set the end of the event.
+
+        |  Will return an Arrow object.
+        |  May be set to anything that arrow.get() understands.
+        |  If setted to a non null value, removes any already 
+            existing duration.
+        |  Setting to None will have unexpected behavior if
+            begin is not None.
+        |  Must not be setted to an inferior value than self.begin.
+        """
 
         if self._duration:  # if end is duration defined
             # return the beginning + duration
@@ -125,20 +137,24 @@ class Event(Component):
 
     @property
     def all_day(self):
-        '''Bool: event is an all-day event'''
+        """Bool: event is an all-day event."""
         return self._begin_precision == 'day' and not self.has_end()
 
     def make_all_day(self):
-        '''Transforms an event to an all-day event.
-        The day will be the day of self.begin.'''
+        """Transforms an event to an all-day event.
+
+        The day will be the day of self.begin.
+        """
         self._begin_precision = 'day'
         self._begin = self._begin.floor('day')
         self._duration = None
         self._end_time = None
 
     def __unicode__(self):
-        '''Returns a unicode representation (__repr__) of the event.
-        Should not be used directly. Use self.__repr__ instead.'''
+        """Returns an unicode representation (__repr__) of the event.
+
+        Should not be used directly. Use self.__repr__ instead.
+        """
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
             return "<all-day Event {} :{}>".format(name,
@@ -150,7 +166,7 @@ class Event(Component):
                                                       self.begin, self.end)
 
     def __str__(self):
-        '''Returns the event as an iCalendar formatted string'''
+        """Returns the event as an iCalendar formatted string."""
         return super(Event, self).__str__()
 
     def __lt__(self, other):
@@ -198,17 +214,17 @@ class Event(Component):
             return None, None
 
     def __eq__(self, other):
-        '''Two events are considered equal if they have the same uid.'''
+        """Two events are considered equal if they have the same uid."""
         return self.uid == other.uid
 
     def clone(self):
-        '''Make an exact copy of self.'''
+        """Make an exact copy of self."""
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
         return clone
 
     def __hash__(self):
-        '''Returns a hash of self based on self.uid'''
+        """Returns a hash of self based on self.uid."""
         ord3 = lambda x: '%.3d' % ord(x)
         return int(''.join(map(ord3, self.uid)))
 
@@ -219,7 +235,7 @@ class Event(Component):
 @Event._extracts('DTSTAMP')
 def created(event, line):
     if line:
-        # get the dict of vtimezeones passed to the classmethod
+        # get the dict of vtimezones passed to the classmethod
         tz_dict = event._classmethod_kwargs['tz']
         event.created = iso_to_arrow(line, tz_dict)
 
@@ -227,7 +243,7 @@ def created(event, line):
 @Event._extracts('DTSTART')
 def start(event, line):
     if line:
-        # get the dict of vtimezeones passed to the classmethod
+        # get the dict of vtimezones passed to the classmethod
         tz_dict = event._classmethod_kwargs['tz']
         event.begin = iso_to_arrow(line, tz_dict)
         event._begin_precision = iso_precision(line.value)
@@ -242,7 +258,7 @@ def duration(event, line):
 @Event._extracts('DTEND')
 def end(event, line):
     if line:
-        # get the dict of vtimezeones passed to the classmethod
+        # get the dict of vtimezones passed to the classmethod
         tz_dict = event._classmethod_kwargs['tz']
         event._end_time = iso_to_arrow(line, tz_dict)
 
@@ -330,4 +346,5 @@ def o_uid(event, container):
         uid = event.uid
     else:
         uid = uid_gen()
+
     container.append(ContentLine('UID', value=uid))

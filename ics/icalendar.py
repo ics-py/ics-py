@@ -26,23 +26,27 @@ from .utils import remove_x
 
 class Calendar(Component):
 
-    '''Represents an unique rfc5545 iCalendar.'''
+    """Represents an unique rfc5545 iCalendar."""
 
-    _TYPE = "VCALENDAR"
+    _TYPE = 'VCALENDAR'
     _EXTRACTORS = []
     _OUTPUTS = []
 
     def __init__(self, imports=None, events=None, creator=None):
-        '''Instanciates a new Calendar.
+        """Instanciates a new Calendar.
+
         Optional arguments:
-            - imports (string or list of lines/strings): data to be imported
-                                                         into the Calendar()
-            - events (list of Events or EventList):
-                If Events: will use to construct internal EventList.
-                If EventList: will use event in place of creating
-                              a new internal EventList
-            - creator (string): uid of the creator program
-        If 'imports' is specified, __init__ ignores every other argument.'''
+
+        - imports (string or list of lines/strings): \
+            data to be imported into the Calendar(),
+        - events (list of Events or EventList):
+            | If Events: will use to construct internal EventList,
+            | If EventList: will use event in place of creating \
+                a new internal EventList,
+        - creator (string): uid of the creator program.
+
+        If `imports` is specified, __init__ ignores every other argument.
+        """
         # TODO : implement a file-descriptor import and a filename import
 
         self._timezones = {}
@@ -71,15 +75,20 @@ class Calendar(Component):
             self._creator = creator
 
     def __unicode__(self):
-        '''Return a unicode representation (__repr__) of the calendar.
-        Should not be used directly. Use self.__repr__ instead'''
+        """Return an unicode representation (__repr__) of the calendar.
+
+        Should not be used directly. Use self.__repr__ instead.
+        """
         return "<Calendar with {} events>".format(len(self.events))
 
     def __iter__(self):
-        '''Returns an iterable version of __str__, line per line
+        """Returns an iterable version of __str__, line per line
         (with line-endings).
+
         Can be used to write calendar to a file:
-        open('my.ics', 'w').writelines(calendar)'''
+
+            open('my.ics', 'w').writelines(calendar)
+        """
         if PY2:
             for line in str(self).decode('utf-8').split('\n'):
                 yield (line + '\n').encode('utf-8')
@@ -88,16 +97,18 @@ class Calendar(Component):
                 yield (line + '\n')
 
     def __str__(self):
-        '''Return the calendar as an iCalendar formatted string'''
+        """Return the calendar as an iCalendar formatted string."""
         return super(Calendar, self).__str__()
 
     @property
     def events(self):
-        '''Get or set the list of calendar's events.
-        Will return an EventList object (similar to python list).
-        May be set to a list or an EventList
-        (otherwise will raise a ValueError).
-        If setted, will override all pre-existing events.'''
+        """Get or set the list of calendar's events.
+
+        |  Will return an EventList object (similar to python list).
+        |  May be set to a list or an EventList
+            (otherwise will raise a ValueError).
+        |  If setted, will override all pre-existing events.
+        """
         return self._events
 
     @events.setter
@@ -112,11 +123,13 @@ class Calendar(Component):
 
     @property
     def creator(self):
-        '''Get or set the calendar's creator.
-        Will return a string.
-        May be set to a string.
-        Creator is the PRODID iCalendar property. It uniquely identifies
-        the program that created the calendar.'''
+        """Get or set the calendar's creator.
+
+        |  Will return a string.
+        |  May be set to a string.
+        |  Creator is the PRODID iCalendar property. 
+        |  It uniquely identifies the program that created the calendar.
+        """
         return self._creator
 
     @creator.setter
@@ -132,7 +145,7 @@ class Calendar(Component):
             self._creator = value
 
     def clone(self):
-        '''Make an exact copy of self.'''
+        """Make an exact copy of self."""
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
         clone.events = map(lambda x: x.clone(), self.events)
@@ -186,8 +199,10 @@ def method(calendar, line):
 
 @Calendar._extracts('VTIMEZONE', multiple=True)
 def timezone(calendar, vtimezones):
-    '''Receives a list of VTIMEZONE blocks.
-    Parses them and adds them to calendar._timezones'''
+    """Receives a list of VTIMEZONE blocks.
+
+    Parses them and adds them to calendar._timezones.
+    """
     for vtimezone in vtimezones:
         remove_x(vtimezone)  # Remove non standard lines from the block
         fake_file = StringIO()
