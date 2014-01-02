@@ -80,9 +80,6 @@ class Event(Component):
         elif duration:  # Duration was specified
             self.duration = duration
 
-    def __eq__(self, other):
-        return self.begin == other.begin and self.end == other.end and self.name == other.name
-
     def has_end(self):
         """Bool: Event has an end."""
         return bool(self._end_time or self._duration)
