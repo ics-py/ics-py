@@ -26,7 +26,7 @@ from .fixture import (
     unfolded_cal6,
 )
 from ics.event import Event
-from time import time
+from ics.eventlist import EventList
 
 if PY3:
     from urllib.request import urlopen
@@ -184,16 +184,14 @@ class TestParse(unittest.TestCase):
             i += 1
 
 class TestEvent(unittest.TestCase):
-    def test_event(self):
-        t = int(time())
-
-        e = Event(begin=t, end=t+20)
-        self.assertEqual(e.begin.timestamp, t)
-        self.assertEqual(e.end.timestamp, t+20)
+    def test_event(self):   
+        e = Event(begin=0, end=20)
+        self.assertEqual(e.begin.timestamp, 0)
+        self.assertEqual(e.end.timestamp, 20)
         self.assertTrue(e.has_end())
         self.assertFalse(e.all_day)
 
-        f = Event(begin=t+10, end=t+30)
+        f = Event(begin=10, end=30)
         self.assertTrue(e < f)
         self.assertTrue(e <= f)
         self.assertTrue(f > e)
@@ -211,6 +209,22 @@ class TestEvent(unittest.TestCase):
         
         g = Event() | Event()
         self.assertEqual(g, (None, None))
+
+class TestEventList(unittest.TestCase):
+    from time import time
+
+    def test_evlist(self):
+        l = EventList()
+        t = self.time()
+
+        self.assertEqual(len(l), 0)
+        e = Event(begin=t, end=t+1)
+        l.append(e)
+        self.assertEqual(len(l), 1)
+        self.assertEqual(l[0], e)
+        self.assertEqual(l.today(), [e])
+        l.append(Event(begin=t, end=t+86400))
+        self.assertEqual(l.today(strict=True), [e])
 
 class TestFunctional(unittest.TestCase):
 
