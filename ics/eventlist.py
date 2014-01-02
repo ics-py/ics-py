@@ -29,7 +29,6 @@ class EventList(list):
 
     def __getitem__(self, sl):
         """Slices EventList.
-        
         |  If sl is conventional (like [10], [4:12], [3:100:2], [::-1], …),
             it slices the EventList like a classical list().
         |  If one of the 3 arguments ([start:stop:step]) is not None or an int,
