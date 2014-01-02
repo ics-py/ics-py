@@ -27,6 +27,7 @@ from .fixture import (
 )
 from ics.event import Event
 from ics.eventlist import EventList
+from ics.icalendar import Calendar
 
 if PY3:
     from urllib.request import urlopen, HTTPError
@@ -225,6 +226,19 @@ class TestEventList(unittest.TestCase):
         self.assertEqual(l.today(), [e])
         l.append(Event(begin=t, end=t+86400))
         self.assertEqual(l.today(strict=True), [e])
+
+class TestCalendar(unittest.TestCase):
+    def test_imports(self):
+        c = Calendar(cal1)
+        self.assertEqual(1, len(c.events))
+
+    def test_events(self):
+        e = Event(begin=0, end=30)
+        c = Calendar()
+        c.events.append(e)
+        d = Calendar(events=c.events)
+        self.assertEqual(1, len(d.events))
+        self.assertEqual(e, d.events[0])
 
 class TestFunctional(unittest.TestCase):
 
