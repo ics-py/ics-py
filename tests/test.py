@@ -28,9 +28,9 @@ from .fixture import (
 
 
 if PY3:
-    from urllib.request import urlopen
+    from urllib.request import urlopen, HTTPError
 else:
-    from urllib2 import urlopen
+    from urllib2 import urlopen, HTTPError
 
 
 class TestContentLine(unittest.TestCase):
@@ -188,8 +188,12 @@ class TestFunctional(unittest.TestCase):
     def test_gehol(self):
         url = "http://scientia-web.ulb.ac.be/gehol/index.php?\
 Student/Calendar/%23SPLUS35F0F0/1-14.ics"
-        print(url)
-        ics = string_to_container(urlopen(url).read().decode('iso-8859-1'))[0]
+        ics = None
+        while not ics:
+            try:
+                ics = string_to_container(urlopen(url).read().decode('iso-8859-1'))[0]
+            except HTTPError:
+                pass
         self.assertTrue(ics)
 
 if __name__ == '__main__':
