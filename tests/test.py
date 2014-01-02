@@ -240,6 +240,11 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(1, len(d.events))
         self.assertEqual(e, d.events[0])
 
+    def test_selfload(self):
+        c = Calendar(cal1)
+        d = Calendar(str(c))
+        self.assertEqual(c, d)
+
 class TestFunctional(unittest.TestCase):
 
     def test_gehol(self):
