@@ -25,8 +25,9 @@ class Event(Component):
 
     """A calendar event.
 
-    Can be full-day or between two instants.
-    Can be defined by a beginning instant and a {duration,end instant}
+    |  Can be full-day or between two instants.
+    |  Can be defined by a beginning instant and 
+        a {duration,end instant}.
     """
 
     _TYPE = "VEVENT"
@@ -45,17 +46,17 @@ class Event(Component):
         """Instanciates a new Event.
 
         Optional arguments:
-            - name (string)
-            - begin (arrow.get() compatible or Arrow)
-            - end (arrow.get() compatible or Arrow)
-            - duration
-            - uid (must be _unique_)
-            - description
-            - created (arrow.get() compatible or Arrow)
-            - location
+            - name (string),
+            - begin (arrow.get() compatible or Arrow),
+            - end (arrow.get() compatible or Arrow),
+            - duration,
+            - uid (must be _unique_),
+            - description,
+            - created (arrow.get() compatible or Arrow),
+            - location.
 
-        'end' and 'duration' may not be specified at the same time
-        (raises ValueError)
+        `end` and `duration` may not be specified at the same time
+        (raises ValueError).
         """
 
         self._duration = None
@@ -87,10 +88,10 @@ class Event(Component):
     def begin(self):
         """Get or set the beginning of the event.
 
-        Will return an Arrow object. May be set to anything that
-        arrow.get() understands.
-        If an end is defined (not a duration), .begin must not be set
-        to a superior value.
+        |  Will return an Arrow object.
+        |  May be set to anything that arrow.get() understands.
+        |  If an end is defined (not a duration), .begin must not 
+            be set to a superior value.
         """
         return self._begin
 
@@ -106,11 +107,13 @@ class Event(Component):
     def end(self):
         """Get or set the end of the event.
 
-        Will return an Arrow object.
-        May be set to anything that arrow.get() understands.
-        If setted to a non null value, removes any already existing duration.
-        Setting to None will have unexpected behavior if begin is not None.
-        Must not be setted to an inferior value than self.begin
+        |  Will return an Arrow object.
+        |  May be set to anything that arrow.get() understands.
+        |  If setted to a non null value, removes any already 
+            existing duration.
+        |  Setting to None will have unexpected behavior if
+            begin is not None.
+        |  Must not be setted to an inferior value than self.begin.
         """
 
         if self._duration:  # if end is duration defined

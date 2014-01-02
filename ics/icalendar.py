@@ -36,15 +36,16 @@ class Calendar(Component):
         """Instanciates a new Calendar.
 
         Optional arguments:
-        - imports (string or list of lines/strings):
-        data to be imported into the Calendar()
-        - events (list of Events or EventList):
-        If Events: will use to construct internal EventList.
-        If EventList: will use event in place of creating
-        a new internal EventList
-        - creator (string): uid of the creator program
 
-        If 'imports' is specified, __init__ ignores every other argument.
+        - imports (string or list of lines/strings): \
+            data to be imported into the Calendar(),
+        - events (list of Events or EventList):
+            | If Events: will use to construct internal EventList,
+            | If EventList: will use event in place of creating \
+                a new internal EventList,
+        - creator (string): uid of the creator program.
+
+        If `imports` is specified, __init__ ignores every other argument.
         """
         # TODO : implement a file-descriptor import and a filename import
 
@@ -76,7 +77,7 @@ class Calendar(Component):
     def __unicode__(self):
         """Return an unicode representation (__repr__) of the calendar.
 
-        Should not be used directly. Use self.__repr__ instead
+        Should not be used directly. Use self.__repr__ instead.
         """
         return "<Calendar with {} events>".format(len(self.events))
 
@@ -85,7 +86,8 @@ class Calendar(Component):
         (with line-endings).
 
         Can be used to write calendar to a file:
-        open('my.ics', 'w').writelines(calendar)
+
+            open('my.ics', 'w').writelines(calendar)
         """
         if PY2:
             for line in str(self).decode('utf-8').split('\n'):
@@ -102,10 +104,10 @@ class Calendar(Component):
     def events(self):
         """Get or set the list of calendar's events.
 
-        Will return an EventList object (similar to python list).
-        May be set to a list or an EventList
-        (otherwise will raise a ValueError).
-        If setted, will override all pre-existing events.
+        |  Will return an EventList object (similar to python list).
+        |  May be set to a list or an EventList
+            (otherwise will raise a ValueError).
+        |  If setted, will override all pre-existing events.
         """
         return self._events
 
@@ -123,10 +125,10 @@ class Calendar(Component):
     def creator(self):
         """Get or set the calendar's creator.
 
-        Will return a string.
-        May be set to a string.
-        Creator is the PRODID iCalendar property. It uniquely identifies
-        the program that created the calendar.
+        |  Will return a string.
+        |  May be set to a string.
+        |  Creator is the PRODID iCalendar property. 
+        |  It uniquely identifies the program that created the calendar.
         """
         return self._creator
 
