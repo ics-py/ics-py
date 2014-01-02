@@ -26,7 +26,7 @@ class Event(Component):
     """A calendar event.
 
     |  Can be full-day or between two instants.
-    |  Can be defined by a beginning instant and 
+    |  Can be defined by a beginning instant and
         a {duration,end instant}.
     """
 
@@ -90,7 +90,7 @@ class Event(Component):
 
         |  Will return an Arrow object.
         |  May be set to anything that arrow.get() understands.
-        |  If an end is defined (not a duration), .begin must not 
+        |  If an end is defined (not a duration), .begin must not
             be set to a superior value.
         """
         return self._begin
@@ -109,7 +109,7 @@ class Event(Component):
 
         |  Will return an Arrow object.
         |  May be set to anything that arrow.get() understands.
-        |  If setted to a non null value, removes any already 
+        |  If setted to a non null value, removes any already
             existing duration.
         |  Setting to None will have unexpected behavior if
             begin is not None.

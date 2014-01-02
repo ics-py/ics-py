@@ -30,7 +30,7 @@ class EventList(list):
     def __getitem__(self, sl):
         """Slices EventList.
 
-        |  If the slice is conventional (like [10], [4:12], [3:100:2], [::-1], …),
+        |  If the sl is conventional (like [10], [4:12], [3:100:2], [::-1], …),
             it slices the EventList like a classical list().
         |  If one of the 3 arguments ([start:stop:step]) is not None or an int,
             slicing differs.
@@ -144,7 +144,7 @@ class EventList(list):
 
         |  If `strict` is True, events will be returned only if they are
             strictly *included* in `day`.
-        |  `day` will be parsed by arrow.get() if it's not 
+        |  `day` will be parsed by arrow.get() if it's not
             an Arrow object.
         """
         if not isinstance(day, Arrow):
