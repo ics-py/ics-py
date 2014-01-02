@@ -59,10 +59,12 @@ class Calendar(Component):
             events = EventList()
 
         if imports is not None:
-            if isinstance(imports, text_type):
+            if isinstance(imports, str) or isinstance(imports, unicode):
                 container = string_to_container(imports)
-            else:
+            elif isinstance(imports, collections.Iterable):
                 container = lines_to_container(imports)
+            else:
+                raise TypeError("Expecting a sequence or a string")
 
             # TODO : make a better API for multiple calendars
             if len(container) != 1:
@@ -99,6 +101,14 @@ class Calendar(Component):
     def __str__(self):
         """Return the calendar as an iCalendar formatted string."""
         return super(Calendar, self).__str__()
+
+    def __eq__(self, other):
+        if len(self.events) != len(other.events):
+            return False
+        for i in range(len(self.events)):
+            if not self.events[i] == other.events[i]:
+                return False
+        return True
 
     @property
     def events(self):

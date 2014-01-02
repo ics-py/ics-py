@@ -25,7 +25,9 @@ from .fixture import (
     unfolded_cal2,
     unfolded_cal6,
 )
-
+from ics.event import Event
+from ics.eventlist import EventList
+from ics.icalendar import Calendar
 
 if PY3:
     from urllib.request import urlopen, HTTPError
@@ -182,6 +184,72 @@ class TestParse(unittest.TestCase):
                     vehicula nullam.', line.value)
             i += 1
 
+class TestEvent(unittest.TestCase):
+    def test_event(self):   
+        e = Event(begin=0, end=20)
+        self.assertEqual(e.begin.timestamp, 0)
+        self.assertEqual(e.end.timestamp, 20)
+        self.assertTrue(e.has_end())
+        self.assertFalse(e.all_day)
+
+        f = Event(begin=10, end=30)
+        self.assertTrue(e < f)
+        self.assertTrue(e <= f)
+        self.assertTrue(f > e)
+        self.assertTrue(f >= e)
+
+    def test_or(self):
+        g = Event(begin=0, end=10) | Event(begin=10, end=20)
+        self.assertEqual(g, (None, None))
+
+        g = Event(begin=0, end=20) | Event(begin=10, end=30)
+        self.assertEqual(tuple(map(lambda x: x.timestamp, g)), (10, 20))
+        
+        g = Event(begin=0, end=20) | Event(begin=5, end=15)
+        self.assertEqual(tuple(map(lambda x: x.timestamp, g)), (5, 15))
+        
+        g = Event() | Event()
+        self.assertEqual(g, (None, None))
+
+class TestEventList(unittest.TestCase):
+    from time import time
+
+    def test_evlist(self):
+        l = EventList()
+        t = self.time()
+
+        self.assertEqual(len(l), 0)
+        e = Event(begin=t, end=t+1)
+        l.append(e)
+        self.assertEqual(len(l), 1)
+        self.assertEqual(l[0], e)
+        self.assertEqual(l.today(), [e])
+        l.append(Event(begin=t, end=t+86400))
+        self.assertEqual(l.today(strict=True), [e])
+
+class TestCalendar(unittest.TestCase):
+    def test_imports(self):
+        c = Calendar(cal1)
+        self.assertEqual(1, len(c.events))
+
+    def test_events(self):
+        e = Event(begin=0, end=30)
+        c = Calendar()
+        c.events.append(e)
+        d = Calendar(events=c.events)
+        self.assertEqual(1, len(d.events))
+        self.assertEqual(e, d.events[0])
+
+    def test_selfload(self):
+        c = Calendar(cal1)
+        d = Calendar(str(c))
+        self.assertEqual(c, d)
+        for i in range(len(c.events)):
+            e, f = c.events[i], d.events[i]
+            self.assertEqual(e, f)
+            self.assertEqual(e.begin, f.begin)
+            self.assertEqual(e.end, f.end)
+            self.assertEqual(e.name, f.name)
 
 class TestFunctional(unittest.TestCase):
 
