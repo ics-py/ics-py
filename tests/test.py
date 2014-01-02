@@ -93,7 +93,7 @@ class TestContentLine(unittest.TestCase):
             self.assertEqual(expected, got, "Parse")
 
 
-class Test_unfold_lines(unittest.TestCase):
+class TestUnfoldLines(unittest.TestCase):
 
     def test_no_folded_lines(self):
         self.assertEqual(list(unfold_lines(cal2.split('\n'))), unfolded_cal2)
@@ -145,7 +145,7 @@ class Test_unfold_lines(unittest.TestCase):
                          ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
 
-class Test_parse(unittest.TestCase):
+class TestParse(unittest.TestCase):
 
     def test_parse(self):
         content = string_to_container(cal5)
@@ -183,7 +183,7 @@ class Test_parse(unittest.TestCase):
             i += 1
 
 
-class Test_functional(unittest.TestCase):
+class TestFunctional(unittest.TestCase):
 
     def test_gehol(self):
         url = "http://scientia-web.ulb.ac.be/gehol/index.php?\
