@@ -100,6 +100,14 @@ class Calendar(Component):
         """Return the calendar as an iCalendar formatted string."""
         return super(Calendar, self).__str__()
 
+    def __eq__(self, other):
+        if len(self.events) != len(other.events):
+            return False
+        for i in range(len(self.events)):
+            if not self.events[i] == other.events[i]:
+                return False
+        return True
+
     @property
     def events(self):
         """Get or set the list of calendar's events.
