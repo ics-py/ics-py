@@ -4,7 +4,33 @@ Ics.py : iCalendar for Humans
 .. image:: https://travis-ci.org/C4ptainCrunch/ics.py.png?branch=master   
    :target: https://travis-ci.org/C4ptainCrunch/ics.py
 .. image:: https://coveralls.io/repos/C4ptainCrunch/ics.py/badge.png 
-   :target: https://coveralls.io/r/C4ptainCrunch/ics.py 
+   :target: https://coveralls.io/r/C4ptainCrunch/ics.py
+
+.. image:: https://pypip.in/v/ics/badge.png
+    :target: https://pypi.python.org/pypi/ics/
+    :alt: Latest Version
+
+.. image:: https://pypip.in/d/ics/badge.png
+    :target: https://pypi.python.org/pypi/ics/
+    :alt: Downloads
+
+.. image:: https://pypip.in/wheel/ics/badge.png
+    :target: https://pypi.python.org/pypi/ics/
+    :alt: Wheel Status
+
+.. image:: https://pypip.in/egg/ics/badge.png
+    :target: https://pypi.python.org/pypi/ics/
+    :alt: Egg Status
+
+.. image:: https://pypip.in/license/ics/badge.png
+    :target: https://pypi.python.org/pypi/ics/
+    :alt: License
+
+.. image:: http://b.repl.ca/v1/Awesomeness-9000+-FD6C9E.png
+    :target: https://pypi.python.org/pypi/ics/
+    :alt: Awesomeness
+
+
 (Release 0.1.1)
 
 Ics.py is a pythonic and easy iCalendar (rfc5545) library. It's goals are to read and write ics data in a developper-friendly way.

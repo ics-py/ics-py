@@ -14,41 +14,49 @@ from .utils import get_arrow
 
 class EventList(list):
 
-    '''EventList is a subclass of the standard list.
+    """EventList is a subclass of the standard list.
+
     It can be used as a list but also has super slicing capabilities
-    and some helpers.'''
+    and some helpers.
+    """
 
     def __init__(self, *args, **kwargs):
-        '''Instanciates a new EventList. Accepts same arguments as list()
-        and pass them all to list()'''
+        """Instanciates a new EventList.
+
+        Accepts same arguments as list() and pass them all to list().
+        """
         super(EventList, self).__init__(*args, **kwargs)
 
     def __getitem__(self, sl):
-        '''Slices EventList.
-        If the slice is conventional (like [10], [4:12], [3:100:2], [::-1], …),
-        it slices the EventList like a classical list().
-        If one of the 3 arguments ([start:stop:step]) is not None or an int,
-        slicing differs.
+        """Slices EventList.
 
-        In that case, 'start' and 'stop' are considerated like instants
-        (or None) and 'step' like a modificator.
-        'start' and 'stop' will be converted to Arrow objects (or None)
-        with arrow.get().
+        |  If the slice is conventional (like [10], [4:12], [3:100:2], [::-1], …),
+            it slices the EventList like a classical list().
+        |  If one of the 3 arguments ([start:stop:step]) is not None or an int,
+            slicing differs.
 
-        - start (arrow.get() compatible or Arrow or None):
-            lower included bond
-        - stop (arrow.get() compatible or Arrow or None):
-            upper, non included, bond
+        |  In that case, `start` and `stop` are considerated like instants
+            (or None) and `step` like a modificator.
+        |  `start` and `stop` will be converted to Arrow objects (or None)
+            with arrow.get().
 
-        Modificators :
-        - begin : the beginning of the events has to be between the bonds.
-        - end : the end of the events has to be between the bonds.
-        - both : both the end and the beginning have to be between the bonds.
-        - any : either (or both) the start of the beginning has to be
-                between the bonds.
-        - inc : the events have to include be bonds
-                (start < event.begin < envent.end < stop)
-        '''
+        - start (arrow.get() compatible or Arrow or None): \
+        lower included bond,
+        - stop (arrow.get() compatible or Arrow or None): \
+        upper, non included, bond.
+
+        Modificators:
+            - begin: the beginning of the events has to be \
+            between the bonds.
+            - end: the end of the events has to be \
+            between the bonds.
+            - both: both the end and the beginning have to be \
+            between the bonds.
+            - any: either (or both) the start of the beginning has to be \
+            between the bonds.
+            - inc: the events have to include be bonds \
+            (start < event.begin < event.end < stop).
+        """
         # Integer slice
         if isinstance(sl, integer_types):
             return super(EventList, self).__getitem__(sl)
@@ -92,9 +100,11 @@ class EventList(list):
             elif step == 'end':
                 condition1 = condition_end1
             elif step == 'any':
-                condition1 = lambda x: condition_begin1(x) or condition_end1(x)
+                condition1 = lambda x: condition_begin1(x) or \
+                    condition_end1(x)
             elif step == 'both':
-                condition1 = lambda x: condition_begin1(x) and condition_end1(x)
+                condition1 = lambda x: condition_begin1(x) and \
+                    condition_end1(x)
         else:
             condition1 = condition0
 
@@ -106,10 +116,11 @@ class EventList(list):
             elif step == 'end':
                 condition2 = condition_end2
             elif step == 'any':
-                condition2 = lambda x: condition_begin2(x) or condition_end2(x)
+                condition2 = lambda x: condition_begin2(x) or \
+                    condition_end2(x)
             elif step == 'both':
-                condition2 = lambda x: condition_begin2(
-                    x) and condition_end2(x)
+                condition2 = lambda x: condition_begin2(x) and \
+                    condition_end2(x)
         else:
             condition2 = condition1
 
@@ -121,33 +132,40 @@ class EventList(list):
         return list(filter(condition2, self))
 
     def today(self, strict=False):
-        '''Return all events that occurs today.
-        If strict is True, events will be returned only if they are
-        strictly *included* in today'''
+        """Returns all events that occurs today.
+
+        If `strict` is True, events will be returned only if they are
+        strictly *included* in today.
+        """
         return self[arrow.now()]
 
     def on(self, day, strict=False):
-        '''Return all events that occurs on 'day'.
-        If strict is True, events will be returned only if they are
-        strictly *included* in 'day'.
-        'day' will be parsed by arrow.get() if it's not an Arrow object.'''
+        """Returns all events that occurs on `day`.
+
+        |  If `strict` is True, events will be returned only if they are
+            strictly *included* in `day`.
+        |  `day` will be parsed by arrow.get() if it's not 
+            an Arrow object.
+        """
         if not isinstance(day, Arrow):
             day = arrow.get(day)
         return self[day]
 
     def now(self):
-        '''Return all events that occurs now.'''
+        """Returns all events that occurs now."""
         return self[arrow.now():arrow.now().ceil('microsecond')]
 
     def at(self, instant):
-        '''Return all events that are occuring at that instant.
-        'instant' will be parsed by arrow.get() if it's not an Arrow object'''
+        """Returns all events that are occuring at that instant.
+
+        `instant` will be parsed by arrow.get() if it's not an Arrow object.
+        """
         if not isinstance(instant, Arrow):
             instant = arrow.get(instant)
         return self[instant:instant.ceil('microsecond'):'one']
 
     def concurrent(self, event):
-        '''Return all events that are overlapping `event`'''
+        """Returns all events that are overlapping `event`."""
         a = self[event.begin:event.start:'any']
         b = self[None:event.begin:'start']
         c = self[event.end:None:'stop']
