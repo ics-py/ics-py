@@ -59,10 +59,12 @@ class Calendar(Component):
             events = EventList()
 
         if imports is not None:
-            if isinstance(imports, text_type):
+            if isinstance(imports, str) or isinstance(imports, unicode):
                 container = string_to_container(imports)
-            else:
+            elif '__iter__' in dir(imports):
                 container = lines_to_container(imports)
+            else:
+                raise TypeError("Expecting a sequence or a string")
 
             # TODO : make a better API for multiple calendars
             if len(container) != 1:
