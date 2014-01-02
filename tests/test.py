@@ -28,12 +28,6 @@ from .fixture import (
 )
 
 
-if PY3:
-    from urllib.request import urlopen, HTTPError
-else:
-    from urllib2 import urlopen, HTTPError
-
-
 class TestContentLine(unittest.TestCase):
     dataset = {
         'haha:': ContentLine('haha'),
