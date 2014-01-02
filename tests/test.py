@@ -189,7 +189,10 @@ class TestFunctional(unittest.TestCase):
     def test_gehol(self):
         cal = os.path.join(os.path.dirname(__file__), "gehol", "BA1.ics")
         with open(cal) as ics:
-            ics = ics.read().decode('iso-8859-1')
+            if PY2:
+                ics = ics.read().decode('iso-8859-1')
+            else:
+                ics = ics.read()
             ics = string_to_container(ics)[0]
             self.assertTrue(ics)
 
