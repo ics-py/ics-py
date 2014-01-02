@@ -109,9 +109,11 @@ class Event(Component):
             return self.begin.replace(**self._duration)
         elif self._end_time:  # if end is time defined
             return self._end_time
-        else:  # if end is not defined
+        elif self._begin:  # if end is not defined
             # return beginning + precision
             return self.begin.replace(**{self._begin_precision + 's': +1})
+        else:
+            return None
 
     @end.setter
     def end(self, value):
@@ -186,16 +188,9 @@ class Event(Component):
         return self.begin >= other.begin
 
     def __or__(self, other):
-        if self.begin <= other.begin <= self.end <= other.end:
-            return other.begin, self.end
-        elif other.begin <= self.begin <= other.end <= self.end:
-            return self.begin, other.end
-        elif other.begin <= self.begin <= self.end <= other.end:
-            return self.begin, self.end
-        elif self.begin <= other.begin <= other.end <= self.begin:
-            return other.begin, other.end
-        else:
-            return None, None
+        begin = max(self.begin, other.begin)
+        end = min(self.end, other.end)
+        return (begin, end) if begin < end else (None, None)
 
     def __eq__(self, other):
         '''Two events are considered equal if they have the same uid.'''
