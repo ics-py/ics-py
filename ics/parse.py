@@ -48,7 +48,7 @@ class ContentLine:
         self.params[item] = [val for val in values]
 
     @classmethod
-    def parse(klass, line):
+    def parse(cls, line):
         if ':' not in line:
             raise ParseError("No ':' in line '{}'".format(line))
 
@@ -68,7 +68,7 @@ class ContentLine:
             splitted = paramstr.split('=')
             pname, pvals = splitted[0], '='.join(splitted[1:])
             params[pname] = pvals.split(',')
-        return klass(name, params, value)
+        return cls(name, params, value)
 
     def clone(self):
         # dict(self.params) -> Make a copy of the dict
@@ -100,7 +100,7 @@ class Container(list):
         return "<Container '{}' with {} elements>".format(self.name, len(self))
 
     @classmethod
-    def parse(klass, name, tokenized_lines):
+    def parse(cls, name, tokenized_lines):
         items = []
         for line in tokenized_lines:
             if line.name == 'BEGIN':
@@ -112,7 +112,7 @@ class Container(list):
                 break
             else:
                 items.append(line)
-        return klass(name, *items)
+        return cls(name, *items)
 
     def clone(self):
         c = self.__class__(self.name)
@@ -165,12 +165,12 @@ def string_to_container(txt):
 if __name__ == "__main__":
     from tests.fixture import cal1
 
-    def printTree(elem, lvl=0):
+    def print_tree(elem, lvl=0):
         if isinstance(elem, list) or isinstance(elem, Container):
             if isinstance(elem, Container):
                 print("{}{}".format('   ' * lvl, elem.name))
             for sub_elem in elem:
-                printTree(sub_elem, lvl + 1)
+                print_tree(sub_elem, lvl + 1)
         elif isinstance(elem, ContentLine):
             print("{}{}{}".format('   ' * lvl,
                   elem.name, elem.params, elem.value))
@@ -178,4 +178,4 @@ if __name__ == "__main__":
             print("Wuuut ?")
 
     cal = string_to_container(cal1)
-    printTree(cal)
+    print_tree(cal)
