@@ -97,9 +97,11 @@ class EventList(list):
             elif step == 'end':
                 condition1 = condition_end1
             elif step == 'any':
-                condition1 = lambda x: condition_begin1(x) or condition_end1(x)
+                condition1 = lambda x: condition_begin1(x) or \
+                    condition_end1(x)
             elif step == 'both':
-                condition1 = lambda x: condition_begin1(x) and condition_end1(x)
+                condition1 = lambda x: condition_begin1(x) and \
+                    condition_end1(x)
         else:
             condition1 = condition0
 
@@ -111,10 +113,11 @@ class EventList(list):
             elif step == 'end':
                 condition2 = condition_end2
             elif step == 'any':
-                condition2 = lambda x: condition_begin2(x) or condition_end2(x)
+                condition2 = lambda x: condition_begin2(x) or \
+                    condition_end2(x)
             elif step == 'both':
-                condition2 = lambda x: condition_begin2(
-                    x) and condition_end2(x)
+                condition2 = lambda x: condition_begin2(x) and \
+                    condition_end2(x)
         else:
             condition2 = condition1
 
