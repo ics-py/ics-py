@@ -26,7 +26,7 @@ class Event(Component):
     """A calendar event.
 
     |  Can be full-day or between two instants.
-    |  Can be defined by a beginning instant and 
+    |  Can be defined by a beginning instant and
         a {duration,end instant}.
     """
 
@@ -90,7 +90,7 @@ class Event(Component):
 
         |  Will return an Arrow object.
         |  May be set to anything that arrow.get() understands.
-        |  If an end is defined (not a duration), .begin must not 
+        |  If an end is defined (not a duration), .begin must not
             be set to a superior value.
         """
         return self._begin
@@ -109,7 +109,7 @@ class Event(Component):
 
         |  Will return an Arrow object.
         |  May be set to anything that arrow.get() understands.
-        |  If setted to a non null value, removes any already 
+        |  If setted to a non null value, removes any already
             existing duration.
         |  Setting to None will have unexpected behavior if
             begin is not None.
@@ -121,9 +121,11 @@ class Event(Component):
             return self.begin.replace(**self._duration)
         elif self._end_time:  # if end is time defined
             return self._end_time
-        else:  # if end is not defined
+        elif self._begin:  # if end is not defined
             # return beginning + precision
             return self.begin.replace(**{self._begin_precision + 's': +1})
+        else:
+            return None
 
     @end.setter
     def end(self, value):
@@ -202,16 +204,12 @@ class Event(Component):
         return self.begin >= other.begin
 
     def __or__(self, other):
-        if self.begin <= other.begin <= self.end <= other.end:
-            return other.begin, self.end
-        elif other.begin <= self.begin <= other.end <= self.end:
-            return self.begin, other.end
-        elif other.begin <= self.begin <= self.end <= other.end:
-            return self.begin, self.end
-        elif self.begin <= other.begin <= other.end <= self.begin:
-            return other.begin, other.end
-        else:
-            return None, None
+        begin, end = None, None
+        if self.begin and other.begin:
+            begin = max(self.begin, other.begin)
+        if self.end and other.end:
+            end = min(self.end, other.end)
+        return (begin, end) if begin and end and begin < end else (None, None)
 
     def __eq__(self, other):
         """Two events are considered equal if they have the same uid."""
