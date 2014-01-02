@@ -79,7 +79,7 @@ class Event(Component):
             self.duration = duration
 
     def has_end(self):
-        '''bool. Event has an end.'''
+        """Bool: Event has an end."""
         return bool(self._end_time or self._duration)
 
     @property
@@ -147,7 +147,7 @@ class Event(Component):
         self._end_time = None
 
     def __unicode__(self):
-        """Returns a unicode representation (__repr__) of the event.
+        """Returns an unicode representation (__repr__) of the event.
 
         Should not be used directly. Use self.__repr__ instead.
         """
@@ -342,4 +342,5 @@ def o_uid(event, container):
         uid = event.uid
     else:
         uid = uid_gen()
+
     container.append(ContentLine('UID', value=uid))

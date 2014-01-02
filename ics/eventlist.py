@@ -35,9 +35,9 @@ class EventList(list):
         If one of the 3 arguments ([start:stop:step]) is not None or an int,
         slicing differs.
 
-        In that case, 'start' and 'stop' are considerated like instants
-        (or None) and 'step' like a modificator.
-        'start' and 'stop' will be converted to Arrow objects (or None)
+        In that case, `start` and `stop` are considerated like instants
+        (or None) and `step` like a modificator.
+        `start` and `stop` will be converted to Arrow objects (or None)
         with arrow.get().
 
         - start (arrow.get() compatible or Arrow or None):
@@ -46,12 +46,12 @@ class EventList(list):
             upper, non included, bond
 
         Modificators :
-        - begin : the beginning of the events has to be between the bonds.
-        - end : the end of the events has to be between the bonds.
-        - both : both the end and the beginning have to be between the bonds.
-        - any : either (or both) the start of the beginning has to be
+        - begin: the beginning of the events has to be between the bonds.
+        - end: the end of the events has to be between the bonds.
+        - both: both the end and the beginning have to be between the bonds.
+        - any: either (or both) the start of the beginning has to be
                 between the bonds.
-        - inc : the events have to include be bonds
+        - inc: the events have to include be bonds
                 (start < event.begin < envent.end < stop)
         """
         # Integer slice
@@ -128,17 +128,17 @@ class EventList(list):
     def today(self, strict=False):
         """Returns all events that occurs today.
 
-        If strict is True, events will be returned only if they are
-        strictly *included* in today
+        If `strict` is True, events will be returned only if they are
+        strictly *included* in today.
         """
         return self[arrow.now()]
 
     def on(self, day, strict=False):
-        """Returns all events that occurs on 'day'.
+        """Returns all events that occurs on `day`.
 
-        If strict is True, events will be returned only if they are
-        strictly *included* in 'day'.
-        'day' will be parsed by arrow.get() if it's not an Arrow object.
+        If `strict` is True, events will be returned only if they are
+        strictly *included* in `day`.
+        `day` will be parsed by arrow.get() if it's not an Arrow object.
         """
         if not isinstance(day, Arrow):
             day = arrow.get(day)
@@ -151,7 +151,7 @@ class EventList(list):
     def at(self, instant):
         """Returns all events that are occuring at that instant.
 
-        'instant' will be parsed by arrow.get() if it's not an Arrow object
+        `instant` will be parsed by arrow.get() if it's not an Arrow object.
         """
         if not isinstance(instant, Arrow):
             instant = arrow.get(instant)

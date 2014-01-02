@@ -175,7 +175,7 @@ if __name__ == "__main__":
             print("{}{}{}".format('   ' * lvl,
                   elem.name, elem.params, elem.value))
         else:
-            print("Wuuut ?")
+            print('Wuuut?')
 
     cal = string_to_container(cal1)
     print_tree(cal)

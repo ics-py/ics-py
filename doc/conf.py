@@ -251,8 +251,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'icspy', u'ics.py Documentation',
-     [u'Nikita Marchant'], 1)
+    (
+        'index',
+        'icspy',
+        u'ics.py Documentation',
+        [u'Nikita Marchant'],
+        1
+    )
 ]
 
 # If true, show URL addresses after external links.

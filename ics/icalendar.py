@@ -28,7 +28,7 @@ class Calendar(Component):
 
     """Represents an unique rfc5545 iCalendar."""
 
-    _TYPE = "VCALENDAR"
+    _TYPE = 'VCALENDAR'
     _EXTRACTORS = []
     _OUTPUTS = []
 
