@@ -204,9 +204,12 @@ class Event(Component):
         return self.begin >= other.begin
 
     def __or__(self, other):
-        begin = max(self.begin, other.begin)
-        end = min(self.end, other.end)
-        return (begin, end) if begin < end else (None, None)
+        begin, end = None, None
+        if self.begin and other.begin:
+            begin = max(self.begin, other.begin)
+        if self.end and other.end:
+            end = min(self.end, other.end)
+        return (begin, end) if begin and end and begin < end else (None, None)
 
     def __eq__(self, other):
         """Two events are considered equal if they have the same uid."""
