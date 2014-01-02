@@ -19,11 +19,11 @@ class Component(object):
     _TYPE = "ABSTRACT"
 
     @classmethod
-    def _from_container(klass, container, *args, **kwargs):
-        if klass._TYPE == "ABSTRACT":
+    def _from_container(cls, container, *args, **kwargs):
+        if cls._TYPE == "ABSTRACT":
             raise NotImplementedError('Abstract class, cannot instanciate.')
 
-        k = klass()
+        k = cls()
         k._classmethod_args = args
         k._classmethod_kwargs = kwargs
         k._populate(container)
@@ -57,20 +57,20 @@ class Component(object):
         self._unused = container  # Store unused lines
 
     @classmethod
-    def _extracts(klass, line_type, required=False, multiple=False):
+    def _extracts(cls, line_type, required=False, multiple=False):
         def decorator(fn):
             extractor = Extractor(
                 function=fn,
                 type=line_type,
                 required=required,
                 multiple=multiple)
-            klass._EXTRACTORS.append(extractor)
+            cls._EXTRACTORS.append(extractor)
             return fn
         return decorator
 
     @classmethod
-    def _outputs(klass, fn):
-        klass._OUTPUTS.append(fn)
+    def _outputs(cls, fn):
+        cls._OUTPUTS.append(fn)
         return fn
 
     def __repr__(self):
