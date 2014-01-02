@@ -1,4 +1,5 @@
 from __future__ import unicode_literals, absolute_import
+import os
 from six import PY2, PY3
 from six.moves import filter, map, range
 
@@ -186,16 +187,11 @@ class TestParse(unittest.TestCase):
 class TestFunctional(unittest.TestCase):
 
     def test_gehol(self):
-        url = "http://scientia-web.ulb.ac.be/gehol/index.php?\
-Student/Calendar/%23SPLUS35F0F0/1-14.ics"
-        ics = None
-        while not ics:
-            try:
-                ics = urlopen(url).read().decode('iso-8859-1')
-                ics = string_to_container(ics)[0]
-            except HTTPError:
-                pass
-        self.assertTrue(ics)
+        cal = os.path.join(os.path.dirname(__file__), "gehol", "BA1.ics")
+        with open(cal) as ics:
+            ics = ics.read().decode('iso-8859-1')
+            ics = string_to_container(ics)[0]
+            self.assertTrue(ics)
 
 if __name__ == '__main__':
     unittest.main()
