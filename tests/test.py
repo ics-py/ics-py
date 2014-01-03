@@ -372,6 +372,25 @@ class TestEventList(unittest.TestCase):
 
         self.assertEqual(1, len(l2))
 
+    def test_inc_empty(self):
+
+        l = EventList()
+        l = l[::'inc']
+
+        self.assertEqual([], l)
+
+    def test_inc(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e0 = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
+        e1 = Event(begin=t.replace(minutes=-30), end=t.replace(minutes=+30))
+        l.append(e0)
+        l = l[e1.begin:e1.end:'inc']
+
+        self.assertEqual([e0], l)
+
 
 class TestCalendar(unittest.TestCase):
 
