@@ -171,9 +171,9 @@ class EventList(list):
 
     def concurrent(self, event):
         """Returns all events that are overlapping `event`."""
-        a = self[event.begin:event.start:'any']
-        b = self[None:event.begin:'start']
-        c = self[event.end:None:'stop']
+        a = self[event.begin:event.end:'any']
+        b = self[None:event.begin:'begin']
+        c = self[event.end:None:'end']
         return list(set(a) | (set(b) & set(c)))
 
     def _remove_duplicates(self):
