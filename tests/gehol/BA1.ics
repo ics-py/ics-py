@@ -25,7 +25,7 @@ END:VTIMEZONE
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130930T120000
 DTEND;TZID=Europe/Brussels:20130930T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -34,7 +34,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131007T120000
 DTEND;TZID=Europe/Brussels:20131007T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -43,7 +43,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131014T120000
 DTEND;TZID=Europe/Brussels:20131014T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -52,7 +52,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131021T120000
 DTEND;TZID=Europe/Brussels:20131021T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -61,7 +61,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131028T120000
 DTEND;TZID=Europe/Brussels:20131028T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -70,7 +70,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131104T120000
 DTEND;TZID=Europe/Brussels:20131104T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -79,7 +79,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131118T120000
 DTEND;TZID=Europe/Brussels:20131118T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -88,7 +88,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131125T120000
 DTEND;TZID=Europe/Brussels:20131125T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -97,7 +97,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131202T120000
 DTEND;TZID=Europe/Brussels:20131202T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -106,7 +106,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131209T120000
 DTEND;TZID=Europe/Brussels:20131209T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -115,7 +115,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131216T120000
 DTEND;TZID=Europe/Brussels:20131216T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.506, P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -421,7 +421,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130917T100000
 DTEND;TZID=Europe/Brussels:20130917T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -430,7 +430,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130924T100000
 DTEND;TZID=Europe/Brussels:20130924T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -439,7 +439,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131001T100000
 DTEND;TZID=Europe/Brussels:20131001T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -448,7 +448,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131008T100000
 DTEND;TZID=Europe/Brussels:20131008T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -457,7 +457,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131015T100000
 DTEND;TZID=Europe/Brussels:20131015T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -466,7 +466,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131022T100000
 DTEND;TZID=Europe/Brussels:20131022T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -475,7 +475,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131105T100000
 DTEND;TZID=Europe/Brussels:20131105T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -484,7 +484,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131112T100000
 DTEND;TZID=Europe/Brussels:20131112T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -493,7 +493,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131119T100000
 DTEND;TZID=Europe/Brussels:20131119T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -502,7 +502,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131126T100000
 DTEND;TZID=Europe/Brussels:20131126T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -511,7 +511,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131203T100000
 DTEND;TZID=Europe/Brussels:20131203T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -520,7 +520,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131210T100000
 DTEND;TZID=Europe/Brussels:20131210T120000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -547,7 +547,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131023T140000
 DTEND;TZID=Europe/Brussels:20131023T160000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.F
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -556,7 +556,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131002T120000
 DTEND;TZID=Europe/Brussels:20131002T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -565,7 +565,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131009T120000
 DTEND;TZID=Europe/Brussels:20131009T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -574,7 +574,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131016T120000
 DTEND;TZID=Europe/Brussels:20131016T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -583,7 +583,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131023T120000
 DTEND;TZID=Europe/Brussels:20131023T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -592,7 +592,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131030T120000
 DTEND;TZID=Europe/Brussels:20131030T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -601,7 +601,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131106T120000
 DTEND;TZID=Europe/Brussels:20131106T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -610,7 +610,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131113T120000
 DTEND;TZID=Europe/Brussels:20131113T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -619,7 +619,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131127T120000
 DTEND;TZID=Europe/Brussels:20131127T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -628,7 +628,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131204T120000
 DTEND;TZID=Europe/Brussels:20131204T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -637,7 +637,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131211T120000
 DTEND;TZID=Europe/Brussels:20131211T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -646,7 +646,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131218T120000
 DTEND;TZID=Europe/Brussels:20131218T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.607, P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -655,7 +655,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131009T140000
 DTEND;TZID=Europe/Brussels:20131009T160000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.2NO906
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -664,7 +664,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131113T140000
 DTEND;TZID=Europe/Brussels:20131113T160000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.2NO906
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -781,7 +781,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130918T100000
 DTEND;TZID=Europe/Brussels:20130918T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -790,7 +790,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130925T100000
 DTEND;TZID=Europe/Brussels:20130925T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -799,7 +799,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131002T100000
 DTEND;TZID=Europe/Brussels:20131002T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -808,7 +808,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131009T100000
 DTEND;TZID=Europe/Brussels:20131009T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -817,7 +817,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131016T100000
 DTEND;TZID=Europe/Brussels:20131016T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -826,7 +826,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131023T100000
 DTEND;TZID=Europe/Brussels:20131023T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -835,7 +835,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131106T100000
 DTEND;TZID=Europe/Brussels:20131106T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -844,7 +844,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131113T100000
 DTEND;TZID=Europe/Brussels:20131113T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -853,7 +853,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131127T100000
 DTEND;TZID=Europe/Brussels:20131127T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -862,7 +862,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131204T100000
 DTEND;TZID=Europe/Brussels:20131204T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -871,7 +871,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131211T100000
 DTEND;TZID=Europe/Brussels:20131211T120000
-SUMMARY: Soci�t� et environnement
+SUMMARY: SociÃ©tÃ© et environnement
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Decroly, Jean-Michel, Pattyn, Frank \n Assistant 
 END:VEVENT
@@ -952,7 +952,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131211T140000
 DTEND;TZID=Europe/Brussels:20131211T160000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.F
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1015,7 +1015,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131128T120000
 DTEND;TZID=Europe/Brussels:20131128T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.708
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1024,7 +1024,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131205T120000
 DTEND;TZID=Europe/Brussels:20131205T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.708
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1033,7 +1033,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131212T120000
 DTEND;TZID=Europe/Brussels:20131212T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.2NO.708
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1222,7 +1222,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130919T160000
 DTEND;TZID=Europe/Brussels:20130919T180000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1231,7 +1231,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130920T120000
 DTEND;TZID=Europe/Brussels:20130920T140000
-SUMMARY: Didactique de la r�ussite
+SUMMARY: Didactique de la rÃ©ussite
 LOCATION: S.UA2.220
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1240,7 +1240,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131004T120000
 DTEND;TZID=Europe/Brussels:20131004T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1249,7 +1249,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131011T120000
 DTEND;TZID=Europe/Brussels:20131011T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1258,7 +1258,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131018T120000
 DTEND;TZID=Europe/Brussels:20131018T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1267,7 +1267,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131025T120000
 DTEND;TZID=Europe/Brussels:20131025T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1276,7 +1276,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131108T120000
 DTEND;TZID=Europe/Brussels:20131108T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1285,7 +1285,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131115T120000
 DTEND;TZID=Europe/Brussels:20131115T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1294,7 +1294,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131122T120000
 DTEND;TZID=Europe/Brussels:20131122T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1303,7 +1303,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131129T120000
 DTEND;TZID=Europe/Brussels:20131129T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1312,7 +1312,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131206T120000
 DTEND;TZID=Europe/Brussels:20131206T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1321,7 +1321,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131213T120000
 DTEND;TZID=Europe/Brussels:20131213T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1330,7 +1330,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131220T120000
 DTEND;TZID=Europe/Brussels:20131220T140000
-SUMMARY: Guidance en Math�matique
+SUMMARY: Guidance en MathÃ©matique
 LOCATION: P.OF.2070, P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1528,7 +1528,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130920T140000
 DTEND;TZID=Europe/Brussels:20130920T160000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.E
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1537,7 +1537,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131004T140000
 DTEND;TZID=Europe/Brussels:20131004T160000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.E
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1546,7 +1546,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131011T140000
 DTEND;TZID=Europe/Brussels:20131011T160000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.E
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1555,7 +1555,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131018T140000
 DTEND;TZID=Europe/Brussels:20131018T160000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.E
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1564,7 +1564,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131025T140000
 DTEND;TZID=Europe/Brussels:20131025T160000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.E
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1573,7 +1573,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131108T130000
 DTEND;TZID=Europe/Brussels:20131108T150000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1582,7 +1582,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131115T130000
 DTEND;TZID=Europe/Brussels:20131115T150000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1591,7 +1591,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131122T130000
 DTEND;TZID=Europe/Brussels:20131122T150000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1600,7 +1600,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131129T130000
 DTEND;TZID=Europe/Brussels:20131129T150000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1609,7 +1609,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131206T130000
 DTEND;TZID=Europe/Brussels:20131206T150000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1618,7 +1618,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131213T130000
 DTEND;TZID=Europe/Brussels:20131213T150000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT
@@ -1627,7 +1627,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131220T130000
 DTEND;TZID=Europe/Brussels:20131220T150000
-SUMMARY: Math�matiques 1
+SUMMARY: MathÃ©matiques 1
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Federinov, Julien \n Assistant 
 END:VEVENT

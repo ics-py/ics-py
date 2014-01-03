@@ -25,7 +25,7 @@ END:VTIMEZONE
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131007T100000
 DTEND;TZID=Europe/Brussels:20131007T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: S.Salle.Baugniet (S.S.01.326)
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -34,7 +34,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131202T100000
 DTEND;TZID=Europe/Brussels:20131202T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: S.Salle.Baugniet (S.S.01.326)
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -43,7 +43,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130916T100000
 DTEND;TZID=Europe/Brussels:20130916T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: 
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -52,7 +52,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131104T100000
 DTEND;TZID=Europe/Brussels:20131104T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: S.AW1.120
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -61,7 +61,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131118T100000
 DTEND;TZID=Europe/Brussels:20131118T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: S.AW1.120
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -70,7 +70,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131125T100000
 DTEND;TZID=Europe/Brussels:20131125T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: S.AW1.120
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -79,7 +79,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131209T100000
 DTEND;TZID=Europe/Brussels:20131209T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: S.AW1.120
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -88,7 +88,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131216T100000
 DTEND;TZID=Europe/Brussels:20131216T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: S.AW1.120
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -97,97 +97,97 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130923T160000
 DTEND;TZID=Europe/Brussels:20130923T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130930T160000
 DTEND;TZID=Europe/Brussels:20130930T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131007T160000
 DTEND;TZID=Europe/Brussels:20131007T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131014T160000
 DTEND;TZID=Europe/Brussels:20131014T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131021T160000
 DTEND;TZID=Europe/Brussels:20131021T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131028T160000
 DTEND;TZID=Europe/Brussels:20131028T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131104T160000
 DTEND;TZID=Europe/Brussels:20131104T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131118T160000
 DTEND;TZID=Europe/Brussels:20131118T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131125T160000
 DTEND;TZID=Europe/Brussels:20131125T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131202T160000
 DTEND;TZID=Europe/Brussels:20131202T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.E
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131021T100000
 DTEND;TZID=Europe/Brussels:20131021T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: S.UA4.222
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -196,9 +196,9 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130916T160000
 DTEND;TZID=Europe/Brussels:20130916T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.B
-DESCRIPTION: Professeur: Kruys, Véronique, Vandenbranden, Michel \n Assistant 
+DESCRIPTION: Professeur: Kruys, VÃ©ronique, Vandenbranden, Michel \n Assistant 
 END:VEVENT
 
 
@@ -214,7 +214,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131014T100000
 DTEND;TZID=Europe/Brussels:20131014T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: S.R42.4.502
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -223,7 +223,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130916T160000
 DTEND;TZID=Europe/Brussels:20130916T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -232,7 +232,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130923T160000
 DTEND;TZID=Europe/Brussels:20130923T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -241,7 +241,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130930T160000
 DTEND;TZID=Europe/Brussels:20130930T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -250,7 +250,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131007T160000
 DTEND;TZID=Europe/Brussels:20131007T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -259,7 +259,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131014T160000
 DTEND;TZID=Europe/Brussels:20131014T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -268,7 +268,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131021T160000
 DTEND;TZID=Europe/Brussels:20131021T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -277,7 +277,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131028T160000
 DTEND;TZID=Europe/Brussels:20131028T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -286,7 +286,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131104T160000
 DTEND;TZID=Europe/Brussels:20131104T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -295,7 +295,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131118T160000
 DTEND;TZID=Europe/Brussels:20131118T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -304,7 +304,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131125T160000
 DTEND;TZID=Europe/Brussels:20131125T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -313,7 +313,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131202T160000
 DTEND;TZID=Europe/Brussels:20131202T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -322,7 +322,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131209T160000
 DTEND;TZID=Europe/Brussels:20131209T180000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -421,7 +421,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130923T100000
 DTEND;TZID=Europe/Brussels:20130923T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.NO8 rotule
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -430,7 +430,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130930T100000
 DTEND;TZID=Europe/Brussels:20130930T130000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.NO8 rotule
 DESCRIPTION: Professeur: Bontempi, Gianluca \n Assistant 
 END:VEVENT
@@ -439,7 +439,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130916T140000
 DTEND;TZID=Europe/Brussels:20130916T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -448,7 +448,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130923T140000
 DTEND;TZID=Europe/Brussels:20130923T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -457,7 +457,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130930T140000
 DTEND;TZID=Europe/Brussels:20130930T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -466,7 +466,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131007T140000
 DTEND;TZID=Europe/Brussels:20131007T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -475,7 +475,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131014T140000
 DTEND;TZID=Europe/Brussels:20131014T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -484,7 +484,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131021T140000
 DTEND;TZID=Europe/Brussels:20131021T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -493,7 +493,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131028T140000
 DTEND;TZID=Europe/Brussels:20131028T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -502,7 +502,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131104T140000
 DTEND;TZID=Europe/Brussels:20131104T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -511,7 +511,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131118T140000
 DTEND;TZID=Europe/Brussels:20131118T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -520,7 +520,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131125T140000
 DTEND;TZID=Europe/Brussels:20131125T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -529,7 +529,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131202T140000
 DTEND;TZID=Europe/Brussels:20131202T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -538,7 +538,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131209T140000
 DTEND;TZID=Europe/Brussels:20131209T160000
-SUMMARY: Circuits logiques et numériques
+SUMMARY: Circuits logiques et numÃ©riques
 LOCATION: S.UB4.132
 DESCRIPTION: Professeur: Milojevic, Dragomir \n Assistant 
 END:VEVENT
@@ -745,7 +745,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130924T100000
 DTEND;TZID=Europe/Brussels:20130924T130000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.NO8 rotule
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -754,7 +754,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131001T100000
 DTEND;TZID=Europe/Brussels:20131001T130000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.NO8 rotule
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -763,7 +763,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131029T130000
 DTEND;TZID=Europe/Brussels:20131029T160000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -772,7 +772,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131105T130000
 DTEND;TZID=Europe/Brussels:20131105T160000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -781,7 +781,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131112T130000
 DTEND;TZID=Europe/Brussels:20131112T160000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -790,7 +790,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131119T130000
 DTEND;TZID=Europe/Brussels:20131119T160000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -799,7 +799,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131126T130000
 DTEND;TZID=Europe/Brussels:20131126T160000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -808,7 +808,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131203T130000
 DTEND;TZID=Europe/Brussels:20131203T160000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -817,7 +817,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131210T130000
 DTEND;TZID=Europe/Brussels:20131210T160000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -934,115 +934,115 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130917T080000
 DTEND;TZID=Europe/Brussels:20130917T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130924T080000
 DTEND;TZID=Europe/Brussels:20130924T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131001T080000
 DTEND;TZID=Europe/Brussels:20131001T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131008T080000
 DTEND;TZID=Europe/Brussels:20131008T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131015T080000
 DTEND;TZID=Europe/Brussels:20131015T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131022T080000
 DTEND;TZID=Europe/Brussels:20131022T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131105T080000
 DTEND;TZID=Europe/Brussels:20131105T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131119T080000
 DTEND;TZID=Europe/Brussels:20131119T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131126T080000
 DTEND;TZID=Europe/Brussels:20131126T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131203T080000
 DTEND;TZID=Europe/Brussels:20131203T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131210T080000
 DTEND;TZID=Europe/Brussels:20131210T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131217T080000
 DTEND;TZID=Europe/Brussels:20131217T100000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: S.UB5.230
-DESCRIPTION: Professeur: Robert, Frédéric \n Assistant 
+DESCRIPTION: Professeur: Robert, FrÃ©dÃ©ric \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131029T100000
 DTEND;TZID=Europe/Brussels:20131029T120000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1051,7 +1051,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131112T100000
 DTEND;TZID=Europe/Brussels:20131112T120000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1060,7 +1060,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131119T100000
 DTEND;TZID=Europe/Brussels:20131119T120000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1069,7 +1069,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131126T100000
 DTEND;TZID=Europe/Brussels:20131126T120000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1078,7 +1078,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131203T100000
 DTEND;TZID=Europe/Brussels:20131203T120000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1087,7 +1087,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131210T100000
 DTEND;TZID=Europe/Brussels:20131210T120000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1096,124 +1096,124 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130917T160000
 DTEND;TZID=Europe/Brussels:20130917T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130924T160000
 DTEND;TZID=Europe/Brussels:20130924T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131001T160000
 DTEND;TZID=Europe/Brussels:20131001T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131008T160000
 DTEND;TZID=Europe/Brussels:20131008T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131015T160000
 DTEND;TZID=Europe/Brussels:20131015T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131022T160000
 DTEND;TZID=Europe/Brussels:20131022T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131029T160000
 DTEND;TZID=Europe/Brussels:20131029T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131105T160000
 DTEND;TZID=Europe/Brussels:20131105T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131112T160000
 DTEND;TZID=Europe/Brussels:20131112T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131119T160000
 DTEND;TZID=Europe/Brussels:20131119T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131126T160000
 DTEND;TZID=Europe/Brussels:20131126T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131203T160000
 DTEND;TZID=Europe/Brussels:20131203T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131210T160000
 DTEND;TZID=Europe/Brussels:20131210T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.C
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131016T140000
 DTEND;TZID=Europe/Brussels:20131016T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1222,7 +1222,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131023T140000
 DTEND;TZID=Europe/Brussels:20131023T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1231,7 +1231,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131030T140000
 DTEND;TZID=Europe/Brussels:20131030T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1240,7 +1240,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131106T140000
 DTEND;TZID=Europe/Brussels:20131106T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.OF.2072
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1249,7 +1249,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130925T160000
 DTEND;TZID=Europe/Brussels:20130925T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1258,7 +1258,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131002T160000
 DTEND;TZID=Europe/Brussels:20131002T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1267,7 +1267,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131009T160000
 DTEND;TZID=Europe/Brussels:20131009T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1276,7 +1276,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131016T160000
 DTEND;TZID=Europe/Brussels:20131016T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1285,7 +1285,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131023T160000
 DTEND;TZID=Europe/Brussels:20131023T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1294,7 +1294,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131030T160000
 DTEND;TZID=Europe/Brussels:20131030T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1303,7 +1303,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131106T160000
 DTEND;TZID=Europe/Brussels:20131106T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1312,7 +1312,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131113T160000
 DTEND;TZID=Europe/Brussels:20131113T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1321,7 +1321,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131127T160000
 DTEND;TZID=Europe/Brussels:20131127T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1330,7 +1330,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131204T160000
 DTEND;TZID=Europe/Brussels:20131204T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1339,7 +1339,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131211T160000
 DTEND;TZID=Europe/Brussels:20131211T180000
-SUMMARY: Electronique appliquée
+SUMMARY: Electronique appliquÃ©e
 LOCATION: 
 DESCRIPTION: Professeur:  \n Assistant  local S.UA5.217
 END:VEVENT
@@ -1348,7 +1348,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130918T140000
 DTEND;TZID=Europe/Brussels:20130918T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.FORUM.E
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1357,7 +1357,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131113T140000
 DTEND;TZID=Europe/Brussels:20131113T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1366,7 +1366,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130925T140000
 DTEND;TZID=Europe/Brussels:20130925T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1375,7 +1375,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131009T140000
 DTEND;TZID=Europe/Brussels:20131009T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.607
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1384,7 +1384,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131127T140000
 DTEND;TZID=Europe/Brussels:20131127T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1393,7 +1393,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131204T140000
 DTEND;TZID=Europe/Brussels:20131204T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1402,7 +1402,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131211T140000
 DTEND;TZID=Europe/Brussels:20131211T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1411,7 +1411,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131218T140000
 DTEND;TZID=Europe/Brussels:20131218T160000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1420,7 +1420,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131219T100000
 DTEND;TZID=Europe/Brussels:20131219T120000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.A2.122
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1429,7 +1429,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131024T140000
 DTEND;TZID=Europe/Brussels:20131024T160000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1438,7 +1438,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131121T140000
 DTEND;TZID=Europe/Brussels:20131121T160000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.2NO.707
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1447,7 +1447,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131121T080000
 DTEND;TZID=Europe/Brussels:20131121T100000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: P.FORUM.E
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1456,7 +1456,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131107T140000
 DTEND;TZID=Europe/Brussels:20131107T160000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.2NO4.008.PC
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1465,7 +1465,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131114T140000
 DTEND;TZID=Europe/Brussels:20131114T160000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.2NO4.008.PC
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1474,7 +1474,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131024T080000
 DTEND;TZID=Europe/Brussels:20131024T100000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: S.DC2.223
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1483,7 +1483,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130919T100000
 DTEND;TZID=Europe/Brussels:20130919T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: S.DC2.223
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1492,7 +1492,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130926T100000
 DTEND;TZID=Europe/Brussels:20130926T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: S.DC2.223
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1501,7 +1501,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131003T100000
 DTEND;TZID=Europe/Brussels:20131003T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: S.DC2.223
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1510,7 +1510,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131010T100000
 DTEND;TZID=Europe/Brussels:20131010T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: S.DC2.223
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1519,7 +1519,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131017T100000
 DTEND;TZID=Europe/Brussels:20131017T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: S.DC2.223
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1528,7 +1528,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131024T100000
 DTEND;TZID=Europe/Brussels:20131024T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: S.DC2.223
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1537,7 +1537,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131003T140000
 DTEND;TZID=Europe/Brussels:20131003T160000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.FORUM.B
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1546,7 +1546,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131010T140000
 DTEND;TZID=Europe/Brussels:20131010T160000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.FORUM.B
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1555,7 +1555,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131017T140000
 DTEND;TZID=Europe/Brussels:20131017T160000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.FORUM.B
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1564,7 +1564,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131128T080000
 DTEND;TZID=Europe/Brussels:20131128T100000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.FORUM.H
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1573,7 +1573,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131205T080000
 DTEND;TZID=Europe/Brussels:20131205T100000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.FORUM.H
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1582,7 +1582,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131212T080000
 DTEND;TZID=Europe/Brussels:20131212T100000
-SUMMARY: Modélisation et simulation
+SUMMARY: ModÃ©lisation et simulation
 LOCATION: P.FORUM.H
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1591,7 +1591,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131107T100000
 DTEND;TZID=Europe/Brussels:20131107T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1600,7 +1600,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131114T100000
 DTEND;TZID=Europe/Brussels:20131114T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1609,7 +1609,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131121T100000
 DTEND;TZID=Europe/Brussels:20131121T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1618,7 +1618,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131128T100000
 DTEND;TZID=Europe/Brussels:20131128T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1627,7 +1627,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131205T100000
 DTEND;TZID=Europe/Brussels:20131205T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1636,7 +1636,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131212T100000
 DTEND;TZID=Europe/Brussels:20131212T120000
-SUMMARY: Génie logiciel et gestion de projets
+SUMMARY: GÃ©nie logiciel et gestion de projets
 LOCATION: P.FORUM.D
 DESCRIPTION: Professeur: Van Der Straeten, Ragnhild \n Assistant 
 END:VEVENT
@@ -1645,7 +1645,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131107T130000
 DTEND;TZID=Europe/Brussels:20131107T153000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -1654,7 +1654,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131114T130000
 DTEND;TZID=Europe/Brussels:20131114T153000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -1663,7 +1663,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131121T130000
 DTEND;TZID=Europe/Brussels:20131121T153000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -1672,7 +1672,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131128T130000
 DTEND;TZID=Europe/Brussels:20131128T153000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -1681,7 +1681,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131205T130000
 DTEND;TZID=Europe/Brussels:20131205T153000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -1690,7 +1690,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131219T130000
 DTEND;TZID=Europe/Brussels:20131219T153000
-SUMMARY: Biologie moléculaire et cellulaire
+SUMMARY: Biologie molÃ©culaire et cellulaire
 LOCATION: S.UD2.218A
 DESCRIPTION: Professeur: Gueydan, Cyril \n Assistant 
 END:VEVENT
@@ -1699,61 +1699,61 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131107T160000
 DTEND;TZID=Europe/Brussels:20131107T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.D
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131114T160000
 DTEND;TZID=Europe/Brussels:20131114T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.D
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131121T160000
 DTEND;TZID=Europe/Brussels:20131121T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.D
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131128T160000
 DTEND;TZID=Europe/Brussels:20131128T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.D
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131205T160000
 DTEND;TZID=Europe/Brussels:20131205T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.D
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131219T160000
 DTEND;TZID=Europe/Brussels:20131219T180000
-SUMMARY: Biochimie métabolique et structurale
+SUMMARY: Biochimie mÃ©tabolique et structurale
 LOCATION: P.FORUM.D
-DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, Véronique \n Assistant 
+DESCRIPTION: Professeur: Vandenbranden, Michel, Kruys, VÃ©ronique \n Assistant 
 END:VEVENT
 
 
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130920T140000
 DTEND;TZID=Europe/Brussels:20130920T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1762,7 +1762,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131004T140000
 DTEND;TZID=Europe/Brussels:20131004T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.FORUM.A
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1771,7 +1771,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20130920T080000
 DTEND;TZID=Europe/Brussels:20130920T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1780,7 +1780,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131004T080000
 DTEND;TZID=Europe/Brussels:20131004T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1789,7 +1789,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131011T080000
 DTEND;TZID=Europe/Brussels:20131011T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1798,7 +1798,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131018T080000
 DTEND;TZID=Europe/Brussels:20131018T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1807,7 +1807,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131025T080000
 DTEND;TZID=Europe/Brussels:20131025T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1816,7 +1816,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131108T080000
 DTEND;TZID=Europe/Brussels:20131108T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1825,7 +1825,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131115T080000
 DTEND;TZID=Europe/Brussels:20131115T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1834,7 +1834,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131122T080000
 DTEND;TZID=Europe/Brussels:20131122T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1843,7 +1843,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131129T080000
 DTEND;TZID=Europe/Brussels:20131129T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1852,7 +1852,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131206T080000
 DTEND;TZID=Europe/Brussels:20131206T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1861,7 +1861,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131213T080000
 DTEND;TZID=Europe/Brussels:20131213T100000
-SUMMARY: Mathématiques discrètes
+SUMMARY: MathÃ©matiques discrÃ¨tes
 LOCATION: P.2NO.506
 DESCRIPTION: Professeur:  \n Assistant 
 END:VEVENT
@@ -1870,7 +1870,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131011T140000
 DTEND;TZID=Europe/Brussels:20131011T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1879,7 +1879,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131018T140000
 DTEND;TZID=Europe/Brussels:20131018T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1888,7 +1888,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131108T140000
 DTEND;TZID=Europe/Brussels:20131108T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1897,7 +1897,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131115T140000
 DTEND;TZID=Europe/Brussels:20131115T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1906,7 +1906,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131122T140000
 DTEND;TZID=Europe/Brussels:20131122T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1915,7 +1915,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131129T140000
 DTEND;TZID=Europe/Brussels:20131129T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1924,7 +1924,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131206T140000
 DTEND;TZID=Europe/Brussels:20131206T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1933,7 +1933,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131213T140000
 DTEND;TZID=Europe/Brussels:20131213T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
@@ -1942,7 +1942,7 @@ END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Brussels:20131220T140000
 DTEND;TZID=Europe/Brussels:20131220T170000
-SUMMARY: Réseaux
+SUMMARY: RÃ©seaux
 LOCATION: P.OF.2070
 DESCRIPTION: Professeur: Leduc, Guy \n Assistant 
 END:VEVENT
