@@ -84,7 +84,7 @@ class EventList(list):
         elif not sl.step in ('begin', 'end', 'both', 'any', 'inc'):
             raise ValueError(
                 "The step must be 'begin', 'end', 'both', 'any', 'inc' \
-                or None not '{}'".format(sl.step))
+or None not '{}'".format(sl.step))
         else:  # valid step
             step = sl.step
 

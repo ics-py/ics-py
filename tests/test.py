@@ -217,6 +217,7 @@ class TestEventList(unittest.TestCase):
     from time import time
 
     def test_evlist(self):
+
         l = EventList()
         t = self.time()
 
@@ -229,6 +230,7 @@ class TestEventList(unittest.TestCase):
         self.assertEqual(l[0], e)
 
     def test_today(self):
+
         l = EventList()
         t = self.time()
 
@@ -240,6 +242,7 @@ class TestEventList(unittest.TestCase):
         self.assertEqual(l.today(strict=True), [e])
 
     def test_on(self):
+
         l = EventList()
 
         c = Calendar(cal1)
@@ -250,9 +253,9 @@ class TestEventList(unittest.TestCase):
     def test_now_large(self):
 
         l = EventList()
-        now = arrow.now()
+        t = arrow.now()
 
-        e = Event("test", now.replace(years=-1), now.replace(years=+1))
+        e = Event("test", t.replace(years=-1), t.replace(years=+1))
         l.append(e)
 
         self.assertIn(e, l.now())
@@ -260,9 +263,9 @@ class TestEventList(unittest.TestCase):
     def test_now_short(self):
 
         l = EventList()
-        now = arrow.now()
+        t = arrow.now()
 
-        e = Event("test", now.replace(seconds=-1), now.replace(seconds=+1))
+        e = Event("test", t.replace(seconds=-1), t.replace(seconds=+1))
         l.append(e)
 
         self.assertIn(e, l.now())
@@ -270,10 +273,10 @@ class TestEventList(unittest.TestCase):
     def test_at_is_now(self):
 
         l = EventList()
-        at = arrow.now()
+        t = arrow.now()
         instant = arrow.now()
 
-        e = Event("test", at.replace(seconds=-1), at.replace(seconds=+1))
+        e = Event("test", t.replace(seconds=-1), t.replace(seconds=+1))
         l.append(e)
 
         self.assertIn(e, l.at(instant))
@@ -281,10 +284,10 @@ class TestEventList(unittest.TestCase):
     def test_at_is_sooner(self):
 
         l = EventList()
-        at = arrow.now()
+        t = arrow.now()
         instant = arrow.now().replace(minutes=-1)
 
-        e = Event("test", at.replace(seconds=-59), at.replace(seconds=+1))
+        e = Event("test", t.replace(seconds=-59), t.replace(seconds=+1))
         l.append(e)
 
         self.assertNotIn(e, l.at(instant))
@@ -292,10 +295,10 @@ class TestEventList(unittest.TestCase):
     def test_at_is_later(self):
 
         l = EventList()
-        at = arrow.now()
+        t = arrow.now()
         instant = arrow.now().replace(minutes=+1)
 
-        e = Event("test", at.replace(seconds=-1), at.replace(seconds=+59))
+        e = Event("test", t.replace(seconds=-1), t.replace(seconds=+59))
         l.append(e)
 
         self.assertNotIn(e, l.at(instant))
