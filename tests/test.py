@@ -223,7 +223,7 @@ class TestEventList(unittest.TestCase):
         self.assertEqual(len(l), 0)
 
         e = Event(begin=t, end=t + 1)
-        l.append(e) 
+        l.append(e)
 
         self.assertEqual(len(l), 1)
         self.assertEqual(l[0], e)
@@ -358,6 +358,19 @@ class TestEventList(unittest.TestCase):
         l._remove_duplicates()
 
         self.assertEqual(2, len(l))
+
+    def test_add_(self):
+
+        l0 = EventList()
+        l1 = EventList()
+        t = arrow.now()
+
+        e = Event("t", t.replace(hours=-1), t.replace(hours=+1))
+        l0.append(e)
+        l1.append(e)
+        l2 = l0 + l1
+
+        self.assertEqual(1, len(l2))
 
 
 class TestCalendar(unittest.TestCase):
