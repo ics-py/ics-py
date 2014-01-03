@@ -163,9 +163,11 @@ class EventList(list):
 
         `instant` will be parsed by arrow.get() if it's not an Arrow object.
         """
-        if not isinstance(instant, Arrow):
-            instant = arrow.get(instant)
-        return self[instant:instant.ceil('microsecond'):'one']
+        at = []
+        for event in self:
+            if event.begin <= instant <= event.end:
+                at.append(event)
+        return at
 
     def concurrent(self, event):
         """Returns all events that are overlapping `event`."""

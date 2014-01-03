@@ -257,6 +257,72 @@ class TestEventList(unittest.TestCase):
 
         self.assertIn(e, l.now())
 
+    def test_now_short(self):
+
+        l = EventList()
+        now = arrow.now()
+
+        e = Event("test", now.replace(seconds=-1), now.replace(seconds=+1))
+        l.append(e)
+
+        self.assertIn(e, l.now())
+
+    def test_at_is_now(self):
+
+        l = EventList()
+        at = arrow.now()
+        instant = arrow.now()
+
+        e = Event("test", at.replace(seconds=-1), at.replace(seconds=+1))
+        l.append(e)
+
+        self.assertIn(e, l.at(instant))
+
+    def test_at_is_sooner(self):
+
+        l = EventList()
+        at = arrow.now()
+        instant = arrow.now().replace(minutes=-1)
+
+        e = Event("test", at.replace(seconds=-59), at.replace(seconds=+1))
+        l.append(e)
+
+        self.assertNotIn(e, l.at(instant))
+
+    def test_at_is_later(self):
+
+        l = EventList()
+        at = arrow.now()
+        instant = arrow.now().replace(minutes=+1)
+
+        e = Event("test", at.replace(seconds=-1), at.replace(seconds=+59))
+        l.append(e)
+
+        self.assertNotIn(e, l.at(instant))
+
+    def test_getitem(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e = Event("test", t.replace(seconds=-1), t.replace(seconds=+1))
+        l.append(e)
+        getitem = l.__getitem__(e.begin)
+        getitem = l[e.begin]
+
+        self.assertEqual([e], getitem)
+
+    def test_getitem_arrow(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e = Event("t", t.replace(hours=-1), t.replace(hours=+1))
+        l.append(e)
+        t = t.format('YYYY-MM-DD')
+
+        self.assertEqual([e], l[t])
+
 
 class TestCalendar(unittest.TestCase):
 
