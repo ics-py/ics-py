@@ -391,6 +391,17 @@ class TestEventList(unittest.TestCase):
 
         self.assertEqual([e0], l)
 
+    def test_end(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
+        l.append(e)
+        l = l[::'end']
+
+        self.assertEqual([e], l)
+
 
 class TestCalendar(unittest.TestCase):
 
