@@ -3,9 +3,7 @@
 ### PY2 ###
 source ve/bin/activate
 python2 setup.py test
-deactivate
 
 ### PY3 ###
 source ve3/bin/activate
 python setup.py test
-deactivate
