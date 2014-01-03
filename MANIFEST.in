@@ -3,5 +3,7 @@ include CHANGELOG
 include LICENSE
 include AUTHORS
 include meta.py
+include tests/fixtures/README
 
 recursive-include tests *.py
+recursive-include tests *.ics
