@@ -3,9 +3,8 @@ import os
 from six import PY2, PY3
 from six.moves import filter, map, range
 
-import unittest
 import arrow
-
+import unittest
 from ics.parse import (
     ParseError,
     ContentLine,
@@ -222,19 +221,40 @@ class TestEventList(unittest.TestCase):
         t = self.time()
 
         self.assertEqual(len(l), 0)
+
         e = Event(begin=t, end=t + 1)
-        l.append(e)
+        l.append(e) 
+
         self.assertEqual(len(l), 1)
         self.assertEqual(l[0], e)
+
+    def test_today(self):
+        l = EventList()
+        t = self.time()
+
+        e = Event(begin=t, end=t + 1)
+        l.append(e)
+
         self.assertEqual(l.today(), [e])
         l.append(Event(begin=t, end=t + 86400))
         self.assertEqual(l.today(strict=True), [e])
 
+    def test_on(self):
+        l = EventList()
+
+        c = Calendar(cal1)
+        l.append(c.events[0])
+        day = "2013-10-29"
+        self.assertIn(c.events[0], l.on(day))
+
     def test_now_large(self):
+
         l = EventList()
         now = arrow.now()
-        e = Event(now.replace(years=-1), now.replace(years=+1))
+
+        e = Event("test", now.replace(years=-1), now.replace(years=+1))
         l.append(e)
+
         self.assertIn(e, l.now())
 
 
