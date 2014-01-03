@@ -29,7 +29,6 @@ from .fixture import (
 from ics.event import Event
 from ics.eventlist import EventList
 from ics.icalendar import Calendar
-from ics.tools import validate
 
 
 class TestContentLine(unittest.TestCase):
@@ -267,19 +266,6 @@ class TestFunctional(unittest.TestCase):
                 ics = ics.decode('utf-8')
 
             ics = string_to_container(ics)[0]
-            self.assertTrue(ics)
-
-
-class TestValidate(unittest.TestCase):
-
-    def test_gehol(self):
-        cal = os.path.join(os.path.dirname(__file__), "gehol", "BA1.ics")
-        with open(cal) as ics:
-            ics = ics.read()
-            if PY2:
-                ics = ics.decode('utf-8')
-
-            ics = validate(ics)
             self.assertTrue(ics)
 
 
