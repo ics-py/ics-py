@@ -416,6 +416,30 @@ class TestEventList(unittest.TestCase):
             l[e.begin:e.end:'htob']
             l[:e.end:'nigeb']
 
+    def test_begin(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e0 = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
+        e1 = Event(begin=t.replace(minutes=-30), end=t.replace(minutes=+30))
+        l.append(e1)
+        l = l[e0.begin::'begin']
+
+        self.assertEqual([e1], l)
+
+    def test_both(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e0 = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
+        e1 = Event(begin=t.replace(minutes=-30), end=t.replace(minutes=+30))
+        l.append(e1)
+        l = l[e0.begin:e0.end:]
+
+        self.assertEqual([e1], l)
+
 
 class TestCalendar(unittest.TestCase):
 
