@@ -396,11 +396,25 @@ class TestEventList(unittest.TestCase):
         l = EventList()
         t = arrow.now()
 
-        e = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
-        l.append(e)
-        l = l[::'end']
+        e0 = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
+        e1 = Event(begin=t.replace(minutes=-30), end=t.replace(minutes=+30))
+        l.append(e1)
+        l = l[:e0.end:'end']
 
-        self.assertEqual([e], l)
+        self.assertEqual([e1], l)
+
+    def test_raise(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
+
+        with self.assertRaises(ValueError):
+            l[::'dne']
+            l[e.begin::'cni']
+            l[e.begin:e.end:'htob']
+            l[:e.end:'nigeb']
 
 
 class TestCalendar(unittest.TestCase):
