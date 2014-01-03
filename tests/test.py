@@ -334,6 +334,32 @@ class TestEventList(unittest.TestCase):
 
         self.assertEqual([e0], l.concurrent(e1))
 
+    def test_remove_duplicate_same(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e = Event("t", t.replace(hours=-1), t.replace(hours=+1))
+        l.append(e)
+        l.append(e)
+        l._remove_duplicates()
+
+        self.assertEqual(1, len(l))
+
+    def test_remove_duplicate_diff(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e0 = Event("t0", t.replace(hours=-1), t.replace(hours=+1))
+        e1 = Event("t0", t.replace(hours=-1), t.replace(hours=+1))
+        l.append(e0)
+        l.append(e1)
+        l._remove_duplicates()
+
+        self.assertEqual(2, len(l))
+
+
 class TestCalendar(unittest.TestCase):
 
     def test_imports(self):
