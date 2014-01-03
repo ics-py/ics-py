@@ -152,7 +152,11 @@ class EventList(list):
 
     def now(self):
         """Returns all events that occurs now."""
-        return self[arrow.now():arrow.now().ceil('microsecond')]
+        now = []
+        for event in self:
+            if event.begin <= arrow.now() <= event.end:
+                now.append(event)
+        return now
 
     def at(self, instant):
         """Returns all events that are occuring at that instant.
