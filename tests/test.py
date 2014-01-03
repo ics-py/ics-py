@@ -1,4 +1,5 @@
 from __future__ import unicode_literals, absolute_import
+import os
 from six import PY2, PY3
 from six.moves import filter, map, range
 
@@ -28,12 +29,6 @@ from .fixture import (
 from ics.event import Event
 from ics.eventlist import EventList
 from ics.icalendar import Calendar
-
-if PY3:
-    from urllib.request import urlopen, HTTPError
-else:
-    from urllib2 import urlopen, HTTPError
-
 
 class TestContentLine(unittest.TestCase):
     dataset = {
@@ -254,16 +249,15 @@ class TestCalendar(unittest.TestCase):
 class TestFunctional(unittest.TestCase):
 
     def test_gehol(self):
-        url = "http://scientia-web.ulb.ac.be/gehol/index.php?\
-Student/Calendar/%23SPLUS35F0F0/1-14.ics"
-        ics = None
-        while not ics:
-            try:
-                ics = urlopen(url).read().decode('iso-8859-1')
-                ics = string_to_container(ics)[0]
-            except HTTPError:
-                pass
-        self.assertTrue(ics)
+        # convert ics to utf8: recode l9..utf8 *.ics
+        cal = os.path.join(os.path.dirname(__file__), "gehol", "BA1.ics")
+        with open(cal) as ics:
+            ics = ics.read()
+            if PY2:
+                ics = ics.decode('utf-8')
+
+            ics = string_to_container(ics)[0]
+            self.assertTrue(ics)
 
 if __name__ == '__main__':
     unittest.main()
