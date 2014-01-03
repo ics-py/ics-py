@@ -323,6 +323,16 @@ class TestEventList(unittest.TestCase):
 
         self.assertEqual([e], l[t])
 
+    def test_concurrent(self):
+
+        l = EventList()
+        t = arrow.now()
+
+        e0 = Event("t0", t.replace(hours=-1), t.replace(hours=+1))
+        e1 = Event("t1", t.replace(minutes=-59), t.replace(hours=+59))
+        l.append(e0)
+
+        self.assertEqual([e0], l.concurrent(e1))
 
 class TestCalendar(unittest.TestCase):
 
