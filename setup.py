@@ -9,12 +9,14 @@ class PyTest(TestCommand):
 
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = ['--flakes',
-          '--pep8',
-          '--cov',
-          'ics',
-          'tests/test.py',
-          'ics/']
+        self.test_args = [
+            '--flakes',
+            '--pep8',
+            '--cov',
+            'ics',
+            'tests/test.py',
+            'ics/'
+        ]
         self.test_suite = True
 
     def run_tests(self):
