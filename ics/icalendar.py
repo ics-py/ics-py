@@ -59,7 +59,9 @@ class Calendar(Component):
             events = EventList()
 
         if imports is not None:
-            if isinstance(imports, str) or isinstance(imports, unicode):
+            if PY2 and isinstance(imports, unicode):
+                container = string_to_container(imports)
+            elif isinstance(imports, str):
                 container = string_to_container(imports)
             elif isinstance(imports, collections.Iterable):
                 container = lines_to_container(imports)
