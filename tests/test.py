@@ -469,6 +469,29 @@ class TestCalendar(unittest.TestCase):
             self.assertEqual(e.end, f.end)
             self.assertEqual(e.name, f.name)
 
+    def test_iter(self):
+        c = cal2
+        it = "".join(i for i in iter(c))
+
+        self.assertEqual(c, it)
+
+    def test_unicode(self):
+        c = Calendar()
+        e = Event(begin=0, end=30)
+        c.events.append(e)
+
+        self.assertEqual('<Calendar with 1 events>', c.__unicode__())
+        if PY2:
+            self.assertEqual('<Calendar with 1 events>', unicode(c))
+
+
+class TestComponent(unittest.TestCase):
+
+    def test_valueerror(self):
+
+        with self.assertRaises(ValueError):
+            Calendar(cal2)
+
 
 class TestFunctional(unittest.TestCase):
 
