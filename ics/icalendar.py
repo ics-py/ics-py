@@ -83,7 +83,8 @@ class Calendar(Component):
 
         Should not be used directly. Use self.__repr__ instead.
         """
-        return "<Calendar with {} events>".format(len(self.events))
+        return "<Calendar with {} event{}>" \
+            .format(len(self.events), "s" if len(self.events) > 1 else "")
 
     def __iter__(self):
         """Returns an iterable version of __str__, line per line
