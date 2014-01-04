@@ -594,6 +594,23 @@ class TestCalendar(unittest.TestCase):
 
         self.assertEqual(c.events, [e])
 
+    def test_events_eventlist(self):
+
+        c = Calendar()
+        l = EventList()
+        e = Event()
+        l.append(e)
+        c.events = l
+
+        self.assertEqual(c.events, [e])
+
+    def test_events_set_int(self):
+
+        c = Calendar()
+
+        with self.assertRaises(ValueError):
+            c.events = 42
+
     # def test_events_set_string(self):
 
     #     c = Calendar(cal1)
