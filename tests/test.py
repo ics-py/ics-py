@@ -594,15 +594,12 @@ class TestCalendar(unittest.TestCase):
 
         self.assertEqual(c.events, [e])
 
-    # def test_unicode_import(self):
+    # def test_events_set_string(self):
 
-    #     #c = Calendar(cal10)
-    #     if PY2:
-    #         b = isinstance(cal10, unicode)
-    #     else:
-    #         b = isinstance(cal10, str)
-
-    #     self.assertTrue(b)
+    #     c = Calendar(cal1)
+    #     e = "42"
+    #     with self.assertRaises(ValueError):
+    #         c.events = e
 
 
 class TestComponent(unittest.TestCase):
