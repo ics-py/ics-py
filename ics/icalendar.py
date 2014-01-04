@@ -126,10 +126,10 @@ class Calendar(Component):
 
     @events.setter
     def events(self, value):
-        if isinstance(value, collections.Iterable):
-            self._events = EventList(value)
-        elif isinstance(value, EventList):
+        if isinstance(value, EventList):
             self._events = value
+        elif isinstance(value, collections.Iterable):
+            self._events = EventList(value)
         else:
             raise ValueError(
                 'Calendar.events must be an EventList or an iterable')
