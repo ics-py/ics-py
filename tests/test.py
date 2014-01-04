@@ -4,6 +4,7 @@ from six import PY2, PY3
 from six.moves import filter, map, range
 
 import arrow
+from collections import Iterable
 import unittest
 from ics.parse import (
     ParseError,
@@ -23,6 +24,7 @@ from .fixture import (
     cal7,
     cal8,
     cal9,
+    cal10,
     unfolded_cal1,
     unfolded_cal2,
     unfolded_cal6,
@@ -473,16 +475,27 @@ class TestCalendar(unittest.TestCase):
         c = cal2
         it = "".join(i for i in iter(c))
 
-        self.assertEqual(c, it)
+        if PY2:
+            self.assertEqual(c, it)
+            self.assertSequenceEqual(c, it)
+        self.assertTrue(isinstance(c, Iterable))
+
+    def test_iter_(self):
+        c = Calendar()
+        e = Event(begin=0, end=10)
+        c.events.append(e)
+
+        self.assertTrue(isinstance(c, Iterable))
+        self.assertTrue(type(iter(c)), Iterable)
 
     def test_unicode(self):
         c = Calendar()
         e = Event(begin=0, end=30)
         c.events.append(e)
 
-        self.assertEqual('<Calendar with 1 events>', c.__unicode__())
+        self.assertEqual('<Calendar with 1 event>', c.__unicode__())
         if PY2:
-            self.assertEqual('<Calendar with 1 events>', unicode(c))
+            self.assertEqual('<Calendar with 1 event>', unicode(c))
 
     def test_eq(self):
         c0 = Calendar()
@@ -537,6 +550,33 @@ class TestCalendar(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             Calendar(42)
+
+    def test_creator(self):
+
+        c = Calendar()
+        c.creator = u'42'
+
+        self.assertEqual(c.creator, '42')
+
+    def test_existing_creator(self):
+
+        c = Calendar(cal1)
+
+        self.assertEqual(c.creator, u'-//Apple Inc.//Mac OS X 10.9//EN')
+
+        c.creator = "apple_is_a_fruit"
+
+        self.assertEqual(c.creator, "apple_is_a_fruit")
+
+    # def test_unicode_import(self):
+
+    #     #c = Calendar(cal10)
+    #     if PY2:
+    #         b = isinstance(cal10, unicode)
+    #     else:
+    #         b = isinstance(cal10, str)
+
+    #     self.assertTrue(b)
 
 
 class TestComponent(unittest.TestCase):
