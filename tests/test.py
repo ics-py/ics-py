@@ -494,7 +494,25 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(c0, c1)
         self.assertTrue(c0 == c1)
 
+    def test_eq_len(self):
+        c0 = Calendar()
+        c1 = Calendar()
+        e = Event(begin=0, end=30)
         c0.events.append(e)
+        c1.events.append(e)
+
+        c0.events.append(e)
+
+        self.assertNotEqual(c0, c1)
+        self.assertFalse(c0 == c1)
+
+    def test_not_eq(self):
+        c0 = Calendar()
+        c1 = Calendar()
+        e0 = Event(begin=0, end=30)   
+        e1 = Event(begin=0, end=30)   
+        c0.events.append(e0)
+        c1.events.append(e1)
 
         self.assertNotEqual(c0, c1)
         self.assertFalse(c0 == c1)
