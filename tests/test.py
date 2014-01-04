@@ -195,7 +195,7 @@ class TestParse(unittest.TestCase):
         e = Event(begin=0, end=10)
         c = Container("test", e)
 
-        self.assertEqual("<Container 'test' with 1 elements>", repr(c))
+        self.assertEqual("<Container 'test' with 1 element>", repr(c))
 
 
 class TestEvent(unittest.TestCase):

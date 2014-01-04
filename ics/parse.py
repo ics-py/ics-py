@@ -43,8 +43,8 @@ class ContentLine:
                 self.name,
                 len(self.params),
                 "s" if len(self.params) > 1 else "",
-                self.value
-                )
+                self.value,
+            )
 
     def __getitem__(self, item):
         return self.params[item]
