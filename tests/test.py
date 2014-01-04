@@ -25,6 +25,7 @@ from .fixture import (
     cal8,
     cal9,
     cal10,
+    cal11,
     unfolded_cal1,
     unfolded_cal2,
     unfolded_cal6,
@@ -183,6 +184,11 @@ class TestParse(unittest.TestCase):
                     Pellentesque nisl mi, molestie id sem vel, \
                     vehicula nullam.', line.value)
             i += 1
+
+    def test_end_different(self):
+
+        with self.assertRaises(ParseError):
+            Calendar(cal11)
 
 
 class TestEvent(unittest.TestCase):
