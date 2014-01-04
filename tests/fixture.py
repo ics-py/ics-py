@@ -119,6 +119,13 @@ END:VEVENT
 END:VCALENDAR
 """
 
+cal11 = u"""
+BEGIN:VCALENDAR
+VERSION:2.0;42
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+END:VCAL
+"""
+
 unfolded_cal2 = [
     'BEGIN:VCALENDAR',
     'BEGIN:VEVENT',
