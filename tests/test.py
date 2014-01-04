@@ -533,6 +533,12 @@ class TestCalendar(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             Calendar() + Calendar()
 
+    def test_init_int(self):
+
+        with self.assertRaises(TypeError):
+            Calendar(42)
+
+
 class TestComponent(unittest.TestCase):
 
     def test_valueerror(self):
