@@ -190,6 +190,13 @@ class TestParse(unittest.TestCase):
         with self.assertRaises(ParseError):
             Calendar(cal11)
 
+    def test_repr(self):
+
+        e = Event(begin=0, end=10)
+        c = Container("test", e)
+
+        self.assertEqual("<Container 'test' with 1 elements>", repr(c))
+
 
 class TestEvent(unittest.TestCase):
 
