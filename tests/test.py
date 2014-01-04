@@ -529,7 +529,6 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(c0, c1)
 
 
-
 class TestComponent(unittest.TestCase):
 
     def test_valueerror(self):
