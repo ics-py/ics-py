@@ -553,10 +553,18 @@ class TestCalendar(unittest.TestCase):
 
     def test_creator(self):
 
-        c = Calendar()
-        c.creator = u'42'
+        c0 = Calendar()
+        c1 = Calendar()
+        c2 = Calendar()
+        c0.creator = u'42'
+        c1.creator = 42
+        c2.creator = '42'
 
-        self.assertEqual(c.creator, '42')
+        if PY2:
+            self.assertEqual(c2.creator, u'42')
+
+        self.assertEqual(c0.creator, u'42')
+        self.assertEqual(c1.creator, u'42')
 
     def test_existing_creator(self):
 
@@ -567,6 +575,12 @@ class TestCalendar(unittest.TestCase):
         c.creator = "apple_is_a_fruit"
 
         self.assertEqual(c.creator, "apple_is_a_fruit")
+
+    def test_scale(self):
+
+        c = Calendar(cal10)
+
+        self.assertEqual(c.scale, u'georgian')
 
     # def test_unicode_import(self):
 
