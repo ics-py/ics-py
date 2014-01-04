@@ -484,6 +484,21 @@ class TestCalendar(unittest.TestCase):
         if PY2:
             self.assertEqual('<Calendar with 1 events>', unicode(c))
 
+    def test_eq(self):
+        c0 = Calendar()
+        c1 = Calendar()
+        e = Event(begin=0, end=30)
+        c0.events.append(e)
+        c1.events.append(e)
+
+        self.assertEqual(c0, c1)
+        self.assertTrue(c0 == c1)
+
+        c0.events.append(e)
+
+        self.assertNotEqual(c0, c1)
+        self.assertFalse(c0 == c1)
+
 
 class TestComponent(unittest.TestCase):
 
