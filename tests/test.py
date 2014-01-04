@@ -560,11 +560,9 @@ class TestCalendar(unittest.TestCase):
         c1.creator = 42
         c2.creator = '42'
 
-        if PY2:
-            self.assertEqual(c2.creator, u'42')
-
         self.assertEqual(c0.creator, u'42')
         self.assertEqual(c1.creator, u'42')
+        self.assertEqual(c2.creator, u'42')
 
     def test_existing_creator(self):
 
@@ -581,6 +579,20 @@ class TestCalendar(unittest.TestCase):
         c = Calendar(cal10)
 
         self.assertEqual(c.scale, u'georgian')
+
+    def test_version(self):
+
+        c = Calendar(cal10)
+
+        self.assertEqual(c.version, u'42')
+
+    def test_events_setter(self):
+
+        c = Calendar(cal1)
+        e = Event()
+        c.events = [e]
+
+        self.assertEqual(c.events, [e])
 
     # def test_unicode_import(self):
 
