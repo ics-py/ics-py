@@ -38,8 +38,13 @@ class ContentLine:
             return ret
 
     def __repr__(self):
-        return "<ContentLine '{}' with {} parameters. Value='{}'>" \
-            .format(self.name, len(self.params), self.value)
+        return "<ContentLine '{}' with {} parameter{}. Value='{}'>" \
+            .format(
+                self.name,
+                len(self.params),
+                "s" if len(self.params) > 1 else "",
+                self.value
+                )
 
     def __getitem__(self, item):
         return self.params[item]
@@ -97,7 +102,8 @@ class Container(list):
             return ret
 
     def __repr__(self):
-        return "<Container '{}' with {} elements>".format(self.name, len(self))
+        return "<Container '{}' with {} element{}>" \
+            .format(self.name, len(self), "s" if len(self) > 1 else "")
 
     @classmethod
     def parse(cls, name, tokenized_lines):
