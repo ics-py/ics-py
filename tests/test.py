@@ -509,13 +509,25 @@ class TestCalendar(unittest.TestCase):
     def test_not_eq(self):
         c0 = Calendar()
         c1 = Calendar()
-        e0 = Event(begin=0, end=30)   
-        e1 = Event(begin=0, end=30)   
+        e0 = Event(begin=0, end=30)
+        e1 = Event(begin=0, end=30)
         c0.events.append(e0)
         c1.events.append(e1)
 
         self.assertNotEqual(c0, c1)
         self.assertFalse(c0 == c1)
+
+    def test_clone(self):
+        c0 = Calendar()
+        e = Event()
+        c0.events.append(e)
+        c1 = c0.clone()
+
+        self.assertTrue(c0 == c1)
+        self.assertTrue(len(c0.events) == len(c1.events))
+        self.assertEqual(c0.events[0], c1.events[0])
+        self.assertEqual(c0, c1)
+
 
 
 class TestComponent(unittest.TestCase):
