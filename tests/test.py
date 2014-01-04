@@ -528,6 +528,10 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(c0.events[0], c1.events[0])
         self.assertEqual(c0, c1)
 
+    def test_multiple_calendars(self):
+
+        with self.assertRaises(NotImplementedError):
+            Calendar() + Calendar()
 
 class TestComponent(unittest.TestCase):
 
