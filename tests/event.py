@@ -2,7 +2,7 @@ import unittest
 from datetime import timedelta
 from ics.event import Event
 from ics.icalendar import Calendar
-from .fixture import cal12
+from .fixture import cal12, cal13
 
 
 class TestEvent(unittest.TestCase):
@@ -38,3 +38,6 @@ class TestEvent(unittest.TestCase):
         e = c.events[0]
         self.assertEqual(e._duration, timedelta(1, 3600))
         self.assertEqual(e.end - e.begin, timedelta(1, 3600))
+
+    def test_not_duration_and_end(self):
+        self.assertRaises(ValueError, Calendar, cal13)
