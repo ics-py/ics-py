@@ -102,8 +102,10 @@ def parse_duration(line):
         val = int(line[i:j])
         if line[j] in DAYS:
             days += val*DAYS[line[j]]
+            DAYS.pop(line[j])
         elif line[j] in SECS:
             secs += val*SECS[line[j]]
+            SECS.pop(line[j])
         else:
             raise parse.ParseError()
         i = j+1

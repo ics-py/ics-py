@@ -31,3 +31,6 @@ class TestParseDuration(unittest.TestCase):
 
     def test_twoLetters(self):
         self.assertRaises(ParseError, parse_duration, 'P1DF')
+
+    def test_twoOccurences(self):
+        self.assertRaises(ParseError, parse_duration, 'P1D1D')
