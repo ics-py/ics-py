@@ -3,6 +3,7 @@ from datetime import timedelta
 from ics.parse import ParseError
 from ics.utils import parse_duration, timedelta_to_duration
 
+
 class TestParseDuration(unittest.TestCase):
     dataset_simple = {
         'P1W': (7, 0), 'P1D': (1, 0), '-P1D': (-1, 0),
@@ -46,7 +47,7 @@ class TestTimedeltaToDuration(unittest.TestCase):
     }
 
     dataset_combined = {
-        (1, 1) : 'P1DT1S', (8,3661): 'P1W1DT1H1M1S', (15, 18020): 'P2W1DT5H20S',
+        (1, 1): 'P1DT1S', (8, 3661): 'P1W1DT1H1M1S', (15, 18020): 'P2W1DT5H20S',
     }
 
     def run_on_dataset(self, dataset):
@@ -59,4 +60,3 @@ class TestTimedeltaToDuration(unittest.TestCase):
 
     def test_combined(self):
         self.run_on_dataset(self.dataset_combined)
-
