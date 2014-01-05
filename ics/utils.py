@@ -81,6 +81,9 @@ def get_lines(container, name):
 
 
 def parse_duration(line):
+    """
+    Return a timedelta object from a string in the DURATION property format
+    """
     DAYS, SECS = {'D': 1, 'W': 7}, {'S': 1, 'M': 60, 'H': 3600}
     sign, i = 1, 0
     if line[i] in '-+':
@@ -114,6 +117,10 @@ def parse_duration(line):
     return timedelta(sign * days, sign * secs)
 
 def timedelta_to_duration(dt):
+    """
+    Return a string according to the DURATION property format 
+    from a timedelta object
+    """
     days, secs = dt.days, dt.seconds
     res = 'P'
     if days//7:

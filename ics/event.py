@@ -111,11 +111,11 @@ class Event(Component):
 
         |  Will return an Arrow object.
         |  May be set to anything that arrow.get() understands.
-        |  If setted to a non null value, removes any already
+        |  If set to a non null value, removes any already
             existing duration.
         |  Setting to None will have unexpected behavior if
             begin is not None.
-        |  Must not be setted to an inferior value than self.begin.
+        |  Must not be set to an inferior value than self.begin.
         """
 
         if self._duration:  # if end is duration defined
