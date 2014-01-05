@@ -13,6 +13,7 @@ from .fixture import (
     unfolded_cal6,
 )
 
+
 class TestUnfoldLines(unittest.TestCase):
 
     def test_no_folded_lines(self):
@@ -63,5 +64,3 @@ class TestUnfoldLines(unittest.TestCase):
     def test_first_line_empty(self):
         self.assertEqual(list(unfold_lines(cal9.split('\n'))),
                          ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
-
-

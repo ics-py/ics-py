@@ -103,15 +103,15 @@ def parse_duration(line):
             raise parse.ParseError()
         val = int(line[i:j])
         if line[j] in DAYS:
-            days += val*DAYS[line[j]]
+            days += val * DAYS[line[j]]
             DAYS.pop(line[j])
         elif line[j] in SECS:
-            secs += val*SECS[line[j]]
+            secs += val * SECS[line[j]]
             SECS.pop(line[j])
         else:
             raise parse.ParseError()
-        i = j+1
-    return timedelta(sign*days, sign*secs)
+        i = j + 1
+    return timedelta(sign * days, sign * secs)
 
 
 def get_arrow(value):

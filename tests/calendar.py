@@ -6,6 +6,7 @@ from ics.event import Event
 from ics.eventlist import EventList
 from .fixture import cal1, cal2, cal10
 
+
 class TestCalendar(unittest.TestCase):
 
     def test_imports(self):
@@ -177,5 +178,3 @@ class TestCalendar(unittest.TestCase):
     #     e = "42"
     #     with self.assertRaises(ValueError):
     #         c.events = e
-
-

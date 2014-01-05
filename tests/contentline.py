@@ -1,6 +1,7 @@
 import unittest
 from ics.parse import ParseError, ContentLine
 
+
 class TestContentLine(unittest.TestCase):
 
     dataset = {
@@ -60,4 +61,3 @@ class TestContentLine(unittest.TestCase):
             expected = self.dataset2[test]
             got = ContentLine.parse(test)
             self.assertEqual(expected, got, "Parse")
-

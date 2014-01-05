@@ -4,6 +4,7 @@ from ics.event import Event
 from ics.icalendar import Calendar
 from .fixture import cal12
 
+
 class TestEvent(unittest.TestCase):
 
     def test_event(self):
@@ -37,4 +38,3 @@ class TestEvent(unittest.TestCase):
         e = c.events[0]
         self.assertEqual(e._duration, timedelta(1, 3600))
         self.assertEqual(e.end - e.begin, timedelta(1, 3600))
-
