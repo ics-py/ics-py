@@ -79,6 +79,7 @@ def get_lines(container, name):
             del container[i]
     return lines
 
+
 def parse_duration(line):
     DAYS, SECS = {'D': 1, 'W': 7}, {'S': 1, 'M': 60, 'H': 3600}
     sign, i = 1, 0
@@ -101,9 +102,9 @@ def parse_duration(line):
         val = int(line[i:j])
         if line[j] in DAYS:
             days += val*DAYS[line[j]]
-        elif line[j] in SECS: 
+        elif line[j] in SECS:
             secs += val*SECS[line[j]]
-        else: 
+        else:
             raise parse.ParseError()
         i = j+1
     return timedelta(sign*days, sign*secs)
