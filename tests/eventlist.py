@@ -3,7 +3,7 @@ import arrow
 from ics.eventlist import EventList
 from ics.event import Event
 from ics.icalendar import Calendar
-from fixture import cal1
+from .fixture import cal1
 
 class TestEventList(unittest.TestCase):
 

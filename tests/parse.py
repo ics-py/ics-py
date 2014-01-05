@@ -1,6 +1,6 @@
 import unittest
 
-from fixture import cal1, cal5, cal11
+from .fixture import cal1, cal5, cal11
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import (

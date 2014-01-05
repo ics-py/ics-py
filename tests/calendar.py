@@ -4,7 +4,7 @@ from six import PY2
 from ics.icalendar import Calendar
 from ics.event import Event
 from ics.eventlist import EventList
-from fixture import cal1, cal2, cal10
+from .fixture import cal1, cal2, cal10
 
 class TestCalendar(unittest.TestCase):
 

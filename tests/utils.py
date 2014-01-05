@@ -18,7 +18,8 @@ class TestParseDuration(unittest.TestCase):
     }
 
     def run_on_dataset(self, dataset):
-        for test, expected in dataset.iteritems():
+        for test in dataset:
+            expected = dataset[test]
             self.assertEqual(parse_duration(test), timedelta(*expected))
 
     def test_simple(self):

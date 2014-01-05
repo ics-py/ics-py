@@ -1,6 +1,6 @@
 import unittest
 from ics.icalendar import Calendar
-from fixture import cal2
+from .fixture import cal2
 
 class TestComponent(unittest.TestCase):
 
