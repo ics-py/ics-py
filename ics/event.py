@@ -71,6 +71,7 @@ class Event(Component):
 
         self.name = name
         self.begin = begin
+        #TODO: DRY [1]
         if duration and end:
             raise ValueError(
                 'Event() may not specify an end and a duration \
@@ -250,12 +251,18 @@ def start(event, line):
 @Event._extracts('DURATION')
 def duration(event, line):
     if line:
+        #TODO: DRY [1]
+        if event._end_time:
+            raise ValueError("An event can't have both DTEND and DURATION")
         event._duration = parse_duration(line.value)
 
 
 @Event._extracts('DTEND')
 def end(event, line):
     if line:
+        #TODO: DRY [1]
+        if event._duration:
+            raise ValueError("An event can't have both DTEND and DURATION")
         # get the dict of vtimezones passed to the classmethod
         tz_dict = event._classmethod_kwargs['tz']
         event._end_time = iso_to_arrow(line, tz_dict)
