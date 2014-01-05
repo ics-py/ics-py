@@ -59,7 +59,9 @@ class Calendar(Component):
             events = EventList()
 
         if imports is not None:
-            if isinstance(imports, str) or isinstance(imports, unicode):
+            if PY2 and isinstance(imports, unicode):
+                container = string_to_container(imports)
+            elif isinstance(imports, str):
                 container = string_to_container(imports)
             elif isinstance(imports, collections.Iterable):
                 container = lines_to_container(imports)
@@ -81,7 +83,8 @@ class Calendar(Component):
 
         Should not be used directly. Use self.__repr__ instead.
         """
-        return "<Calendar with {} events>".format(len(self.events))
+        return "<Calendar with {} event{}>" \
+            .format(len(self.events), "s" if len(self.events) > 1 else "")
 
     def __iter__(self):
         """Returns an iterable version of __str__, line per line
@@ -123,10 +126,10 @@ class Calendar(Component):
 
     @events.setter
     def events(self, value):
-        if isinstance(value, collections.Iterable):
-            self._events = EventList(value)
-        elif isinstance(value, EventList):
+        if isinstance(value, EventList):
             self._events = value
+        elif isinstance(value, collections.Iterable):
+            self._events = EventList(value)
         else:
             raise ValueError(
                 'Calendar.events must be an EventList or an iterable')

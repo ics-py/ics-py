@@ -14,6 +14,7 @@ from uuid import uuid4
 import re
 
 from . import parse
+from datetime import timedelta
 
 
 def remove_x(container):
@@ -79,8 +80,66 @@ def get_lines(container, name):
     return lines
 
 
-def parse_duration(duration):
-    return None
+def parse_duration(line):
+    """
+    Return a timedelta object from a string in the DURATION property format
+    """
+    DAYS, SECS = {'D': 1, 'W': 7}, {'S': 1, 'M': 60, 'H': 3600}
+    sign, i = 1, 0
+    if line[i] in '-+':
+        if line[i] == '-':
+            sign = -1
+        i += 1
+    if line[i] != 'P':
+        raise parse.ParseError()
+    i += 1
+    days, secs = 0, 0
+    while i < len(line):
+        if line[i] == 'T':
+            i += 1
+            if i == len(line):
+                break
+        j = i
+        while line[j].isdigit():
+            j += 1
+        if i == j:
+            raise parse.ParseError()
+        val = int(line[i:j])
+        if line[j] in DAYS:
+            days += val * DAYS[line[j]]
+            DAYS.pop(line[j])
+        elif line[j] in SECS:
+            secs += val * SECS[line[j]]
+            SECS.pop(line[j])
+        else:
+            raise parse.ParseError()
+        i = j + 1
+    return timedelta(sign * days, sign * secs)
+
+
+def timedelta_to_duration(dt):
+    """
+    Return a string according to the DURATION property format
+    from a timedelta object
+    """
+    days, secs = dt.days, dt.seconds
+    res = 'P'
+    if days // 7:
+        res += str(days // 7) + 'W'
+        days %= 7
+    if days:
+        res += str(days) + 'D'
+    if secs:
+        res += 'T'
+        if secs // 3600:
+            res += str(secs // 3600) + 'H'
+            secs %= 3600
+        if secs // 60:
+            res += str(secs // 60) + 'M'
+            secs %= 60
+        if secs:
+            res += str(secs) + 'S'
+    return res
 
 
 def get_arrow(value):

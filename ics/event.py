@@ -12,6 +12,7 @@ import copy
 from .component import Component
 from .utils import (
     parse_duration,
+    timedelta_to_duration,
     iso_to_arrow,
     iso_precision,
     get_arrow,
@@ -71,6 +72,7 @@ class Event(Component):
 
         self.name = name
         self.begin = begin
+        #TODO: DRY [1]
         if duration and end:
             raise ValueError(
                 'Event() may not specify an end and a duration \
@@ -78,7 +80,7 @@ class Event(Component):
         elif end:  # End was specified
             self.end = end
         elif duration:  # Duration was specified
-            self.duration = duration
+            self._duration = duration
 
     def has_end(self):
         """Bool: Event has an end."""
@@ -109,16 +111,16 @@ class Event(Component):
 
         |  Will return an Arrow object.
         |  May be set to anything that arrow.get() understands.
-        |  If setted to a non null value, removes any already
+        |  If set to a non null value, removes any already
             existing duration.
         |  Setting to None will have unexpected behavior if
             begin is not None.
-        |  Must not be setted to an inferior value than self.begin.
+        |  Must not be set to an inferior value than self.begin.
         """
 
         if self._duration:  # if end is duration defined
             # return the beginning + duration
-            return self.begin.replace(**self._duration)
+            return self.begin + self._duration
         elif self._end_time:  # if end is time defined
             return self._end_time
         elif self._begin:  # if end is not defined
@@ -250,12 +252,18 @@ def start(event, line):
 @Event._extracts('DURATION')
 def duration(event, line):
     if line:
-        event._duration = parse_duration(line)
+        #TODO: DRY [1]
+        if event._end_time:
+            raise ValueError("An event can't have both DTEND and DURATION")
+        event._duration = parse_duration(line.value)
 
 
 @Event._extracts('DTEND')
 def end(event, line):
     if line:
+        #TODO: DRY [1]
+        if event._duration:
+            raise ValueError("An event can't have both DTEND and DURATION")
         # get the dict of vtimezones passed to the classmethod
         tz_dict = event._classmethod_kwargs['tz']
         event._end_time = iso_to_arrow(line, tz_dict)
@@ -308,7 +316,12 @@ def o_start(event, container):
 @Event._outputs
 def o_duration(event, container):
     # TODO : DURATION
-    pass
+    if not event.begin:
+        raise ValueError(
+            'An event with a duration but no start cannot be exported')
+    if event._duration:
+        representation = timedelta_to_duration(event._duration)
+        container.append(ContentLine('DURATION', value=representation))
 
 
 @Event._outputs

@@ -84,7 +84,7 @@ class EventList(list):
         elif not sl.step in ('begin', 'end', 'both', 'any', 'inc'):
             raise ValueError(
                 "The step must be 'begin', 'end', 'both', 'any', 'inc' \
-                or None not '{}'".format(sl.step))
+or None not '{}'".format(sl.step))
         else:  # valid step
             step = sl.step
 
@@ -163,15 +163,17 @@ class EventList(list):
 
         `instant` will be parsed by arrow.get() if it's not an Arrow object.
         """
-        if not isinstance(instant, Arrow):
-            instant = arrow.get(instant)
-        return self[instant:instant.ceil('microsecond'):'one']
+        at = []
+        for event in self:
+            if event.begin <= instant <= event.end:
+                at.append(event)
+        return at
 
     def concurrent(self, event):
         """Returns all events that are overlapping `event`."""
-        a = self[event.begin:event.start:'any']
-        b = self[None:event.begin:'start']
-        c = self[event.end:None:'stop']
+        a = self[event.begin:event.end:'any']
+        b = self[None:event.begin:'begin']
+        c = self[event.end:None:'end']
         return list(set(a) | (set(b) & set(c)))
 
     def _remove_duplicates(self):
