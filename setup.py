@@ -14,8 +14,8 @@ class PyTest(TestCommand):
             '--pep8',
             '--cov',
             'ics',
-            'tests/test.py',
-            'ics/'
+            'ics/',
+            'tests/'
         ]
         self.test_suite = True
 
