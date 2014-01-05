@@ -3,6 +3,7 @@ from datetime import timedelta
 from ics.parse import ParseError
 from ics.utils import parse_duration
 
+
 class TestParseDuration(unittest.TestCase):
     dataset_simple = {
         'P1W': (7, 0), 'P1D': (1, 0), '-P1D': (-1, 0),
@@ -28,11 +29,11 @@ class TestParseDuration(unittest.TestCase):
     def test_combined(self):
         self.run_on_dataset(self.dataset_combined)
 
-    def test_noP(self):
+    def test_no_p(self):
         self.assertRaises(ParseError, parse_duration, 'caca')
 
-    def test_twoLetters(self):
+    def test_two_letters(self):
         self.assertRaises(ParseError, parse_duration, 'P1DF')
 
-    def test_twoOccurences(self):
+    def test_two_occurences(self):
         self.assertRaises(ParseError, parse_duration, 'P1D1D')

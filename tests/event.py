@@ -1,6 +1,7 @@
 import unittest
 from ics.event import Event
 
+
 class TestEvent(unittest.TestCase):
 
     def test_event(self):
@@ -28,5 +29,3 @@ class TestEvent(unittest.TestCase):
 
         g = Event() | Event()
         self.assertEqual(g, (None, None))
-
-

@@ -5,6 +5,7 @@ from ics.event import Event
 from ics.icalendar import Calendar
 from .fixture import cal1
 
+
 class TestEventList(unittest.TestCase):
 
     from time import time
@@ -235,5 +236,3 @@ class TestEventList(unittest.TestCase):
         l = l[e0.begin:e0.end:]
 
         self.assertEqual([e1], l)
-
-

@@ -5,6 +5,7 @@ from six import PY2
 
 from ics.parse import string_to_container
 
+
 class TestFunctional(unittest.TestCase):
 
     def test_gehol(self):

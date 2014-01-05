@@ -11,6 +11,7 @@ from ics.parse import (
     lines_to_container,
 )
 
+
 class TestParse(unittest.TestCase):
 
     def test_parse(self):
@@ -63,5 +64,3 @@ class TestParse(unittest.TestCase):
         c = Container("test", e)
 
         self.assertEqual("<Container 'test' with 1 element>", repr(c))
-
-
