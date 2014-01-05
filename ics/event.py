@@ -118,7 +118,7 @@ class Event(Component):
 
         if self._duration:  # if end is duration defined
             # return the beginning + duration
-            return self.begin.replace(**self._duration)
+            return self.begin + self._duration
         elif self._end_time:  # if end is time defined
             return self._end_time
         elif self._begin:  # if end is not defined
@@ -250,7 +250,7 @@ def start(event, line):
 @Event._extracts('DURATION')
 def duration(event, line):
     if line:
-        event._duration = parse_duration(line)
+        event._duration = parse_duration(line.value)
 
 
 @Event._extracts('DTEND')
