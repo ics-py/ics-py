@@ -47,4 +47,11 @@ class TestEvent(unittest.TestCase):
         lines = str(e).split('\n')
         self.assertIn('DTSTART:19700101T000000Z', lines)
         self.assertIn('DURATION:P1DT23S', lines)
-        
+
+    def test_make_all_day(self):
+        e = Event(begin=0, end=20)
+        begin = e.begin
+        e.make_all_day()
+        self.assertEqual(e.begin, begin)
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e._duration, None)
