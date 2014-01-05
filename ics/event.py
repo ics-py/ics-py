@@ -147,7 +147,6 @@ class Event(Component):
         |  Will return a timedelta object.
         |  May be set to anything that timedelta() understands.
         |  May be set with a dict ({"days":2, "hours":6}).
-        |  If dict is used, both `days` and `hours` are needed.
         |  If set to a non null value, removes any already
             existing end time.
         """
@@ -156,7 +155,7 @@ class Event(Component):
     @duration.setter
     def duration(self, value):
         if type(value) is dict:
-            value = timedelta(days=+value['days'], hours=+value['hours'])
+            value = timedelta(**value)
         else:
             value = timedelta(value)
 
