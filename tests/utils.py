@@ -7,7 +7,8 @@ class TestParseDuration(unittest.TestCase):
     dataset_simple = {
         'P1W': (7, 0), 'P1D': (1, 0), '-P1D': (-1, 0),
         'P1H': (0, 3600), 'P1M': (0, 60), 'P1S': (0, 1),
-        'PT1H': (0, 3600), 'PT1M': (0, 60), 'PT1S': (0, 1)
+        'PT1H': (0, 3600), 'PT1M': (0, 60), 'PT1S': (0, 1),
+        'PT': (0, 0)
     }
 
     dataset_combined = {

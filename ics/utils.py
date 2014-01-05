@@ -94,6 +94,8 @@ def parse_duration(line):
     while i < len(line):
         if line[i] == 'T':
             i += 1
+            if i == len(line):
+                break
         j = i
         while line[j].isdigit():
             j += 1
