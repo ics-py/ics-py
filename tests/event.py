@@ -41,3 +41,10 @@ class TestEvent(unittest.TestCase):
 
     def test_not_duration_and_end(self):
         self.assertRaises(ValueError, Calendar, cal13)
+
+    def test_duration_output(self):
+        e = Event(begin=0, duration=timedelta(1, 23))
+        lines = str(e).split('\n')
+        self.assertIn('DTSTART:19700101T000000Z', lines)
+        self.assertIn('DURATION:P1DT23S', lines)
+        

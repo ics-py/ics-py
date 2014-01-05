@@ -113,6 +113,25 @@ def parse_duration(line):
         i = j + 1
     return timedelta(sign * days, sign * secs)
 
+def timedelta_to_duration(dt):
+    days, secs = dt.days, dt.seconds
+    res = 'P'
+    if days//7:
+        res += str(days//7) + 'W'
+        days %= 7
+    if days:
+        res += str(days) + 'D'
+    if secs:
+        res += 'T'
+        if secs//3600:
+            res += str(secs//3600) + 'H'
+            secs %= 3600
+        if secs//60:
+            res += str(secs//60) + 'M'
+            secs %= 60
+        if secs:
+            res += str(secs) + 'S'
+    return res
 
 def get_arrow(value):
     if value is None:

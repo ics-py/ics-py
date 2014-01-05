@@ -12,6 +12,7 @@ import copy
 from .component import Component
 from .utils import (
     parse_duration,
+    timedelta_to_duration,
     iso_to_arrow,
     iso_precision,
     get_arrow,
@@ -79,7 +80,7 @@ class Event(Component):
         elif end:  # End was specified
             self.end = end
         elif duration:  # Duration was specified
-            self.duration = duration
+            self._duration = duration
 
     def has_end(self):
         """Bool: Event has an end."""
@@ -315,7 +316,12 @@ def o_start(event, container):
 @Event._outputs
 def o_duration(event, container):
     # TODO : DURATION
-    pass
+    if not event.begin:
+        raise ValueError(
+            'An event with a duration but no start cannot be exported')
+    if event._duration:
+        representation = timedelta_to_duration(event._duration)
+        container.append(ContentLine('DURATION', value=representation))
 
 
 @Event._outputs
