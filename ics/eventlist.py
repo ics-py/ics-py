@@ -208,8 +208,6 @@ or None not '{}'".format(sl.step))
         return EventList(events)
 
     def __setitem__(self, key, val):
-        print type(key)
-        print key
         if isinstance(key, slice):
             acc = []
             for elem in val:
