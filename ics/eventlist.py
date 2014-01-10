@@ -3,8 +3,7 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import PY3, StringIO, string_types, text_type, integer_types
-PY2 = not PY3
+from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
 from arrow.arrow import Arrow

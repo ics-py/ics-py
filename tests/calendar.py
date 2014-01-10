@@ -1,7 +1,6 @@
 import unittest
 from collections import Iterable
-from six import PY3
-PY2 = not PY3
+from six import PY2
 from ics.icalendar import Calendar
 from ics.event import Event
 from ics.eventlist import EventList

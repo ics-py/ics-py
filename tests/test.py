@@ -1,8 +1,7 @@
 from __future__ import unicode_literals, absolute_import
 import os
 import unittest
-from six import PY3
-PY2 = not PY3
+from six import PY2
 
 from ics.parse import string_to_container
 
