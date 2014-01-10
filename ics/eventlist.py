@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
+from collections import Iterable
 
 from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
@@ -31,7 +32,7 @@ class EventList(list):
 
         for elem in arg:
             if not isinstance(elem, Event):
-                raise ValueError('EventList takes only iterables with elements of type "Event" not "{}"'
+                raise ValueError('EventList takes only iterables with elements of type "Event" not {}'
                     .format(type(elem)))
             else:
                 self.append(elem)
@@ -205,3 +206,29 @@ or None not '{}'".format(sl.step))
     def clone(self):
         events = map(lambda x: x.clone(), self)
         return EventList(events)
+
+    def __setitem__(self, key, val):
+        print type(key)
+        print key
+        if isinstance(key, slice):
+            acc = []
+            for elem in val:
+                if not isinstance(elem, Event):
+                    raise ValueError('EventList may only contain elements of type "Event" not {}'
+                        .format(type(elem)))
+                else:
+                    acc.append(elem)
+            val = acc
+        elif not isinstance(val, Event):
+            raise ValueError('EventList may only contain elements of type "Event" not {}'
+                .format(type(val)))
+        super(EventList, self).__setitem__(key, val)
+
+    def __setslice__(self, i, j, val):
+        return self.__setitem__(slice(i, j), val)
+
+    def append(self, elem):
+        if not isinstance(elem, Event):
+            raise ValueError('EventList may only contain elements of type "Event" not {}'
+                .format(type(elem)))
+        super(EventList, self).append(elem)
