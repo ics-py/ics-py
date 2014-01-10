@@ -316,20 +316,14 @@ def o_start(event, container):
 @Event._outputs
 def o_duration(event, container):
     # TODO : DURATION
-    if not event.begin:
-        raise ValueError(
-            'An event with a duration but no start cannot be exported')
-    if event._duration:
+    if event._duration and event.begin:
         representation = timedelta_to_duration(event._duration)
         container.append(ContentLine('DURATION', value=representation))
 
 
 @Event._outputs
 def o_end(event, container):
-    if not event.begin:
-        raise ValueError(
-            'An event with an end but no start cannot be exported')
-    if event._end_time:
+    if event.begin and event._end_time:
         container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
 
 
