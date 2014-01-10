@@ -10,7 +10,7 @@ from arrow.arrow import Arrow
 import arrow
 
 from .utils import get_arrow
-
+from .event import Event
 
 class EventList(list):
 
@@ -20,12 +20,17 @@ class EventList(list):
     and some helpers.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, arg=[]):
         """Instanciates a new EventList.
 
         Accepts same arguments as list() and pass them all to list().
         """
-        super(EventList, self).__init__(*args, **kwargs)
+
+        for elem in arg:
+            if not isinstance(elem, Event):
+                raise ValueError('EventList takes only iterables with elements of type "Event" not "{}"'
+                    .format(type(elem)))
+        super(EventList, self).__init__(arg)
 
     def __getitem__(self, sl):
         """Slices EventList.
