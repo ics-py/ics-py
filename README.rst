@@ -1,10 +1,10 @@
 Ics.py : iCalendar for Humans
 =============================
 
-.. image:: https://travis-ci.org/C4ptainCrunch/ics.py.png?branch=master   
+.. image:: https://travis-ci.org/C4ptainCrunch/ics.py.png?branch=master
    :target: https://travis-ci.org/C4ptainCrunch/ics.py
 
-.. image:: https://coveralls.io/repos/C4ptainCrunch/ics.py/badge.png 
+.. image:: https://coveralls.io/repos/C4ptainCrunch/ics.py/badge.png
    :target: https://coveralls.io/r/C4ptainCrunch/ics.py
 
 .. image:: https://pypip.in/license/ics/badge.png
