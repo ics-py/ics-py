@@ -161,7 +161,7 @@ class Calendar(Component):
         """Make an exact copy of self."""
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
-        clone.events = map(lambda x: x.clone(), self.events)
+        clone.events = self.events.clone()
         clone._timezones = copy.copy(self._timezones)
         return clone
 

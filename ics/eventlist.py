@@ -12,6 +12,7 @@ import arrow
 from .utils import get_arrow
 from .event import Event
 
+
 class EventList(list):
 
     """EventList is a subclass of the standard list.
@@ -26,11 +27,14 @@ class EventList(list):
         Accepts same arguments as list() and pass them all to list().
         """
 
+        super(EventList, self).__init__()
+
         for elem in arg:
             if not isinstance(elem, Event):
                 raise ValueError('EventList takes only iterables with elements of type "Event" not "{}"'
                     .format(type(elem)))
-        super(EventList, self).__init__(arg)
+            else:
+                self.append(elem)
 
     def __getitem__(self, sl):
         """Slices EventList.
@@ -194,3 +198,10 @@ or None not '{}'".format(sl.step))
         ret = EventList(ret)
         ret._remove_duplicates()
         return ret
+
+    def __repr__(self):
+        return "<EventList {}>".format(super(EventList, self).__repr__())
+
+    def clone(self):
+        events = map(lambda x: x.clone(), self)
+        return EventList(events)
