@@ -1,3 +1,4 @@
 python-dateutil
 arrow
 six>1.5
+sphinxcontrib-napoleon
