@@ -28,7 +28,7 @@ Thanks to:
 Contribute
 ----------
 
-.. include:: ../CONTRIBUTE.rst
+.. include:: ../CONTRIBUTING.rst
 
 
 Misc
