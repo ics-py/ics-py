@@ -103,7 +103,7 @@ EventList
 
 .. autoclass:: ics.eventlist.EventList
     :members:
-    :special-members: __getitem__, __init__
+    :special-members: __getitem__, __init__, __add__
 
 
 .. Contents:

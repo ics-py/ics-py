@@ -40,6 +40,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'sphinxcontrib.napoleon',
 ]
 
 autodoc_member_order = 'groupwise'

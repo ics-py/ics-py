@@ -25,7 +25,8 @@ class EventList(list):
     def __init__(self, arg=[]):
         """Instanciates a new EventList.
 
-        Accepts same arguments as list() and pass them all to list().
+            Args:
+                arg (iterable): same argument as list() and pass it to list().
         """
 
         super(EventList, self).__init__()
@@ -39,15 +40,16 @@ class EventList(list):
 
     def __getitem__(self, sl):
         """Slices EventList.
-        |  If sl is conventional (like [10], [4:12], [3:100:2], [::-1], …),
-            it slices the EventList like a classical list().
-        |  If one of the 3 arguments ([start:stop:step]) is not None or an int,
-            slicing differs.
 
-        |  In that case, `start` and `stop` are considerated like instants
-            (or None) and `step` like a modificator.
-        |  `start` and `stop` will be converted to Arrow objects (or None)
-            with arrow.get().
+        If sl is conventional (like [10], [4:12], [3:100:2], [::-1], …),\
+        it slices the EventList like a classical list().
+        If one of the 3 arguments ([start:stop:step]) is not None or an int,\
+        slicing differs.
+
+        In that case, `start` and `stop` are considerated like instants\
+        (or None) and `step` like a modificator.
+        `start` and `stop` will be converted to Arrow objects (or None)\
+        with arrow.get().
 
         - start (arrow.get() compatible or Arrow or None): \
         lower included bond,
@@ -141,27 +143,33 @@ or None not '{}'".format(sl.step))
         return list(filter(condition2, self))
 
     def today(self, strict=False):
-        """Returns all events that occurs today.
+        """Args:
+            strict (bool): if True events will be returned only if they are\
+            strictly *included* in `day`.
 
-        If `strict` is True, events will be returned only if they are
-        strictly *included* in today.
+        Returns:
+            list<Event>: all events that occurs today
         """
         return self[arrow.now()]
 
     def on(self, day, strict=False):
-        """Returns all events that occurs on `day`.
-
-        |  If `strict` is True, events will be returned only if they are
+        """Args:
+            day (Arrow-convertible)
+            strict (bool): if True events will be returned only if they are\
             strictly *included* in `day`.
-        |  `day` will be parsed by arrow.get() if it's not
-            an Arrow object.
+
+        Returns:
+            list<Event>: all events that occurs on `day`
         """
         if not isinstance(day, Arrow):
             day = arrow.get(day)
         return self[day]
 
     def now(self):
-        """Returns all events that occurs now."""
+        """
+        Returns:
+            list<Event>: all events that occurs now
+        """
         now = []
         for event in self:
             if event.begin <= arrow.now() <= event.end:
@@ -169,9 +177,10 @@ or None not '{}'".format(sl.step))
         return now
 
     def at(self, instant):
-        """Returns all events that are occuring at that instant.
-
-        `instant` will be parsed by arrow.get() if it's not an Arrow object.
+        """Args:
+            instant (Arrow-convertible)
+        Returns:
+            list<Event>: all events that are occuring during `instant`.
         """
         at = []
         for event in self:
@@ -180,7 +189,11 @@ or None not '{}'".format(sl.step))
         return at
 
     def concurrent(self, event):
-        """Returns all events that are overlapping `event`."""
+        """Args:
+            event (Event)
+        Returns:
+            list<Event>: all events that are overlapping `event`
+        """
         a = self[event.begin:event.end:'any']
         b = self[None:event.begin:'begin']
         c = self[event.end:None:'end']
@@ -195,6 +208,8 @@ or None not '{}'".format(sl.step))
                 seen.add(self[i])
 
     def __add__(self, *args, **kwargs):
+        """Add 2 `EventList`. Return a new `EventList` conataining\
+        a copy of each `Event` in the union of both `EventLists`"""
         ret = super(EventList, self).__add__(*args, **kwargs)
         ret = EventList(ret)
         ret._remove_duplicates()
@@ -204,10 +219,15 @@ or None not '{}'".format(sl.step))
         return "<EventList {}>".format(super(EventList, self).__repr__())
 
     def clone(self):
+        """
+        Returns:
+            Copy of `self` containing copies of underlying `Events`
+        """
         events = map(lambda x: x.clone(), self)
         return EventList(events)
 
     def __setitem__(self, key, val):
+        """Set an item or a slice. Verifies that all items are instance of `Event`"""
         if isinstance(key, slice):
             acc = []
             for elem in val:
@@ -223,9 +243,15 @@ or None not '{}'".format(sl.step))
         super(EventList, self).__setitem__(key, val)
 
     def __setslice__(self, i, j, val):
+        """Compatibility for python2"""
         return self.__setitem__(slice(i, j), val)
 
     def append(self, elem):
+        """Append a element to self and verifies that it's a `Event`.
+
+        Args:
+            elem (Event): element to be appended
+        """
         if not isinstance(elem, Event):
             raise ValueError('EventList may only contain elements of type "Event" not {}'
                 .format(type(elem)))
