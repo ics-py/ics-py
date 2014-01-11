@@ -25,7 +25,7 @@ Ics.py is for you!
 
 
 Quickstart
-==========
+----------
 
 .. code-block:: bash
 
@@ -45,7 +45,13 @@ Quickstart
 There are a more of examples in the `documentation <http://icspy.readthedocs.org/>`_
 
 Documentation
-=============
+-------------
 
 All the documentation (examples, api, about, ...) is hosted on readthedocs.org and is updated automaticaly at every commit.
 Go and `get it <http://icspy.readthedocs.org/>`_ !
+
+
+Contribute
+----------
+
+Contribution are welcome of course ! More info over `there <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_ (or in the doc.)
