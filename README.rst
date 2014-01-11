@@ -44,7 +44,7 @@ Quickstart
     >>> c.events
     [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
 
-There are a more of examples in the `documentation <http://icspy.readthedocs.org/>`_
+There are more of examples in the `documentation <http://icspy.readthedocs.org/>`_
 
 Documentation
 -------------
