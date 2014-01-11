@@ -54,9 +54,7 @@ class TestCalendar(unittest.TestCase):
         e = Event(begin=0, end=30)
         c.events.append(e)
 
-        self.assertEqual('<Calendar with 1 event>', c.__unicode__())
-        if PY2:
-            self.assertEqual('<Calendar with 1 event>', unicode(c))
+        self.assertEqual('<Calendar with 1 event>', repr(c))
 
     def test_eq(self):
         c0 = Calendar()

@@ -73,7 +73,7 @@ class Calendar(Component):
             self._events = events
             self._creator = creator
 
-    def __unicode__(self):
+    def __urepr__(self):
         """Returns:
             unicode: representation (__repr__) of the calendar.
 
@@ -93,17 +93,11 @@ class Calendar(Component):
             >>> c = Calendar(); c.append(Event(name="My cool event"))
             >>> open('my.ics', 'w').writelines(c)
         """
-        if PY2:
-            for line in str(self).decode('utf-8').split('\n'):
-                yield (line + '\n').encode('utf-8')
-        else:
-            for line in str(self).split('\n'):
-                yield (line + '\n')
-
-    def __str__(self):
-        """Returns:
-        string: self as an iCalendar formatted string."""
-        return super(Calendar, self).__str__()
+        for line in self.__unicode__().split('\n'):
+            l = line + '\n'
+            if PY2:
+                l = l.encode('utf-8')
+            yield l
 
     def __eq__(self, other):
         if len(self.events) != len(other.events):

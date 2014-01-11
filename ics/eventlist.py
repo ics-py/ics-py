@@ -219,7 +219,7 @@ or None not '{}'".format(sl.step))
         ret._remove_duplicates()
         return ret
 
-    def __repr__(self):
+    def __urepr__(self):
         return "<EventList {}>".format(super(EventList, self).__repr__())
 
     def clone(self):

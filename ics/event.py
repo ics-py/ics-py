@@ -151,7 +151,7 @@ class Event(Component):
         return self._begin_precision == 'day' and not self.has_end()
 
     def make_all_day(self):
-        """Transforms slef to an all-day event.
+        """Transforms self to an all-day event.
 
         The day will be the day of self.begin.
         """
@@ -160,7 +160,7 @@ class Event(Component):
         self._duration = None
         self._end_time = None
 
-    def __unicode__(self):
+    def __urepr__(self):
         """Should not be used directly. Use self.__repr__ instead.
 
         Returns:
@@ -168,20 +168,11 @@ class Event(Component):
         """
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
-            return "<all-day Event {} :{}>".format(name,
-                                                   self.begin.strftime("%F"))
+            return "<all-day Event {} :{}>".format(name, self.begin.strftime("%F"))
         elif self.begin is None:
             return "<Event '{}'>".format(self.name) if self.name else "<Event>"
         else:
-            return "<Event {}begin:{} end:{}>".format(name,
-                                                      self.begin, self.end)
-
-    def __str__(self):
-        """
-        Returns:
-            string: self as an iCalendar formatted string.
-        """
-        return super(Event, self).__str__()
+            return "<Event {}begin:{} end:{}>".format(name, self.begin, self.end)
 
     def __lt__(self, other):
         if not isinstance(other, Event):
