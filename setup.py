@@ -65,5 +65,6 @@ setup(
     include_package_data=True,
     cmdclass={'test': PyTest},
     tests_require=['pytest', 'pytest-cov', 'pytest-flakes', 'pytest-pep8'],
-    zip_safe=False
+    test_suite="py.test",
+    zip_safe=False,
 )

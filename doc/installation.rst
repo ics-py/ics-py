@@ -10,7 +10,7 @@ The first step to using any software package is getting it properly installed.
 Distribute & Pip
 ----------------
 
-Installing Requests is simple with `pip <http://www.pip-installer.org/>`_::
+Installing ics.py is simple with `pip <http://www.pip-installer.org/>`_::
 
     $ pip install ics
 

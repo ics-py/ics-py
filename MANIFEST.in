@@ -1,7 +1,8 @@
 include README.rst
-include CHANGELOG
+include CHANGELOG.rst
 include LICENSE
-include AUTHORS
+include AUTHORS.rst
+include CONTRIBUTING.rst
 include meta.py
 include tests/fixtures/README
 
