@@ -31,6 +31,8 @@ Quickstart
 
     $ pip install ics
 
+
+
 .. code-block:: python
 
     >>> from ics import Calendar, Event
