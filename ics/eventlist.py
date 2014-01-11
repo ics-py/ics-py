@@ -16,17 +16,18 @@ from .event import Event
 
 class EventList(list):
 
-    """EventList is a subclass of the standard list.
+    """EventList is a subclass of the standard :class:`list`.
 
-    It can be used as a list but also has super slicing capabilities
-    and some helpers.
+    It can be used as a list but also has super slicing capabilities and some helpers.
     """
 
     def __init__(self, arg=[]):
-        """Instanciates a new EventList.
+        """Instanciates a new :class:`ics.eventlist.EventList`.
 
             Args:
                 arg (iterable): same argument as list() and pass it to list().
+            Raises:
+                ValueError: if `arg`contains elements which are not :class:`ics.event.Event`
         """
 
         super(EventList, self).__init__()
@@ -39,21 +40,21 @@ class EventList(list):
                 self.append(elem)
 
     def __getitem__(self, sl):
-        """Slices EventList.
+        """Slices :class:`ics.eventlist.EventList`.
 
         If sl is conventional (like [10], [4:12], [3:100:2], [::-1], …),\
-        it slices the EventList like a classical list().
+        it slices the :class:`ics.eventlist.EventList` like a classical list().
         If one of the 3 arguments ([start:stop:step]) is not None or an int,\
         slicing differs.
 
         In that case, `start` and `stop` are considerated like instants\
         (or None) and `step` like a modificator.
-        `start` and `stop` will be converted to Arrow objects (or None)\
-        with arrow.get().
+        `start` and `stop` will be converted to :class:`Arrow` objects (or None)\
+        with :func:`arrow.get`.
 
-        - start (arrow.get() compatible or Arrow or None): \
+        - start (:class:`Arrow-convertible`): \
         lower included bond,
-        - stop (arrow.get() compatible or Arrow or None): \
+        - stop (:class:`Arrow-convertible`): \
         upper, non included, bond.
 
         Modificators:
@@ -154,7 +155,7 @@ or None not '{}'".format(sl.step))
 
     def on(self, day, strict=False):
         """Args:
-            day (Arrow-convertible)
+            day (:class:`Arrow-convertible`)
             strict (bool): if True events will be returned only if they are\
             strictly *included* in `day`.
 
@@ -178,7 +179,7 @@ or None not '{}'".format(sl.step))
 
     def at(self, instant):
         """Args:
-            instant (Arrow-convertible)
+            instant (:class:`Arrow-convertible`)
         Returns:
             list<Event>: all events that are occuring during `instant`.
         """
@@ -190,7 +191,7 @@ or None not '{}'".format(sl.step))
 
     def concurrent(self, event):
         """Args:
-            event (Event)
+            event (:class:`ics.event.Event`)
         Returns:
             list<Event>: all events that are overlapping `event`
         """
@@ -208,8 +209,11 @@ or None not '{}'".format(sl.step))
                 seen.add(self[i])
 
     def __add__(self, *args, **kwargs):
-        """Add 2 `EventList`. Return a new `EventList` containing\
-        a copy of each `Event` in the union of both `EventLists`"""
+        """Add 2 :class:`ics.eventlist.EventList`.
+
+        Returns:
+            EventList: a new EventList containing\
+            a copy of each :class:`ics.event.Event` in the union of both EventList"""
         ret = super(EventList, self).__add__(*args, **kwargs)
         ret = EventList(ret)
         ret._remove_duplicates()
@@ -221,13 +225,13 @@ or None not '{}'".format(sl.step))
     def clone(self):
         """
         Returns:
-            Copy of `self` containing copies of underlying `Events`
+            Copy of `self` containing copies of underlying Event
         """
         events = map(lambda x: x.clone(), self)
         return EventList(events)
 
     def __setitem__(self, key, val):
-        """Set an item or a slice. Verifies that all items are instance of `Event`"""
+        """Set an item or a slice. Verifies that all items are instance of :class:`ics.event.Event`"""
         if isinstance(key, slice):
             acc = []
             for elem in val:
@@ -247,10 +251,12 @@ or None not '{}'".format(sl.step))
         return self.__setitem__(slice(i, j), val)
 
     def append(self, elem):
-        """Append a element to self and verifies that it's an `Event`.
+        """Append a element to self and verifies that it's an :class:`ics.event.Event`.
 
         Args:
             elem (Event): element to be appended
+        Raises:
+            ValueError: if `elem` is not a :class:`ics.event.Event`
         """
         if not isinstance(elem, Event):
             raise ValueError('EventList may only contain elements of type "Event" not {}'

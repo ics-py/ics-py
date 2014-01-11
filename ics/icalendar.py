@@ -35,15 +35,10 @@ class Calendar(Component):
     def __init__(self, imports=None, events=None, creator=None):
         """Instanciates a new Calendar.
 
-        Optional arguments:
-
-        - imports (string or list of lines/strings): \
-            data to be imported into the Calendar(),
-        - events (list of Events or EventList):
-            | If Events: will use to construct internal EventList,
-            | If EventList: will use event in place of creating \
-                a new internal EventList,
-        - creator (string): uid of the creator program.
+        Args:
+            imports (string or list of lines/strings): data to be imported into the Calendar(),
+            events (list of Events or EventList): will be casted to :class:`ics.eventlist.EventList`
+            creator (string): uid of the creator program.
 
         If `imports` is specified, __init__ ignores every other argument.
         """
@@ -79,7 +74,8 @@ class Calendar(Component):
             self._creator = creator
 
     def __unicode__(self):
-        """Return an unicode representation (__repr__) of the calendar.
+        """Returns:
+            unicode: representation (__repr__) of the calendar.
 
         Should not be used directly. Use self.__repr__ instead.
         """
@@ -87,12 +83,15 @@ class Calendar(Component):
             .format(len(self.events), "s" if len(self.events) > 1 else "")
 
     def __iter__(self):
-        """Returns an iterable version of __str__, line per line
+        """Returns:
+        iterable: an iterable version of __str__, line per line
         (with line-endings).
 
-        Can be used to write calendar to a file:
+        Example:
+            Can be used to write calendar to a file:
 
-            open('my.ics', 'w').writelines(calendar)
+            >>> c = Calendar(); c.append(Event(name="My cool event"))
+            >>> open('my.ics', 'w').writelines(c)
         """
         if PY2:
             for line in str(self).decode('utf-8').split('\n'):
@@ -102,7 +101,8 @@ class Calendar(Component):
                 yield (line + '\n')
 
     def __str__(self):
-        """Return the calendar as an iCalendar formatted string."""
+        """Returns:
+        string: self as an iCalendar formatted string."""
         return super(Calendar, self).__str__()
 
     def __eq__(self, other):
@@ -158,7 +158,10 @@ class Calendar(Component):
             self._creator = value
 
     def clone(self):
-        """Make an exact copy of self."""
+        """
+        Returns:
+            Calendar: an exact deep copy of self
+        """
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
         clone.events = self.events.clone()

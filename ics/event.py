@@ -28,7 +28,7 @@ class Event(Component):
 
     Can be full-day or between two instants.
     Can be defined by a beginning instant and\
-    a {duration,end instant}.
+    a duration *or* end instant.
     """
 
     _TYPE = "VEVENT"
@@ -44,7 +44,7 @@ class Event(Component):
                  description=None,
                  created=None,
                  location=None):
-        """Instanciates a new Event.
+        """Instanciates a new :class:`ics.event.Event`.
 
         Args:
             name (string)
@@ -93,8 +93,8 @@ class Event(Component):
     def begin(self):
         """Get or set the beginning of the event.
 
-        |  Will return an Arrow object.
-        |  May be set to anything that arrow.get() understands.
+        |  Will return an :class:`Arrow` object.
+        |  May be set to anything that :func:`Arrow.get` understands.
         |  If an end is defined (not a duration), .begin must not
             be set to a superior value.
         """
@@ -112,8 +112,8 @@ class Event(Component):
     def end(self):
         """Get or set the end of the event.
 
-        |  Will return an Arrow object.
-        |  May be set to anything that arrow.get() understands.
+        |  Will return an :class:`Arrow` object.
+        |  May be set to anything that :func:`Arrow.get` understands.
         |  If set to a non null value, removes any already
             existing duration.
         |  Setting to None will have unexpected behavior if
@@ -146,12 +146,12 @@ class Event(Component):
     def all_day(self):
         """
         Return:
-            bool: event is an all-day event
+            bool: self is an all-day event
         """
         return self._begin_precision == 'day' and not self.has_end()
 
     def make_all_day(self):
-        """Transforms an event to an all-day event.
+        """Transforms slef to an all-day event.
 
         The day will be the day of self.begin.
         """
