@@ -155,7 +155,7 @@ or None not '{}'".format(sl.step))
 
     def on(self, day, strict=False):
         """Args:
-            day (:class:`Arrow-convertible`)
+            day (Arrow-convertible)
             strict (bool): if True events will be returned only if they are\
             strictly *included* in `day`.
 
@@ -179,7 +179,8 @@ or None not '{}'".format(sl.step))
 
     def at(self, instant):
         """Args:
-            instant (:class:`Arrow-convertible`)
+            instant (Arrow-convertible)
+
         Returns:
             list<Event>: all events that are occuring during `instant`.
         """
@@ -191,7 +192,7 @@ or None not '{}'".format(sl.step))
 
     def concurrent(self, event):
         """Args:
-            event (:class:`ics.event.Event`)
+            event (Event)
         Returns:
             list<Event>: all events that are overlapping `event`
         """
