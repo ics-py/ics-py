@@ -208,7 +208,7 @@ or None not '{}'".format(sl.step))
                 seen.add(self[i])
 
     def __add__(self, *args, **kwargs):
-        """Add 2 `EventList`. Return a new `EventList` conataining\
+        """Add 2 `EventList`. Return a new `EventList` containing\
         a copy of each `Event` in the union of both `EventLists`"""
         ret = super(EventList, self).__add__(*args, **kwargs)
         ret = EventList(ret)
@@ -247,7 +247,7 @@ or None not '{}'".format(sl.step))
         return self.__setitem__(slice(i, j), val)
 
     def append(self, elem):
-        """Append a element to self and verifies that it's a `Event`.
+        """Append a element to self and verifies that it's an `Event`.
 
         Args:
             elem (Event): element to be appended

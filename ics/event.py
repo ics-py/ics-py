@@ -26,9 +26,9 @@ class Event(Component):
 
     """A calendar event.
 
-    |  Can be full-day or between two instants.
-    |  Can be defined by a beginning instant and
-        a {duration,end instant}.
+    Can be full-day or between two instants.
+    Can be defined by a beginning instant and\
+    a {duration,end instant}.
     """
 
     _TYPE = "VEVENT"
@@ -46,18 +46,18 @@ class Event(Component):
                  location=None):
         """Instanciates a new Event.
 
-        Optional arguments:
-            - name (string),
-            - begin (arrow.get() compatible or Arrow),
-            - end (arrow.get() compatible or Arrow),
-            - duration,
-            - uid (must be _unique_),
-            - description,
-            - created (arrow.get() compatible or Arrow),
-            - location.
+        Args:
+            name (string)
+            begin (Arrow-compatible)
+            end (Arrow-compatible)
+            duration (datetime.timedelta)
+            uid (string): must be unique
+            description (string)
+            created (Arrow-compatible)
+            location (string)
 
-        `end` and `duration` may not be specified at the same time
-        (raises ValueError).
+        Raises:
+            ValueError: if `end` and `duration` are specified at the same time
         """
 
         self._duration = None
@@ -83,7 +83,10 @@ class Event(Component):
             self._duration = duration
 
     def has_end(self):
-        """Bool: Event has an end."""
+        """
+        Return:
+            bool: self has an end
+        """
         return bool(self._end_time or self._duration)
 
     @property
@@ -141,7 +144,10 @@ class Event(Component):
 
     @property
     def all_day(self):
-        """Bool: event is an all-day event."""
+        """
+        Return:
+            bool: event is an all-day event
+        """
         return self._begin_precision == 'day' and not self.has_end()
 
     def make_all_day(self):
@@ -155,9 +161,10 @@ class Event(Component):
         self._end_time = None
 
     def __unicode__(self):
-        """Returns an unicode representation (__repr__) of the event.
+        """Should not be used directly. Use self.__repr__ instead.
 
-        Should not be used directly. Use self.__repr__ instead.
+        Returns:
+            unicode: a unicode representation (__repr__) of the event.
         """
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
@@ -170,7 +177,10 @@ class Event(Component):
                                                       self.begin, self.end)
 
     def __str__(self):
-        """Returns the event as an iCalendar formatted string."""
+        """
+        Returns:
+            string: self as an iCalendar formatted string.
+        """
         return super(Event, self).__str__()
 
     def __lt__(self, other):
@@ -218,13 +228,17 @@ class Event(Component):
         return self.uid == other.uid
 
     def clone(self):
-        """Make an exact copy of self."""
+        """
+        Returns:
+            Event: an exact copy of self"""
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
         return clone
 
     def __hash__(self):
-        """Returns a hash of self based on self.uid."""
+        """
+        Returns:
+            int: hash of self. Based on self.uid."""
         ord3 = lambda x: '%.3d' % ord(x)
         return int(''.join(map(ord3, self.uid)))
 
