@@ -95,18 +95,17 @@ class TestCalendar(unittest.TestCase):
 
     def test_eq(self):
         # TODO : better equality check
-        c0 = Calendar()
-        c1 = Calendar()
-        e = Event(begin=0, end=30)
+        c0, c1 = Calendar(), Calendar()
+        e = Event()
+
         c0.events.append(e)
         c1.events.append(e)
 
         self.assertEqual(c0, c1)
 
-    def test_eq_len(self):
-        c0 = Calendar()
-        c1 = Calendar()
-        e = Event(begin=0, end=30)
+    def test_neq_len(self):
+        c0, c1 = Calendar(), Calendar()
+        e = Event()
 
         c0.events.append(e)
         c0.events.append(e)
@@ -116,20 +115,18 @@ class TestCalendar(unittest.TestCase):
         self.assertNotEqual(c0, c1)
 
     def test_eq_len(self):
-        c0 = Calendar()
-        c1 = Calendar()
-        e = Event(begin=0, end=30)
+        c0, c1 = Calendar(), Calendar()
+        e = Event()
 
         c0.events.append(e)
         c1.events.append(e)
 
         self.assertEqual(c0, c1)
 
-    def test_not_eq(self):
-        c0 = Calendar()
-        c1 = Calendar()
-        e0 = Event(begin=0, end=30)
-        e1 = Event(begin=0, end=30)
+    def test_neq(self):
+        c0, c1 = Calendar(), Calendar()
+        e0, e1 = Event(), Event()
+
         c0.events.append(e0)
         c1.events.append(e1)
 
