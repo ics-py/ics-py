@@ -27,9 +27,9 @@ class Event(Component):
 
     """A calendar event.
 
-    |  Can be full-day or between two instants.
-    |  Can be defined by a beginning instant and
-        a {duration,end instant}.
+    Can be full-day or between two instants.
+    Can be defined by a beginning instant and\
+    a duration *or* end instant.
     """
 
     _TYPE = "VEVENT"
@@ -45,20 +45,20 @@ class Event(Component):
                  description=None,
                  created=None,
                  location=None):
-        """Instanciates a new Event.
+        """Instanciates a new :class:`ics.event.Event`.
 
-        Optional arguments:
-            - name (string),
-            - begin (arrow.get() compatible or Arrow),
-            - end (arrow.get() compatible or Arrow),
-            - duration,
-            - uid (must be _unique_),
-            - description,
-            - created (arrow.get() compatible or Arrow),
-            - location.
+        Args:
+            name (string)
+            begin (Arrow-compatible)
+            end (Arrow-compatible)
+            duration (datetime.timedelta)
+            uid (string): must be unique
+            description (string)
+            created (Arrow-compatible)
+            location (string)
 
-        `end` and `duration` may not be specified at the same time
-        (raises ValueError).
+        Raises:
+            ValueError: if `end` and `duration` are specified at the same time
         """
 
         self._duration = None
@@ -84,15 +84,18 @@ class Event(Component):
             self._duration = duration
 
     def has_end(self):
-        """Bool: Event has an end."""
+        """
+        Return:
+            bool: self has an end
+        """
         return bool(self._end_time or self._duration)
 
     @property
     def begin(self):
         """Get or set the beginning of the event.
 
-        |  Will return an Arrow object.
-        |  May be set to anything that arrow.get() understands.
+        |  Will return an :class:`Arrow` object.
+        |  May be set to anything that :func:`Arrow.get` understands.
         |  If an end is defined (not a duration), .begin must not
             be set to a superior value.
         """
@@ -110,8 +113,8 @@ class Event(Component):
     def end(self):
         """Get or set the end of the event.
 
-        |  Will return an Arrow object.
-        |  May be set to anything that arrow.get() understands.
+        |  Will return an :class:`Arrow` object.
+        |  May be set to anything that :func:`Arrow.get` understands.
         |  If set to a non null value, removes any already
             existing duration.
         |  Setting to None will have unexpected behavior if
@@ -165,11 +168,14 @@ class Event(Component):
 
     @property
     def all_day(self):
-        """Bool: event is an all-day event."""
+        """
+        Return:
+            bool: self is an all-day event
+        """
         return self._begin_precision == 'day' and not self.has_end()
 
     def make_all_day(self):
-        """Transforms an event to an all-day event.
+        """Transforms self to an all-day event.
 
         The day will be the day of self.begin.
         """
@@ -178,24 +184,19 @@ class Event(Component):
         self._duration = None
         self._end_time = None
 
-    def __unicode__(self):
-        """Returns an unicode representation (__repr__) of the event.
+    def __urepr__(self):
+        """Should not be used directly. Use self.__repr__ instead.
 
-        Should not be used directly. Use self.__repr__ instead.
+        Returns:
+            unicode: a unicode representation (__repr__) of the event.
         """
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
-            return "<all-day Event {} :{}>".format(name,
-                                                   self.begin.strftime("%F"))
+            return "<all-day Event {} :{}>".format(name, self.begin.strftime("%F"))
         elif self.begin is None:
             return "<Event '{}'>".format(self.name) if self.name else "<Event>"
         else:
-            return "<Event {}begin:{} end:{}>".format(name,
-                                                      self.begin, self.end)
-
-    def __str__(self):
-        """Returns the event as an iCalendar formatted string."""
-        return super(Event, self).__str__()
+            return "<Event {}begin:{} end:{}>".format(name, self.begin, self.end)
 
     def __lt__(self, other):
         if not isinstance(other, Event):
@@ -242,13 +243,17 @@ class Event(Component):
         return self.uid == other.uid
 
     def clone(self):
-        """Make an exact copy of self."""
+        """
+        Returns:
+            Event: an exact copy of self"""
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
         return clone
 
     def __hash__(self):
-        """Returns a hash of self based on self.uid."""
+        """
+        Returns:
+            int: hash of self. Based on self.uid."""
         ord3 = lambda x: '%.3d' % ord(x)
         return int(''.join(map(ord3, self.uid)))
 
@@ -340,20 +345,14 @@ def o_start(event, container):
 @Event._outputs
 def o_duration(event, container):
     # TODO : DURATION
-    if not event.begin:
-        raise ValueError(
-            'An event with a duration but no start cannot be exported')
-    if event._duration:
+    if event._duration and event.begin:
         representation = timedelta_to_duration(event._duration)
         container.append(ContentLine('DURATION', value=representation))
 
 
 @Event._outputs
 def o_end(event, container):
-    if not event.begin:
-        raise ValueError(
-            'An event with an end but no start cannot be exported')
-    if event._end_time:
+    if event.begin and event._end_time:
         container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
 
 

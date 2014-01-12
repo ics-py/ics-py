@@ -76,12 +76,11 @@ class Component(object):
         return fn
 
     def __repr__(self):
-        """ - In python2: returns self.__unicode__() encoded into utf-8.
-            - In python3: returns self.__unicode__()
+        """ - In python2: returns self.__urepr__() encoded into utf-8.
+            - In python3: returns self.__urepr__()
         """
-        if hasattr(self, '__unicode__'):
-            return self.__unicode__().encode('utf-8') \
-                if PY2 else self.__unicode__()
+        if hasattr(self, '__urepr__'):
+            return self.__urepr__().encode('utf-8') if PY2 else self.__urepr__()
         else:
             super(Component, self).__repr__()
 

@@ -9,7 +9,3 @@
 
 0.1.3 :
 	- FIX : broken install. Again.
-
-0.2:
-	- ADD : changelog
-	- FIX : missing PRODID in case of empty Calendar.creator

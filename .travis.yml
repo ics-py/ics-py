@@ -1,18 +1,24 @@
 language: python
+
 python:
   - "2.7"
   - "3.3"
-# command to install dependencies
-install: 
-  - "pip install -r requirements.txt"
-  - "pip install -r requirements-test.txt"
-  - "pip install python-coveralls"
-# command to run tests
-script: 
+
+install:
+  - "./dev/travis-install"
+
+script:
   - "python setup.py test"
+
 after_success:
   - "coveralls"
+
+env:
+  global:
+    secure: "MtnNUn03t6ti+SicsW0gpLcDlCepgTQw+SO2yiF5BQX9H+BG1SCLd+EPBKN6lKi5Z9bqJdvb2OntUGKUFDKcS1RjyM4RXsjCie+zPekddGL7IiGJCLijzKRgJTnw7XzOBQOPImb/8rkafXWdbEyvvTomQ7i290AfexSkyuWxusc="
+
 notifications:
+  email: false
   irc:
     channels:
       - "chat.freenode.net#icspy"
