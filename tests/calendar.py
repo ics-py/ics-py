@@ -132,6 +132,10 @@ class TestCalendar(unittest.TestCase):
 
         self.assertNotEqual(c0, c1)
 
+    def test_neq_creator(self):
+        c0, c1 = Calendar(), Calendar(creator="test")
+        self.assertNotEqual(c0, c1)
+
     def test_creator(self):
 
         c0 = Calendar()

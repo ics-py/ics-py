@@ -105,11 +105,14 @@ class Calendar(Component):
         for i in range(len(self.events)):
             if not self.events[i] == other.events[i]:
                 return False
-        for attr in ('_unused', 'scale', 'method'):
+        for attr in ('_unused', 'scale', 'method', 'creator'):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
                 return False
 
         return True
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     @property
     def events(self):
