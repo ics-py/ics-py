@@ -8,6 +8,7 @@ from six.moves import filter, map, range
 
 import arrow
 import copy
+from datetime import timedelta
 
 from .component import Component
 from .utils import (
@@ -141,6 +142,29 @@ class Event(Component):
         self._end_time = value
         if value:
             self._duration = None
+
+    @property
+    def duration(self):
+        """Get or set the duration of the event.
+
+        |  Will return a timedelta object.
+        |  May be set to anything that timedelta() understands.
+        |  May be set with a dict ({"days":2, "hours":6}).
+        |  If set to a non null value, removes any already
+            existing end time.
+        """
+        return self._duration
+
+    @duration.setter
+    def duration(self, value):
+        if type(value) is dict:
+            value = timedelta(**value)
+        else:
+            value = timedelta(value)
+
+        self._duration = value
+        if value:
+            self._end_time = None
 
     @property
     def all_day(self):

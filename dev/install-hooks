@@ -1,4 +1,5 @@
 #!/bin/bash
+
 pushd ./$(git rev-parse --show-cdup) > /dev/null
 for file in "post-checkout" "prepare-commit-msg"; do
     ln -s "../../dev/$file" ".git/hooks/$file"
