@@ -145,15 +145,9 @@ class Calendar(Component):
 
     @creator.setter
     def creator(self, value):
-        if isinstance(value, string_types) and PY2:
-            self._creator = unicode(value)
-        elif isinstance(value, text_type):
-            self._creator = value
-        else:
-            value = str(value)
-            if PY2:
-                value = unicode(value)
-            self._creator = value
+        if not isinstance(value, text_type):
+            raise ValueError('Event.creator must be unicode data not {}'.format(type(value)))
+        self._creator = value
 
     def clone(self):
         """

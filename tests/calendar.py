@@ -107,12 +107,23 @@ class TestCalendar(unittest.TestCase):
         c0 = Calendar()
         c1 = Calendar()
         e = Event(begin=0, end=30)
+
+        c0.events.append(e)
+        c0.events.append(e)
+
+        c1.events.append(e)
+
+        self.assertNotEqual(c0, c1)
+
+    def test_eq_len(self):
+        c0 = Calendar()
+        c1 = Calendar()
+        e = Event(begin=0, end=30)
+
         c0.events.append(e)
         c1.events.append(e)
 
-        c0.events.append(e)
-
-        self.assertNotEqual(c0, c1)
+        self.assertEqual(c0, c1)
 
     def test_not_eq(self):
         c0 = Calendar()
@@ -128,21 +139,18 @@ class TestCalendar(unittest.TestCase):
 
         c0 = Calendar()
         c1 = Calendar()
-        c2 = Calendar()
         c0.creator = u'42'
-        c1.creator = 42
-        c2.creator = '42'
+        with self.assertRaises(ValueError):
+            c1.creator = 42
 
         self.assertEqual(c0.creator, u'42')
-        self.assertEqual(c1.creator, u'42')
-        self.assertEqual(c2.creator, u'42')
 
     def test_existing_creator(self):
         c = Calendar(cal1)
         self.assertEqual(c.creator, u'-//Apple Inc.//Mac OS X 10.9//EN')
 
-        c.creator = "apple_is_a_fruit"
-        self.assertEqual(c.creator, "apple_is_a_fruit")
+        c.creator = u"apple_is_a_fruit"
+        self.assertEqual(c.creator, u"apple_is_a_fruit")
 
     def test_scale(self):
 
