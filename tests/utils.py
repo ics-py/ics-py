@@ -1,7 +1,9 @@
 import unittest
 from datetime import timedelta
-from ics.parse import ParseError
-from ics.utils import parse_duration, timedelta_to_duration
+from ics.parse import ParseError, Container, string_to_container
+from ics.utils import parse_duration, timedelta_to_duration, remove_x, iso_to_arrow
+
+from tests.fixture import cal1, cal2
 
 
 class TestParseDuration(unittest.TestCase):
@@ -60,3 +62,24 @@ class TestTimedeltaToDuration(unittest.TestCase):
 
     def test_combined(self):
         self.run_on_dataset(self.dataset_combined)
+
+
+class TestRemoveX(unittest.TestCase):
+
+    def test_with_x(self):
+        c = string_to_container(cal1)[0]
+        remove_x(c)
+        for line in c:
+            self.assertFalse(line.name.startswith('X-'))
+
+    def test_without_x(self):
+        c = string_to_container(cal2)[0]
+        c2 = string_to_container(cal2)[0]
+        remove_x(c)
+        self.assertSequenceEqual(c, c2)
+
+
+class TestIso_to_arrow(unittest.TestCase):
+
+    def test_none(self):
+        self.assertIs(None, iso_to_arrow(None))
