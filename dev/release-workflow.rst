@@ -10,5 +10,7 @@ Release HOWTO
 * Check PyPI release page for obvious errors
 * `git commit`
 * `git tag -a v{version} -m 'Version {version}'`
+* Set version to "{version+1}-dev"
+* `git commit`
 * `git push --tags && git push`
 
