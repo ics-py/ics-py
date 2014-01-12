@@ -112,7 +112,7 @@ class TestEventList(unittest.TestCase):
     def test_getitem_arrow(self):
 
         l = EventList()
-        t = arrow.now()
+        t = arrow.get("20130303T101010")
 
         e = Event("t", t.replace(hours=-1), t.replace(hours=+1))
         l.append(e)

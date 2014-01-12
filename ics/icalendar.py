@@ -93,7 +93,7 @@ class Calendar(Component):
             >>> c = Calendar(); c.append(Event(name="My cool event"))
             >>> open('my.ics', 'w').writelines(c)
         """
-        for line in self.__unicode__().split('\n'):
+        for line in str(self).split('\n'):
             l = line + '\n'
             if PY2:
                 l = l.encode('utf-8')
@@ -105,6 +105,10 @@ class Calendar(Component):
         for i in range(len(self.events)):
             if not self.events[i] == other.events[i]:
                 return False
+        for attr in ('_unused', 'scale', 'method'):
+            if self.__getattribute__(attr) != other.__getattribute__(attr):
+                return False
+
         return True
 
     @property
