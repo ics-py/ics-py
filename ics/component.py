@@ -34,7 +34,7 @@ class Component(object):
 
     def _populate(self, container):
         if container.name != self._TYPE:
-            raise ValueError("container isn't an {}".format(), self.TYPE)
+            raise ValueError("container isn't an {}".format(self._TYPE))
 
         for extractor in self._EXTRACTORS:
             lines = get_lines(container, extractor.type)
