@@ -193,7 +193,7 @@ def version(calendar, line):
 def scale(calendar, line):
     calscale = line
     if calscale:
-        calendar.scale = calscale.value
+        calendar.scale = calscale.value.lower()
         calendar.scale_params = calscale.params
     else:
         calendar.scale = 'georgian'
