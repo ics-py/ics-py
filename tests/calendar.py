@@ -47,7 +47,7 @@ class TestCalendar(unittest.TestCase):
             s = str(c)
             self.assertIsInstance(c, Iterable)
             i_with_no_lr = map(lambda x: x.rstrip('\n'), c)
-            self.assertSequenceEqual(s.split('\n'), i_with_no_lr)
+            self.assertSequenceEqual(s.split('\n'), list(i_with_no_lr))
 
     def test_eventlist_is_same(self):
         c = Calendar()
@@ -70,17 +70,6 @@ class TestCalendar(unittest.TestCase):
         self.assertIsNot(c.events, l)
         self.assertIsInstance(c.events, EventList)
         self.assertSequenceEqual(c.events, l)
-
-    def test_imports(self):
-        c = Calendar(cal1)
-        self.assertEqual(c.creator, '-//Apple Inc.//Mac OS X 10.9//EN')
-        self.assertEqual(c.method, 'PUBLISH')
-        self.assertIsInstance(c.events, EventList)
-        e = c.events[0]
-        self.assertFalse(e.all_day)
-        self.assertEqual(arrow.get(2013, 10, 29, 9, 30), e.begin)
-        self.assertEqual(arrow.get(2013, 10, 29, 10, 30), e.end)
-        self.assertEqual(1, len(c.events))
 
     def test_events(self):
         e = Event(begin=0, end=30)
@@ -217,6 +206,17 @@ class TestCalendar(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             c.events = 42
+
+    def test_imports(self):
+        c = Calendar(cal1)
+        self.assertEqual(c.creator, '-//Apple Inc.//Mac OS X 10.9//EN')
+        self.assertEqual(c.method, 'PUBLISH')
+        self.assertIsInstance(c.events, EventList)
+        e = c.events[0]
+        self.assertFalse(e.all_day)
+        self.assertEqual(arrow.get(2013, 10, 29, 9, 30), e.begin)
+        self.assertEqual(arrow.get(2013, 10, 29, 10, 30), e.end)
+        self.assertEqual(1, len(c.events))
 
     # def test_events_set_string(self):
 
