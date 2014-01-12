@@ -41,16 +41,16 @@ Quickstart
     >>> c.events
     [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
 
-More examples are available in the `documentation <http://icspy.readthedocs.org/>`_
+More examples are available in the `documentation <http://icspy.readthedocs.org/>`_.
 
 Documentation
 -------------
 
-All the documentation (examples, api, about, ...) is hosted on readthedocs.org and is updated automaticaly at every commit.
-Go and `get it <http://icspy.readthedocs.org/>`_ !
+All the documentation (examples, api, about…) is hosted on readthedocs.org and is updated automaticaly at every commit.
+Go and `get it <http://icspy.readthedocs.org/>`_!
 
 
 Contribute
 ----------
 
-Contribution are welcome of course ! More info over `there <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_ (or in the doc.)
+Contribution are welcome of course! More info over `there <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_ (or in the doc).
