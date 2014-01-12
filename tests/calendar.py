@@ -42,7 +42,7 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(c.__urepr__(), repr(c))
 
     def test_iter(self):
-        for i, fix in enumerate(self.fixtures):
+        for fix in self.fixtures:
             c = Calendar(imports=fix)
             s = str(c)
             self.assertIsInstance(c, Iterable)
@@ -72,23 +72,21 @@ class TestCalendar(unittest.TestCase):
         self.assertSequenceEqual(c.events, l)
 
     def test_events(self):
-        e = Event(begin=0, end=30)
+        e = Event()
         c = Calendar()
         c.events.append(e)
         d = Calendar(events=c.events)
-        self.assertEqual(1, len(d.events))
-        self.assertEqual(e, d.events[0])
+        self.assertIs(c.events, d.events)
+        self.assertSequenceEqual([e], d.events)
+        self.assertIs(e, d.events[0])
 
     def test_selfload(self):
-        c = Calendar(cal1)
-        d = Calendar(str(c))
-        self.assertEqual(c, d)
-        for i in range(len(c.events)):
-            e, f = c.events[i], d.events[i]
-            self.assertEqual(e, f)
-            self.assertEqual(e.begin, f.begin)
-            self.assertEqual(e.end, f.end)
-            self.assertEqual(e.name, f.name)
+        for fix in self.fixtures:
+            c = Calendar(fix)
+            d = Calendar(str(c))
+            self.assertEqual(str(c), str(d))
+            self.assertEqual(c, d)
+            self.assertSequenceEqual(c.events, d.events)
 
     def test_unicode(self):
         c = Calendar()
