@@ -1,0 +1,16 @@
+echo "Downloading wheels"
+wget -4 http://travis.nikitamarchant.com/$TRAVIS_PYTHON_VERSION -O /tmp/wheels$TRAVIS_PYTHON_VERSION.tar
+if [ $? -eq 0 ]; then
+    echo "Extracting wheels"
+    pushd /tmp/
+    tar xvf wheels$TRAVIS_PYTHON_VERSION.tar
+    popd
+else
+    echo "Wheels not present, making cache !"
+    ./make_cache
+fi
+
+echo "Installing wheels"
+pip install --use-wheel --no-index --find-links=/tmp/wheelhouse$(echo $TRAVIS_PYTHON_VERSION) pytest pytest-cov pytest-flakes pytest-pep8 python-dateutil arrow six>1.5 python-coveralls
+
+echo "=========== Install finished ================="
