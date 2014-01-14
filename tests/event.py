@@ -1,5 +1,6 @@
 import unittest
 from datetime import timedelta
+import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
 from .fixture import cal12, cal13
@@ -55,3 +56,34 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.begin, begin)
         self.assertEqual(e._end_time, None)
         self.assertEqual(e._duration, None)
+
+    def test_init_duration_end(self):
+        with self.assertRaises(ValueError):
+            Event(name="plop", begin=0, end=10, duration=1)
+
+    def test_end_before_begin(self):
+        e = Event(begin="2013/10/10")
+        with self.assertRaises(ValueError):
+            e.end = "1999/10/10"
+
+    def test_begin_after_end(self):
+        e = Event(end="19991010")
+        with self.assertRaises(ValueError):
+            e.begin = "2013/10/10"
+
+    def test_end_with_prescision(self):
+        e = Event(begin="1999/10/10")
+        e._begin_precision = "day"
+        self.assertEqual(e.end, arrow.get("1999/10/11"))
+
+    def test_plain_repr(self):
+        self.assertEqual(repr(Event()), "<Event>")
+
+    def test_all_day_repr(self):
+        e = Event(name='plop', begin="1999/10/10")
+        e.make_all_day()
+        self.assertEqual(repr(e), "<all-day Event 'plop'  :1999-10-10>")
+
+    def test_repr(self):
+        e = Event(name='plop', begin="1999/10/10")
+        self.assertEqual(repr(e), "<Event 'plop' begin:1999-10-10T00:00:00+00:00 end:1999-10-10T00:00:01+00:00>")
