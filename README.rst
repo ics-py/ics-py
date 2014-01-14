@@ -1,6 +1,8 @@
 Ics.py : iCalendar for Humans
 =============================
 
+`Original repository <https://github.com/C4ptainCrunch/ics.py>`_ (GitHub) - `Bugtracker and issues <https://github.com/C4ptainCrunch/ics.py/issues>`_ (GitHub) - `PyPi package <https://pypi.python.org/pypi/ics/>`_ (ics) - `Documentation <http://icspy.readthedocs.org/>`_ (Read The Docs).
+
 .. image:: https://travis-ci.org/C4ptainCrunch/ics.py.png?branch=master
    :target: https://travis-ci.org/C4ptainCrunch/ics.py
 
@@ -54,3 +56,12 @@ Contribute
 ----------
 
 Contribution are welcome of course! More info over `there <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_ (or in the doc).
+
+
+Links
+-----
+`Rfc5545 <http://tools.ietf.org/html/rfc5545>`_- `Vulgarisated RFC <http://www.kanzaki.com/docs/ical/>`_
+
+.. image:: https://i.imgur.com/8iYDvvy.jpg
+    :target: https://github.com/C4ptainCrunch/ics.py
+    :alt: Parse ALL the calendars !
