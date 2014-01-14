@@ -290,7 +290,7 @@ def start(event, line):
 def duration(event, line):
     if line:
         #TODO: DRY [1]
-        if event._end_time:
+        if event._end_time: # pragma: no cover
             raise ValueError("An event can't have both DTEND and DURATION")
         event._duration = parse_duration(line.value)
 
