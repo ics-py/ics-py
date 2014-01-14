@@ -192,7 +192,7 @@ class Event(Component):
         """
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
-            return "<all-day Event {} :{}>".format(name, self.begin.strftime("%F"))
+            return "<all-day Event {}{}>".format(name, self.begin.strftime("%F"))
         elif self.begin is None:
             return "<Event '{}'>".format(self.name) if self.name else "<Event>"
         else:

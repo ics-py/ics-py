@@ -82,7 +82,11 @@ class TestEvent(unittest.TestCase):
     def test_all_day_repr(self):
         e = Event(name='plop', begin="1999/10/10")
         e.make_all_day()
-        self.assertEqual(repr(e), "<all-day Event 'plop'  :1999-10-10>")
+        self.assertEqual(repr(e), "<all-day Event 'plop' 1999-10-10>")
+
+    def test_name_repr(self):
+        e = Event(name='plop')
+        self.assertEqual(repr(e), "<Event 'plop'>")
 
     def test_repr(self):
         e = Event(name='plop', begin="1999/10/10")
