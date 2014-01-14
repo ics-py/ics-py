@@ -105,7 +105,6 @@ class TestComponent(unittest.TestCase):
         unused.append(ContentLine(name="PLOP", value="plip"))
 
         c = CT2._from_container(cont)
-        self.assertEqual(c._unused.name, "TEST")
         self.assertEqual(c.some_attr, "anything")
         self.assertEqual(unused, c._unused)
 
@@ -116,6 +115,40 @@ class TestComponent(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             CT1._from_container(cont)
+
+    def test_multiple(self):
+        cont = Container("TEST")
+        cont.append(ContentLine(name="ATTR", value="anything"))
+        cont.append(ContentLine(name="ATTR", value="plip"))
+
+        c = CT3._from_container(cont)
+
+        self.assertEqual(c.some_attr, "plip, anything")
+        self.assertEqual(Container("TEST"), c._unused)
+
+    def test_multiple_fail(self):
+        cont = Container("TEST")
+
+        c = CT3._from_container(cont)
+
+        self.assertEqual(c.some_attr, "biiip")
+        self.assertEqual(Container("TEST"), c._unused)
+
+    def test_multiple_unique(self):
+        cont = Container("TEST")
+        cont.append(ContentLine(name="ATTR", value="anything"))
+
+        c = CT3._from_container(cont)
+
+        self.assertEqual(c.some_attr, "anything")
+        self.assertEqual(Container("TEST"), c._unused)
+
+    def test_multiple_unique_required(self):
+        cont = Container("TEST")
+        cont.append(ContentLine(name="OTHER", value="anything"))
+
+        with self.assertRaises(ValueError):
+            CT4._from_container(cont)
 
 
 class ComponentBaseTest(Component):
