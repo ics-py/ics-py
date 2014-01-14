@@ -15,12 +15,16 @@ Ics.py : iCalendar for Humans
     :alt: Apache 2 License
 
 
-Ics.py is a pythonic and easy iCalendar (rfc5545) library. It's goals are to read and write ics data in a developper-friendly way.
+Ics.py is a pythonic and easy iCalendar library. It's goals are to read and write ics data in a developper friendly way.
 
-Ics.py is available for Python2 (>=2.7) *and* Python3 (>=3.3) and is Apache2 Licensed.
+iCalendar is a widely-used and useful format but not user friendly. Ics.py is there to give you the ability of creating and reading this format without any knowledge of it.
 
-iCalendar is complicated, you don't like RFCs but you want/have to use the ics format and you love pythonic APIs?
-Ics.py is for you!
+It should be able to parse every calendar that respects the `rfc5545 <http://tools.ietf.org/html/rfc5545>`_ and maybe some more... It also outputs rfc compliant calendars.
+
+iCalendar (file extension `.ics`) is used (for example) by Sunbird, Google Calendar, Apple Calendar, Android ...
+
+
+Ics.py is available for Python>=2.7 *and* Python>=3.3 and is Apache2 Licensed.
 
 
 Quickstart
@@ -42,26 +46,35 @@ Quickstart
     >>> c.events.append(e)
     >>> c.events
     [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
+    >>> with open('my.ics', 'w') as my_file:
+    >>>     my_file.writelines(c)
+    >>> # and it's done !
 
 More examples are available in the `documentation <http://icspy.readthedocs.org/>`_.
 
 Documentation
 -------------
 
-All the documentation (examples, api, about…) is hosted on readthedocs.org and is updated automaticaly at every commit.
-Go and `get it <http://icspy.readthedocs.org/>`_!
+All the `documentation <http://icspy.readthedocs.org/>`_ is hosted on `readthedocs.org <http://readthedocs.org/>`_ and is updated automaticaly at every commit.
+
+* `Quickstart <http://icspy.readthedocs.org/>`_
+* `API <http://icspy.readthedocs.org/en/latest/api.html>`_
+* `About <http://icspy.readthedocs.org/en/latest/about.html>`_
 
 
 Contribute
 ----------
 
-Contribution are welcome of course! More info over `there <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_ (or in the doc).
+Contribution are welcome of course! For more information, see `contributing <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_.
 
 
 Links
 -----
-`Rfc5545 <http://tools.ietf.org/html/rfc5545>`_- `Vulgarisated RFC <http://www.kanzaki.com/docs/ical/>`_
+* `rfc5545 <http://tools.ietf.org/html/rfc5545>`_
+* `Vulgarisated RFC <http://www.kanzaki.com/docs/ical/>`_
 
 .. image:: https://i.imgur.com/8iYDvvy.jpg
     :target: https://github.com/C4ptainCrunch/ics.py
     :alt: Parse ALL the calendars !
+    :align: center
+
