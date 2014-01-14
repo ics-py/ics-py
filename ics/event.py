@@ -64,7 +64,7 @@ class Event(Component):
         self._duration = None
         self._end_time = None
         self._begin = None
-        self._begin_precision = 'day'
+        self._begin_precision = None
         self.uid = uid_gen() if not uid else uid
         self.description = description
         self.created = get_arrow(created)
@@ -153,7 +153,12 @@ class Event(Component):
         |  If set to a non null value, removes any already
             existing end time.
         """
-        return self._duration
+        if self._duration:
+            return self._duration
+        elif self.end:
+            return self.end - self.begin
+        else:
+            return None
 
     @duration.setter
     def duration(self, value):

@@ -3,6 +3,7 @@ from datetime import timedelta
 import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
+from ics.parse import Container
 from .fixture import cal12, cal13
 
 
@@ -91,3 +92,44 @@ class TestEvent(unittest.TestCase):
     def test_repr(self):
         e = Event(name='plop', begin="1999/10/10")
         self.assertEqual(repr(e), "<Event 'plop' begin:1999-10-10T00:00:00+00:00 end:1999-10-10T00:00:01+00:00>")
+
+    def test_init(self):
+        e = Event()
+
+        self.assertEqual(e._duration, None)
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e._begin, None)
+        self.assertEqual(e._begin_precision, 'second')
+        self.assertNotEqual(e.uid, None)
+        self.assertEqual(e.description, None)
+        self.assertEqual(e.created, None)
+        self.assertEqual(e.location, None)
+        self.assertEqual(e._unused, Container(name='VEVENT'))
+
+    def test_has_end(self):
+        e = Event()
+        self.assertFalse(e.has_end())
+        e = Event(begin="1993/05/24", duration=10)
+        self.assertTrue(e.has_end())
+        e = Event(begin="1993/05/24", end="1999/10/11")
+        self.assertTrue(e.has_end())
+        e = Event(begin="1993/05/24")
+        e.make_all_day()
+        self.assertFalse(e.has_end())
+
+    def test_duration(self):
+        e = Event()
+        self.assertIsNone(e.duration)
+
+        e1 = Event(begin="1993/05/24")
+        e1.make_all_day()
+        self.assertEqual(e1.duration, timedelta(days=1))
+
+        e2 = Event(begin="1993/05/24", end="1993/05/30")
+        self.assertEqual(e2.duration, timedelta(days=6))
+
+        e3 = Event(begin="1993/05/24", duration=timedelta(minutes=1))
+        self.assertEqual(e3.duration, timedelta(minutes=1))
+
+        e4 = Event(begin="1993/05/24")
+        self.assertEqual(e4.duration, timedelta(seconds=1))
