@@ -9,7 +9,7 @@ from ics.icalendar import Calendar
 from ics.event import Event
 from ics.eventlist import EventList
 
-from .fixture import cal1, cal2, cal10, cal12
+from .fixture import cal1, cal2, cal10, cal12, cal14
 
 
 class TestCalendar(unittest.TestCase):
@@ -25,6 +25,17 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(c.scale, None)
         self.assertEqual(c._unused, Container(name='VCALENDAR'))
         self.assertEqual(c._timezones, {})
+
+    def test_selfload(self):
+        for fix in self.fixtures:
+            c = Calendar(fix)
+            d = Calendar(str(c))
+            self.assertEqual(c, d)
+            self.assertSequenceEqual(c.events, d.events)
+
+            e = Calendar(str(d))
+            # cannot compare str(c) and str(d) because times are encoded differently
+            self.assertEqual(str(d), str(e))
 
     def test_urepr(self):
         # TODO : more cases
@@ -42,7 +53,7 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(c.__urepr__(), repr(c))
 
     def test_iter(self):
-        for i, fix in enumerate(self.fixtures):
+        for fix in self.fixtures:
             c = Calendar(imports=fix)
             s = str(c)
             self.assertIsInstance(c, Iterable)
@@ -71,104 +82,76 @@ class TestCalendar(unittest.TestCase):
         self.assertIsInstance(c.events, EventList)
         self.assertSequenceEqual(c.events, l)
 
-    def test_events(self):
-        e = Event(begin=0, end=30)
+    def test_eventlist_move(self):
+        e = Event()
         c = Calendar()
         c.events.append(e)
+
         d = Calendar(events=c.events)
-        self.assertEqual(1, len(d.events))
-        self.assertEqual(e, d.events[0])
 
-    def test_selfload(self):
-        c = Calendar(cal1)
-        d = Calendar(str(c))
-        self.assertEqual(c, d)
-        for i in range(len(c.events)):
-            e, f = c.events[i], d.events[i]
-            self.assertEqual(e, f)
-            self.assertEqual(e.begin, f.begin)
-            self.assertEqual(e.end, f.end)
-            self.assertEqual(e.name, f.name)
-
-    def test_unicode(self):
-        c = Calendar()
-        e = Event(begin=0, end=30)
-        c.events.append(e)
-
-        self.assertEqual('<Calendar with 1 event>', repr(c))
+        self.assertIs(c.events, d.events)
+        self.assertSequenceEqual([e], d.events)
+        self.assertIs(e, d.events[0])
 
     def test_eq(self):
-        c0 = Calendar()
-        c1 = Calendar()
-        e = Event(begin=0, end=30)
+        # TODO : better equality check
+        c0, c1 = Calendar(), Calendar()
+        e = Event()
+
         c0.events.append(e)
         c1.events.append(e)
 
         self.assertEqual(c0, c1)
 
-    def test_eq_len(self):
-        c0 = Calendar()
-        c1 = Calendar()
-        e = Event(begin=0, end=30)
-        c0.events.append(e)
-        c1.events.append(e)
+    def test_neq_len(self):
+        c0, c1 = Calendar(), Calendar()
+        e = Event()
 
         c0.events.append(e)
+        c0.events.append(e)
+
+        c1.events.append(e)
 
         self.assertNotEqual(c0, c1)
 
-    def test_not_eq(self):
-        c0 = Calendar()
-        c1 = Calendar()
-        e0 = Event(begin=0, end=30)
-        e1 = Event(begin=0, end=30)
+    def test_eq_len(self):
+        c0, c1 = Calendar(), Calendar()
+        e = Event()
+
+        c0.events.append(e)
+        c1.events.append(e)
+
+        self.assertEqual(c0, c1)
+
+    def test_neq(self):
+        c0, c1 = Calendar(), Calendar()
+        e0, e1 = Event(), Event()
+
         c0.events.append(e0)
         c1.events.append(e1)
 
         self.assertNotEqual(c0, c1)
 
-    def test_clone(self):
-        c0 = Calendar()
-        e = Event()
-        c0.events.append(e)
-        c1 = c0.clone()
-
-        self.assertTrue(len(c0.events) == len(c1.events))
-        self.assertEqual(c0.events[0], c1.events[0])
-        self.assertEqual(c0, c1)
-
-    def test_multiple_calendars(self):
-
-        with self.assertRaises(NotImplementedError):
-            Calendar() + Calendar()
-
-    def test_init_int(self):
-
-        with self.assertRaises(TypeError):
-            Calendar(42)
+    def test_neq_creator(self):
+        c0, c1 = Calendar(), Calendar(creator="test")
+        self.assertNotEqual(c0, c1)
 
     def test_creator(self):
 
         c0 = Calendar()
         c1 = Calendar()
-        c2 = Calendar()
         c0.creator = u'42'
-        c1.creator = 42
-        c2.creator = '42'
+        with self.assertRaises(ValueError):
+            c1.creator = 42
 
         self.assertEqual(c0.creator, u'42')
-        self.assertEqual(c1.creator, u'42')
-        self.assertEqual(c2.creator, u'42')
 
     def test_existing_creator(self):
-
         c = Calendar(cal1)
-
         self.assertEqual(c.creator, u'-//Apple Inc.//Mac OS X 10.9//EN')
 
-        c.creator = "apple_is_a_fruit"
-
-        self.assertEqual(c.creator, "apple_is_a_fruit")
+        c.creator = u"apple_is_a_fruit"
+        self.assertEqual(c.creator, u"apple_is_a_fruit")
 
     def test_scale(self):
 
@@ -179,7 +162,9 @@ class TestCalendar(unittest.TestCase):
     def test_version(self):
 
         c = Calendar(cal10)
+        self.assertEqual(c.version, u'2.0')
 
+        c = Calendar(cal14)
         self.assertEqual(c.version, u'42')
 
     def test_events_setter(self):
@@ -207,6 +192,33 @@ class TestCalendar(unittest.TestCase):
         with self.assertRaises(ValueError):
             c.events = 42
 
+    def test_clone(self):
+        c0 = Calendar()
+        e = Event()
+        c0.events.append(e)
+        c1 = c0.clone()
+
+        self.assertTrue(len(c0.events) == len(c1.events))
+        self.assertEqual(c0.events[0], c1.events[0])
+        self.assertEqual(c0, c1)
+
+    def test_multiple_calendars(self):
+
+        with self.assertRaises(NotImplementedError):
+            Calendar() + Calendar()
+
+    def test_init_int(self):
+
+        with self.assertRaises(TypeError):
+            Calendar(42)
+
+    def test_events_set_string(self):
+
+        c = Calendar(cal1)
+        e = "42"
+        with self.assertRaises(ValueError):
+            c.events = e
+
     def test_imports(self):
         c = Calendar(cal1)
         self.assertEqual(c.creator, '-//Apple Inc.//Mac OS X 10.9//EN')
@@ -217,10 +229,3 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(arrow.get(2013, 10, 29, 9, 30), e.begin)
         self.assertEqual(arrow.get(2013, 10, 29, 10, 30), e.end)
         self.assertEqual(1, len(c.events))
-
-    # def test_events_set_string(self):
-
-    #     c = Calendar(cal1)
-    #     e = "42"
-    #     with self.assertRaises(ValueError):
-    #         c.events = e

@@ -34,7 +34,7 @@ class Component(object):
 
     def _populate(self, container):
         if container.name != self._TYPE:
-            raise ValueError("container isn't an {}".format(), self.TYPE)
+            raise ValueError("container isn't an {}".format(self._TYPE))
 
         for extractor in self._EXTRACTORS:
             lines = get_lines(container, extractor.type)
@@ -82,7 +82,9 @@ class Component(object):
         if hasattr(self, '__urepr__'):
             return self.__urepr__().encode('utf-8') if PY2 else self.__urepr__()
         else:
-            super(Component, self).__repr__()
+            t = self.__class__.__name__
+            adress = hex(id(self))
+            return '<{} at {}>'.format(t, adress)
 
     def __str__(self):
         """Returns the component in an iCalendar format."""

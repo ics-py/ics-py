@@ -105,11 +105,14 @@ class Calendar(Component):
         for i in range(len(self.events)):
             if not self.events[i] == other.events[i]:
                 return False
-        for attr in ('_unused', 'scale', 'method'):
+        for attr in ('_unused', 'scale', 'method', 'creator'):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
                 return False
 
         return True
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     @property
     def events(self):
@@ -145,15 +148,9 @@ class Calendar(Component):
 
     @creator.setter
     def creator(self, value):
-        if isinstance(value, string_types) and PY2:
-            self._creator = unicode(value)
-        elif isinstance(value, text_type):
-            self._creator = value
-        else:
-            value = str(value)
-            if PY2:
-                value = unicode(value)
-            self._creator = value
+        if not isinstance(value, text_type):
+            raise ValueError('Event.creator must be unicode data not {}'.format(type(value)))
+        self._creator = value
 
     def clone(self):
         """
@@ -193,7 +190,7 @@ def version(calendar, line):
 def scale(calendar, line):
     calscale = line
     if calscale:
-        calendar.scale = calscale.value
+        calendar.scale = calscale.value.lower()
         calendar.scale_params = calscale.params
     else:
         calendar.scale = 'georgian'

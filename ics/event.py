@@ -64,7 +64,7 @@ class Event(Component):
         self._duration = None
         self._end_time = None
         self._begin = None
-        self._begin_precision = 'day'
+        self._begin_precision = None
         self.uid = uid_gen() if not uid else uid
         self.description = description
         self.created = get_arrow(created)
@@ -81,7 +81,7 @@ class Event(Component):
         elif end:  # End was specified
             self.end = end
         elif duration:  # Duration was specified
-            self._duration = duration
+            self.duration = duration
 
     def has_end(self):
         """
@@ -153,18 +153,26 @@ class Event(Component):
         |  If set to a non null value, removes any already
             existing end time.
         """
-        return self._duration
+        if self._duration:
+            return self._duration
+        elif self.end:
+            return self.end - self.begin
+        else:
+            return None
 
     @duration.setter
     def duration(self, value):
-        if type(value) is dict:
+        if isinstance(value, dict):
             value = timedelta(**value)
-        else:
+        elif isinstance(value, timedelta):
+            value = value
+        elif not value is None:
             value = timedelta(value)
 
-        self._duration = value
         if value:
             self._end_time = None
+
+        self._duration = value
 
     @property
     def all_day(self):
@@ -192,7 +200,7 @@ class Event(Component):
         """
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
-            return "<all-day Event {} :{}>".format(name, self.begin.strftime("%F"))
+            return "<all-day Event {}{}>".format(name, self.begin.strftime("%F"))
         elif self.begin is None:
             return "<Event '{}'>".format(self.name) if self.name else "<Event>"
         else:
@@ -206,21 +214,21 @@ class Event(Component):
             return self.name < other.name
         return self.begin < other.begin
 
-    def __gt__(self, other):
-        if not isinstance(other, Event):
-            raise NotImplementedError(
-                'Cannot compare Event and {}'.format(type(other)))
-        if self.begin is None and other.begin is None:
-            return self.name >= other.name
-        return self.begin > other.begin
-
     def __le__(self, other):
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
-            return self.name >= other.name
+            return self.name <= other.name
         return self.begin <= other.begin
+
+    def __gt__(self, other):
+        if not isinstance(other, Event):
+            raise NotImplementedError(
+                'Cannot compare Event and {}'.format(type(other)))
+        if self.begin is None and other.begin is None:
+            return self.name > other.name
+        return self.begin > other.begin
 
     def __ge__(self, other):
         if not isinstance(other, Event):
@@ -282,7 +290,7 @@ def start(event, line):
 def duration(event, line):
     if line:
         #TODO: DRY [1]
-        if event._end_time:
+        if event._end_time: # pragma: no cover
             raise ValueError("An event can't have both DTEND and DURATION")
         event._duration = parse_duration(line.value)
 

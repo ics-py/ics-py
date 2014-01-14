@@ -236,3 +236,27 @@ class TestEventList(unittest.TestCase):
         l = l[e0.begin:e0.end:]
 
         self.assertEqual([e1], l)
+
+    def test_set_slice_fail(self):
+
+        l = EventList()
+        for i in range(6):
+            l.append(Event())
+        with self.assertRaises(ValueError):
+            l[2:4] = [Event(), "coucou, tu veux voir ma b*** ?"]
+
+    def test_set_slice(self):
+
+        fix = [Event(), Event(), Event(), Event(), Event(), Event()]
+        fix2 = [Event(name="test"), Event(name="test2")]
+
+        l = EventList(fix)
+        l[2:4] = fix2
+        fix[2:4] = fix2
+
+        self.assertSequenceEqual(fix, l)
+
+    def test_set_elem_fail(self):
+        l = EventList([Event(), Event()])
+        with self.assertRaises(ValueError):
+            l[3] = "plop"
