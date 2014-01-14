@@ -133,3 +133,43 @@ class TestEvent(unittest.TestCase):
 
         e4 = Event(begin="1993/05/24")
         self.assertEqual(e4.duration, timedelta(seconds=1))
+
+        e5 = Event(begin="1993/05/24")
+        e5.duration = {'days': 6, 'hours': 2}
+        self.assertEqual(e5.end, arrow.get("1993/05/30T02:00"))
+        self.assertEqual(e5.duration, timedelta(hours=146))
+
+    def test_always_uid(self):
+        e = Event()
+        e.uid = None
+        self.assertIn('UID:', str(e))
+
+    def test_cmp_other(self):
+        with self.assertRaises(NotImplementedError):
+            Event() < 1
+        with self.assertRaises(NotImplementedError):
+            Event() > 1
+        with self.assertRaises(NotImplementedError):
+            Event() <= 1
+        with self.assertRaises(NotImplementedError):
+            Event() >= 1
+
+    def test_cmp_by_name(self):
+        self.assertGreater(Event(name="z"), Event(name="a"))
+        self.assertGreaterEqual(Event(name="z"), Event(name="a"))
+        self.assertGreaterEqual(Event(name="m"), Event(name="m"))
+
+        self.assertLess(Event(name="a"), Event(name="z"))
+        self.assertLessEqual(Event(name="a"), Event(name="z"))
+        self.assertLessEqual(Event(name="m"), Event(name="m"))
+
+    def test_cmp_by_name_fail(self):
+        self.assertFalse(Event(name="a") > Event(name="z"))
+        self.assertFalse(Event(name="a") >= Event(name="z"))
+
+        self.assertFalse(Event(name="z") < Event(name="a"))
+        self.assertFalse(Event(name="z") <= Event(name="a"))
+
+    def test_cmp_by_name_fail_not_equal(self):
+        self.assertFalse(Event(name="a") > Event(name="a"))
+        self.assertFalse(Event(name="b") < Event(name="b"))

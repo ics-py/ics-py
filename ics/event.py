@@ -81,7 +81,7 @@ class Event(Component):
         elif end:  # End was specified
             self.end = end
         elif duration:  # Duration was specified
-            self._duration = duration
+            self.duration = duration
 
     def has_end(self):
         """
@@ -162,14 +162,17 @@ class Event(Component):
 
     @duration.setter
     def duration(self, value):
-        if type(value) is dict:
+        if isinstance(value, dict):
             value = timedelta(**value)
-        else:
+        elif isinstance(value, timedelta):
+            value = value
+        elif not value is None:
             value = timedelta(value)
 
-        self._duration = value
         if value:
             self._end_time = None
+
+        self._duration = value
 
     @property
     def all_day(self):
@@ -211,21 +214,21 @@ class Event(Component):
             return self.name < other.name
         return self.begin < other.begin
 
-    def __gt__(self, other):
-        if not isinstance(other, Event):
-            raise NotImplementedError(
-                'Cannot compare Event and {}'.format(type(other)))
-        if self.begin is None and other.begin is None:
-            return self.name >= other.name
-        return self.begin > other.begin
-
     def __le__(self, other):
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
-            return self.name >= other.name
+            return self.name <= other.name
         return self.begin <= other.begin
+
+    def __gt__(self, other):
+        if not isinstance(other, Event):
+            raise NotImplementedError(
+                'Cannot compare Event and {}'.format(type(other)))
+        if self.begin is None and other.begin is None:
+            return self.name > other.name
+        return self.begin > other.begin
 
     def __ge__(self, other):
         if not isinstance(other, Event):
