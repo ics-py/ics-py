@@ -58,9 +58,24 @@ class TestParse(unittest.TestCase):
         with self.assertRaises(ParseError):
             Calendar(cal11)
 
+
+class TestContainer(unittest.TestCase):
+
     def test_repr(self):
 
-        e = Event(begin=0, end=10)
+        e = ContentLine(name="VTEST", value="cocu !")
         c = Container("test", e)
 
         self.assertEqual("<Container 'test' with 1 element>", repr(c))
+
+
+class TestLine(unittest.TestCase):
+
+    def test_repr(self):
+
+        c = ContentLine(name="VTEST", value="cocu !")
+        self.assertEqual("<ContentLine 'VTEST' with 0 parameter. Value='cocu !'>", repr(c))
+
+    def test_get_item(self):
+        l = ContentLine(name="VTEST", value="cocu !", params={"plop": "plip"})
+        self.assertEqual(l['plop'], "plip")

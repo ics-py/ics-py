@@ -32,10 +32,7 @@ class ContentLine:
         for pname in self.params:
             params_str += ';{}={}'.format(pname, ','.join(self.params[pname]))
         ret = "{}{}:{}".format(self.name, params_str, self.value)
-        if PY2:
-            return ret.encode('utf-8')
-        else:
-            return ret
+        return ret.encode('utf-8') if PY2 else ret
 
     def __repr__(self):
         return "<ContentLine '{}' with {} parameter{}. Value='{}'>" \
