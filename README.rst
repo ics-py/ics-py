@@ -19,9 +19,9 @@ Ics.py is a pythonic and easy iCalendar library. It's goals are to read and writ
 
 iCalendar is a widely-used and useful format but not user friendly. Ics.py is there to give you the ability of creating and reading this format without any knowledge of it.
 
-It should be able to parse every calendar that respects the `rfc5545 <http://tools.ietf.org/html/rfc5545>`_ and maybe some more... It also outputs rfc compliant calendars.
+It should be able to parse every calendar that respects the `rfc5545 <http://tools.ietf.org/html/rfc5545>`_ and maybe some more… It also outputs rfc compliant calendars.
 
-iCalendar (file extension `.ics`) is used (for example) by Sunbird, Google Calendar, Apple Calendar, Android ...
+iCalendar (file extension `.ics`) is used by Sunbird, Google Calendar, Apple Calendar, Android…
 
 
 Ics.py is available for Python>=2.7 *and* Python>=3.3 and is Apache2 Licensed.
@@ -55,7 +55,7 @@ More examples are available in the `documentation <http://icspy.readthedocs.org/
 Documentation
 -------------
 
-All the `documentation <http://icspy.readthedocs.org/>`_ is hosted on `readthedocs.org <http://readthedocs.org/>`_ and is updated automaticaly at every commit.
+All the `documentation <http://icspy.readthedocs.org/>`_ is hosted on `readthedocs.org <http://readthedocs.org/>`_ and is updated automatically at every commit.
 
 * `Quickstart <http://icspy.readthedocs.org/>`_
 * `API <http://icspy.readthedocs.org/en/latest/api.html>`_
@@ -71,10 +71,10 @@ Contribution are welcome of course! For more information, see `contributing <htt
 Links
 -----
 * `rfc5545 <http://tools.ietf.org/html/rfc5545>`_
-* `Vulgarisated RFC <http://www.kanzaki.com/docs/ical/>`_
+* `Vulgarised RFC <http://www.kanzaki.com/docs/ical/>`_
 
 .. image:: https://i.imgur.com/8iYDvvy.jpg
     :target: https://github.com/C4ptainCrunch/ics.py
-    :alt: Parse ALL the calendars !
+    :alt: Parse ALL the calendars!
     :align: center
 
