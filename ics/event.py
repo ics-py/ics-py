@@ -19,7 +19,8 @@ from .utils import (
     get_arrow,
     arrow_to_iso,
     uid_gen,
-    unescape_string
+    unescape_string,
+    escape_string,
 )
 from .parse import ContentLine, Container
 
@@ -382,19 +383,19 @@ def o_end(event, container):
 @Event._outputs
 def o_summary(event, container):
     if event.name:
-        container.append(ContentLine('SUMMARY', value=event.name))
+        container.append(ContentLine('SUMMARY', value=escape_string(event.name)))
 
 
 @Event._outputs
 def o_description(event, container):
     if event.description:
-        container.append(ContentLine('DESCRIPTION', value=event.description))
+        container.append(ContentLine('DESCRIPTION', value=escape_string(event.description)))
 
 
 @Event._outputs
 def o_location(event, container):
     if event.location:
-        container.append(ContentLine('LOCATION', value=event.location))
+        container.append(ContentLine('LOCATION', value=escape_string(event.location)))
 
 
 @Event._outputs

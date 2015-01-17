@@ -186,3 +186,21 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.name, "Some special ; chars")
         self.assertEqual(e.location, "In, every text field")
         self.assertEqual(e.description, "Yes, all of them;")
+
+    def test_escapte_output(self):
+        e = Event()
+
+        e.name = "Hello, with \\ spechial; chars and \n newlines"
+        e.location = "Here; too"
+        e.description = "Every\nwhere ! Yes, yes !"
+        e.created = arrow.Arrow(2013, 1, 1)
+        e.uid = "empty-uid"
+
+        eq = """BEGIN:VEVENT
+DTSTAMP:20130101T000000Z
+SUMMARY:Hello\\, with \\\\ spechial\\; chars and \\n newlines
+DESCRIPTION:Every\\nwhere ! Yes\\, yes !
+LOCATION:Here\\; too
+UID:empty-uid
+END:VEVENT"""
+        self.assertEqual(str(e), eq)
