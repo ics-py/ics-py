@@ -164,3 +164,21 @@ def arrow_to_iso(instant):
 def uid_gen():
     uid = str(uuid4())
     return "{}@{}.org".format(uid, uid[:4])
+
+
+def escape_string(string):
+    string = string.replace("\\", "\\\\")
+    string = string.replace(";", "\\;")
+    string = string.replace(",", "\\,")
+    string = string.replace("\n", "\\n")
+    return string
+
+
+def unescape_string(string):
+    string = string.replace("\\;", ";")
+    string = string.replace("\\,", ",")
+    string = string.replace("\\n", "\n")
+    string = string.replace("\\N", "\n")
+    string = string.replace("\\\\", "\\")
+
+    return string

@@ -174,6 +174,29 @@ PRODID:-//Apple Inc.//Mac OS X 10.9//EN
 END:VCALENDAR
 """
 
+cal15 = u"""
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+
+BEGIN:VEVENT
+SUMMARY:Hello, \\n World\\; This is a backslash : \\\\ and another new \\N line
+DTSTART;TZID=Europe/Berlin:20120608T202500
+DTEND;TZID=Europe/Berlin:20120608T212500
+LOCATION:MUC
+END:VEVENT
+
+BEGIN:VEVENT
+SUMMARY:Some special \\; chars
+DTSTART;TZID=Europe/Berlin:20130608T202501
+DTEND;TZID=Europe/Berlin:20130608T212501
+LOCATION:In\\, every text field
+DESCRIPTION:Yes\\, all of them\\;
+END:VEVENT
+
+END:VCALENDAR
+"""
+
 unfolded_cal2 = [
     'BEGIN:VCALENDAR',
     'BEGIN:VEVENT',

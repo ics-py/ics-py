@@ -19,6 +19,7 @@ from .utils import (
     get_arrow,
     arrow_to_iso,
     uid_gen,
+    unescape_string
 )
 from .parse import ContentLine, Container
 
@@ -308,17 +309,17 @@ def end(event, line):
 
 @Event._extracts('SUMMARY')
 def summary(event, line):
-    event.name = line.value if line else None
+    event.name = unescape_string(line.value) if line else None
 
 
 @Event._extracts('DESCRIPTION')
 def description(event, line):
-    event.description = line.value if line else None
+    event.description = unescape_string(line.value) if line else None
 
 
 @Event._extracts('LOCATION')
 def location(event, line):
-    event.location = line.value if line else None
+    event.location = unescape_string(line.value) if line else None
 
 
 # TODO : make uid required ?
