@@ -230,7 +230,7 @@ def events(calendar, lines):
     # tz=calendar._timezones gives access to the event factory to the
     # timezones list
     event_factory = lambda x: Event._from_container(x, tz=calendar._timezones)
-    calendar.events = list(sorted(map(event_factory, lines)))
+    calendar.events = list(map(event_factory, lines))
 
 
 ######################

@@ -31,6 +31,7 @@ class EventList(list):
         """
 
         super(EventList, self).__init__()
+        self.sort()
 
         for elem in arg:
             if not isinstance(elem, Event):
@@ -41,6 +42,9 @@ class EventList(list):
 
     def __getitem__(self, sl):
         """Slices :class:`ics.eventlist.EventList`.
+
+        Note : an :class:`ics.eventlist.EventList` is always sorted and the slices \
+        returned by this method will be sorted too.
 
         If sl is conventional (like [10], [4:12], [3:100:2], [::-1], …),\
         it slices the :class:`ics.eventlist.EventList` like a classical list().
@@ -246,6 +250,7 @@ or None not '{}'".format(sl.step))
             raise ValueError('EventList may only contain elements of type "Event" not {}'
                 .format(type(val)))
         super(EventList, self).__setitem__(key, val)
+        self.sort()
 
     def __setslice__(self, i, j, val):
         """Compatibility for python2"""
@@ -263,3 +268,4 @@ or None not '{}'".format(sl.step))
             raise ValueError('EventList may only contain elements of type "Event" not {}'
                 .format(type(elem)))
         super(EventList, self).append(elem)
+        self.sort()

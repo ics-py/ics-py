@@ -254,7 +254,7 @@ class TestEventList(unittest.TestCase):
         l[2:4] = fix2
         fix[2:4] = fix2
 
-        self.assertSequenceEqual(fix, l)
+        self.assertSequenceEqual(sorted(fix), sorted(l))
 
     def test_set_elem_fail(self):
         l = EventList([Event(), Event()])
