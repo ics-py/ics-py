@@ -212,7 +212,14 @@ class Event(Component):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
-            return self.name < other.name
+            if self.name is None and other.name is None:
+                return id(self) < id(other)
+            elif self.name is None:
+                return True
+            elif other.name is None:
+                return False
+            else:
+                return self.name < other.name
         return self.begin < other.begin
 
     def __le__(self, other):
@@ -220,7 +227,14 @@ class Event(Component):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
-            return self.name <= other.name
+            if self.name is None and other.name is None:
+                return id(self) <= id(other)
+            elif self.name is None:
+                return True
+            elif other.name is None:
+                return False
+            else:
+                return self.name <= other.name
         return self.begin <= other.begin
 
     def __gt__(self, other):
