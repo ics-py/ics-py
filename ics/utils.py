@@ -36,7 +36,7 @@ def iso_to_arrow(time_container, available_tz={}):
         tz = tz_list[0]
     else:
         tz = None
-    if (not 'T' in time_container.value) and \
+    if ('T' not in time_container.value) and \
             'DATE' in time_container.params.get('VALUE', []):
         val = time_container.value + 'T0000'
     else:

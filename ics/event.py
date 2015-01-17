@@ -166,7 +166,7 @@ class Event(Component):
             value = timedelta(**value)
         elif isinstance(value, timedelta):
             value = value
-        elif not value is None:
+        elif value is not None:
             value = timedelta(value)
 
         if value:
