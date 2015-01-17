@@ -213,7 +213,7 @@ class Event(Component):
                 'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             if self.name is None and other.name is None:
-                return id(self) < id(other)
+                return False
             elif self.name is None:
                 return True
             elif other.name is None:
@@ -228,7 +228,7 @@ class Event(Component):
                 'Cannot compare Event and {}'.format(type(other)))
         if self.begin is None and other.begin is None:
             if self.name is None and other.name is None:
-                return id(self) <= id(other)
+                return True
             elif self.name is None:
                 return True
             elif other.name is None:

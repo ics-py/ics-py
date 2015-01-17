@@ -31,7 +31,7 @@ class TestCalendar(unittest.TestCase):
             c = Calendar(fix)
             d = Calendar(str(c))
             self.assertEqual(c, d)
-            self.assertSequenceEqual(c.events, d.events)
+            self.assertSequenceEqual(sorted(c.events), sorted(d.events))
 
             e = Calendar(str(d))
             # cannot compare str(c) and str(d) because times are encoded differently
@@ -72,7 +72,7 @@ class TestCalendar(unittest.TestCase):
         c.events = l
         self.assertIsNot(c.events, l)
         self.assertIsInstance(c.events, EventList)
-        self.assertSequenceEqual(c.events, l)
+        self.assertSequenceEqual(sorted(c.events), sorted(l))
 
     def test_list_to_eventlist(self):
         c = Calendar()
@@ -80,7 +80,7 @@ class TestCalendar(unittest.TestCase):
         c.events = l
         self.assertIsNot(c.events, l)
         self.assertIsInstance(c.events, EventList)
-        self.assertSequenceEqual(c.events, l)
+        self.assertSequenceEqual(sorted(c.events), sorted(l))
 
     def test_eventlist_move(self):
         e = Event()
