@@ -15,7 +15,7 @@ Ics.py : iCalendar for Humans
     :alt: Apache 2 License
 
 
-Ics.py is a pythonic and easy iCalendar library. It's goals are to read and write ics data in a developper friendly way.
+Ics.py is a pythonic and easy iCalendar library. It's goals are to read and write ics data in a developer friendly way.
 
 iCalendar is a widely-used and useful format but not user friendly. Ics.py is there to give you the ability of creating and reading this format without any knowledge of it.
 
