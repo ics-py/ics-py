@@ -4,7 +4,7 @@ import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15
+from .fixture import cal12, cal13, cal15, cal16
 
 
 class TestEvent(unittest.TestCase):
@@ -175,14 +175,14 @@ class TestEvent(unittest.TestCase):
         self.assertFalse(Event(name="a") > Event(name="a"))
         self.assertFalse(Event(name="b") < Event(name="b"))
 
-    def test_unescape_summarry(self):
+    def test_unescape_summary(self):
         c = Calendar(cal15)
         e = c.events[0]
         self.assertEqual(e.name, "Hello, \n World; This is a backslash : \\ and another new \n line")
 
     def test_unescapte_texts(self):
-        c = Calendar(cal15)
-        e = c.events[1]
+        c = Calendar(cal16)
+        e = c.events[0]
         self.assertEqual(e.name, "Some special ; chars")
         self.assertEqual(e.location, "In, every text field")
         self.assertEqual(e.description, "Yes, all of them;")
