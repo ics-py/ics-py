@@ -28,60 +28,13 @@ class Timeline(object):
     def __iter__(self):
         """Iterates on every event from the :class:`ics.icalendar.Calendar` in chronological order
 
-        Note : chronological order is defined by the comparaison operators in :class:`ics.event.Event`
+        Note :
+            - chronological order is defined by the comparaison operators in :class:`ics.event.Event`
+            - Events with no `begin` will not appear here. (To list all events in a `Calendar` use
+            `Calendar.events`)
         """
         for event in sorted(filter(lambda x: x.begin is not None, self._calendar.events)):
             yield event
-
-    def start_after(self, instant):
-        """Iterates (in chronological order) on every event from the :class:`ics.icalendar.Calendar` in chronological order.
-        The first event of the iteration has a starting date greater (later) than `instant`
-
-        Args:
-            instant : (Arrow object) starting point of the iteration
-        """
-        for event in self:
-            if event.begin > instant:
-                yield event
-
-    def today(self, strict=False):
-        """Iterates (in chronological order) over all events that occurs today
-
-        Args:
-            strict (bool): if True events will be returned only if they are\
-            strictly *included* in `day`.
-        """
-        return self.on(arrow.now(), strict=strict)
-
-    def on(self, day, strict=False):
-        """Iterates (in chronological order) over all events that occurs on `day`
-
-        Args:
-            day (Arrow object)
-            strict (bool): if True events will be returned only if they are\
-            strictly *included* in `day`.
-        """
-        day_start, day_stop = day.floor('day').span('day')
-        if strict:
-            return self.included(day_start, day_stop)
-        else:
-            return self.overlapping(day_start, day_stop)
-
-    def now(self):
-        """Iterates (in chronological order) over all events that occurs now
-        """
-        return self.at(arrow.now())
-
-    def at(self, instant):
-        """Iterates (in chronological order) over all events that are occuring during `instant`.
-
-        Args:
-            instant (Arrow object)
-        """
-
-        for event in self:
-            if event.begin <= instant <= event.end:
-                yield event
 
     def included(self, start, stop):
         """Iterates (in chronological order) over every event that is included
@@ -109,3 +62,53 @@ class Timeline(object):
             or start <= event.end <= stop) # or stop is between the bonds
             or event.begin <= start and event.end >= stop): # or event is a superset of [start,stop]
                 yield event
+
+    def start_after(self, instant):
+        """Iterates (in chronological order) on every event from the :class:`ics.icalendar.Calendar` in chronological order.
+        The first event of the iteration has a starting date greater (later) than `instant`
+
+        Args:
+            instant : (Arrow object) starting point of the iteration
+        """
+        for event in self:
+            if event.begin > instant:
+                yield event
+
+    def at(self, instant):
+        """Iterates (in chronological order) over all events that are occuring during `instant`.
+
+        Args:
+            instant (Arrow object)
+        """
+
+        for event in self:
+            if event.begin <= instant <= event.end:
+                yield event
+
+    def on(self, day, strict=False):
+        """Iterates (in chronological order) over all events that occurs on `day`
+
+        Args:
+            day (Arrow object)
+            strict (bool): if True events will be returned only if they are\
+            strictly *included* in `day`.
+        """
+        day_start, day_stop = day.floor('day').span('day')
+        if strict:
+            return self.included(day_start, day_stop)
+        else:
+            return self.overlapping(day_start, day_stop)
+
+    def today(self, strict=False):
+        """Iterates (in chronological order) over all events that occurs today
+
+        Args:
+            strict (bool): if True events will be returned only if they are\
+            strictly *included* in `day`.
+        """
+        return self.on(arrow.now(), strict=strict)
+
+    def now(self):
+        """Iterates (in chronological order) over all events that occurs now
+        """
+        return self.at(arrow.now())
