@@ -15,9 +15,9 @@ Event
     :members:
     :special-members:
 
-EventList
+Timeline
 ---------
 
-.. autoclass:: ics.eventlist.EventList
+.. autoclass:: ics.timeline.Timeline
     :members:
     :special-members:

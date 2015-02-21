@@ -60,7 +60,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ics.py'
-copyright = u'2013, Nikita Marchant'
+copyright = u'2013-2015, Nikita Marchant'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
