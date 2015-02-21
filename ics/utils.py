@@ -8,13 +8,14 @@ from six.moves import filter, map, range
 
 import arrow
 from arrow.arrow import Arrow
-tzutc = arrow.utcnow().tzinfo
 from uuid import uuid4
 
 import re
 
 from . import parse
 from datetime import timedelta
+
+tzutc = arrow.utcnow().tzinfo
 
 
 def remove_x(container):
