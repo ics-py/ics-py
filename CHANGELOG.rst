@@ -1,3 +1,6 @@
+0.3.1 :
+    - Pin arrow to 0.4.2
+
 0.3 :
     - Events in an EventList() are now always sorted
     - Freeze the version of Arrow (they made backwards-incompatible changes)
