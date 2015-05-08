@@ -197,6 +197,18 @@ END:VEVENT
 END:VCALENDAR
 """
 
+# Event with URL
+cal16 = u"""
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+SUMMARY:Hello World
+DTSTART;TZID=Europe/Berlin:20120608T202500
+DTEND;TZID=Europe/Berlin:20120608T212500
+URL:http://example.com/pub/calendars/jsmith/mytime.ics
+END:VEVENT
+END:VCALENDAR
+"""
+
 unfolded_cal2 = [
     'BEGIN:VCALENDAR',
     'BEGIN:VEVENT',
