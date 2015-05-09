@@ -83,19 +83,14 @@ class Container(list):
         self.name = name
 
     def __str__(self):
+        name = self.name
         if PY2:
-            l = lambda x: str(x).decode('utf-8')
-        else:
-            l = lambda x: str(x)
-        content_str = '\n'.join(map(l, self))
-        if content_str:
-            content_str = '\n' + content_str
-
-        ret = 'BEGIN:{}{}\nEND:{}'.format(self.name, content_str, self.name)
-        if PY2:
-            return ret.encode('utf-8')
-        else:
-            return ret
+            name = name.encode('utf-8')
+        ret = ['BEGIN:' + name]
+        for line in self:
+            ret.append(str(line))
+        ret.append('END:' + name)
+        return '\r\n'.join(ret)
 
     def __repr__(self):
         return "<Container '{}' with {} element{}>" \
