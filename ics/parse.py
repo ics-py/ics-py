@@ -54,23 +54,22 @@ class ContentLine:
         if ':' not in line:
             raise ParseError("No ':' in line '{}'".format(line))
 
-        # Separe key and value
-        splitted = line.split(':')
-        key, value = splitted[0], ':'.join(splitted[1:]).strip()
+        # Separate key and value
+        splitted = line.split(':', 1)
+        key, value = splitted[0], splitted[1:].strip()
 
-        # Separe name and params
+        # Separate name and params
         splitted = key.split(';')
         name, params_strings = splitted[0], splitted[1:]
 
-        # Separe key and values for params
+        # Separate key and values for params
         params = {}
         for paramstr in params_strings:
             if '=' not in paramstr:
                 raise ParseError("No '=' in line '{}'".format(line))
-            splitted = paramstr.split('=')
-            pname, pvals = splitted[0], '='.join(splitted[1:])
+            pname, pvals = paramstr.split('=', 1)
             params[pname] = pvals.split(',')
-        return cls(name, params, value)
+        return cls(name.upper(), params, value)
 
     def clone(self):
         # dict(self.params) -> Make a copy of the dict
