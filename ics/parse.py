@@ -7,12 +7,20 @@ from six.moves import filter, map, range
 
 import collections
 
+CRLF = '\r\n'
+
 
 class ParseError(Exception):
     pass
 
 
 class ContentLine:
+    """ represents one property of calender content
+
+    name:   the name of the property
+    params: a dict of the parameters
+    value:  its value
+    """
 
     def __eq__(self, other):
         ret = (self.name == other.name
@@ -56,7 +64,7 @@ class ContentLine:
 
         # Separate key and value
         splitted = line.split(':', 1)
-        key, value = splitted[0], splitted[1:].strip()
+        key, value = splitted[0], splitted[1].strip()
 
         # Separate name and params
         splitted = key.split(';')
@@ -77,6 +85,11 @@ class ContentLine:
 
 
 class Container(list):
+    """ represents one calendar object.
+    Contains a list of ContentLines or Containers.
+    
+    name: the name of the object (VCALENDAR, VEVENT etc.)
+    """
 
     def __init__(self, name, *items):
         super(Container, self).__init__(items)
@@ -85,12 +98,12 @@ class Container(list):
     def __str__(self):
         name = self.name
         if PY2:
-            name = name.encode('utf-8')
+            name = name.encode('utf-8')  # can self.name ever contain a non-ASCII character?
         ret = ['BEGIN:' + name]
         for line in self:
             ret.append(str(line))
         ret.append('END:' + name)
-        return '\r\n'.join(ret)
+        return CRLF.join(ret)
 
     def __repr__(self):
         return "<Container '{}' with {} element{}>" \
@@ -157,7 +170,7 @@ def lines_to_container(lines):
 
 
 def string_to_container(txt):
-    return lines_to_container(txt.split('\n'))
+    return lines_to_container(txt.splitlines())
 
 if __name__ == "__main__":
     from tests.fixture import cal1

@@ -7,8 +7,6 @@ from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
 from dateutil.tz import tzical
-from arrow.arrow import Arrow
-import arrow
 import copy
 import collections
 
@@ -54,9 +52,7 @@ class Calendar(Component):
             events = EventList()
 
         if imports is not None:
-            if PY2 and isinstance(imports, unicode):
-                container = string_to_container(imports)
-            elif isinstance(imports, str):
+            if isinstance(imports, string_types):
                 container = string_to_container(imports)
             elif isinstance(imports, collections.Iterable):
                 container = lines_to_container(imports)
