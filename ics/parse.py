@@ -24,12 +24,13 @@ class ContentLine:
     """
 
     def __eq__(self, other):
-        ret = (self.name == other.name
-               and self.params == other.params
-               and self.value == other.value)
+        ret = (self.name == other.name and
+               self.params == other.params and
+               self.value == other.value)
         return ret
 
-    __ne__ = lambda self, other: not self.__eq__(other)
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __init__(self, name, params={}, value=''):
         self.name = name.upper()
@@ -88,7 +89,7 @@ class ContentLine:
 class Container(list):
     """ represents one calendar object.
     Contains a list of ContentLines or Containers.
-    
+
     name: the name of the object (VCALENDAR, VEVENT etc.)
     """
 

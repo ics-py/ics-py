@@ -281,13 +281,12 @@ class Event(Component):
         """
         Returns:
             int: hash of self. Based on self.uid."""
-        ord3 = lambda x: '%.3d' % ord(x)
-        return int(''.join(map(ord3, self.uid)))
+        return int(''.join(map(lambda x: '%.3d' % ord(x), self.uid)))
 
 
-######################
-####### Inputs #######
-
+# ------------------
+# ----- Inputs -----
+# ------------------
 @Event._extracts('DTSTAMP')
 def created(event, line):
     if line:
@@ -353,8 +352,9 @@ def uid(event, line):
         event.uid = line.value
 
 
-######################
-###### Outputs #######
+# -------------------
+# ----- Outputs -----
+# -------------------
 @Event._outputs
 def o_created(event, container):
     if event.created:
