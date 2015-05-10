@@ -214,8 +214,4 @@ END:VEVENT"""
     def test_url_output(self):
         URL = "http://example.com/pub/calendars/jsmith/mytime.ics"
         e = Event(name="Name", url=URL)
-        eq = """BEGIN:VEVENT
-SUMMARY:Name
-URL:http://example.com/pub/calendars/jsmith/mytime.ics
-END:VEVENT"""
-        self.assertEqual(str(e), eq)
+        self.assertIn("URL:"+URL, str(e).splitlines())

@@ -200,12 +200,17 @@ END:VCALENDAR
 # Event with URL
 cal16 = u"""
 BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+
 BEGIN:VEVENT
-SUMMARY:Hello World
+SUMMARY:Hello, \\n World\\; This is a backslash : \\\\ and another new \\N line
 DTSTART;TZID=Europe/Berlin:20120608T202500
 DTEND;TZID=Europe/Berlin:20120608T212500
+LOCATION:MUC
 URL:http://example.com/pub/calendars/jsmith/mytime.ics
 END:VEVENT
+
 END:VCALENDAR
 """
 
