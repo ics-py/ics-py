@@ -6,6 +6,8 @@ from ics.icalendar import Calendar
 from ics.parse import Container
 from .fixture import cal12, cal13, cal15, cal16
 
+CRLF = "\r\n"
+
 
 class TestEvent(unittest.TestCase):
 
@@ -47,7 +49,7 @@ class TestEvent(unittest.TestCase):
 
     def test_duration_output(self):
         e = Event(begin=0, duration=timedelta(1, 23))
-        lines = str(e).split('\n')
+        lines = str(e).splitlines()
         self.assertIn('DTSTART:19700101T000000Z', lines)
         self.assertIn('DURATION:P1DT23S', lines)
 
@@ -197,13 +199,13 @@ class TestEvent(unittest.TestCase):
         e.created = arrow.Arrow(2013, 1, 1)
         e.uid = "empty-uid"
 
-        eq = """BEGIN:VEVENT
-DTSTAMP:20130101T000000Z
-SUMMARY:Hello\\, with \\\\ spechial\\; chars and \\n newlines
-DESCRIPTION:Every\\nwhere ! Yes\\, yes !
-LOCATION:Here\\; too
-UID:empty-uid
-END:VEVENT"""
+        eq = CRLF.join(("BEGIN:VEVENT",
+                "DTSTAMP:20130101T000000Z",
+                "SUMMARY:Hello\\, with \\\\ spechial\\; chars and \\n newlines",
+                "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
+                "LOCATION:Here\\; too",
+                "UID:empty-uid",
+                "END:VEVENT"))
         self.assertEqual(str(e), eq)
 
     def test_url_input(self):

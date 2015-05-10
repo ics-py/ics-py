@@ -17,7 +17,8 @@ class ParseError(Exception):
 class ContentLine:
     """ represents one property of calender content
 
-    name:   the name of the property
+    name:   the name of the property (uppercased for consistency and
+            easier comparing)
     params: a dict of the parameters
     value:  its value
     """
@@ -31,7 +32,7 @@ class ContentLine:
     __ne__ = lambda self, other: not self.__eq__(other)
 
     def __init__(self, name, params={}, value=''):
-        self.name = name
+        self.name = name.upper()
         self.params = params
         self.value = value
 
@@ -77,7 +78,7 @@ class ContentLine:
                 raise ParseError("No '=' in line '{}'".format(line))
             pname, pvals = paramstr.split('=', 1)
             params[pname] = pvals.split(',')
-        return cls(name.upper(), params, value)
+        return cls(name, params, value)
 
     def clone(self):
         # dict(self.params) -> Make a copy of the dict
