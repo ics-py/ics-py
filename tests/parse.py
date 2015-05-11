@@ -23,7 +23,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(isinstance(cal, Container))
         self.assertEqual('VERSION', cal[0].name)
         self.assertEqual('2.0', cal[0].value)
-        self.assertEqual(cal5.strip(), str(cal).strip())
+        self.assertEqual(cal5.strip().splitlines(), str(cal).strip().splitlines())
 
     def test_one_line(self):
         ics = 'DTSTART;TZID=Europe/Brussels:20131029T103000'
