@@ -7,23 +7,33 @@ from six.moves import filter, map, range
 
 import collections
 
+CRLF = '\r\n'
+
 
 class ParseError(Exception):
     pass
 
 
 class ContentLine:
+    """ represents one property of calender content
+
+    name:   the name of the property (uppercased for consistency and
+            easier comparing)
+    params: a dict of the parameters
+    value:  its value
+    """
 
     def __eq__(self, other):
-        ret = (self.name == other.name
-               and self.params == other.params
-               and self.value == other.value)
+        ret = (self.name == other.name and
+               self.params == other.params and
+               self.value == other.value)
         return ret
 
-    __ne__ = lambda self, other: not self.__eq__(other)
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __init__(self, name, params={}, value=''):
-        self.name = name
+        self.name = name.upper()
         self.params = params
         self.value = value
 
@@ -54,21 +64,20 @@ class ContentLine:
         if ':' not in line:
             raise ParseError("No ':' in line '{}'".format(line))
 
-        # Separe key and value
-        splitted = line.split(':')
-        key, value = splitted[0], ':'.join(splitted[1:]).strip()
+        # Separate key and value
+        splitted = line.split(':', 1)
+        key, value = splitted[0], splitted[1].strip()
 
-        # Separe name and params
+        # Separate name and params
         splitted = key.split(';')
         name, params_strings = splitted[0], splitted[1:]
 
-        # Separe key and values for params
+        # Separate key and values for params
         params = {}
         for paramstr in params_strings:
             if '=' not in paramstr:
                 raise ParseError("No '=' in line '{}'".format(line))
-            splitted = paramstr.split('=')
-            pname, pvals = splitted[0], '='.join(splitted[1:])
+            pname, pvals = paramstr.split('=', 1)
             params[pname] = pvals.split(',')
         return cls(name, params, value)
 
@@ -78,25 +87,25 @@ class ContentLine:
 
 
 class Container(list):
+    """ represents one calendar object.
+    Contains a list of ContentLines or Containers.
+
+    name: the name of the object (VCALENDAR, VEVENT etc.)
+    """
 
     def __init__(self, name, *items):
         super(Container, self).__init__(items)
         self.name = name
 
     def __str__(self):
+        name = self.name
         if PY2:
-            l = lambda x: str(x).decode('utf-8')
-        else:
-            l = lambda x: str(x)
-        content_str = '\n'.join(map(l, self))
-        if content_str:
-            content_str = '\n' + content_str
-
-        ret = 'BEGIN:{}{}\nEND:{}'.format(self.name, content_str, self.name)
-        if PY2:
-            return ret.encode('utf-8')
-        else:
-            return ret
+            name = name.encode('utf-8')  # can self.name ever contain a non-ASCII character?
+        ret = ['BEGIN:' + name]
+        for line in self:
+            ret.append(str(line))
+        ret.append('END:' + name)
+        return CRLF.join(ret)
 
     def __repr__(self):
         return "<Container '{}' with {} element{}>" \
@@ -163,7 +172,7 @@ def lines_to_container(lines):
 
 
 def string_to_container(txt):
-    return lines_to_container(txt.split('\n'))
+    return lines_to_container(txt.splitlines())
 
 if __name__ == "__main__":
     from tests.fixture import cal1

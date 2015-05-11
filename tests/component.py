@@ -5,14 +5,9 @@ from ics.parse import Container, ContentLine
 from .fixture import cal2
 import copy
 
-fix1 = """BEGIN:BASETEST
-ATTR:FOOBAR
-END:BASETEST"""
+fix1 = "BEGIN:BASETEST\r\nATTR:FOOBAR\r\nEND:BASETEST"
 
-fix2 = """BEGIN:BASETEST
-ATTR:FOO
-ATTR2:BAR
-END:BASETEST"""
+fix2 = "BEGIN:BASETEST\r\nATTR:FOO\r\nATTR2:BAR\r\nEND:BASETEST"
 
 
 class TestComponent(unittest.TestCase):

@@ -7,8 +7,6 @@ from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
 from dateutil.tz import tzical
-from arrow.arrow import Arrow
-import arrow
 import copy
 import collections
 
@@ -54,9 +52,7 @@ class Calendar(Component):
             events = EventList()
 
         if imports is not None:
-            if PY2 and isinstance(imports, unicode):
-                container = string_to_container(imports)
-            elif isinstance(imports, str):
+            if isinstance(imports, string_types):
                 container = string_to_container(imports)
             elif isinstance(imports, collections.Iterable):
                 container = lines_to_container(imports)
@@ -168,8 +164,9 @@ class Calendar(Component):
         return Calendar(events)
 
 
-######################
-####### Inputs #######
+# ------------------
+# ----- Inputs -----
+# ------------------
 
 @Calendar._extracts('PRODID', required=True)
 def prodid(calendar, prodid):
@@ -229,12 +226,14 @@ def timezone(calendar, vtimezones):
 def events(calendar, lines):
     # tz=calendar._timezones gives access to the event factory to the
     # timezones list
-    event_factory = lambda x: Event._from_container(x, tz=calendar._timezones)
+    def event_factory(x):
+        return Event._from_container(x, tz=calendar._timezones)
     calendar.events = list(map(event_factory, lines))
 
 
-######################
-###### Outputs #######
+# -------------------
+# ----- Outputs -----
+# -------------------
 
 @Calendar._outputs
 def o_prodid(calendar, container):

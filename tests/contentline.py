@@ -5,11 +5,11 @@ from ics.parse import ParseError, ContentLine
 class TestContentLine(unittest.TestCase):
 
     dataset = {
-        'haha:': ContentLine('haha'),
+        'HAHA:': ContentLine('haha'),
         ':hoho': ContentLine('', {}, 'hoho'),
-        'haha:hoho': ContentLine('haha', {}, 'hoho'),
-        'haha:hoho:hihi': ContentLine('haha', {}, 'hoho:hihi'),
-        'haha;hoho=1:hoho': ContentLine('haha', {'hoho': ['1']}, 'hoho'),
+        'HAHA:hoho': ContentLine('haha', {}, 'hoho'),
+        'HAHA:hoho:hihi': ContentLine('haha', {}, 'hoho:hihi'),
+        'HAHA;hoho=1:hoho': ContentLine('haha', {'hoho': ['1']}, 'hoho'),
         'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU':
         ContentLine(
             'RRULE',
@@ -53,11 +53,11 @@ class TestContentLine(unittest.TestCase):
         for test in self.dataset:
             expected = test
             got = str(self.dataset[test])
-            self.assertEqual(expected, got, "To string")
+            self.assertEqual(expected, got)
 
     def test_parse(self):
         self.dataset2.update(self.dataset)
         for test in self.dataset2:
             expected = self.dataset2[test]
             got = ContentLine.parse(test)
-            self.assertEqual(expected, got, "Parse")
+            self.assertEqual(expected, got)

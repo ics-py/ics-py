@@ -46,7 +46,8 @@ class Event(Component):
                  uid=None,
                  description=None,
                  created=None,
-                 location=None):
+                 location=None,
+                 url=None):
         """Instanciates a new :class:`ics.event.Event`.
 
         Args:
@@ -58,6 +59,7 @@ class Event(Component):
             description (string)
             created (Arrow-compatible)
             location (string)
+            url (string)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -71,6 +73,7 @@ class Event(Component):
         self.description = description
         self.created = get_arrow(created)
         self.location = location
+        self.url = url
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -278,13 +281,12 @@ class Event(Component):
         """
         Returns:
             int: hash of self. Based on self.uid."""
-        ord3 = lambda x: '%.3d' % ord(x)
-        return int(''.join(map(ord3, self.uid)))
+        return int(''.join(map(lambda x: '%.3d' % ord(x), self.uid)))
 
 
-######################
-####### Inputs #######
-
+# ------------------
+# ----- Inputs -----
+# ------------------
 @Event._extracts('DTSTAMP')
 def created(event, line):
     if line:
@@ -337,6 +339,11 @@ def location(event, line):
     event.location = unescape_string(line.value) if line else None
 
 
+@Event._extracts('URL')
+def url(event, line):
+    event.url = unescape_string(line.value) if line else None
+
+
 # TODO : make uid required ?
 # TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
@@ -345,8 +352,9 @@ def uid(event, line):
         event.uid = line.value
 
 
-######################
-###### Outputs #######
+# -------------------
+# ----- Outputs -----
+# -------------------
 @Event._outputs
 def o_created(event, container):
     if event.created:
@@ -396,6 +404,12 @@ def o_description(event, container):
 def o_location(event, container):
     if event.location:
         container.append(ContentLine('LOCATION', value=escape_string(event.location)))
+
+
+@Event._outputs
+def o_url(event, container):
+    if event.url:
+        container.append(ContentLine('URL', value=escape_string(event.url)))
 
 
 @Event._outputs
