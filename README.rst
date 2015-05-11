@@ -68,6 +68,23 @@ Contribute
 Contribution are welcome of course! For more information, see `contributing <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_.
 
 
+Testing & Docs
+--------------
+
+.. code-block:: bash
+
+    # tests
+    $ pip install -r requirements.txt
+    $ pip install -r dev/requirements-test.txt
+    $ python setup.py test
+
+    # docs
+    $ pip install -r requirements.txt
+    $ pip install -r dev/requirements-doc.txt
+    $ cd doc
+    $ make html
+
+
 Links
 -----
 * `rfc5545 <http://tools.ietf.org/html/rfc5545>`_
