@@ -291,16 +291,14 @@ class Event(Component):
 def created(event, line):
     if line:
         # get the dict of vtimezones passed to the classmethod
-        tz_dict = event._classmethod_kwargs['tz']
-        event.created = iso_to_arrow(line, tz_dict)
+        event.created = iso_to_arrow(line, event.timezones)
 
 
 @Event._extracts('DTSTART')
 def start(event, line):
     if line:
         # get the dict of vtimezones passed to the classmethod
-        tz_dict = event._classmethod_kwargs['tz']
-        event.begin = iso_to_arrow(line, tz_dict)
+        event.begin = iso_to_arrow(line, event.timezones)
         event._begin_precision = iso_precision(line.value)
 
 
@@ -320,8 +318,7 @@ def end(event, line):
         if event._duration:
             raise ValueError("An event can't have both DTEND and DURATION")
         # get the dict of vtimezones passed to the classmethod
-        tz_dict = event._classmethod_kwargs['tz']
-        event._end_time = iso_to_arrow(line, tz_dict)
+        event._end_time = iso_to_arrow(line, event.timezones)
 
 
 @Event._extracts('SUMMARY')

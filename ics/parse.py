@@ -94,6 +94,12 @@ class Container(list):
     """
 
     def __init__(self, name, *items):
+        """ Instantiate the Container
+
+        Args:
+            name (string): the name of the represented object (VCALENDAR, VEVENT etc.)
+            items (list): a list of ContentLines or Containers as read from the file
+        """
         super(Container, self).__init__(items)
         self.name = name
 
@@ -113,6 +119,12 @@ class Container(list):
 
     @classmethod
     def parse(cls, name, tokenized_lines):
+        """ Collect the lines, parse Sub-Containers, then instantiate the Container
+
+        Args:
+            name (string): the name of the object (VCALENDAR, VEVENT etc.)
+            tokenized_lines (list): Instances of ContentLine
+        """
         items = []
         for line in tokenized_lines:
             if line.name == 'BEGIN':

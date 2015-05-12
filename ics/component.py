@@ -23,11 +23,11 @@ class Component(object):
     @classmethod
     def _from_container(cls, container, *args, **kwargs):
         if cls._TYPE == "ABSTRACT":
-            raise NotImplementedError('Abstract class, cannot instanciate.')
+            raise NotImplementedError('Abstract class, cannot instantiate.')
 
         k = cls()
-        k._classmethod_args = args
-        k._classmethod_kwargs = kwargs
+        if cls._TYPE == "VEVENT":
+            k.timezones = kwargs.get('tz', {})
         k._populate(container)
 
         return k
