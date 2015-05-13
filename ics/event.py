@@ -48,7 +48,7 @@ class Event(Component):
                  created=None,
                  location=None,
                  url=None):
-        """Instanciates a new :class:`ics.event.Event`.
+        """Instantiates a new :class:`ics.event.Event`.
 
         Args:
             name (string)

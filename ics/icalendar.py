@@ -31,7 +31,7 @@ class Calendar(Component):
     _OUTPUTS = []
 
     def __init__(self, imports=None, events=None, creator=None):
-        """Instanciates a new Calendar.
+        """Instantiates a new Calendar.
 
         Args:
             imports (string or list of lines/strings): data to be imported into the Calendar(),

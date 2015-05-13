@@ -22,7 +22,7 @@ class EventList(list):
     """
 
     def __init__(self, arg=[]):
-        """Instanciates a new :class:`ics.eventlist.EventList`.
+        """Instantiates a new :class:`ics.eventlist.EventList`.
 
             Args:
                 arg (iterable): same argument as list() and pass it to list().
