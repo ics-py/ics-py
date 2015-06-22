@@ -3,8 +3,8 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
+from six import PY2, StringIO, string_types
+from six.moves import range
 
 from dateutil.tz import tzical
 import copy
@@ -16,10 +16,9 @@ from .eventlist import EventList
 from .parse import (
     lines_to_container,
     string_to_container,
-    ContentLine,
     Container,
 )
-from .utils import remove_x
+from .property import TextProperty
 
 
 class Calendar(Component):
@@ -29,6 +28,16 @@ class Calendar(Component):
     _TYPE = 'VCALENDAR'
     _EXTRACTORS = []
     _OUTPUTS = []
+    _known_components = (
+        ('VEVENT', Event, '_events'),
+        # VTIMEZONE is dealt with independently
+    )
+
+    creator = TextProperty('PRODID', default='ics.py - http://git.io/lLljaA')
+    version = TextProperty('VERSION', default='2.0')
+    # TODO : should take care of minver/maxver
+    scale = TextProperty('CALSCALE', default='GREGORIAN')
+    method = TextProperty('METHOD')
 
     def __init__(self, imports=None, events=None, creator=None):
         """Instantiates a new Calendar.
@@ -41,15 +50,11 @@ class Calendar(Component):
         If `imports` is specified, __init__ ignores every other argument.
         """
         # TODO : implement a file-descriptor import and a filename import
-
+        super(Calendar, self).__init__()
         self._timezones = {}
         self._events = EventList()
-        self._unused = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
-
-        if events is None:
-            events = EventList()
 
         if imports is not None:
             if isinstance(imports, string_types):
@@ -66,8 +71,9 @@ class Calendar(Component):
 
             self._populate(container[0])  # Use first calendar
         else:
-            self._events = events
-            self._creator = creator
+            self._events = events or EventList()
+            if creator is not None:
+                self.creator = creator
 
     def __urepr__(self):
         """Returns:
@@ -97,12 +103,19 @@ class Calendar(Component):
 
     def __eq__(self, other):
         if len(self.events) != len(other.events):
+            print "Lengths different"
             return False
         for i in range(len(self.events)):
             if not self.events[i] == other.events[i]:
+                print "Event {} different".format(i)
+                print self.events[i]
+                print
+                print other.events[i]
+                print
                 return False
-        for attr in ('_unused', 'scale', 'method', 'creator'):
+        for attr in ('scale', 'method', 'creator'):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
+                print "Attribute {} different".format(attr)
                 return False
 
         return True
@@ -131,31 +144,15 @@ class Calendar(Component):
             raise ValueError(
                 'Calendar.events must be an EventList or an iterable')
 
-    @property
-    def creator(self):
-        """Get or set the calendar's creator.
-
-        |  Will return a string.
-        |  May be set to a string.
-        |  Creator is the PRODID iCalendar property.
-        |  It uniquely identifies the program that created the calendar.
-        """
-        return self._creator
-
-    @creator.setter
-    def creator(self, value):
-        if not isinstance(value, text_type):
-            raise ValueError('Event.creator must be unicode data not {}'.format(type(value)))
-        self._creator = value
-
     def clone(self):
         """
         Returns:
             Calendar: an exact deep copy of self
         """
         clone = copy.copy(self)
-        clone._unused = clone._unused.clone()
-        clone.events = self.events.clone()
+        clone._properties = copy.copy(clone._properties)
+        clone._components = copy.copy(clone._components)
+        clone.events = EventList(self.events)
         clone._timezones = copy.copy(self._timezones)
         return clone
 
@@ -163,103 +160,14 @@ class Calendar(Component):
         events = self.events + other.events
         return Calendar(events)
 
+    def get_timezones(self):
+        return self._timezones
+# TODO: add_timezone or set_timezones
 
-# ------------------
-# ----- Inputs -----
-# ------------------
-
-@Calendar._extracts('PRODID', required=True)
-def prodid(calendar, prodid):
-    calendar._creator = prodid.value
-
-
-@Calendar._extracts('VERSION', required=True)
-def version(calendar, line):
-    version = line
-    # TODO : should take care of minver/maxver
-    if ';' in version.value:
-        _, calendar.version = version.value.split(';')
-    else:
-        calendar.version = version.value
-
-
-@Calendar._extracts('CALSCALE')
-def scale(calendar, line):
-    calscale = line
-    if calscale:
-        calendar.scale = calscale.value.lower()
-        calendar.scale_params = calscale.params
-    else:
-        calendar.scale = 'georgian'
-        calendar.scale_params = {}
-
-
-@Calendar._extracts('METHOD')
-def method(calendar, line):
-    method = line
-    if method:
-        calendar.method = method.value
-        calendar.method_params = method.params
-    else:
-        calendar.method = None
-        calendar.method_params = {}
-
-
-@Calendar._extracts('VTIMEZONE', multiple=True)
-def timezone(calendar, vtimezones):
-    """Receives a list of VTIMEZONE blocks.
-
-    Parses them and adds them to calendar._timezones.
-    """
-    for vtimezone in vtimezones:
-        remove_x(vtimezone)  # Remove non standard lines from the block
-        fake_file = StringIO()
-        fake_file.write(str(vtimezone))  # Represent the block as a string
-        fake_file.seek(0)
-        timezones = tzical(fake_file)  # tzical does not like strings
-        # timezones is a tzical object and could contain multiple timezones
-        for key in timezones.keys():
-            calendar._timezones[key] = timezones.get(key)
-
-
-@Calendar._extracts('VEVENT', multiple=True)
-def events(calendar, lines):
-    # tz=calendar._timezones gives access to the event factory to the
-    # timezones list
-    def event_factory(x):
-        return Event._from_container(x, tz=calendar._timezones)
-    calendar.events = list(map(event_factory, lines))
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-
-@Calendar._outputs
-def o_prodid(calendar, container):
-    creator = calendar.creator if calendar.creator else \
-        'ics.py - http://git.io/lLljaA'
-    container.append(ContentLine('PRODID', value=creator))
-
-
-@Calendar._outputs
-def o_version(calendar, container):
-    container.append(ContentLine('VERSION', value='2.0'))
-
-
-@Calendar._outputs
-def o_scale(calendar, container):
-    if calendar.scale:
-        container.append(ContentLine('CALSCALE', value=calendar.scale.upper()))
-
-
-@Calendar._outputs
-def o_method(calendar, container):
-    if calendar.method:
-        container.append(ContentLine('METHOD', value=calendar.method.upper()))
-
-
-@Calendar._outputs
-def o_events(calendar, container):
-    for event in calendar.events:
-        container.append(str(event))
+    def _build_components(self):
+        super(Calendar, self)._build_components()
+        # parse timezones
+        for vtimezone in self._components['VTIMEZONE']:
+            timezones = tzical(StringIO(str(vtimezone)))  # tzical does not like strings
+            for key in timezones.keys():
+                self._timezones[key] = timezones.get(key)

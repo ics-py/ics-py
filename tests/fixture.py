@@ -65,14 +65,14 @@ END:VCALENDAR
 """
 
 
-cal3 = """
+empty_calendar = """
 BEGIN:VCALENDAR
 END:VCALENDAR
 """
 
-cal4 = """BEGIN:VCALENDAR"""
+#calendar_without_end = """BEGIN:VCALENDAR"""  # not used
 
-cal5 = """
+empty_calendar_with_version = """
 BEGIN:VCALENDAR
 VERSION:2.0
 END:VCALENDAR
@@ -83,25 +83,25 @@ DESCRIPTION:a
  b
 """
 
-cal7 = """
+empty_calendar_with_blank_line1 = """
 BEGIN:VCALENDAR
 
 END:VCALENDAR
 """
 
-cal8 = """
+empty_calendar_with_blank_line2 = """
 BEGIN:VCALENDAR
 \t
 END:VCALENDAR
 """
 
-cal9 = """
+empty_calendar_with_blank_line3 = """
 
 BEGIN:VCALENDAR
 END:VCALENDAR
 """
 
-cal10 = u"""
+cal10 = """
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Apple Inc.//Mac OS X 10.9//EN
@@ -121,7 +121,7 @@ END:VEVENT
 END:VCALENDAR
 """
 
-cal11 = u"""
+calendar_with_parse_error = """
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Apple Inc.//Mac OS X 10.9//EN
@@ -167,14 +167,14 @@ END:VEVENT
 END:VCALENDAR
 """
 
-cal14 = u"""
+cal14 = """
 BEGIN:VCALENDAR
 VERSION:2.0;42
 PRODID:-//Apple Inc.//Mac OS X 10.9//EN
 END:VCALENDAR
 """
 
-cal15 = u"""
+cal15 = """
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Apple Inc.//Mac OS X 10.9//EN
@@ -198,7 +198,7 @@ END:VCALENDAR
 """
 
 # Event with URL
-cal16 = u"""
+cal16 = """
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Apple Inc.//Mac OS X 10.9//EN

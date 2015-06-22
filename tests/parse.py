@@ -1,7 +1,6 @@
 import unittest
 
-from .fixture import cal1, cal5, cal11
-from ics.event import Event
+from .fixture import cal1, empty_calendar_with_version, calendar_with_parse_error
 from ics.icalendar import Calendar
 from ics.parse import (
     ParseError,
@@ -15,7 +14,7 @@ from ics.parse import (
 class TestParse(unittest.TestCase):
 
     def test_parse(self):
-        content = string_to_container(cal5)
+        content = string_to_container(empty_calendar_with_version)
         self.assertEqual(1, len(content))
 
         cal = content.pop()
@@ -23,7 +22,8 @@ class TestParse(unittest.TestCase):
         self.assertTrue(isinstance(cal, Container))
         self.assertEqual('VERSION', cal[0].name)
         self.assertEqual('2.0', cal[0].value)
-        self.assertEqual(cal5.strip().splitlines(), str(cal).strip().splitlines())
+        self.assertEqual(empty_calendar_with_version.strip().splitlines(),
+                         str(cal).strip().splitlines())
 
     def test_one_line(self):
         ics = 'DTSTART;TZID=Europe/Brussels:20131029T103000'
@@ -56,7 +56,7 @@ class TestParse(unittest.TestCase):
     def test_end_different(self):
 
         with self.assertRaises(ParseError):
-            Calendar(cal11)
+            Calendar(calendar_with_parse_error)
 
 
 class TestContainer(unittest.TestCase):

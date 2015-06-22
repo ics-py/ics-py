@@ -108,7 +108,6 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.created, None)
         self.assertEqual(e.location, None)
         self.assertEqual(e.url, None)
-        self.assertEqual(e._unused, Container(name='VEVENT'))
 
     def test_has_end(self):
         e = Event()

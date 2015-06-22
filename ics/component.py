@@ -3,22 +3,23 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
+from six import PY2
 
-from collections import namedtuple
+from collections import defaultdict
+import itertools
 
-from .utils import get_lines
-
-
-Extractor = namedtuple(
-    'Extractor',
-    ['function', 'type', 'required', 'multiple']
-)
+from .parse import ContentLine, Container
+from .property import property_description
 
 
 class Component(object):
     _TYPE = "ABSTRACT"
+    _known_components = ()
+
+    def __init__(self):
+        self._properties = {}
+        self._components = defaultdict(list)
+        self.parent = None
 
     @classmethod
     def _from_container(cls, container, *args, **kwargs):
@@ -26,54 +27,47 @@ class Component(object):
             raise NotImplementedError('Abstract class, cannot instantiate.')
 
         k = cls()
-        if cls._TYPE == "VEVENT":
-            k.timezones = kwargs.get('tz', {})
+        k.parent = kwargs.get('parent')
         k._populate(container)
 
         return k
 
     def _populate(self, container):
+        """ Build the component from the container
+        """
         if container.name != self._TYPE:
             raise ValueError("container isn't an {}".format(self._TYPE))
 
-        for extractor in self._EXTRACTORS:
-            lines = get_lines(container, extractor.type)
-            if not lines and extractor.required:
-                raise ValueError(
-                    'A {} must have at least one {}'
-                    .format(container.name, extractor.type))
-
-            if not extractor.multiple and len(lines) > 1:
-                raise ValueError(
-                    'A {} must have at most one {}'
-                    .format(container.name, extractor.type))
-
-            if extractor.multiple:
-                extractor.function(self, lines)  # Send a list or empty list
+        for e in container:
+            if isinstance(e, ContentLine):
+                self._add_property(e)
             else:
-                if len(lines) == 1:
-                    extractor.function(self, lines[0])  # Send the element
-                else:
-                    extractor.function(self, None)  # Send None
+                self._add_component(e)
+        self._build_components()
 
-        self._unused = container  # Store unused lines
+    def _build_components(self):
+        """ Build the dependant components
+        """
+        for name, component, attribute in self._known_components:
+            for container in self._components[name]:
+                comp = component._from_container(container, parent=self)
+                getattr(self, attribute).append(comp)
 
-    @classmethod
-    def _extracts(cls, line_type, required=False, multiple=False):
-        def decorator(fn):
-            extractor = Extractor(
-                function=fn,
-                type=line_type,
-                required=required,
-                multiple=multiple)
-            cls._EXTRACTORS.append(extractor)
-            return fn
-        return decorator
+    def _add_property(self, line):
+        if property_description(self._TYPE, line.name).multiple:
+            if line.name in self._properties:
+                self._properties[line.name].append(line)
+            else:
+                self._properties[line.name] = [line]
+        else:
+            if line.name in self._properties:
+                raise AttributeError('{} must only occur once in a {}'.format(
+                    line.name, self._TYPE))
+            self._properties[line.name] = line
+            self._properties[line.name].single = True
 
-    @classmethod
-    def _outputs(cls, fn):
-        cls._OUTPUTS.append(fn)
-        return fn
+    def _add_component(self, container):
+        self._components[container.name].append(container)
 
     def __repr__(self):
         """ - In python2: returns self.__urepr__() encoded into utf-8.
@@ -86,9 +80,22 @@ class Component(object):
             adress = hex(id(self))
             return '<{} at {}>'.format(t, adress)
 
+    def get_container(self):
+        container = Container(self._TYPE)
+        for name, value in self._properties.items():
+            if property_description(self._TYPE, name).multiple:
+                container.extend(value)
+            else:
+                container.append(value)
+        for components in self._components.values():
+            container.extend(components)
+        return container
+
     def __str__(self):
         """Returns the component in an iCalendar format."""
-        container = self._unused.clone()
-        for output in self._OUTPUTS:
-            output(self, container)
-        return str(container)
+        return str(self.get_container())
+
+    def get_timezones(self):
+        if self.parent:
+            return self.parent.get_timezones()
+        return {}

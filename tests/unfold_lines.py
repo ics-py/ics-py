@@ -3,11 +3,11 @@ from ics.parse import unfold_lines
 from .fixture import (
     cal1,
     cal2,
-    cal3,
+    empty_calendar,
     cal6,
-    cal7,
-    cal8,
-    cal9,
+    empty_calendar_with_blank_line1,
+    empty_calendar_with_blank_line2,
+    empty_calendar_with_blank_line3,
     unfolded_cal1,
     unfolded_cal2,
     unfolded_cal6,
@@ -50,17 +50,17 @@ class TestUnfoldLines(unittest.TestCase):
         self.assertEqual(list(unfold_lines(cal6.split('\n'))), unfolded_cal6)
 
     def test_two_lines(self):
-        self.assertEqual(list(unfold_lines(cal3.split('\n'))),
+        self.assertEqual(list(unfold_lines(empty_calendar.split('\n'))),
                          ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
     def test_no_empty_lines(self):
-        self.assertEqual(list(unfold_lines(cal7.split('\n'))),
+        self.assertEqual(list(unfold_lines(empty_calendar_with_blank_line1.split('\n'))),
                          ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
     def test_no_whitespace_lines(self):
-        self.assertEqual(list(unfold_lines(cal8.split('\n'))),
+        self.assertEqual(list(unfold_lines(empty_calendar_with_blank_line2.split('\n'))),
                          ['BEGIN:VCALENDAR', 'END:VCALENDAR'])
 
     def test_first_line_empty(self):
-        self.assertEqual(list(unfold_lines(cal9.split('\n'))),
+        self.assertEqual(list(unfold_lines(empty_calendar_with_blank_line3.split('\n'))),
                          ['BEGIN:VCALENDAR', 'END:VCALENDAR'])

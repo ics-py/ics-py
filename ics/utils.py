@@ -35,11 +35,7 @@ def iso_to_arrow(time_container, available_tz={}):
         tz = tz_list[0]
     else:
         tz = None
-    if ('T' not in time_container.value) and \
-            'DATE' in time_container.params.get('VALUE', []):
-        val = time_container.value + 'T0000'
-    else:
-        val = time_container.value
+    val = time_container.value
 
     if tz and not (val[-1].upper() == 'Z'):
         naive = arrow.get(val).naive
@@ -67,16 +63,6 @@ def iso_precision(string):
             return 'minute'
     else:
         return 'day'
-
-
-def get_lines(container, name):
-    lines = []
-    for i in reversed(range(len(container))):
-        item = container[i]
-        if item.name == name:
-            lines.append(item)
-            del container[i]
-    return lines
 
 
 def parse_duration(line):
@@ -163,21 +149,3 @@ def arrow_to_iso(instant):
 def uid_gen():
     uid = str(uuid4())
     return "{}@{}.org".format(uid, uid[:4])
-
-
-def escape_string(string):
-    string = string.replace("\\", "\\\\")
-    string = string.replace(";", "\\;")
-    string = string.replace(",", "\\,")
-    string = string.replace("\n", "\\n")
-    return string
-
-
-def unescape_string(string):
-    string = string.replace("\\;", ";")
-    string = string.replace("\\,", ",")
-    string = string.replace("\\n", "\n")
-    string = string.replace("\\N", "\n")
-    string = string.replace("\\\\", "\\")
-
-    return string

@@ -1,9 +1,6 @@
 import unittest
 from collections import Iterable
-from six import PY2
 import arrow
-
-from ics.parse import Container
 
 from ics.icalendar import Calendar
 from ics.event import Event
@@ -22,16 +19,16 @@ class TestCalendar(unittest.TestCase):
         self.assertIsInstance(c.events, EventList)
         self.assertSequenceEqual(c.events, [])
         self.assertEqual(c.method, None)
-        self.assertEqual(c.scale, None)
-        self.assertEqual(c._unused, Container(name='VCALENDAR'))
+        # self.assertEqual(c.scale, None)
+        # Calendar.scale defaults to 'GREGORIAN' according to RFC5545
         self.assertEqual(c._timezones, {})
 
     def test_selfload(self):
-        for fix in self.fixtures:
+        for i, fix in enumerate(self.fixtures):
             c = Calendar(fix)
             d = Calendar(str(c))
-            self.assertEqual(c, d)
-            self.assertSequenceEqual(sorted(c.events), sorted(d.events))
+            self.assertEqual(c, d, "Error with nr. {}".format(i))
+            self.assertSequenceEqual(sorted(c.events), sorted(d.events), "Error with nr. {}".format(i))
 
             e = Calendar(str(d))
             # cannot compare str(c) and str(d) because times are encoded differently
@@ -141,10 +138,13 @@ class TestCalendar(unittest.TestCase):
         c0 = Calendar()
         c1 = Calendar()
         c0.creator = u'42'
-        with self.assertRaises(ValueError):
-            c1.creator = 42
+        # with self.assertRaises(ValueError):
+        #     c1.creator = 42
+        # TextProperties are cast to a string type
+        c1.creator = 42
 
         self.assertEqual(c0.creator, u'42')
+        self.assertEqual(c1.creator, u'42')
 
     def test_existing_creator(self):
         c = Calendar(cal1)
@@ -157,7 +157,7 @@ class TestCalendar(unittest.TestCase):
 
         c = Calendar(cal10)
 
-        self.assertEqual(c.scale, u'georgian')
+        self.assertEqual(c.scale, u'GREGORIAN')
 
     def test_version(self):
 
