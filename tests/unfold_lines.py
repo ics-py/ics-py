@@ -2,14 +2,14 @@ import unittest
 from ics.parse import unfold_lines
 from .fixture import (
     cal1,
-    cal2,
+    calendar_without_prodid,
     empty_calendar,
     cal6,
     empty_calendar_with_blank_line1,
     empty_calendar_with_blank_line2,
     empty_calendar_with_blank_line3,
     unfolded_cal1,
-    unfolded_cal2,
+    unfolded_calendar_without_prodid,
     unfolded_cal6,
 )
 
@@ -17,7 +17,8 @@ from .fixture import (
 class TestUnfoldLines(unittest.TestCase):
 
     def test_no_folded_lines(self):
-        self.assertEqual(list(unfold_lines(cal2.split('\n'))), unfolded_cal2)
+        self.assertEqual(list(unfold_lines(calendar_without_prodid.split('\n'))),
+                         unfolded_calendar_without_prodid)
 
     def test_simple_folded_lines(self):
         self.assertEqual(list(unfold_lines(cal1.split('\n'))), unfolded_cal1)

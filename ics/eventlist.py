@@ -10,7 +10,8 @@ from six.moves import filter, map, range
 from arrow.arrow import Arrow
 import arrow
 
-from .utils import get_arrow
+from datetime import datetime, time, timedelta
+from .utils import get_arrow, get_date_or_datetime
 from .event import Event
 
 
@@ -18,7 +19,8 @@ class EventList(list):
 
     """EventList is a subclass of the standard :class:`list`.
 
-    It can be used as a list but also has super slicing capabilities and some helpers.
+    It can be used as a list but also has super slicing capabilities
+    and some helpers.
     """
 
     def __init__(self, arg=[]):
@@ -36,7 +38,7 @@ class EventList(list):
         for elem in arg:
             if not isinstance(elem, Event):
                 raise ValueError('EventList takes only iterables with elements of type "Event" not {}'
-                    .format(type(elem)))
+                                 .format(type(elem)))
             else:
                 self.append(elem)
 
@@ -51,9 +53,9 @@ class EventList(list):
         If one of the 3 arguments ([start:stop:step]) is not None or an int,\
         slicing differs.
 
-        In that case, `start` and `stop` are considerated like instants\
+        In that case, `start` and `stop` are considered as instants\
         (or None) and `step` like a modificator.
-        `start` and `stop` will be converted to :class:`Arrow` objects (or None)\
+        `start` and `stop` will be converted to :class:`datetime` objects (or None)\
         with :func:`arrow.get`.
 
         - start (:class:`Arrow-convertible`): \
@@ -77,75 +79,59 @@ class EventList(list):
         if isinstance(sl, integer_types):
             return super(EventList, self).__getitem__(sl)
 
-        if isinstance(sl, Arrow):  # Single arrow slice
-            begin, end = sl.floor('day').span('day')
-            return self[begin:end:'both']
+        if not isinstance(sl, slice) and not isinstance(sl, datetime):
+            # not an int, not a slice, not a datetime,
+            # try to convert it to a datetime
+            sl = get_date_or_datetime(sl)
 
-        # not a slice, not an int, try to convert it to an Arrow
-        if not isinstance(sl, slice):
-            begin, end = get_arrow(sl).floor('day').span('day')
-            return self[begin:end:'both']
+        if isinstance(sl, datetime):  # Single datetime slice
+            begin = datetime.combine(sl.date(), time(0))
+            end = begin + timedelta(1)
+            sl = slice(begin, end, 'both')
 
         # now it has to be a slice
         int_or_none = integer_types + (type(None), )
-        if isinstance(sl.start, int_or_none) \
-            and isinstance(sl.stop, int_or_none) \
-                and isinstance(sl.step, int_or_none):
+        if (isinstance(sl.start, int_or_none) and
+                isinstance(sl.stop, int_or_none) and
+                isinstance(sl.step, int_or_none)):
             # classical slice
             return super(EventList, self).__getitem__(sl)
 
         # now we have a slice and it's a special one
-        if sl.step is None:  # Empty step -> default value
-            step = 'both'
-        # invalid step
-        elif sl.step not in ('begin', 'end', 'both', 'any', 'inc'):
-            raise ValueError(
-                "The step must be 'begin', 'end', 'both', 'any', 'inc' \
-or None not '{}'".format(sl.step))
-        else:  # valid step
-            step = sl.step
+        step = sl.step or 'both'  # Empty step -> default value
+        begin = get_date_or_datetime(sl.start)
+        end = get_date_or_datetime(sl.stop)
 
-        begin, end = get_arrow(sl.start), get_arrow(sl.stop)
-        condition0 = lambda x: True
+        def _begin(event):
+            return ((begin is None or event.begin > begin) and
+                    (end is None or event.begin < end))
 
-        if begin:
-            condition_begin1 = lambda x: condition0(x) and x.begin > begin
-            condition_end1 = lambda x: condition0(x) and x.end > begin
-            if step == 'begin':
-                condition1 = condition_begin1
-            elif step == 'end':
-                condition1 = condition_end1
-            elif step == 'any':
-                condition1 = lambda x: condition_begin1(x) or \
-                    condition_end1(x)
-            elif step == 'both':
-                condition1 = lambda x: condition_begin1(x) and \
-                    condition_end1(x)
-        else:
-            condition1 = condition0
+        def _end(event):
+            return ((begin is None or event.end > begin) and
+                    (end is None or event.end < end))
 
-        if end:
-            condition_begin2 = lambda x: condition1(x) and x.begin < end
-            condition_end2 = lambda x: condition1(x) and x.end < end
-            if step == 'begin':
-                condition2 = condition_begin2
-            elif step == 'end':
-                condition2 = condition_end2
-            elif step == 'any':
-                condition2 = lambda x: condition_begin2(x) or \
-                    condition_end2(x)
-            elif step == 'both':
-                condition2 = lambda x: condition_begin2(x) and \
-                    condition_end2(x)
-        else:
-            condition2 = condition1
+        def _both(event):
+            return ((begin is None or event.begin > begin and event.end > begin) and
+                    (end is None or event.begin < end and event.end < end))
 
-        if step == 'inc':
-            if not begin or not end:
-                return []
-            condition2 = lambda x: x.begin < begin and end < x.end
+        def _any(event):
+            return ((begin is None or event.begin > begin or event.end > begin) and
+                    (end is None or event.begin < end or event.end < end))
 
-        return list(filter(condition2, self))
+        def _inc(event):
+            return (begin is not None and end is None and
+                    event.begin < begin or event.end < end)
+
+        def _error(event):
+            msg = "The step must be 'begin', 'end', 'both', 'any', 'inc' or None not '{}'"
+            raise ValueError(msg.format(step))
+
+        modificators = {'begin': _begin,
+                        'end': _end,
+                        'both': _both,
+                        'any': _any,
+                        'inc': _inc, }
+        return list(filter(modificators.get(step, _error), self))
 
     def today(self, strict=False):
         """Args:

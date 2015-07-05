@@ -5,13 +5,11 @@ from __future__ import unicode_literals, absolute_import
 
 from six.moves import map
 
-import arrow
 import copy
-from datetime import date, timedelta
+from datetime import date, time, timedelta
 
 from .component import Component
-from .utils import get_arrow, uid_gen
-from .parse import Container
+from .utils import utcnow, uid_gen, is_date
 from .property import (TextProperty, DateTimeProperty, DateTimeOrDateProperty,
                        DurationProperty)
 
@@ -35,8 +33,9 @@ class Event(Component):
     description = TextProperty('DESCRIPTION')
     location = TextProperty('LOCATION')
     url = TextProperty('URL')
-    created = DateTimeProperty('DTSTAMP', default=arrow.now)
-    uid = TextProperty('UID', default=uid_gen)
+    created = DateTimeProperty('DTSTAMP', default='_default_created',
+                               create_on_access=True)
+    uid = TextProperty('UID', default=uid_gen, create_on_access=True)
 
     _TYPE = "VEVENT"
     _EXTRACTORS = []
@@ -72,6 +71,7 @@ class Event(Component):
             Handling of all day events has changed a bit from the previous
         """
         super(Event, self).__init__()
+        self.no_validation = False  # bypass all validation when `True`
         if name is not None:
             self.name = name
         if begin is not None:
@@ -81,6 +81,7 @@ class Event(Component):
                 'Event() may not specify an end and a duration at the same time')
         if end is not None:
             self.end = end
+            # temp = self.end
         if duration is not None:
             self.duration = duration
         if uid is not None:
@@ -99,19 +100,26 @@ class Event(Component):
         Return:
             bool: self has an end
         """
-        return bool(self._has_end_time() or self._has_duration())
+        return bool(self._has_end() or self._has_duration())
 
     def _validate_begin(self, value):
-        value = get_arrow(value)
-        if value and self._has_end_time and value > self.end:
-            raise ValueError('Begin must be before end')
+        if not self.no_validation and value:
+            if is_date(value):
+                self.make_all_day()
+            if self._has_end() and value > self.end:
+                raise ValueError('Begin must be before end')
+        return value
 
     def _default_end(self, property_name):
-        if self._has_duration():  # if end is duration defined
+        if self._has_duration() and self.begin:  # if end is duration defined
             # return the beginning + duration
-            return self.begin + self.duration
+            if self.all_day:
+                # The end day belongs to the event
+                return self.begin + self.duration - timedelta(1)
+            else:
+                return self.begin + self.duration
         elif self.begin:
-            if isinstance(self.begin, date):
+            if self.all_day:
                 # According to RFC 5545 "DTEND" is set to a calendar date
                 # after "DTSTART" if the VEVENT spans more than one date.
                 # If DTEND is not specified, the VEVENT should be only
@@ -134,24 +142,35 @@ class Event(Component):
             begin is not None.
         |  Must not be set to a lower value than self.begin.
         """
-        if value:
-            if value < self.begin:
+        if not self.no_validation and value:
+            if self.all_day and hasattr(value, 'date'):
+                value = value.date()
+            if self.begin and value < self.begin:
                 raise ValueError('End must be after begin')
             if self._has_duration():
                 del self.duration
+        return value
 
     def _default_duration(self, property_name):
         if self._has_end():
+            if self.all_day:
+                return self.end - self.begin + timedelta(1)
             return self.end - self.begin
-        else:
-            return None
+        if self.all_day:
+            return timedelta(1)
+        if self.begin:
+            # This is how it was implemented previously.
+            # Is this good?
+            return timedelta(seconds=1)
+        return None
 
     def _validate_duration(self, value):
-        if value and self._has_end_time():
+        if not self.no_validation and value and self._has_end():
             del self.end
+        return value
 
-    def _has_end_time(self):
-        return 'END' in self._properties
+    def _has_end(self):
+        return 'DTEND' in self._properties
 
     def _has_duration(self):
         return 'DURATION' in self._properties
@@ -162,16 +181,30 @@ class Event(Component):
         Return:
             bool: self is an all-day event
         """
-        return isinstance(self.begin, date)
+        return is_date(self.begin)
 
     def make_all_day(self):
         """Transforms self to an all-day event.
 
-        The day will be the day of self.begin.
+        The day will begin on the day of self.begin.
         """
-        self.begin = self.begin.date()
-        self.duration = None
-        self.end = None
+        self.no_validation = True
+        if not self.all_day:
+            if self.begin:
+                self.begin = self.begin.date()
+            if self._has_duration():
+                self.duration = timedelta(days=self.duration.days)
+            elif self._has_end() and not is_date(self.end):
+                # if the event ended at 0:00,
+                # the next day should not be included in the all-day version
+                if self.end.time() == time(0):
+                    self.end = self.end.date() - timedelta(1)
+                else:
+                    self.end = self.end.date()
+        self.no_validation = False
+
+    def _default_created(self, property_name):
+        return utcnow()
 
     def __urepr__(self):
         """Should not be used directly. Use self.__repr__ instead.
@@ -234,6 +267,10 @@ class Event(Component):
         return self.begin >= other.begin
 
     def __or__(self, other):
+        """ Return a 2-tuple of datetimes
+        with begin and end of the period the two events overlap
+        or (None, None) if they don't overlap
+        """
         begin, end = None, None
         if self.begin and other.begin:
             begin = max(self.begin, other.begin)

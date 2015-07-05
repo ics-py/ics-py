@@ -4,20 +4,37 @@
 from __future__ import unicode_literals, absolute_import
 
 from arrow.arrow import Arrow
-from datetime import timedelta
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
+from datetime import date, datetime, timedelta, tzinfo
+import six
 from uuid import uuid4
 import arrow
 import re
 
 from . import parse
 
-tzutc = arrow.utcnow().tzinfo
+
+ZERO_OFFSET = timedelta(0)
+
+
+class TZUTC(tzinfo):
+    def utcoffset(self, dt):
+        return ZERO_OFFSET
+
+    def dst(self, dt):
+        return ZERO_OFFSET
+
+    def tzname(self, dt):
+        return "UTC"
+
+tzutc = TZUTC()
+
+
+def utcnow():
+    return datetime.now(tzutc)
 
 
 def remove_x(container):
-    for i in reversed(range(len(container))):
+    for i in reversed(six.moves.range(len(container))):
         item = container[i]
         if item.name.startswith('X-'):
             del container[i]
@@ -141,11 +158,148 @@ def get_arrow(value):
 
 
 def arrow_to_iso(instant):
-    # set to utc, make iso, remove timezone
-    instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDDTHHmmss')
-    return instant + 'Z'
+    if instant.tzinfo:
+        # set to utc, make iso, remove timezone
+        return arrow.get(instant.astimezone(arrow.utcnow().tzinfo)
+                         ).format('YYYYMMDDTHHmmss') + 'Z'
+    # naive
+    return instant.strftime('%Y%m%dT%H%M%S')
+
+
+def datetime_to_iso(instant):
+    if instant.tzinfo:
+        # set to utc, make iso, remove timezone
+        instant = instant.astimezone(tzutc)
+        return instant.strftime('%Y%m%dT%H%M%SZ')
+    # naive
+    return instant.strftime('%Y%m%dT%H%M%S')
+
+
+def get_date_or_datetime(value, tz=None):
+    """ Tries to read a date/datetime from whatever it gets.
+
+    Usually it will return a datetime,
+    except when it is passed a date
+    or a string without hours, minutes and seconds
+    If tz (timezone) is None, it will return a naive datetime,
+    except when it gets an int or float,
+    which are interpreted as timestamp in UTC.
+    """
+    if value is None:
+        return None
+    elif isinstance(value, date):  # True for date and datetime
+        return value
+    elif isinstance(value, tuple):
+        return datetime(*value, tzinfo=tz)
+    elif isinstance(value, dict):
+        if tz is not None:
+            value['tzinfo'] = tz
+        return datetime(**value)
+    elif isinstance(value, six.string_types):
+        return parse_date_or_datetime(value, tz=tz)
+    elif isinstance(value, (six.integer_types, float)):
+        return datetime.fromtimestamp(value, tz=tz or tzutc)
+
+
+DATETIME_PATTERNS = (
+    (r'(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2}).(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})',
+     datetime),  # YYYY/MM/DD?HH:mm:ss
+    (r'(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2}).(?P<hour>\d{2}):(?P<minute>\d{2})',
+     datetime),  # YYYY/MM/DD?HH:mm
+    (r'(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}).(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})',
+     datetime),  # YYYY-MM-DD?HH:mm:ss
+    (r'(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}).(?P<hour>\d{2}):(?P<minute>\d{2})',
+     datetime),  # YYYY-MM-DD?HH:mm
+    (r'(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2}).(?P<hour>\d{2})(?P<minute>\d{2})(?P<second>\d{2})',
+     datetime),  # YYYYMMDD?HHmmss
+    (r'(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2}).(?P<hour>\d{2})(?P<minute>\d{2})',
+     datetime),  # YYYYMMDD?HHmm
+    (r'(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})', date),  # YYYY/MM/DD
+    (r'(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})', date),  # YYYY-MM-DD
+    (r'(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})', date),  # YYYYMMDD
+)
+
+
+def parse_date_or_datetime(value, tz=None):
+    if not isinstance(value, six.string_types):
+        raise ValueError('String type expected, got {}'.format(type(value).__name__))
+    for pattern, _type in DATETIME_PATTERNS:
+        match = re.match(pattern, value)
+        if match:
+            print pattern
+            kwargs = dict((key, int(val))
+                          for key, val in match.groupdict().items())
+            if _type == datetime:
+                kwargs['tzinfo'] = tz
+            return _type(**kwargs)
+
+DATE_PATTERNS = (
+    (re.compile(r'^\d{8}$'), '%Y%m%d'),
+    (re.compile(r'^\d{4}/\d{2}/\d{2}$'), '%Y/%m/%d'),
+    (re.compile(r'^\d{4}-\d{2}-\d{2}$'), '%Y-%m-%d'),
+)
+
+
+def parse_date(value):
+    """ If `value` is a string representing a date, return the date,
+    else return `value` unchanged
+    """
+    if isinstance(value, six.string_types):
+        for pattern, format in DATE_PATTERNS:
+            if pattern.match(value):
+                return datetime.strptime(value, format).date()
+    return value
+
+
+def parse_cal_date(value):
+    """ Parse a date value as specified in RFC5545
+    """
+    return datetime.strptime(value, '%Y%m%d').date()
+
+
+DATETIME_PATTERN = re.compile(
+    r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})")
+
+
+def parse_cal_datetime(contentline, timezones={}):
+    """ Parse a datetime value as specified in RFC5545
+
+    FORM #1: DATE WITH LOCAL TIME:
+        19980118T230000
+    FORM #2: DATE WITH UTC TIME
+        19980119T070000Z
+    FORM #3: DATE WITH LOCAL TIME AND TIME ZONE REFERENCE
+        TZID=America/New_York:19980119T020000
+
+    If there should be more than one TZID (which should not occur)
+    the first one is used.
+    """
+    if contentline is None:
+        return None
+
+    tz_list = contentline.params.get('TZID')
+    val = contentline.value
+
+    if val[-1].upper() == 'Z':  # FORM #2
+        tzinfo = tzutc
+        val = val[:-1]
+    elif tz_list:  # FORM #3
+        tzinfo = timezones.get(tz_list[0])
+    else:  # FORM #1
+        tzinfo = None
+    args = [int(i) for i in DATETIME_PATTERN.match(val).groups()]
+    if tzinfo:
+        return datetime(*args, tzinfo=tzinfo)
+    return datetime(*args)
+
+    # TODO : raise if not iso date
+    # TODO : see if timezone is registered as a VTIMEZONE
 
 
 def uid_gen():
     uid = str(uuid4())
     return "{}@{}.org".format(uid, uid[:4])
+
+
+def is_date(value):
+    return isinstance(value, date) and not isinstance(value, datetime)

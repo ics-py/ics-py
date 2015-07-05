@@ -18,7 +18,7 @@ from .parse import (
     string_to_container,
     Container,
 )
-from .property import TextProperty
+from .property import TextProperty, VersionProperty
 
 
 class Calendar(Component):
@@ -34,7 +34,7 @@ class Calendar(Component):
     )
 
     creator = TextProperty('PRODID', default='ics.py - http://git.io/lLljaA')
-    version = TextProperty('VERSION', default='2.0')
+    version = VersionProperty('VERSION', default='2.0')
     # TODO : should take care of minver/maxver
     scale = TextProperty('CALSCALE', default='GREGORIAN')
     method = TextProperty('METHOD')
@@ -103,19 +103,12 @@ class Calendar(Component):
 
     def __eq__(self, other):
         if len(self.events) != len(other.events):
-            print "Lengths different"
             return False
         for i in range(len(self.events)):
             if not self.events[i] == other.events[i]:
-                print "Event {} different".format(i)
-                print self.events[i]
-                print
-                print other.events[i]
-                print
                 return False
         for attr in ('scale', 'method', 'creator'):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
-                print "Attribute {} different".format(attr)
                 return False
 
         return True

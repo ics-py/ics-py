@@ -1,9 +1,8 @@
 import unittest
 from ics.icalendar import Calendar
 from ics.component import Component
-from ics.parse import Container, ContentLine
-from .fixture import cal2
-import copy
+from ics.parse import Container
+from .fixture import calendar_without_prodid
 
 fix1 = "BEGIN:BASETEST\r\nATTR:FOOBAR\r\nEND:BASETEST"
 
@@ -15,7 +14,7 @@ class TestComponent(unittest.TestCase):
     def test_valueerror(self):
 
         with self.assertRaises(ValueError):
-            Calendar(cal2)
+            Calendar(calendar_without_prodid)
 
     def test_abstract(self):
         with self.assertRaises(NotImplementedError):

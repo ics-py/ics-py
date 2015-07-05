@@ -47,7 +47,7 @@ END:VEVENT
 END:VCALENDAR
 """
 
-cal2 = """
+calendar_without_prodid = """
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 DTEND;TZID=Europe/Berlin:20120608T212500
@@ -147,7 +147,7 @@ END:VEVENT
 END:VCALENDAR
 """
 
-cal13 = """
+calendar_with_duration_and_end = """
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Apple Inc.//Mac OS X 10.9//EN
@@ -214,7 +214,7 @@ END:VEVENT
 END:VCALENDAR
 """
 
-unfolded_cal2 = [
+unfolded_calendar_without_prodid = [
     'BEGIN:VCALENDAR',
     'BEGIN:VEVENT',
     'DTEND;TZID=Europe/Berlin:20120608T212500',

@@ -1,8 +1,10 @@
 import unittest
 import arrow
+from datetime import timedelta
 from ics.eventlist import EventList
 from ics.event import Event
 from ics.icalendar import Calendar
+from ics.utils import utcnow
 from .fixture import cal1
 
 
@@ -100,9 +102,10 @@ class TestEventList(unittest.TestCase):
     def test_getitem(self):
 
         l = EventList()
-        t = arrow.now()
+        t = utcnow()
+        sec = timedelta(seconds=1)
 
-        e = Event("test", t.replace(seconds=-1), t.replace(seconds=+1))
+        e = Event("test", t-sec, t+sec)
         l.append(e)
         getitem = l.__getitem__(e.begin)
         getitem = l[e.begin]

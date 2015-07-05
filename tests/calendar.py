@@ -6,7 +6,7 @@ from ics.icalendar import Calendar
 from ics.event import Event
 from ics.eventlist import EventList
 
-from .fixture import cal1, cal2, cal10, cal12, cal14
+from .fixture import cal1, cal10, cal12, cal14
 
 
 class TestCalendar(unittest.TestCase):

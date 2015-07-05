@@ -15,11 +15,12 @@ component.
 TODO: handle multiple values
 """
 import six
-from datetime import date, datetime, timedelta
+from datetime import datetime, date, timedelta
 from collections import namedtuple
 
-from .utils import (iso_to_arrow, arrow_to_iso, parse_duration,
-                    timedelta_to_duration)
+from .utils import (datetime_to_iso, parse_duration,
+                    timedelta_to_duration, parse_date,
+                    get_date_or_datetime, parse_cal_date, parse_cal_datetime)
 from .parse import ContentLine
 
 
@@ -242,6 +243,11 @@ PropertyDesc = namedtuple(
     ['type', 'required', 'multiple']
 )
 
+# If MEMOIZE_DATA is True,
+# setting properties memoizes their python value.
+# Is False for development/debugging purposes.
+MEMOIZE_DATA = False
+
 
 def property_description(component, line):
     """ Return a description of the property of this component
@@ -263,12 +269,15 @@ class ICalProperty(object):
     """
     def __init__(self, ical_name,
                  validation=None,
-                 default=None):
+                 default=None,
+                 create_on_access=False):
         """ Initialize the property
 
         Args:
             ical_name (string): the name of this property in the rfc 5545
-            validation (string): name of a method of the instance used to validate (and process) the input
+            validation (string): name of a method of the instance used to
+                validate (and process) the input.
+                The method must return the validated value.
             default (value of appropriate type
                      or method name of the instance
                      or function not expecting parameters):
@@ -277,19 +286,27 @@ class ICalProperty(object):
                 `def default(self, property_name):`
                 where `property_name` is the ical_name of the property.
                 It should return a python value of the appropriate type.
+                The method or function is called for every access to the
+                property as long as it is not set.
+            create_on_access: if there is no value for the property
+                when it is accessed, set the result of `default`
 
         `required` and `multiple` are ignored when `parent_type` is given
         """
         self.ical_name = ical_name
         self.validation = validation
         self.default = default
+        self.create_on_access = create_on_access
+        self.memoized = False
 
     def __get__(self, instance, owner):
+        if MEMOIZE_DATA and self.memoized:
+            return self.memo
         if self.ical_name in instance._properties:
             line = instance._properties[self.ical_name]
-            return self.to_python(line, instance)
+            return self._memoize(self.to_python(line, instance))
         default = self._get_default(instance)
-        if default is not None:
+        if self.create_on_access:
             self.__set__(instance, default)
         return default
 
@@ -321,6 +338,7 @@ class ICalProperty(object):
                 # Setting a property to None is deleting it
                 self.__delete__(instance)
         else:
+            self._memoize(value)
             p_value = self.from_python(value)
             instance._properties[self.ical_name] = p_value
 
@@ -329,6 +347,7 @@ class ICalProperty(object):
             raise TypeError("{} is required for {}".format(
                             self.ical_name, instance._TYPE))
         del instance._properties[self.ical_name]
+        self._memoize(None)
 
     def from_python(self, value, params={}):
         """ Translate a python data type to the format of iCalendar
@@ -349,6 +368,12 @@ class ICalProperty(object):
         """ Return True if this property can occur multiple times in this instance
         """
         return property_description(instance._TYPE, self.ical_name).multiple
+
+    def _memoize(self, value):
+        if MEMOIZE_DATA:
+            self.memoized = True
+            self.memo = value
+        return value
 
 
 class TextProperty(ICalProperty):
@@ -380,31 +405,50 @@ class DateTimeProperty(ICalProperty):
     """ ICalProperty with 'DATE-TIME' value type
     """
     def from_python(self, value, params={}):
-        return ContentLine(self.ical_name, value=arrow_to_iso(value), params=params)
+        return ContentLine(self.ical_name, value=datetime_to_iso(value),
+                           params=params)
 
     def to_python(self, line, instance):
-        tz = line.params.get('TZID') if line.params else None
-        if tz:
-            return iso_to_arrow(line.value, instance.get_timezones())
-        else:
-            return iso_to_arrow(line.value)
+        return parse_cal_datetime(line, instance.get_timezones())
 
 
 class DateTimeOrDateProperty(ICalProperty):
     """ ICalProperty with 'DATE-TIME' or 'DATE' value type
     """
+    def __set__(self, instance, value):
+        value = get_date_or_datetime(value)
+        if self.validation:
+            value = getattr(instance, self.validation)(value)
+        if value is None:
+            if self.ical_name in instance._properties:
+                # Setting a property to None means deleting it
+                self.__delete__(instance)
+        else:
+            p_value = self.from_python(value)
+            instance._properties[self.ical_name] = p_value
+
     def from_python(self, value, params={}):
         params = params or {}
-        if isinstance(value, date):
+        if isinstance(value, date) and not isinstance(value, datetime):
             params['VALUE'] = 'DATE'
-        return ContentLine(self.ical_name, value=arrow_to_iso(value), params=params)
+            s_value = value.strftime('%Y%m%d')
+        else:
+            s_value = value.strftime('%Y%m%dT%H%M%S')
+            if value.tzinfo:
+                # handle timezone
+                if value.tzinfo.utcoffset(value):
+                    params['TZID'] = [value.tzinfo.tzname(value)]
+                else:
+                    # UTC
+                    s_value += 'Z'
+        return ContentLine(self.ical_name, value=s_value, params=params)
 
     def to_python(self, line, instance):
         value = line.value
         params = line.params or {}
         if params.get('VALUE') == 'DATE':
-            return datetime.strptime(value, '%Y%m%d').date()
-        return iso_to_arrow(line, instance.get_timezones())
+            return parse_cal_date(value)
+        return parse_cal_datetime(line, instance.get_timezones())
 
 
 class DurationProperty(ICalProperty):
@@ -426,3 +470,16 @@ class DurationProperty(ICalProperty):
 
     def to_python(self, line, instance):
         return parse_duration(line.value)
+
+
+class VersionProperty(ICalProperty):
+    """ ICalProperty for calendar 'VERSION'
+
+    |  If there is a minversion and a maxversion,
+    |  it will return the maxversion
+    """
+
+    def to_python(self, line, instance):
+        if ';' in line.value:
+            return line.value.split(';', 1)[1]
+        return line.value

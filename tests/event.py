@@ -1,10 +1,9 @@
 import unittest
-from datetime import timedelta
-import arrow
+from datetime import datetime, timedelta
 from ics.event import Event
 from ics.icalendar import Calendar
-from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16
+from ics.utils import parse_date_or_datetime, tzutc
+from .fixture import cal12, calendar_with_duration_and_end, cal15, cal16
 
 CRLF = "\r\n"
 
@@ -13,8 +12,8 @@ class TestEvent(unittest.TestCase):
 
     def test_event(self):
         e = Event(begin=0, end=20)
-        self.assertEqual(e.begin.timestamp, 0)
-        self.assertEqual(e.end.timestamp, 20)
+        self.assertEqual(e.begin, datetime.fromtimestamp(0, tz=tzutc))
+        self.assertEqual(e.end, datetime.fromtimestamp(20, tz=tzutc))
         self.assertTrue(e.has_end())
         self.assertFalse(e.all_day)
 
@@ -28,11 +27,14 @@ class TestEvent(unittest.TestCase):
         g = Event(begin=0, end=10) | Event(begin=10, end=20)
         self.assertEqual(g, (None, None))
 
+        def timestamp(dt):
+            return (dt - datetime.fromtimestamp(0, tz=tzutc)).total_seconds()
+
         g = Event(begin=0, end=20) | Event(begin=10, end=30)
-        self.assertEqual(tuple(map(lambda x: x.timestamp, g)), (10, 20))
+        self.assertEqual(tuple(map(timestamp, g)), (10, 20))
 
         g = Event(begin=0, end=20) | Event(begin=5, end=15)
-        self.assertEqual(tuple(map(lambda x: x.timestamp, g)), (5, 15))
+        self.assertEqual(tuple(map(timestamp, g)), (5, 15))
 
         g = Event() | Event()
         self.assertEqual(g, (None, None))
@@ -40,12 +42,13 @@ class TestEvent(unittest.TestCase):
     def test_event_with_duration(self):
         c = Calendar(cal12)
         e = c.events[0]
-        self.assertEqual(e._duration, timedelta(1, 3600))
+        self.assertTrue(e._has_duration())
+        self.assertEqual(e.duration, timedelta(1, 3600))
         self.assertEqual(e.end - e.begin, timedelta(1, 3600))
 
     def test_not_duration_and_end(self):
         with self.assertRaises(ValueError):
-            Calendar(cal13)
+            Calendar(calendar_with_duration_and_end)
 
     def test_duration_output(self):
         e = Event(begin=0, duration=timedelta(1, 23))
@@ -57,9 +60,9 @@ class TestEvent(unittest.TestCase):
         e = Event(begin=0, end=20)
         begin = e.begin
         e.make_all_day()
-        self.assertEqual(e.begin, begin)
-        self.assertEqual(e._end_time, None)
-        self.assertEqual(e._duration, None)
+        self.assertEqual(e.begin, begin.date())
+        self.assertEqual(e.end, begin.date())
+        self.assertEqual(e.duration, timedelta(1))
 
     def test_init_duration_end(self):
         with self.assertRaises(ValueError):
@@ -75,17 +78,11 @@ class TestEvent(unittest.TestCase):
         with self.assertRaises(ValueError):
             e.begin = "2013/10/10"
 
-    def test_end_with_prescision(self):
-        e = Event(begin="1999/10/10")
-        e._begin_precision = "day"
-        self.assertEqual(e.end, arrow.get("1999/10/11"))
-
     def test_plain_repr(self):
         self.assertEqual(repr(Event()), "<Event>")
 
     def test_all_day_repr(self):
         e = Event(name='plop', begin="1999/10/10")
-        e.make_all_day()
         self.assertEqual(repr(e), "<all-day Event 'plop' 1999-10-10>")
 
     def test_name_repr(self):
@@ -93,19 +90,20 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(repr(e), "<Event 'plop'>")
 
     def test_repr(self):
-        e = Event(name='plop', begin="1999/10/10")
-        self.assertEqual(repr(e), "<Event 'plop' begin:1999-10-10T00:00:00+00:00 end:1999-10-10T00:00:01+00:00>")
+        e = Event(name='plop', begin="1999/10/10 00:00")
+        self.assertEqual(repr(e), "<Event 'plop' begin:1999-10-10 00:00:00 end:1999-10-10 00:00:01>")
 
     def test_init(self):
         e = Event()
 
-        self.assertEqual(e._duration, None)
-        self.assertEqual(e._end_time, None)
-        self.assertEqual(e._begin, None)
-        self.assertEqual(e._begin_precision, 'second')
+        self.assertEqual(e.duration, None)
+        self.assertEqual(e.end, None)
+        self.assertFalse(e._has_duration())
+        self.assertFalse(e._has_end())
+        self.assertEqual(e.begin, None)
         self.assertNotEqual(e.uid, None)
         self.assertEqual(e.description, None)
-        self.assertEqual(e.created, None)
+        self.assertNotEqual(e.created, None)
         self.assertEqual(e.location, None)
         self.assertEqual(e.url, None)
 
@@ -124,28 +122,29 @@ class TestEvent(unittest.TestCase):
         e = Event()
         self.assertIsNone(e.duration)
 
-        e1 = Event(begin="1993/05/24")
-        e1.make_all_day()
-        self.assertEqual(e1.duration, timedelta(days=1))
+        birthday = Event(begin="1993/05/24")
+        self.assertEqual(birthday.duration, timedelta(days=1))
 
-        e2 = Event(begin="1993/05/24", end="1993/05/30")
-        self.assertEqual(e2.duration, timedelta(days=6))
+        vacation = Event(begin="1993/05/24", end="1993/05/30")
+        self.assertEqual(vacation.duration, timedelta(days=7))
 
-        e3 = Event(begin="1993/05/24", duration=timedelta(minutes=1))
+        e3 = Event(begin=datetime(1993, 5, 24, 12),
+                   duration=timedelta(minutes=1))
         self.assertEqual(e3.duration, timedelta(minutes=1))
 
-        e4 = Event(begin="1993/05/24")
+        e4 = Event(begin=datetime(1993, 5, 24, 12))
         self.assertEqual(e4.duration, timedelta(seconds=1))
 
-        e5 = Event(begin="1993/05/24")
+        e5 = Event(begin=datetime(1993, 5, 24, 12))
         e5.duration = {'days': 6, 'hours': 2}
-        self.assertEqual(e5.end, arrow.get("1993/05/30T02:00"))
+        self.assertEqual(e5.end, parse_date_or_datetime("1993/05/30T14:00"))
         self.assertEqual(e5.duration, timedelta(hours=146))
 
     def test_always_uid(self):
         e = Event()
-        e.uid = None
+        uid = e.uid  # uid is generated when accessed
         self.assertIn('UID:', str(e))
+        self.assertIn(uid, str(e))
 
     def test_cmp_other(self):
         with self.assertRaises(NotImplementedError):
@@ -189,23 +188,24 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.location, "In, every text field")
         self.assertEqual(e.description, "Yes, all of them;")
 
-    def test_escapte_output(self):
+    def test_escape_output(self):
         e = Event()
 
         e.name = "Hello, with \\ spechial; chars and \n newlines"
         e.location = "Here; too"
         e.description = "Every\nwhere ! Yes, yes !"
-        e.created = arrow.Arrow(2013, 1, 1)
+        e.created = datetime(2013, 1, 1, tzinfo=tzutc)
         e.uid = "empty-uid"
 
-        eq = CRLF.join(("BEGIN:VEVENT",
-                "DTSTAMP:20130101T000000Z",
-                "SUMMARY:Hello\\, with \\\\ spechial\\; chars and \\n newlines",
-                "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
-                "LOCATION:Here\\; too",
-                "UID:empty-uid",
-                "END:VEVENT"))
-        self.assertEqual(str(e), eq)
+        output = str(e).splitlines()
+        self.assertEqual(output[0], "BEGIN:VEVENT")
+        self.assertEqual(output[-1], "END:VEVENT")
+        eq = set(("DTSTAMP:20130101T000000Z",
+                  "SUMMARY:Hello\\, with \\\\ spechial\\; chars and \\n newlines",
+                  "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
+                  "LOCATION:Here\\; too",
+                  "UID:empty-uid"))
+        self.assertEqual(set(output[1:-1]), eq)
 
     def test_url_input(self):
         c = Calendar(cal16)
