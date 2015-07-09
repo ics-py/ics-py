@@ -16,7 +16,6 @@ from .eventlist import EventList
 from .parse import (
     lines_to_container,
     string_to_container,
-    Container,
 )
 from .property import TextProperty, VersionProperty
 
@@ -164,3 +163,8 @@ class Calendar(Component):
             timezones = tzical(StringIO(str(vtimezone)))  # tzical does not like strings
             for key in timezones.keys():
                 self._timezones[key] = timezones.get(key)
+
+    # def validate(self):
+    #     """ Validate the calendar
+    #     """
+    #     return True

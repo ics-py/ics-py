@@ -9,7 +9,7 @@ from collections import defaultdict
 import itertools
 
 from .parse import ContentLine, Container
-from .property import property_description
+from .property import property_description, get_required_properties
 
 
 class Component(object):
@@ -68,6 +68,17 @@ class Component(object):
 
     def _add_component(self, container):
         self._components[container.name].append(container)
+
+    def validate(self):
+        """ Validate the component and its sub-components
+        and raise a ValueError on any errors
+        """
+        for prop in get_required_properties(self._TYPE):
+            if prop not in self._properties:
+                raise ValueError("{} is required for {}".format(prop, self._TYPE))
+        for known_comp in self._known_components:
+            for comp in getattr(self, known_comp[2]):
+                comp.validate()
 
     def __repr__(self):
         """ - In python2: returns self.__urepr__() encoded into utf-8.

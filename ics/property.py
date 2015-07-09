@@ -249,19 +249,26 @@ PropertyDesc = namedtuple(
 MEMOIZE_DATA = False
 
 
-def property_description(component, line):
-    """ Return a description of the property of this component
+def property_description(component_type, line):
+    """ Return a description of the property of this component_type
 
     Defaults to PropertyDesc(type=ICalProperty, required=False,
         multiple=False)
     For unknown components or properties 'multiple' is True
     """
-    comp_def = ICAL_PROPERTIES.get(component, {'properties': {}})
+    comp_def = ICAL_PROPERTIES.get(component_type, {'properties': {}})
     definition = comp_def['properties'].get(line, {'multiple': True})
     return PropertyDesc(
         type=definition.get('type', ICalProperty),
         required=definition.get('required', False),
         multiple=definition.get('multiple', False))
+
+
+def get_required_properties(component_type):
+    comp_def = ICAL_PROPERTIES.get(component_type, {'properties': {}})
+    properties = comp_def.get('properties', {})
+    return [prop for prop, features in properties.items()
+            if features.get('required', False)]
 
 
 class ICalProperty(object):
