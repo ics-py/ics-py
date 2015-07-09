@@ -280,10 +280,7 @@ class Event(Component):
 
     def __eq__(self, other):
         """Two events are considered equal if they have the same uid."""
-        # We have to compare the properties themselves,
-        # because when uid should not be set,
-        # a simple 'self.uid == other.uid' would invoke uid_gen
-        return self._properties.get('UID') == other._properties.get('UID')
+        return self.uid == other.uid
 
     def clone(self):
         """
