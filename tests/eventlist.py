@@ -101,7 +101,7 @@ class TestEventList(unittest.TestCase):
 
         self.assertEqual([e], getitem)
 
-    def test_getitem_arrow(self):
+    def test_getitem_datetime(self):
 
         l = EventList()
         t = datetime(2013, 3, 3, 10)
