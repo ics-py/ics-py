@@ -3,11 +3,9 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from arrow.arrow import Arrow
 from datetime import date, datetime, timedelta, tzinfo
 import six
 from uuid import uuid4
-import arrow
 import re
 
 from . import parse
@@ -38,31 +36,6 @@ def remove_x(container):
         item = container[i]
         if item.name.startswith('X-'):
             del container[i]
-
-
-def iso_to_arrow(time_container, available_tz={}):
-    if time_container is None:
-        return None
-
-    # TODO : raise if not iso date
-    tz_list = time_container.params.get('TZID')
-    # TODO : raise if len(tz_list) > 1 or if tz is not a valid tz
-    # TODO : see if timezone is registered as a VTIMEZONE
-    if tz_list and len(tz_list) > 0:
-        tz = tz_list[0]
-    else:
-        tz = None
-    val = time_container.value
-
-    if tz and not (val[-1].upper() == 'Z'):
-        naive = arrow.get(val).naive
-        selected_tz = available_tz.get(tz, 'UTC')
-        return arrow.get(naive, selected_tz)
-    else:
-        return arrow.get(val)
-
-    # TODO : support floating (ie not bound to any time zone) times (cf
-    # http://www.kanzaki.com/docs/ical/dateTime.html)
 
 
 def iso_precision(string):
@@ -142,28 +115,6 @@ def timedelta_to_duration(dt):
         if secs:
             res += str(secs) + 'S'
     return res
-
-
-def get_arrow(value):
-    if value is None:
-        return None
-    elif isinstance(value, Arrow):
-        return value
-    elif isinstance(value, tuple):
-        return arrow.get(*value)
-    elif isinstance(value, dict):
-        return arrow.get(**value)
-    else:
-        return arrow.get(value)
-
-
-def arrow_to_iso(instant):
-    if instant.tzinfo:
-        # set to utc, make iso, remove timezone
-        return arrow.get(instant.astimezone(arrow.utcnow().tzinfo)
-                         ).format('YYYYMMDDTHHmmss') + 'Z'
-    # naive
-    return instant.strftime('%Y%m%dT%H%M%S')
 
 
 def datetime_to_iso(instant):

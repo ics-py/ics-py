@@ -2,7 +2,7 @@ import unittest
 from datetime import date, datetime, timedelta, tzinfo
 from dateutil.tz import tzstr
 from ics.parse import ParseError, ContentLine, string_to_container
-from ics.utils import (tzutc, parse_duration, timedelta_to_duration, remove_x, iso_to_arrow,
+from ics.utils import (tzutc, parse_duration, timedelta_to_duration, remove_x,
                        get_date_or_datetime, parse_date_or_datetime, parse_date,
                        parse_cal_date, parse_cal_datetime)
 
@@ -80,14 +80,6 @@ class TestRemoveX(unittest.TestCase):
         c2 = string_to_container(calendar_without_prodid)[0]
         remove_x(c)
         self.assertSequenceEqual(c, c2)
-
-
-class TestIso_to_arrow(unittest.TestCase):
-
-    def test_none(self):
-        self.assertIs(None, iso_to_arrow(None))
-
-    # TODO: Test with data
 
 
 class TestGet_date_or_datetime(unittest.TestCase):

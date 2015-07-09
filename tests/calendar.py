@@ -1,10 +1,11 @@
 import unittest
 from collections import Iterable
-import arrow
+from datetime import datetime
 
 from ics.icalendar import Calendar
 from ics.event import Event
 from ics.eventlist import EventList
+from ics.utils import tzutc
 
 from .fixture import cal1, calendar_without_prodid, cal10, cal12, cal14
 
@@ -229,6 +230,6 @@ class TestCalendar(unittest.TestCase):
         self.assertIsInstance(c.events, EventList)
         e = c.events[0]
         self.assertFalse(e.all_day)
-        self.assertEqual(arrow.get(2013, 10, 29, 9, 30), e.begin)
-        self.assertEqual(arrow.get(2013, 10, 29, 10, 30), e.end)
+        self.assertEqual(datetime(2013, 10, 29, 9, 30, tzinfo=tzutc), e.begin)
+        self.assertEqual(datetime(2013, 10, 29, 10, 30, tzinfo=tzutc), e.end)
         self.assertEqual(1, len(c.events))

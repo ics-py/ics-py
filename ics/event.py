@@ -136,7 +136,7 @@ class Event(Component):
     def _validate_end(self, value):
         """Validate the end of the event.
 
-        May be set to anything that :func:`ics-utils.get_date_or_datetime` 
+        May be set to anything that :func:`ics-utils.get_date_or_datetime`
         understands.
         If set to a non null value, removes any already existing duration.
         Setting to None will have unexpected behavior if begin is not None.
