@@ -47,8 +47,9 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.end - e.begin, timedelta(1, 3600))
 
     def test_not_duration_and_end(self):
+        c = Calendar(calendar_with_duration_and_end)
         with self.assertRaises(ValueError):
-            Calendar(calendar_with_duration_and_end)
+            c.validate()
 
     def test_duration_output(self):
         e = Event(begin=0, duration=timedelta(1, 23))

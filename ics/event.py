@@ -297,3 +297,11 @@ class Event(Component):
         Returns:
             int: hash of self. Based on self.uid."""
         return int(''.join(map(lambda x: '%.3d' % ord(x), self.uid)))
+
+    def validate(self):
+        """ Validate the event
+        """
+        super(Event, self).validate()
+        if self._has_end() and self._has_duration():
+            raise ValueError('Event() may not specify an end and a duration '
+                             'at the same time')
