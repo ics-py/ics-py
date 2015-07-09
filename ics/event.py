@@ -51,16 +51,16 @@ class Event(Component):
                  created=None,
                  location=None,
                  url=None):
-        """Instantiates a new :class:`ics.event.Event`.
+        """Instantiate a new :class:`ics.event.Event`.
 
         Args:
             name (string)
-            begin (Arrow-compatible)
-            end (Arrow-compatible)
+            begin (date-or-datetime-convertible)
+            end (date-or-datetime-convertible)
             duration (datetime.timedelta)
             uid (string): must be unique
             description (string)
-            created (Arrow-compatible)
+            created (datetime-convertible)
             location (string)
             url (string)
 
@@ -69,6 +69,7 @@ class Event(Component):
 
         Comment:
             Handling of all day events has changed a bit from the previous
+            versions
         """
         super(Event, self).__init__()
         self.no_validation = False  # bypass all validation when `True`
@@ -135,12 +136,11 @@ class Event(Component):
     def _validate_end(self, value):
         """Validate the end of the event.
 
-        |  May be set to anything that :func:`Arrow.get` understands.
-        |  If set to a non null value, removes any already
-            existing duration.
-        |  Setting to None will have unexpected behavior if
-            begin is not None.
-        |  Must not be set to a lower value than self.begin.
+        May be set to anything that :func:`ics-utils.get_date_or_datetime` 
+        understands.
+        If set to a non null value, removes any already existing duration.
+        Setting to None will have unexpected behavior if begin is not None.
+        Must not be set to a lower value than self.begin.
         """
         if not self.no_validation and value:
             if self.all_day and hasattr(value, 'date'):

@@ -15,17 +15,18 @@ class EventList(list):
 
     """EventList is a subclass of the standard :class:`list`.
 
-    It can be used as a list but also has super slicing capabilities
+    It can be used as a list but also has super slicing capabilities (see
+    :func:`ics.eventlist.EventList.__getitem__`)
     and some helpers.
     """
 
     def __init__(self, arg=[]):
         """Instantiates a new :class:`ics.eventlist.EventList`.
 
-            Args:
-                arg (iterable): same argument as list() and pass it to list().
-            Raises:
-                ValueError: if `arg`contains elements which are not :class:`ics.event.Event`
+        Args:
+            arg (iterable): same argument as list() and pass it to list().
+        Raises:
+            ValueError: if `arg`contains elements which are not :class:`ics.event.Event`
         """
 
         super(EventList, self).__init__()
@@ -41,57 +42,52 @@ class EventList(list):
     def __getitem__(self, sl):
         """Slices :class:`ics.eventlist.EventList`.
 
-        Note : an :class:`ics.eventlist.EventList` is always sorted and the slices \
+        Note : an :class:`ics.eventlist.EventList` is always sorted and the slices
         returned by this method will be sorted too.
 
-        If sl is conventional (like [10], [4:12], [3:100:2], [::-1], …),\
+        If sl is conventional (like [10], [4:12], [3:100:2], [::-1], …),
         it slices the :class:`ics.eventlist.EventList` like a classical list().
-        If one of the 3 arguments ([start:stop:step]) is not None or an int,\
+        If one of the 3 arguments ([start:stop:step]) is not None or an int,
         slicing differs.
 
-        In that case, `start` and `stop` are considered as instants\
-        (or None) and `step` like a modificator.
-        `start` and `stop` will be converted to :class:`datetime` objects (or None)\
-        with :func:`arrow.get`.
+        In that case, ``start`` and ``stop`` are considered as instants
+        (or None) and ``step`` as a modifier.
+        ``start`` and ``stop`` will be converted to :class:`datetime` objects
+        (or None) with :func:`ics.utils.get_date_or_datetime`.
 
-        - start (:class:`Arrow-convertible`): \
-        lower included bond,
-        - stop (:class:`Arrow-convertible`): \
-        upper, non included, bond.
-
-        Modificators:
-            - begin: the beginning of the events has to be \
-            between the bonds.
-            - end: the end of the events has to be \
-            between the bonds.
-            - both: both the end and the beginning have to be \
-            between the bonds.
-            - any: the beginning has to be before stop and the end \
-            has to be after start, i.e. the event and the start-stop-period \
-            have to overlap.
-            - inc: the events have to include be bonds \
+        ``step`` is expected to be a string with one of these values and meanings:
+            - ``begin``: the beginning of the events has to be between the bonds.
+            - ``end``: the end of the events has to be between the bonds.
+            - ``both``: both the end and the beginning have to be between the bonds.
+            - ``any``: the beginning has to be before stop and the end has to be\
+            after start, i.e. the event and the start-stop-period have to overlap.
+            - ``inc``: the events have to include be bonds\
             (start < event.begin < event.end < stop).
 
-        Usually the beginning is not considered to be between the bonds \
-        if it is equal to 'stop', as well as the end if it is equal to 'start'. \
-        (In these cases the Event doesn't overlap the timespan except \
+        Usually the beginning is not considered to be between the bonds
+        if it is equal to 'stop', as well as the end if it is equal to 'start'.
+        (In these cases the Event doesn't overlap the timespan except
         for one single moment.)
 
-          start    stop     'begin' 'end' 'both' 'any' 'inc'
-            |        |
-     +---+  |        |        no      no    no     no    no
-        +---+        |        no      no    no     no    no
-        +---+-+      |        no     yes    no    yes    no
-         +--+--------+        no     yes    no    yes    no
-         +--+--------+-+      no      no    no    yes    no
-            +-----+  |       yes     yes   yes    yes    no
-            +--------+       yes     yes   yes    yes    no
-            +--------+-+     yes      no    no    yes    no
-            | +---+  |       yes     yes   yes    yes   yes
-            | +------+       yes     yes   yes    yes    no
-            | +------+--+    yes      no    no    yes    no
-            |        +---+    no      no    no     no    no
-            |        |+--+    no      no    no     no    no
+        Here is a schema of possible events, their relation to the start-stop-period,
+        and if they are included by the different modifiers::
+
+              start    stop     'begin' 'end' 'both' 'any' 'inc'
+                |        |
+         +---+  |        |        no      no    no     no    no
+            +---+        |        no      no    no     no    no
+            +---+-+      |        no     yes    no    yes    no
+             +--+--------+        no     yes    no    yes    no
+             +--+--------+-+      no      no    no    yes    no
+                +-----+  |       yes     yes   yes    yes    no
+                +--------+       yes     yes   yes    yes    no
+                +--------+-+     yes      no    no    yes    no
+                | +---+  |       yes     yes   yes    yes   yes
+                | +------+       yes     yes   yes    yes    no
+                | +------+--+    yes      no    no    yes    no
+                |        +---+    no      no    no     no    no
+                |        |+--+    no      no    no     no    no
+
         """
         # Integer slice
         if isinstance(sl, integer_types):
@@ -123,8 +119,6 @@ class EventList(list):
         modifier = sl.step or 'both'  # Empty step -> default value
         start = get_date_or_datetime(sl.start)
         stop = get_date_or_datetime(sl.stop)
-        print 'start', start
-        print 'stop', stop
 
         if modifier not in ('begin', 'end', 'both', 'any', 'inc', '_date', None):
             msg = "The step must be 'begin', 'end', 'both', 'any', 'inc' or None not '{}'"
@@ -165,7 +159,8 @@ class EventList(list):
         return list(filter(routines[modifier], self))
 
     def today(self, strict=False):
-        """Args:
+        """ Return the events of today.
+        Args:
             strict (bool): if True events will be returned only if they are\
             strictly *included* in `day`.
 
@@ -176,7 +171,7 @@ class EventList(list):
 
     def on(self, day, strict=False):
         """Args:
-            day (Arrow-convertible)
+            day (date-or-datetime-convertible)
             strict (bool): if True events will be returned only if they are\
             strictly *included* in `day`.
 
@@ -198,7 +193,7 @@ class EventList(list):
 
     def at(self, instant):
         """Args:
-            instant (Arrow-convertible)
+            instant (datetime-convertible)
 
         Returns:
             list<Event>: all events that are occuring during `instant`.
@@ -251,7 +246,7 @@ class EventList(list):
         return EventList(events)
 
     def __setitem__(self, key, val):
-        """Set an item or a slice. Verifies that all items are instance of :class:`ics.event.Event`"""
+        """Set an item or a slice. Verifies that all items are instances of :class:`ics.event.Event`"""
         if isinstance(key, slice):
             acc = []
             for elem in val:
