@@ -1,25 +1,30 @@
 import unittest
-import arrow
-from datetime import timedelta
+from collections import defaultdict
+from datetime import timedelta, datetime
 from ics.eventlist import EventList
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.utils import utcnow
 from .fixture import cal1
 
+SECOND = timedelta(seconds=1)
+MINUTE = timedelta(minutes=1)
+HOUR = timedelta(hours=1)
+DAY = timedelta(days=1)
+YEAR = 365*DAY
+
+BEGIN = utcnow().replace(microsecond=0)  # Events don't handle microseconds
+END = BEGIN + 3*HOUR
+
 
 class TestEventList(unittest.TestCase):
-
-    from time import time
 
     def test_evlist(self):
 
         l = EventList()
-        t = self.time()
-
         self.assertEqual(len(l), 0)
 
-        e = Event(begin=t, end=t + 1)
+        e = Event(begin=100, end=101)
         l.append(e)
 
         self.assertEqual(len(l), 1)
@@ -28,19 +33,16 @@ class TestEventList(unittest.TestCase):
     def test_today(self):
 
         l = EventList()
-        t = self.time()
-
-        e = Event(begin=t, end=t + 1)
+        e = Event(begin=BEGIN, end=BEGIN+SECOND)
         l.append(e)
 
         self.assertEqual(l.today(), [e])
-        l.append(Event(begin=t, end=t + 86400))
+        l.append(Event(begin=BEGIN, end=BEGIN+DAY))
         self.assertEqual(l.today(strict=True), [e])
 
     def test_on(self):
 
         l = EventList()
-
         c = Calendar(cal1)
         l.append(c.events[0])
         day = "2013-10-29"
@@ -49,9 +51,7 @@ class TestEventList(unittest.TestCase):
     def test_now_large(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e = Event("test", t.replace(years=-1), t.replace(years=+1))
+        e = Event("test", BEGIN-YEAR, BEGIN+YEAR)
         l.append(e)
 
         self.assertIn(e, l.now())
@@ -59,9 +59,8 @@ class TestEventList(unittest.TestCase):
     def test_now_short(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e = Event("test", t.replace(seconds=-1), t.replace(seconds=+1))
+        t = utcnow()
+        e = Event("test", t-SECOND, t+SECOND)
         l.append(e)
 
         self.assertIn(e, l.now())
@@ -69,21 +68,16 @@ class TestEventList(unittest.TestCase):
     def test_at_is_now(self):
 
         l = EventList()
-        t = arrow.now()
-        instant = arrow.now()
-
-        e = Event("test", t.replace(seconds=-1), t.replace(seconds=+1))
+        e = Event("test", BEGIN-SECOND, BEGIN+SECOND)
         l.append(e)
 
-        self.assertIn(e, l.at(instant))
+        self.assertIn(e, l.at(BEGIN))
 
     def test_at_is_sooner(self):
 
         l = EventList()
-        t = arrow.now()
-        instant = arrow.now().replace(minutes=-1)
-
-        e = Event("test", t.replace(seconds=-59), t.replace(seconds=+1))
+        instant = BEGIN - MINUTE
+        e = Event("test", BEGIN - 59*SECOND, BEGIN + SECOND)
         l.append(e)
 
         self.assertNotIn(e, l.at(instant))
@@ -91,10 +85,8 @@ class TestEventList(unittest.TestCase):
     def test_at_is_later(self):
 
         l = EventList()
-        t = arrow.now()
-        instant = arrow.now().replace(minutes=+1)
-
-        e = Event("test", t.replace(seconds=-1), t.replace(seconds=+59))
+        instant = BEGIN + 60*SECOND
+        e = Event("test", BEGIN - SECOND, BEGIN + 59*SECOND)
         l.append(e)
 
         self.assertNotIn(e, l.at(instant))
@@ -102,34 +94,27 @@ class TestEventList(unittest.TestCase):
     def test_getitem(self):
 
         l = EventList()
-        t = utcnow()
-        sec = timedelta(seconds=1)
-
-        e = Event("test", t-sec, t+sec)
+        e = Event("test", BEGIN-SECOND, BEGIN+SECOND)
         l.append(e)
         getitem = l.__getitem__(e.begin)
-        getitem = l[e.begin]
+        # getitem = l[e.begin]
 
         self.assertEqual([e], getitem)
 
     def test_getitem_arrow(self):
 
         l = EventList()
-        t = arrow.get("20130303T101010")
-
-        e = Event("t", t.replace(hours=-1), t.replace(hours=+1))
+        t = datetime(2013, 3, 3, 10)
+        e = Event("t", t, t+HOUR)
         l.append(e)
-        t = t.format('YYYY-MM-DD')
 
-        self.assertEqual([e], l[t])
+        self.assertEqual([e], l['2013-03-03'])
 
     def test_concurrent(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e0 = Event("t0", t.replace(hours=-1), t.replace(hours=+1))
-        e1 = Event("t1", t.replace(minutes=-59), t.replace(hours=+59))
+        e0 = Event("t0", BEGIN - HOUR, BEGIN + HOUR)
+        e1 = Event("t1", BEGIN - 59*MINUTE, BEGIN + 59*MINUTE)
         l.append(e0)
 
         self.assertEqual([e0], l.concurrent(e1))
@@ -137,9 +122,7 @@ class TestEventList(unittest.TestCase):
     def test_remove_duplicate_same(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e = Event("t", t.replace(hours=-1), t.replace(hours=+1))
+        e = Event("t", BEGIN, END)
         l.append(e)
         l.append(e)
         l._remove_duplicates()
@@ -149,10 +132,8 @@ class TestEventList(unittest.TestCase):
     def test_remove_duplicate_diff(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e0 = Event("t0", t.replace(hours=-1), t.replace(hours=+1))
-        e1 = Event("t0", t.replace(hours=-1), t.replace(hours=+1))
+        e0 = Event("t0", BEGIN, END)
+        e1 = Event("t0", BEGIN, END)
         l.append(e0)
         l.append(e1)
         l._remove_duplicates()
@@ -163,14 +144,42 @@ class TestEventList(unittest.TestCase):
 
         l0 = EventList()
         l1 = EventList()
-        t = arrow.now()
-
-        e = Event("t", t.replace(hours=-1), t.replace(hours=+1))
+        e = Event("t", BEGIN, END)
         l0.append(e)
         l1.append(e)
         l2 = l0 + l1
 
         self.assertEqual(1, len(l2))
+
+    def test_modifiers(self):
+        schemata = (
+            ('     start    stop   ', 'begin', 'end', 'both', 'any', 'inc', 'e.begin',    'e.end'),
+            ('+---+  |        |    ',  False,  False,  False, False, False, BEGIN-2*HOUR, BEGIN-HOUR),
+            ('   +---+        |    ',  False,  False,  False, False, False, BEGIN-HOUR,   BEGIN),
+            ('   +---+-+      |    ',  False,   True,  False,  True, False, BEGIN-HOUR,   BEGIN+HOUR),
+            ('    +--+--------+    ',  False,   True,  False,  True, False, BEGIN-HOUR,   END),
+            ('    +--+--------+-+  ',  False,  False,  False,  True, False, BEGIN-HOUR,   END+HOUR),
+            ('       +-----+  |    ',   True,   True,   True,  True, False, BEGIN,        END-HOUR),
+            ('       +--------+    ',   True,   True,   True,  True, False, BEGIN,        END),
+            ('       +--------+-+  ',   True,  False,  False,  True, False, BEGIN,        END+HOUR),
+            ('       | +---+  |    ',   True,   True,   True,  True,  True, BEGIN+HOUR,   END-HOUR),
+            ('       | +------+    ',   True,   True,   True,  True, False, BEGIN+HOUR,   END),
+            ('       | +------+--+ ',   True,  False,  False,  True, False, BEGIN+HOUR,   END+HOUR),
+            ('       |        +---+',  False,  False,  False, False, False, END,          END+HOUR),
+            ('       |        |+--+',  False,  False,  False, False, False, END+HOUR,     END+2*HOUR),
+        )
+        names = schemata[0]
+        expected_results = defaultdict(list)
+        all_events = EventList()
+        for line in schemata[1:]:
+            e = Event(line[0], begin=line[-2], end=line[-1])
+            all_events.append(e)
+            for i in range(1, len(names)-2):
+                if line[i]:
+                    expected_results[names[i]].append(e.name)
+        for modifier in names[1:-2]:
+            self.assertEqual([event.name for event in all_events[BEGIN:END:modifier]],
+                             expected_results[modifier])
 
     def test_inc_empty(self):
 
@@ -182,61 +191,46 @@ class TestEventList(unittest.TestCase):
     def test_inc(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e0 = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
-        e1 = Event(begin=t.replace(minutes=-30), end=t.replace(minutes=+30))
+        e0 = Event(begin=BEGIN, end=END)
         l.append(e0)
-        l = l[e1.begin:e1.end:'inc']
+        l = l[BEGIN - MINUTE:END + MINUTE:'inc']
 
         self.assertEqual([e0], l)
 
     def test_end(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e0 = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
-        e1 = Event(begin=t.replace(minutes=-30), end=t.replace(minutes=+30))
+        e1 = Event(begin=BEGIN + 10*MINUTE, end=END - 10*MINUTE)
         l.append(e1)
-        l = l[:e0.end:'end']
+        l = l[:END:'end']
 
         self.assertEqual([e1], l)
 
     def test_raise(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
 
         with self.assertRaises(ValueError):
             l[::'dne']
-            l[e.begin::'cni']
-            l[e.begin:e.end:'htob']
-            l[:e.end:'nigeb']
+            l[BEGIN::'cni']
+            l[BEGIN:END:'htob']
+            l[:END:'nigeb']
 
     def test_begin(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e0 = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
-        e1 = Event(begin=t.replace(minutes=-30), end=t.replace(minutes=+30))
+        e1 = Event(begin=BEGIN + 10*MINUTE, end=END - 10*MINUTE)
         l.append(e1)
-        l = l[e0.begin::'begin']
+        l = l[BEGIN::'begin']
 
         self.assertEqual([e1], l)
 
     def test_both(self):
 
         l = EventList()
-        t = arrow.now()
-
-        e0 = Event(begin=t.replace(hours=-1), end=t.replace(hours=+1))
-        e1 = Event(begin=t.replace(minutes=-30), end=t.replace(minutes=+30))
+        e1 = Event(begin=BEGIN + 10*MINUTE, end=END - 10*MINUTE)
         l.append(e1)
-        l = l[e0.begin:e0.end:]
+        l = l[BEGIN:END:]
 
         self.assertEqual([e1], l)
 

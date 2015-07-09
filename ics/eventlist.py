@@ -2,16 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
-from collections import Iterable
 
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
+from six import integer_types
 from six.moves import filter, map, range
 
-from arrow.arrow import Arrow
-import arrow
-
-from datetime import datetime, time, timedelta
-from .utils import get_arrow, get_date_or_datetime
+from datetime import datetime, date, time, timedelta
+from .utils import get_date_or_datetime, utcnow
 from .event import Event
 
 
@@ -70,10 +66,32 @@ class EventList(list):
             between the bonds.
             - both: both the end and the beginning have to be \
             between the bonds.
-            - any: either (or both) the start of the beginning has to be \
-            between the bonds.
+            - any: the beginning has to be before stop and the end \
+            has to be after start, i.e. the event and the start-stop-period \
+            have to overlap.
             - inc: the events have to include be bonds \
             (start < event.begin < event.end < stop).
+
+        Usually the beginning is not considered to be between the bonds \
+        if it is equal to 'stop', as well as the end if it is equal to 'start'. \
+        (In these cases the Event doesn't overlap the timespan except \
+        for one single moment.)
+
+          start    stop     'begin' 'end' 'both' 'any' 'inc'
+            |        |
+     +---+  |        |        no      no    no     no    no
+        +---+        |        no      no    no     no    no
+        +---+-+      |        no     yes    no    yes    no
+         +--+--------+        no     yes    no    yes    no
+         +--+--------+-+      no      no    no    yes    no
+            +-----+  |       yes     yes   yes    yes    no
+            +--------+       yes     yes   yes    yes    no
+            +--------+-+     yes      no    no    yes    no
+            | +---+  |       yes     yes   yes    yes   yes
+            | +------+       yes     yes   yes    yes    no
+            | +------+--+    yes      no    no    yes    no
+            |        +---+    no      no    no     no    no
+            |        |+--+    no      no    no     no    no
         """
         # Integer slice
         if isinstance(sl, integer_types):
@@ -84,10 +102,14 @@ class EventList(list):
             # try to convert it to a datetime
             sl = get_date_or_datetime(sl)
 
-        if isinstance(sl, datetime):  # Single datetime slice
-            begin = datetime.combine(sl.date(), time(0))
-            end = begin + timedelta(1)
-            sl = slice(begin, end, 'both')
+        if isinstance(sl, date):  # True for date and datetime
+            if isinstance(sl, datetime):  # Single datetime slice
+                begin = datetime.combine(sl.date(),
+                                         time(0, tzinfo=sl.tzinfo))
+                end = begin + timedelta(1)
+                sl = slice(begin, end, 'both')
+            else:  # Single date slice
+                sl = slice(sl, None, '_date')
 
         # now it has to be a slice
         int_or_none = integer_types + (type(None), )
@@ -98,40 +120,49 @@ class EventList(list):
             return super(EventList, self).__getitem__(sl)
 
         # now we have a slice and it's a special one
-        step = sl.step or 'both'  # Empty step -> default value
-        begin = get_date_or_datetime(sl.start)
-        end = get_date_or_datetime(sl.stop)
+        modifier = sl.step or 'both'  # Empty step -> default value
+        start = get_date_or_datetime(sl.start)
+        stop = get_date_or_datetime(sl.stop)
+        print 'start', start
+        print 'stop', stop
+
+        if modifier not in ('begin', 'end', 'both', 'any', 'inc', '_date', None):
+            msg = "The step must be 'begin', 'end', 'both', 'any', 'inc' or None not '{}'"
+            raise ValueError(msg.format(modifier))
 
         def _begin(event):
-            return ((begin is None or event.begin > begin) and
-                    (end is None or event.begin < end))
+            return ((start is None or (event.begin >= start)) and
+                    (stop is None or (event.begin < stop)))
 
         def _end(event):
-            return ((begin is None or event.end > begin) and
-                    (end is None or event.end < end))
+            return ((start is None or event.end > start) and
+                    (stop is None or event.end <= stop))
 
         def _both(event):
-            return ((begin is None or event.begin > begin and event.end > begin) and
-                    (end is None or event.begin < end and event.end < end))
+            return ((start is None or event.begin >= start and event.end > start) and
+                    (stop is None or event.begin < stop and event.end <= stop))
 
         def _any(event):
-            return ((begin is None or event.begin > begin or event.end > begin) and
-                    (end is None or event.begin < end or event.end < end))
+            return ((start is None or event.begin > start or event.end > start) and
+                    (stop is None or event.begin < stop or event.end < stop))
 
         def _inc(event):
-            return (begin is not None and end is None and
-                    event.begin < begin or event.end < end)
+            return (start is not None and stop is not None and
+                    event.begin > start and event.end < stop)
 
-        def _error(event):
-            msg = "The step must be 'begin', 'end', 'both', 'any', 'inc' or None not '{}'"
-            raise ValueError(msg.format(step))
+        def _date(event):
+            # start is a date.
+            # return only events on this day.
+            return (event.begin.date() == start and
+                    event.end.date() == start)
 
-        modificators = {'begin': _begin,
-                        'end': _end,
-                        'both': _both,
-                        'any': _any,
-                        'inc': _inc, }
-        return list(filter(modificators.get(step, _error), self))
+        routines = {'begin': _begin,
+                    'end': _end,
+                    'both': _both,
+                    'any': _any,
+                    '_date': _date,
+                    'inc': _inc, }
+        return list(filter(routines[modifier], self))
 
     def today(self, strict=False):
         """Args:
@@ -141,7 +172,7 @@ class EventList(list):
         Returns:
             list<Event>: all events that occurs today
         """
-        return self[arrow.now()]
+        return self[utcnow()]
 
     def on(self, day, strict=False):
         """Args:
@@ -152,8 +183,9 @@ class EventList(list):
         Returns:
             list<Event>: all events that occurs on `day`
         """
-        if not isinstance(day, Arrow):
-            day = arrow.get(day)
+        day = get_date_or_datetime(day)
+        if hasattr(day, 'date'):
+            day = day.date()
         return self[day]
 
     def now(self):
@@ -161,11 +193,8 @@ class EventList(list):
         Returns:
             list<Event>: all events that occurs now
         """
-        now = []
-        for event in self:
-            if event.begin <= arrow.now() <= event.end:
-                now.append(event)
-        return now
+        return [event for event in self
+                if event.begin <= utcnow() <= event.end]
 
     def at(self, instant):
         """Args:

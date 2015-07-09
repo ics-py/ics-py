@@ -226,7 +226,6 @@ def parse_date_or_datetime(value, tz=None):
     for pattern, _type in DATETIME_PATTERNS:
         match = re.match(pattern, value)
         if match:
-            print pattern
             kwargs = dict((key, int(val))
                           for key, val in match.groupdict().items())
             if _type == datetime:

@@ -6,7 +6,7 @@ from ics.icalendar import Calendar
 from ics.event import Event
 from ics.eventlist import EventList
 
-from .fixture import cal1, cal10, cal12, cal14
+from .fixture import cal1, calendar_without_prodid, cal10, cal12, cal14
 
 
 class TestCalendar(unittest.TestCase):
@@ -138,8 +138,6 @@ class TestCalendar(unittest.TestCase):
         c0 = Calendar()
         c1 = Calendar()
         c0.creator = u'42'
-        # with self.assertRaises(ValueError):
-        #     c1.creator = 42
         # TextProperties are cast to a string type
         c1.creator = 42
 
@@ -152,6 +150,11 @@ class TestCalendar(unittest.TestCase):
 
         c.creator = u"apple_is_a_fruit"
         self.assertEqual(c.creator, u"apple_is_a_fruit")
+
+    def test_no_prodid(self):
+        c = Calendar(calendar_without_prodid)
+        with self.assertRaises(ValueError):
+            c.validate()
 
     def test_scale(self):
 
