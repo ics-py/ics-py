@@ -19,7 +19,7 @@ from datetime import datetime, date, timedelta
 from collections import namedtuple
 
 from .utils import (datetime_to_iso, parse_duration,
-                    timedelta_to_duration, parse_date,
+                    timedelta_to_duration,
                     get_date_or_datetime, parse_cal_date, parse_cal_datetime)
 from .parse import ContentLine
 

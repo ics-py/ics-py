@@ -161,6 +161,10 @@ DATETIME_PATTERNS = (
      datetime),  # YYYY-MM-DD?HH:mm:ss
     (r'(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}).(?P<hour>\d{2}):(?P<minute>\d{2})',
      datetime),  # YYYY-MM-DD?HH:mm
+    (r'(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2}).(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})',
+     datetime),  # YYYYMMDD?HH:mm:ss
+    (r'(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2}).(?P<hour>\d{2}):(?P<minute>\d{2})',
+     datetime),  # YYYYMMDD?HH:mm
     (r'(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2}).(?P<hour>\d{2})(?P<minute>\d{2})(?P<second>\d{2})',
      datetime),  # YYYYMMDD?HHmmss
     (r'(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2}).(?P<hour>\d{2})(?P<minute>\d{2})',
