@@ -6,7 +6,7 @@ from __future__ import unicode_literals, absolute_import
 from six.moves import map
 
 import copy
-from datetime import date, time, timedelta
+from datetime import time, timedelta
 
 from .component import Component
 from .utils import utcnow, uid_gen, is_date
@@ -38,8 +38,6 @@ class Event(Component):
     uid = TextProperty('UID', default=uid_gen, create_on_access=True)
 
     _TYPE = "VEVENT"
-    _EXTRACTORS = []
-    _OUTPUTS = []
 
     def __init__(self,
                  name=None,

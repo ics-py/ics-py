@@ -2,9 +2,10 @@ import unittest
 from datetime import date, datetime, timedelta, tzinfo
 from dateutil.tz import tzutc
 from ics.property import (property_description, ICalProperty, TextProperty,
-                          DateTimeProperty, DateTimeOrDateProperty)
+                          DateTimeProperty, DateTimeOrDateProperty,
+                          TriggerProperty)
 from ics.parse import ContentLine
-
+from ics.component import Component
 
 class TestPropertyDescription(unittest.TestCase):
 
@@ -45,11 +46,10 @@ class TestICalProperty(unittest.TestCase):
 
     def test_without_data(self):
 
-        class Component(object):
-            _properties = {}
+        class ICalComponent(Component):
             prop = ICalProperty('PROP')
 
-        c = Component()
+        c = ICalComponent()
         self.assertEqual(c.prop, None)
         c.prop = 'Test'
         self.assertEqual(c._properties,
@@ -58,7 +58,7 @@ class TestICalProperty(unittest.TestCase):
 
         # to add a property, it must be set on the component class,
         # not on the instance
-        Component.test = ICalProperty('TEST')
+        ICalComponent.test = ICalProperty('TEST')
         self.assertEqual(c.test, None)
         c.test = 'Test2'
         self.assertEqual(c._properties['TEST'],
@@ -67,11 +67,11 @@ class TestICalProperty(unittest.TestCase):
 
     def test_with_data(self):
 
-        class Component(object):
-            _properties = {'PROP': ContentLine('PROP', value='Test')}
+        class ICalComponent(Component):
             prop = ICalProperty('PROP')
 
-        c = Component()
+        c = ICalComponent()
+        c._properties = {'PROP': ContentLine('PROP', value='Test')}
         self.assertEqual(c.prop, 'Test')
         c.prop = 'Different'
         self.assertEqual(c._properties,
@@ -80,8 +80,7 @@ class TestICalProperty(unittest.TestCase):
 
     def test_validation(self):
 
-        class Component(object):
-            _properties = {'PROP': ContentLine('PROP', value='Test')}
+        class ICalComponent(Component):
             prop = ICalProperty('PROP', 'validate_prop')
 
             def validate_prop(self, value):
@@ -90,7 +89,8 @@ class TestICalProperty(unittest.TestCase):
                 else:
                     return 'three'
 
-        c = Component()
+        c = ICalComponent()
+        c._properties = {'PROP': ContentLine('PROP', value='Test')}
         self.assertEqual(c.prop, 'Test')
         c.prop = 'one'
         self.assertEqual(c._properties,
@@ -106,8 +106,7 @@ class TestICalProperty(unittest.TestCase):
         def default_function4():
             return 'default-prop4'
 
-        class Component(object):
-            _properties = {'PROP1': ContentLine('PROP1', value='Test')}
+        class DefaultComponent(Component):
             prop1 = ICalProperty('PROP1', default='default-prop1')
             prop2 = ICalProperty('PROP2', default='default-prop2')
             prop3 = ICalProperty('PROP3', default='default_method3')
@@ -116,7 +115,8 @@ class TestICalProperty(unittest.TestCase):
             def default_method3(self, property_name):
                 return 'default-prop3'
 
-        c = Component()
+        c = DefaultComponent()
+        c._properties = {'PROP1': ContentLine('PROP1', value='Test')}
         self.assertEqual(c.prop1, 'Test')
         self.assertEqual(c.prop2, 'default-prop2')
         self.assertEqual(c.prop3, 'default-prop3')
@@ -127,13 +127,12 @@ class TestTextProperty(unittest.TestCase):
 
     def test_text(self):
 
-        class Component(object):
-            _properties = {}
+        class TextComponent(Component):
             prop = TextProperty('PROP')
 
         ical_text = 'comma\\, semicolon\\; backslash\\\\ newlines\\N\\n'
         plain_text = 'comma, semicolon; backslash\\ newlines\n\n'
-        c = Component()
+        c = TextComponent()
         c.prop = plain_text
         self.assertEqual(c._properties,
                          {'PROP': ContentLine('PROP', value=ical_text.lower())})
@@ -154,31 +153,28 @@ new_york = TimezoneNewYork()
 
 class TestDateTimeProperty(unittest.TestCase):
 
-    class Component(object):
+    class DTComponent(Component):
         prop = DateTimeProperty('PROP')
-
-        def __init__(self):
-            self._properties = {}
 
         def get_timezones(self):
             return {'America/New_York': new_york}
 
     def test_naive_datetime(self):
-        c = self.Component()
+        c = self.DTComponent()
         c.prop = datetime(2015, 7, 1, 6)
         self.assertEqual(c._properties,
                          {'PROP': ContentLine('PROP', value='20150701T060000')})
         self.assertEqual(c.prop, datetime(2015, 7, 1, 6))
 
     def test_utc_datetime(self):
-        c = self.Component()
+        c = self.DTComponent()
         c.prop = datetime(2015, 7, 1, 6, tzinfo=tzutc())
         self.assertEqual(c._properties,
                          {'PROP': ContentLine('PROP', value='20150701T060000Z')})
         self.assertEqual(c.prop, datetime(2015, 7, 1, 6, tzinfo=tzutc()))
 
     def test_datetime_with_timezone(self):
-        c = self.Component()
+        c = self.DTComponent()
         c._properties['PROP'] = ContentLine.parse(
             'PROP;TZID=America/New_York:20150701T060000')
         self.assertEqual(c.prop,
@@ -187,42 +183,40 @@ class TestDateTimeProperty(unittest.TestCase):
 
 class TestDateTimeOrDateProperty(unittest.TestCase):
 
-    class Component(object):
+    class DTComponent(Component):
         prop = DateTimeOrDateProperty('PROP')
-        def __init__(self):
-            self._properties = {}
         def get_timezones(self):
             return {'America/New_York': new_york}
 
     def test_naive_datetime(self):
-        c = self.Component()
+        c = self.DTComponent()
         c.prop = datetime(2015, 7, 1, 6)
         self.assertEqual(c._properties,
                          {'PROP': ContentLine('PROP', value='20150701T060000')})
         self.assertEqual(c.prop, datetime(2015, 7, 1, 6))
 
     def test_utc_datetime(self):
-        c = self.Component()
+        c = self.DTComponent()
         c.prop = datetime(2015, 7, 1, 6, tzinfo=tzutc())
         self.assertEqual(c._properties,
                          {'PROP': ContentLine('PROP', value='20150701T060000Z')})
         self.assertEqual(c.prop, datetime(2015, 7, 1, 6, tzinfo=tzutc()))
 
     def test_datetime_with_timezone1(self):
-        c = self.Component()
+        c = self.DTComponent()
         c._properties['PROP'] = ContentLine.parse(
             'PROP;TZID=America/New_York:20150701T060000')
         self.assertEqual(c.prop,
                          datetime(2015, 7, 1, 6, tzinfo=new_york))
 
     def test_datetime_with_timezone2(self):
-        c = self.Component()
+        c = self.DTComponent()
         c.prop = datetime(2015, 7, 1, 6, tzinfo=new_york)
         self.assertEqual(c._properties,
                          {'PROP': ContentLine.parse('PROP;TZID=America/New_York:20150701T060000')})
 
     def test_date(self):
-        c = self.Component()
+        c = self.DTComponent()
         c.prop = date(2015, 7, 1)
         prop = c._properties['PROP']
         self.assertEqual(prop.name, 'PROP')
