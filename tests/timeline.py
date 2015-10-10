@@ -57,8 +57,8 @@ class TestTimeline(unittest.TestCase):
             Event(begin=datetime(2015, 10, 10)),
             Event(begin=datetime(2010, 10, 10)),
             Event(begin=datetime(2020, 10, 10)),
-            Event(begin=datetime(2015, 01, 10)),
-            Event(begin=datetime(2014, 01, 10), end=datetime(2018, 01, 10)),
+            Event(begin=datetime(2015, 1, 10)),
+            Event(begin=datetime(2014, 1, 10), end=datetime(2018, 1, 10)),
         ]
 
         for ev in e:
