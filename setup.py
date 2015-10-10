@@ -13,8 +13,6 @@ class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = [
-            '--flakes',
-            '--pep8',
             '--cov',
             'ics',
             'ics/',
