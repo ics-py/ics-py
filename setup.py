@@ -28,8 +28,12 @@ class PyTest(TestCommand):
 
 
 def readme():
-    with open('README.rst') as f:
-        return f.read()
+    if sys.version_info.major > 2:
+        with open('README.rst', encoding='utf-8') as f:
+            return f.read()
+    else:
+        with open('README.rst') as f:
+            return f.read()
 
 setup(
     name=__title__,
