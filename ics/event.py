@@ -185,7 +185,7 @@ class Event(Component):
         Return:
             bool: self is an all-day event
         """
-        return self._begin_precision == 'day' and not self.has_end()
+        return self._begin_precision == 'day' and ((not self.has_end()) or self.end - self.begin == timedelta(day=1))
 
     def make_all_day(self):
         """Transforms self to an all-day event.
