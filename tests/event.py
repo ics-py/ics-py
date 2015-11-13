@@ -4,7 +4,7 @@ import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16
+from .fixture import cal12, cal13, cal15, cal16, cal17, cal18
 
 CRLF = "\r\n"
 
@@ -94,7 +94,7 @@ class TestEvent(unittest.TestCase):
 
     def test_repr(self):
         e = Event(name='plop', begin="1999/10/10")
-        self.assertEqual(repr(e), "<Event 'plop' begin:1999-10-10T00:00:00+00:00 end:1999-10-10T00:00:01+00:00>")
+        self.assertEqual(repr(e), "<Event 'plop' begin:1999-10-10T00:00:00+00:00 end:1999-10-10T00:00:00+00:00>")
 
     def test_init(self):
         e = Event()
@@ -136,7 +136,7 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e3.duration, timedelta(minutes=1))
 
         e4 = Event(begin="1993/05/24")
-        self.assertEqual(e4.duration, timedelta(seconds=1))
+        self.assertEqual(e4.duration, timedelta(0))
 
         e5 = Event(begin="1993/05/24")
         e5.duration = {'days': 6, 'hours': 2}
@@ -217,3 +217,33 @@ class TestEvent(unittest.TestCase):
         URL = "http://example.com/pub/calendars/jsmith/mytime.ics"
         e = Event(name="Name", url=URL)
         self.assertIn("URL:"+URL, str(e).splitlines())
+
+    def test_all_day_with_end(self):
+        c = Calendar(cal17)
+        e = c.events[0]
+        self.assertTrue(e.all_day)
+
+    def test_not_all_day(self):
+        c = Calendar(cal16)
+        e = c.events[0]
+        self.assertFalse(e.all_day)
+
+    def test_all_day_duration(self):
+        c = Calendar(cal17)
+        e = c.events[0]
+        self.assertTrue(e.all_day)
+        self.assertEqual(e.duration, timedelta(days=3))
+
+    def test_make_all_day_idempotence(self):
+        c = Calendar(cal18)
+        e = c.events[0]
+        self.assertFalse(e.all_day)
+        e2 = e.clone()
+        e2.make_all_day()
+        self.assertTrue(e2.all_day)
+        self.assertNotEqual(e.begin, e2.begin)
+        self.assertNotEqual(e.end, e2.end)
+        e3 = e2.clone()
+        e3.make_all_day()
+        self.assertEqual(e2.begin, e3.begin)
+        self.assertEqual(e2.end, e3.end)
