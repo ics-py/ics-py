@@ -18,6 +18,7 @@ from .utils import (
     iso_precision,
     get_arrow,
     arrow_to_iso,
+    arrow_date_to_iso,
     uid_gen,
     unescape_string,
     escape_string,
@@ -48,7 +49,7 @@ class Event(Component):
                  created=None,
                  location=None,
                  url=None):
-        """Instanciates a new :class:`ics.event.Event`.
+        """Instantiates a new :class:`ics.event.Event`.
 
         Args:
             name (string)
@@ -78,7 +79,7 @@ class Event(Component):
 
         self.name = name
         self.begin = begin
-        #TODO: DRY [1]
+        # TODO: DRY [1]
         if duration and end:
             raise ValueError(
                 'Event() may not specify an end and a duration \
@@ -392,11 +393,15 @@ def o_created(event, container):
 
 @Event._outputs
 def o_start(event, container):
-    if event.begin:
-        container.append(
-            ContentLine('DTSTART', value=arrow_to_iso(event.begin)))
+    if event.begin and not event.all_day:
+        container.append(ContentLine('DTSTART', value=arrow_to_iso(event.begin)))
 
-    # TODO : take care of precision
+
+@Event._outputs
+def o_all_day(event, container):
+    if event.begin and event.all_day:
+        container.append(ContentLine('DTSTART', params={'VALUE': ('DATE',)},
+                                     value=arrow_date_to_iso(event.begin)))
 
 
 @Event._outputs
