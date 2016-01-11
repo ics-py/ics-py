@@ -163,6 +163,13 @@ def arrow_to_iso(instant):
     return instant + 'Z'
 
 
+def arrow_date_to_iso(instant):
+    # date-only for all day events
+    # set to utc, make iso, remove timezone
+    instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDD')
+    return instant  # no TZ for all days
+
+
 def uid_gen():
     uid = str(uuid4())
     return "{}@{}.org".format(uid, uid[:4])

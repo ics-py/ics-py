@@ -190,10 +190,10 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.location, "In, every text field")
         self.assertEqual(e.description, "Yes, all of them;")
 
-    def test_escapte_output(self):
+    def test_escape_output(self):
         e = Event()
 
-        e.name = "Hello, with \\ spechial; chars and \n newlines"
+        e.name = "Hello, with \\ special; chars and \n newlines"
         e.location = "Here; too"
         e.description = "Every\nwhere ! Yes, yes !"
         e.created = arrow.Arrow(2013, 1, 1)
@@ -201,7 +201,7 @@ class TestEvent(unittest.TestCase):
 
         eq = CRLF.join(("BEGIN:VEVENT",
                 "DTSTAMP:20130101T000000Z",
-                "SUMMARY:Hello\\, with \\\\ spechial\\; chars and \\n newlines",
+                "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
                 "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
                 "LOCATION:Here\\; too",
                 "UID:empty-uid",
@@ -247,3 +247,15 @@ class TestEvent(unittest.TestCase):
         e3.make_all_day()
         self.assertEqual(e2.begin, e3.begin)
         self.assertEqual(e2.end, e3.end)
+
+    def test_all_day_outputs_dtstart_value_date(self):
+        """All day events should output DTSTART using VALUE=DATE without
+        time and timezone in order to assume the user's current timezone
+
+        refs http://www.kanzaki.com/docs/ical/dtstart.html
+             http://www.kanzaki.com/docs/ical/date.html
+        """
+        e = Event(begin="2015/12/21")
+        e.make_all_day()
+        # no time or tz specifier
+        self.assertIn('DTSTART;VALUE=DATE:20151221', str(e).splitlines())
