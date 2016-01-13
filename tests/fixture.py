@@ -248,6 +248,23 @@ END:VEVENT
 END:VCALENDAR
 """
 
+# Event with TRANSP
+cal19 = u"""
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+
+BEGIN:VEVENT
+SUMMARY:Hello, \\n World\\; This is a backslash : \\\\ and another new \\N line
+DTSTART;TZID=Europe/Berlin:20120608T202500
+DTEND;TZID=Europe/Berlin:20120608T212500
+LOCATION:MUC
+TRANSP:OPAQUE
+END:VEVENT
+
+END:VCALENDAR
+"""
+
 unfolded_cal2 = [
     'BEGIN:VCALENDAR',
     'BEGIN:VEVENT',

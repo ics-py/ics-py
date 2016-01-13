@@ -48,7 +48,8 @@ class Event(Component):
                  description=None,
                  created=None,
                  location=None,
-                 url=None):
+                 url=None,
+                 transp=None):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -75,6 +76,7 @@ class Event(Component):
         self.created = get_arrow(created)
         self.location = location
         self.url = url
+        self.transp = transp
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -370,6 +372,11 @@ def url(event, line):
     event.url = unescape_string(line.value) if line else None
 
 
+@Event._extracts('TRANSP')
+def transp(event, line):
+    event.transp = unescape_string(line.value) if line else None
+
+
 # TODO : make uid required ?
 # TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
@@ -440,6 +447,12 @@ def o_location(event, container):
 def o_url(event, container):
     if event.url:
         container.append(ContentLine('URL', value=escape_string(event.url)))
+
+
+@Event._outputs
+def o_transp(event, container):
+    if event.transp:
+        container.append(ContentLine('TRANSP', value=escape_string(event.transp)))
 
 
 @Event._outputs

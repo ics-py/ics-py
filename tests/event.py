@@ -4,7 +4,7 @@ import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18
+from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19
 
 CRLF = "\r\n"
 
@@ -259,3 +259,13 @@ class TestEvent(unittest.TestCase):
         e.make_all_day()
         # no time or tz specifier
         self.assertIn('DTSTART;VALUE=DATE:20151221', str(e).splitlines())
+
+    def test_transp_input(self):
+        c = Calendar(cal19)
+        e = c.events[0]
+        self.assertEqual(e.transp, "OPAQUE")
+
+    def test_transp_output(self):
+        TRANSP = "OPAQUE"
+        e = Event(name="Name", transp=TRANSP)
+        self.assertIn("TRANSP:"+TRANSP, str(e).splitlines())
