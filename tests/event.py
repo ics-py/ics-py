@@ -263,9 +263,9 @@ class TestEvent(unittest.TestCase):
     def test_transp_input(self):
         c = Calendar(cal19)
         e = c.events[0]
-        self.assertEqual(e.transp, "OPAQUE")
+        self.assertEqual(e.transparent, False)
 
     def test_transp_output(self):
-        TRANSP = "OPAQUE"
-        e = Event(name="Name", transp=TRANSP)
-        self.assertIn("TRANSP:"+TRANSP, str(e).splitlines())
+        TRANSPARENT = True
+        e = Event(name="Name", transparent=TRANSPARENT)
+        self.assertIn("TRANSP:TRANSPARENT", str(e).splitlines())
