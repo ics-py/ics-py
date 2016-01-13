@@ -260,12 +260,12 @@ class TestEvent(unittest.TestCase):
         # no time or tz specifier
         self.assertIn('DTSTART;VALUE=DATE:20151221', str(e).splitlines())
 
-    def test_transp_input(self):
+    def test_transparent_input(self):
         c = Calendar(cal19)
         e = c.events[0]
         self.assertEqual(e.transparent, False)
 
-    def test_transp_output(self):
+    def test_transparent_output(self):
         TRANSPARENT = True
         e = Event(name="Name", transparent=TRANSPARENT)
         self.assertIn("TRANSP:TRANSPARENT", str(e).splitlines())
