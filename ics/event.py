@@ -49,7 +49,7 @@ class Event(Component):
                  created=None,
                  location=None,
                  url=None,
-                 transparent=None):
+                 transparent=False):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -377,8 +377,6 @@ def url(event, line):
 def transparent(event, line):
     if line:
         event.transparent = line.value == 'TRANSPARENT'
-    else:
-        event.transparent = None
 
 
 # TODO : make uid required ?
@@ -455,11 +453,10 @@ def o_url(event, container):
 
 @Event._outputs
 def o_transparent(event, container):
-    if event.transparent is not None:
-        if event.transparent:
-            container.append(ContentLine('TRANSP', value=escape_string('TRANSPARENT')))
-        else:
-            container.append(ContentLine('TRANSP', value=escape_string('OPAQUE')))
+    if event.transparent:
+        container.append(ContentLine('TRANSP', value=escape_string('TRANSPARENT')))
+    else:
+        container.append(ContentLine('TRANSP', value=escape_string('OPAQUE')))
 
 
 @Event._outputs
