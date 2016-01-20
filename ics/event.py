@@ -48,7 +48,8 @@ class Event(Component):
                  description=None,
                  created=None,
                  location=None,
-                 url=None):
+                 url=None,
+                 transparent=False):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -61,6 +62,7 @@ class Event(Component):
             created (Arrow-compatible)
             location (string)
             url (string)
+            transparent (boolean)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -75,6 +77,7 @@ class Event(Component):
         self.created = get_arrow(created)
         self.location = location
         self.url = url
+        self.transparent = transparent
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -370,6 +373,12 @@ def url(event, line):
     event.url = unescape_string(line.value) if line else None
 
 
+@Event._extracts('TRANSP')
+def transparent(event, line):
+    if line:
+        event.transparent = line.value == 'TRANSPARENT'
+
+
 # TODO : make uid required ?
 # TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
@@ -440,6 +449,14 @@ def o_location(event, container):
 def o_url(event, container):
     if event.url:
         container.append(ContentLine('URL', value=escape_string(event.url)))
+
+
+@Event._outputs
+def o_transparent(event, container):
+    if event.transparent:
+        container.append(ContentLine('TRANSP', value=escape_string('TRANSPARENT')))
+    else:
+        container.append(ContentLine('TRANSP', value=escape_string('OPAQUE')))
 
 
 @Event._outputs

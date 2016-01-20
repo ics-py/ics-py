@@ -4,7 +4,7 @@ import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18
+from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19
 
 CRLF = "\r\n"
 
@@ -204,6 +204,7 @@ class TestEvent(unittest.TestCase):
                 "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
                 "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
                 "LOCATION:Here\\; too",
+                "TRANSP:OPAQUE",
                 "UID:empty-uid",
                 "END:VEVENT"))
         self.assertEqual(str(e), eq)
@@ -259,3 +260,22 @@ class TestEvent(unittest.TestCase):
         e.make_all_day()
         # no time or tz specifier
         self.assertIn('DTSTART;VALUE=DATE:20151221', str(e).splitlines())
+
+    def test_transparent_input(self):
+        c = Calendar(cal19)
+        e = c.events[0]
+        self.assertEqual(e.transparent, False)
+
+    def test_transparent_output(self):
+        TRANSPARENT = True
+        e = Event(name="Name", transparent=TRANSPARENT)
+        self.assertIn("TRANSP:TRANSPARENT", str(e).splitlines())
+
+    def test_default_transparent_input(self):
+        c = Calendar(cal18)
+        e = c.events[0]
+        self.assertEqual(e.transparent, False)
+
+    def test_default_transparent_output(self):
+        e = Event(name="Name")
+        self.assertIn("TRANSP:OPAQUE", str(e).splitlines())
