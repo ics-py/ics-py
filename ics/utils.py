@@ -8,6 +8,7 @@ from datetime import timedelta
 from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 from uuid import uuid4
+from dateutil.tz import gettz
 import arrow
 import re
 
@@ -45,7 +46,9 @@ def iso_to_arrow(time_container, available_tz={}):
 
     if tz and not (val[-1].upper() == 'Z'):
         naive = arrow.get(val).naive
-        selected_tz = available_tz.get(tz, 'UTC')
+        selected_tz = gettz(tz)
+        if not selected_tz:
+            selected_tz = available_tz.get(tz, 'UTC')
         return arrow.get(naive, selected_tz)
     else:
         return arrow.get(val)
@@ -160,6 +163,13 @@ def arrow_to_iso(instant):
     # set to utc, make iso, remove timezone
     instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDDTHHmmss')
     return instant + 'Z'
+
+
+def arrow_date_to_iso(instant):
+    # date-only for all day events
+    # set to utc, make iso, remove timezone
+    instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDD')
+    return instant  # no TZ for all days
 
 
 def uid_gen():

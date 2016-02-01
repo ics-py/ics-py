@@ -18,6 +18,7 @@ from .utils import (
     iso_precision,
     get_arrow,
     arrow_to_iso,
+    arrow_date_to_iso,
     uid_gen,
     unescape_string,
     escape_string,
@@ -47,8 +48,9 @@ class Event(Component):
                  description=None,
                  created=None,
                  location=None,
-                 url=None):
-        """Instanciates a new :class:`ics.event.Event`.
+                 url=None,
+                 transparent=False):
+        """Instantiates a new :class:`ics.event.Event`.
 
         Args:
             name (string)
@@ -60,6 +62,7 @@ class Event(Component):
             created (Arrow-compatible)
             location (string)
             url (string)
+            transparent (boolean)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -74,11 +77,12 @@ class Event(Component):
         self.created = get_arrow(created)
         self.location = location
         self.url = url
+        self.transparent = transparent
         self._unused = Container(name='VEVENT')
 
         self.name = name
         self.begin = begin
-        #TODO: DRY [1]
+        # TODO: DRY [1]
         if duration and end:
             raise ValueError(
                 'Event() may not specify an end and a duration \
@@ -131,10 +135,16 @@ class Event(Component):
             # return the beginning + duration
             return self.begin + self._duration
         elif self._end_time:  # if end is time defined
-            return self._end_time
+            if self.all_day:
+                return self._end_time + timedelta(days=1)
+            else:
+                return self._end_time
         elif self._begin:  # if end is not defined
-            # return beginning + precision
-            return self.begin.replace(**{self._begin_precision + 's': +1})
+            if self.all_day:
+                return self._begin + timedelta(days=1)
+            else:
+                # instant event
+                return self._begin
         else:
             return None
 
@@ -161,8 +171,10 @@ class Event(Component):
         if self._duration:
             return self._duration
         elif self.end:
+            # because of the clever getter for end, this also takes care of all_day events
             return self.end - self.begin
         else:
+            # event has neither start, nor end, nor duration
             return None
 
     @duration.setter
@@ -185,17 +197,30 @@ class Event(Component):
         Return:
             bool: self is an all-day event
         """
-        return self._begin_precision == 'day' and not self.has_end()
+        # the event may have an end, also given in 'day' precision
+        return self._begin_precision == 'day'
 
     def make_all_day(self):
         """Transforms self to an all-day event.
 
-        The day will be the day of self.begin.
+        The event will span all the days from the begin to the end day.
         """
+        was_instant = self.duration == timedelta(0)
+        old_end = self.end
+        self._duration = None
         self._begin_precision = 'day'
         self._begin = self._begin.floor('day')
-        self._duration = None
-        self._end_time = None
+        if was_instant:
+            self._end_time = None
+            return
+        floored_end = old_end.floor('day')
+        # this "overflooring" must be done because end times are not included in the interval
+        calculated_end = floored_end - timedelta(days=1) if floored_end == old_end else floored_end
+        if calculated_end == self._begin:
+            # for a one day event, we don't need to save the _end_time
+            self._end_time = None
+        else:
+            self._end_time = calculated_end
 
     def __urepr__(self):
         """Should not be used directly. Use self.__repr__ instead.
@@ -205,7 +230,10 @@ class Event(Component):
         """
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
-            return "<all-day Event {}{}>".format(name, self.begin.strftime("%F"))
+            if not self._end_time or self._begin == self._end_time:
+                return "<all-day Event {}{}>".format(name, self.begin.strftime("%F"))
+            else:
+                return "<all-day Event {}begin:{} end:{}>".format(name, self._begin.strftime("%F"), self._end_time.strftime("%F"))
         elif self.begin is None:
             return "<Event '{}'>".format(self.name) if self.name else "<Event>"
         else:
@@ -322,6 +350,7 @@ def end(event, line):
         # get the dict of vtimezones passed to the classmethod
         tz_dict = event._classmethod_kwargs['tz']
         event._end_time = iso_to_arrow(line, tz_dict)
+        # one could also save the end_precision to check that if begin_precision is day, end_precision also is
 
 
 @Event._extracts('SUMMARY')
@@ -342,6 +371,12 @@ def location(event, line):
 @Event._extracts('URL')
 def url(event, line):
     event.url = unescape_string(line.value) if line else None
+
+
+@Event._extracts('TRANSP')
+def transparent(event, line):
+    if line:
+        event.transparent = line.value == 'TRANSPARENT'
 
 
 # TODO : make uid required ?
@@ -367,11 +402,15 @@ def o_created(event, container):
 
 @Event._outputs
 def o_start(event, container):
-    if event.begin:
-        container.append(
-            ContentLine('DTSTART', value=arrow_to_iso(event.begin)))
+    if event.begin and not event.all_day:
+        container.append(ContentLine('DTSTART', value=arrow_to_iso(event.begin)))
 
-    # TODO : take care of precision
+
+@Event._outputs
+def o_all_day(event, container):
+    if event.begin and event.all_day:
+        container.append(ContentLine('DTSTART', params={'VALUE': ('DATE',)},
+                                     value=arrow_date_to_iso(event.begin)))
 
 
 @Event._outputs
@@ -410,6 +449,14 @@ def o_location(event, container):
 def o_url(event, container):
     if event.url:
         container.append(ContentLine('URL', value=escape_string(event.url)))
+
+
+@Event._outputs
+def o_transparent(event, container):
+    if event.transparent:
+        container.append(ContentLine('TRANSP', value=escape_string('TRANSPARENT')))
+    else:
+        container.append(ContentLine('TRANSP', value=escape_string('OPAQUE')))
 
 
 @Event._outputs
