@@ -62,7 +62,7 @@ class Event(Component):
             created (Arrow-compatible)
             location (string)
             url (string)
-            transparent (boolean)
+            transparent (Boolean)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
