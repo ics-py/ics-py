@@ -22,7 +22,7 @@ class EventList(list):
     """
 
     def __init__(self, arg=[]):
-        """Instanciates a new :class:`ics.eventlist.EventList`.
+        """Instantiates a new :class:`ics.eventlist.EventList`.
 
             Args:
                 arg (iterable): same argument as list() and pass it to list().
@@ -46,31 +46,31 @@ class EventList(list):
         Note : an :class:`ics.eventlist.EventList` is always sorted and the slices \
         returned by this method will be sorted too.
 
-        If sl is conventional (like [10], [4:12], [3:100:2], [::-1], …),\
+        If `sl` is conventional (like [10], [4:12], [3:100:2], [::-1], …),\
         it slices the :class:`ics.eventlist.EventList` like a classical list().
         If one of the 3 arguments ([start:stop:step]) is not None or an int,\
         slicing differs.
 
-        In that case, `start` and `stop` are considerated like instants\
-        (or None) and `step` like a modificator.
+        In that case, `start` and `stop` are considered instants in time\
+        (or None) and `step` like a modifier.
         `start` and `stop` will be converted to :class:`Arrow` objects (or None)\
         with :func:`arrow.get`.
 
         - start (:class:`Arrow-convertible`): \
-        lower included bond,
+        lower included bound,
         - stop (:class:`Arrow-convertible`): \
-        upper, non included, bond.
+        upper, non included, bound.
 
-        Modificators:
+        Modifiers:
             - begin: the beginning of the events has to be \
-            between the bonds.
+            between the bounds.
             - end: the end of the events has to be \
-            between the bonds.
+            between the bounds.
             - both: both the end and the beginning have to be \
-            between the bonds.
-            - any: either (or both) the start of the beginning has to be \
-            between the bonds.
-            - inc: the events have to include be bonds \
+            between the bounds.
+            - any: either (or both) the start or the beginning have to be \
+            between the bounds.
+            - inc: the events have to include the bounds \
             (start < event.begin < event.end < stop).
         """
         # Integer slice
@@ -149,7 +149,7 @@ or None not '{}'".format(sl.step))
 
     def today(self, strict=False):
         """Args:
-            strict (bool): if True events will be returned only if they are\
+            strict (bool): if `True`, events will be returned only if they are\
             strictly *included* in `day`.
 
         Returns:
@@ -160,7 +160,7 @@ or None not '{}'".format(sl.step))
     def on(self, day, strict=False):
         """Args:
             day (Arrow-convertible)
-            strict (bool): if True events will be returned only if they are\
+            strict (bool): if `True`, events will be returned only if they are\
             strictly *included* in `day`.
 
         Returns:

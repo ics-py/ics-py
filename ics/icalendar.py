@@ -31,7 +31,7 @@ class Calendar(Component):
     _OUTPUTS = []
 
     def __init__(self, imports=None, events=None, creator=None):
-        """Instanciates a new Calendar.
+        """Instantiates a new Calendar.
 
         Args:
             imports (string or list of lines/strings): data to be imported into the Calendar(),
@@ -117,7 +117,7 @@ class Calendar(Component):
         |  Will return an EventList object (similar to python list).
         |  May be set to a list or an EventList
             (otherwise will raise a ValueError).
-        |  If setted, will override all pre-existing events.
+        |  If set, will override all pre-existing events.
         """
         return self._events
 

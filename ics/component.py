@@ -23,7 +23,7 @@ class Component(object):
     @classmethod
     def _from_container(cls, container, *args, **kwargs):
         if cls._TYPE == "ABSTRACT":
-            raise NotImplementedError('Abstract class, cannot instanciate.')
+            raise NotImplementedError('Abstract class, cannot instantiate.')
 
         k = cls()
         k._classmethod_args = args
