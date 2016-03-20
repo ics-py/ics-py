@@ -4,7 +4,7 @@ import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19
+from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20
 
 CRLF = "\r\n"
 
@@ -178,14 +178,14 @@ class TestEvent(unittest.TestCase):
         self.assertFalse(Event(name="a") > Event(name="a"))
         self.assertFalse(Event(name="b") < Event(name="b"))
 
-    def test_unescape_summarry(self):
+    def test_unescape_summary(self):
         c = Calendar(cal15)
         e = c.events[0]
         self.assertEqual(e.name, "Hello, \n World; This is a backslash : \\ and another new \n line")
 
     def test_unescapte_texts(self):
-        c = Calendar(cal15)
-        e = c.events[1]
+        c = Calendar(cal17)
+        e = c.events[0]
         self.assertEqual(e.name, "Some special ; chars")
         self.assertEqual(e.location, "In, every text field")
         self.assertEqual(e.description, "Yes, all of them;")
@@ -220,7 +220,7 @@ class TestEvent(unittest.TestCase):
         self.assertIn("URL:"+URL, str(e).splitlines())
 
     def test_all_day_with_end(self):
-        c = Calendar(cal17)
+        c = Calendar(cal20)
         e = c.events[0]
         self.assertTrue(e.all_day)
 
@@ -230,7 +230,7 @@ class TestEvent(unittest.TestCase):
         self.assertFalse(e.all_day)
 
     def test_all_day_duration(self):
-        c = Calendar(cal17)
+        c = Calendar(cal20)
         e = c.events[0]
         self.assertTrue(e.all_day)
         self.assertEqual(e.duration, timedelta(days=3))

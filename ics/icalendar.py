@@ -11,8 +11,8 @@ import copy
 import collections
 
 from .component import Component
+from .timeline import Timeline
 from .event import Event
-from .eventlist import EventList
 from .parse import (
     lines_to_container,
     string_to_container,
@@ -35,21 +35,20 @@ class Calendar(Component):
 
         Args:
             imports (string or list of lines/strings): data to be imported into the Calendar(),
-            events (list of Events or EventList): will be casted to :class:`ics.eventlist.EventList`
+            events (list of Events): :class:`ics.event.Event`s to be added to the calendar
             creator (string): uid of the creator program.
 
-        If `imports` is specified, __init__ ignores every other argument.
+        If `imports` is specified, every other argument will be ignored.
         """
         # TODO : implement a file-descriptor import and a filename import
 
         self._timezones = {}
-        self._events = EventList()
+        self.events = set()
         self._unused = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
 
-        if events is None:
-            events = EventList()
+        self.timeline = Timeline(self)
 
         if imports is not None:
             if isinstance(imports, string_types):
@@ -66,7 +65,8 @@ class Calendar(Component):
 
             self._populate(container[0])  # Use first calendar
         else:
-            self._events = events
+            if events is not None:
+                self.events.update(set(events))
             self._creator = creator
 
     def __urepr__(self):
@@ -98,8 +98,8 @@ class Calendar(Component):
     def __eq__(self, other):
         if len(self.events) != len(other.events):
             return False
-        for i in range(len(self.events)):
-            if not self.events[i] == other.events[i]:
+        for x, y in zip(sorted(self.events), sorted(other.events)):
+            if not x == y:
                 return False
         for attr in ('_unused', 'scale', 'method', 'creator'):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
@@ -109,27 +109,6 @@ class Calendar(Component):
 
     def __ne__(self, other):
         return not self.__eq__(other)
-
-    @property
-    def events(self):
-        """Get or set the list of calendar's events.
-
-        |  Will return an EventList object (similar to python list).
-        |  May be set to a list or an EventList
-            (otherwise will raise a ValueError).
-        |  If set, will override all pre-existing events.
-        """
-        return self._events
-
-    @events.setter
-    def events(self, value):
-        if isinstance(value, EventList):
-            self._events = value
-        elif isinstance(value, collections.Iterable):
-            self._events = EventList(value)
-        else:
-            raise ValueError(
-                'Calendar.events must be an EventList or an iterable')
 
     @property
     def creator(self):
@@ -155,13 +134,9 @@ class Calendar(Component):
         """
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
-        clone.events = self.events.clone()
+        clone.events = copy.copy(self.events)
         clone._timezones = copy.copy(self._timezones)
         return clone
-
-    def __add__(self, other):
-        events = self.events + other.events
-        return Calendar(events)
 
 
 # ------------------

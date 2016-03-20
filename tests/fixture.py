@@ -186,14 +186,6 @@ DTEND;TZID=Europe/Berlin:20120608T212500
 LOCATION:MUC
 END:VEVENT
 
-BEGIN:VEVENT
-SUMMARY:Some special \\; chars
-DTSTART;TZID=Europe/Berlin:20130608T202501
-DTEND;TZID=Europe/Berlin:20130608T212501
-LOCATION:In\\, every text field
-DESCRIPTION:Yes\\, all of them\\;
-END:VEVENT
-
 END:VCALENDAR
 """
 
@@ -214,18 +206,21 @@ END:VEVENT
 END:VCALENDAR
 """
 
-# 3 days all-day event including end date
 cal17 = u"""
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:manually crafted from an ownCloud 8.0 ics
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+
 BEGIN:VEVENT
-SUMMARY:3 days party
-DTSTART;VALUE=DATE:20151114
-DTEND;VALUE=DATE:20151116
+SUMMARY:Some special \\; chars
+DTSTART;TZID=Europe/Berlin:20130608T202501
+DTEND;TZID=Europe/Berlin:20130608T212501
+LOCATION:In\\, every text field
+DESCRIPTION:Yes\\, all of them\\;
 END:VEVENT
 END:VCALENDAR
 """
+
 
 # long event which is not all_day
 cal18 = u"""
@@ -261,7 +256,19 @@ DTEND;TZID=Europe/Berlin:20120608T212500
 LOCATION:MUC
 TRANSP:OPAQUE
 END:VEVENT
+END:VCALENDAR
+"""
 
+# 3 days all-day event including end date
+cal20 = u"""
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:manually crafted from an ownCloud 8.0 ics
+BEGIN:VEVENT
+SUMMARY:3 days party
+DTSTART;VALUE=DATE:20151114
+DTEND;VALUE=DATE:20151116
+END:VEVENT
 END:VCALENDAR
 """
 

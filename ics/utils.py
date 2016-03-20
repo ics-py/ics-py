@@ -16,6 +16,8 @@ from . import parse
 
 tzutc = arrow.utcnow().tzinfo
 
+tzutc = arrow.utcnow().tzinfo
+
 
 def remove_x(container):
     for i in reversed(range(len(container))):
