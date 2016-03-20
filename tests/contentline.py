@@ -1,5 +1,6 @@
 import unittest
 from ics.parse import ParseError, ContentLine
+from ics.utils import iso_to_arrow
 
 
 class TestContentLine(unittest.TestCase):
@@ -61,3 +62,10 @@ class TestContentLine(unittest.TestCase):
             expected = self.dataset2[test]
             got = ContentLine.parse(test)
             self.assertEqual(expected, got)
+
+
+    # https://github.com/C4ptainCrunch/ics.py/issues/68
+    def test_timezone_not_dropped(self):
+        line = ContentLine.parse("DTSTART;TZID=Europe/Berlin:20151104T190000")
+        arrow = iso_to_arrow(line)
+        self.assertIn("Europe/Berlin", str(arrow.tzinfo))

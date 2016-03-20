@@ -53,7 +53,7 @@ class Event(Component):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
-            name (string)
+            name (string) : rfc5545 SUMMARY property
             begin (Arrow-compatible)
             end (Arrow-compatible)
             duration (datetime.timedelta)
@@ -62,7 +62,7 @@ class Event(Component):
             created (Arrow-compatible)
             location (string)
             url (string)
-            transparent (boolean)
+            transparent (Boolean)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time

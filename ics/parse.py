@@ -15,10 +15,10 @@ class ParseError(Exception):
 
 
 class ContentLine:
-    """ represents one property of calender content
+    """ represents one property of calendar content
 
     name:   the name of the property (uppercased for consistency and
-            easier comparing)
+            easier comparison)
     params: a dict of the parameters
     value:  its value
     """
