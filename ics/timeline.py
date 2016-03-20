@@ -30,8 +30,7 @@ class Timeline(object):
 
         Note :
             - chronological order is defined by the comparaison operators in :class:`ics.event.Event`
-            - Events with no `begin` will not appear here. (To list all events in a `Calendar` use
-            `Calendar.events`)
+            - Events with no `begin` will not appear here. (To list all events in a `Calendar` use `Calendar.events`)
         """
         for event in sorted(filter(lambda x: x.begin is not None, self._calendar.events)):
             yield event
