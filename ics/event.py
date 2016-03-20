@@ -53,7 +53,7 @@ class Event(Component):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
-            name (string)
+            name (string) : rfc5545 SUMMARY property
             begin (Arrow-compatible)
             end (Arrow-compatible)
             duration (datetime.timedelta)
