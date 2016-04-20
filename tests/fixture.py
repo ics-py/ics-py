@@ -272,6 +272,50 @@ END:VEVENT
 END:VCALENDAR
 """
 
+# Event with Display alarm without repeats
+cal21 = u"""
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+
+BEGIN:VEVENT
+SUMMARY:Some special \\; chars
+DTSTART;TZID=Europe/Berlin:20130608T202501
+DTEND;TZID=Europe/Berlin:20130608T212501
+LOCATION:In\\, every text field
+DESCRIPTION:Yes\\, all of them\\;
+BEGIN:VALARM
+TRIGGER:-PT1H
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+END:VALARM
+END:VEVENT
+END:VCALENDAR
+"""
+
+# Event with Display alarm WITH repeats
+cal22 = u"""
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+
+BEGIN:VEVENT
+SUMMARY:Some special \\; chars
+DTSTART;TZID=Europe/Berlin:20130608T202501
+DTEND;TZID=Europe/Berlin:20130608T212501
+LOCATION:In\\, every text field
+DESCRIPTION:Yes\\, all of them\\;
+BEGIN:VALARM
+TRIGGER:-PT1H
+REPEAT:2
+DURATION:PT10M
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+END:VALARM
+END:VEVENT
+END:VCALENDAR
+"""
+
 unfolded_cal2 = [
     'BEGIN:VCALENDAR',
     'BEGIN:VEVENT',
@@ -335,3 +379,22 @@ Pellentesque nisl mi, molestie idsem vel, vehicula nullam.',
 ]
 
 unfolded_cal6 = ['DESCRIPTION:ab']
+
+unfolded_cal21 = [
+    'BEGIN:VCALENDAR',
+    'BEGIN:VEVENT',
+    'DTEND;TZID=Europe/Berlin:20120608T212500',
+    'SUMMARY:Name',
+    'DTSTART;TZID=Europe/Berlin:20120608T202500',
+    'LOCATION:MUC',
+    'SEQUENCE:0',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT1H',
+    'REPEAT:2',
+    'DURATION:PT10M',
+    'DESCRIPTION:Event reminder',
+    'ACTION:DISPLAY',
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR',
+]

@@ -10,6 +10,7 @@ import arrow
 import copy
 from datetime import timedelta
 
+from .alarm import AlarmFactory
 from .component import Component
 from .utils import (
     parse_duration,
@@ -31,7 +32,7 @@ class Event(Component):
     """A calendar event.
 
     Can be full-day or between two instants.
-    Can be defined by a beginning instant and\
+    Can be defined by a beginning instant and
     a duration *or* end instant.
     """
 
@@ -49,7 +50,8 @@ class Event(Component):
                  created=None,
                  location=None,
                  url=None,
-                 transparent=False):
+                 transparent=False,
+                 alarms=None):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -63,6 +65,7 @@ class Event(Component):
             location (string)
             url (string)
             transparent (Boolean)
+            alarms (`ics.alarm.Alarm`)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -78,6 +81,7 @@ class Event(Component):
         self.location = location
         self.url = url
         self.transparent = transparent
+        self.alarms = set()
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -91,6 +95,9 @@ class Event(Component):
             self.end = end
         elif duration:  # Duration was specified
             self.duration = duration
+
+        if alarms is not None:
+            self.alarms.update(set(alarms))
 
     def has_end(self):
         """
@@ -303,6 +310,7 @@ class Event(Component):
             Event: an exact copy of self"""
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
+        clone.alarms = copy.copy(self.alarms)
         return clone
 
     def __hash__(self):
@@ -387,6 +395,15 @@ def uid(event, line):
         event.uid = line.value
 
 
+@Event._extracts('VALARM', multiple=True)
+def alarms(event, lines):
+    def alarm_factory(x):
+        af = AlarmFactory.get_type_from_container(x)
+        return af._from_container(x)
+
+    event.alarms = list(map(alarm_factory, lines))
+
+
 # -------------------
 # ----- Outputs -----
 # -------------------
@@ -467,3 +484,9 @@ def o_uid(event, container):
         uid = uid_gen()
 
     container.append(ContentLine('UID', value=uid))
+
+
+@Event._outputs
+def o_alarm(event, container):
+    for alarm in event.alarms:
+        container.append(str(alarm))
