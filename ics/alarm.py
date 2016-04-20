@@ -61,8 +61,7 @@ class Alarm(Component):
         Adheres to RFC5545 VALARM standard: http://icalendar.org/iCalendar-RFC-5545/3-6-6-alarm-component.html
 
         Args:
-            trigger (datetime.timedelta OR datetime.datetime) : Timespan to alert before parent action,
-                                                                or absolute time to alert - REQUIRED
+            trigger (datetime.timedelta OR datetime.datetime) : Timespan to alert before parent action, or absolute time to alert
             repeat (integer) : How many times to repeat the alarm
             duration (datetime.timedelta) : Duration between repeats
 
@@ -184,7 +183,7 @@ class Alarm(Component):
     def clone(self):
         """
         Returns:
-            Event: an exact copy of self"""
+            Alarm: an exact copy of self"""
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
         return clone
@@ -265,7 +264,7 @@ class DisplayAlarm(Alarm):
 
         Args:
             description (string) : RFC5545 DESCRIPTION property
-            kwargs (dict) : Args to `ics.alarm.Alarm`
+            kwargs (dict) : Args to :func:`ics.alarm.Alarm.__init__`
         """
         super(DisplayAlarm, self).__init__(**kwargs)
         self.description = description

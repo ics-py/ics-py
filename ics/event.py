@@ -65,7 +65,7 @@ class Event(Component):
             location (string)
             url (string)
             transparent (Boolean)
-            alarms (`ics.alarm.Alarm`)
+            alarms (:class:`ics.alarm.Alarm`)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
