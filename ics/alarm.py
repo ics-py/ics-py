@@ -231,6 +231,7 @@ def o_trigger(alarm, container):
     else:
         container.append(ContentLine('TRIGGER;VALUE=DATE-TIME', value=arrow_to_iso(alarm.trigger)))
 
+
 @Alarm._outputs
 def o_duration(alarm, container):
     if alarm.duration:
