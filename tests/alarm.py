@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from ics.alarm import DisplayAlarm
 from ics.icalendar import Calendar
 
-from .fixture import cal21, cal22
+from .fixture import cal21, cal22, cal23
 
 CRLF = "\r\n"
 
@@ -138,3 +138,14 @@ class TestDisplayAlarm(unittest.TestCase):
         self.assertEqual(a.repeat, 2)
         self.assertEqual(a.duration, timedelta(minutes=10))
         self.assertEqual(a.description, 'Event reminder')
+
+    def test_alarm_without_repeat_datetime_trigger_extraction(self):
+        c = Calendar(cal23)
+        a = c.events[0].alarms[0]
+
+        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
+        self.assertEqual(a.trigger, arrow.get(alarm_time))
+        self.assertIsNone(a.repeat)
+        self.assertIsNone(a.duration)
+        self.assertEqual(a.description, 'Event reminder')
+

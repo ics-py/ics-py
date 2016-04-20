@@ -194,15 +194,16 @@ class Alarm(Component):
 # ------------------
 @Alarm._extracts('TRIGGER', required=True)
 def trigger(alarm, line):
-    alarm.trigger = parse_duration(line.value[1:])
+    if not line.params:
+        alarm.trigger = parse_duration(line.value[1:])
+    else:
+        if len(line.params) > 1:
+            raise ValueError('TRIGGER has too many parameters')
 
-
-@Alarm._extracts('TRIGGER;VALUE=DATE-TIME')
-def trigger_datetime(alarm, line):
-    if line:
-        # get the dict of vtimezones passed to the classmethod
-        tz_dict = alarm._classmethod_kwargs['tz']
-        alarm.trigger = iso_to_arrow(line, tz_dict)
+        if 'VALUE' in line.params:
+            alarm.trigger = iso_to_arrow(line)
+        else:
+            raise ValueError('TRIGGER has invalid parameters')
 
 
 @Alarm._extracts('DURATION')
