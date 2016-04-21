@@ -2,10 +2,10 @@ import arrow
 import unittest
 
 from datetime import datetime, timedelta
-from ics.alarm import DisplayAlarm
+from ics.alarm import AudioAlarm, DisplayAlarm
 from ics.icalendar import Calendar
 
-from .fixture import cal21, cal22, cal23
+from .fixture import cal21, cal22, cal23, cal24, cal25
 
 CRLF = "\r\n"
 
@@ -149,3 +149,66 @@ class TestDisplayAlarm(unittest.TestCase):
         self.assertIsNone(a.duration)
         self.assertEqual(a.description, 'Event reminder')
 
+
+class TestAudioAlarm(unittest.TestCase):
+
+    def test_alarm(self):
+        a = AudioAlarm(trigger=timedelta(minutes=15))
+        self.assertEqual('AUDIO', a.action)
+
+    def test_plain_repr(self):
+        a = AudioAlarm(trigger=timedelta(minutes=15))
+        self.assertEqual(repr(a), "<<class 'ics.alarm.AudioAlarm'> trigger:0:15:00>")
+
+    def test_attach_repr(self):
+        attach = 'ftp://example.com/pub/sounds/bell-01.aud'
+        attach_params = {'FMTTYPE': ['audio/basic']}
+        a = AudioAlarm(trigger=timedelta(minutes=15),
+                       repeat=2,
+                       duration=timedelta(minutes=10),
+                       attach=attach,
+                       attach_params=attach_params)
+        self.assertEqual(repr(a), "<<class 'ics.alarm.AudioAlarm'> trigger:0:15:00 repeat:2 "
+                                  "duration:0:10:00 attach:ftp://example.com/pub/sounds/bell-01.aud "
+                                  "attach_params:{'FMTTYPE': ['audio/basic']}>")
+
+    def test_alarm_output(self):
+        attach = 'ftp://example.com/pub/sounds/bell-01.aud'
+        attach_params = {'FMTTYPE': ['audio/basic']}
+        a = AudioAlarm(trigger=timedelta(minutes=15),
+                       attach=attach,
+                       attach_params=attach_params)
+
+        desired_output = CRLF.join(['BEGIN:VALARM',
+                                    'TRIGGER:-PT15M',
+                                    'ACTION:AUDIO',
+                                    'ATTACH;{0}:{1}'.format(';'.join('{0}={1}'.format(k, v[0]) for k, v in attach_params.iteritems()), attach),
+                                    'END:VALARM'])
+
+        self.assertEqual(desired_output, str(a))
+
+    def test_alarm_without_attach_extraction(self):
+        c = Calendar(cal24)
+        a = c.events[0].alarms[0]
+        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
+
+        self.assertEqual(a.action, 'AUDIO')
+        self.assertEqual(a.trigger, arrow.get(alarm_time))
+        self.assertIsNone(a.repeat)
+        self.assertIsNone(a.duration)
+        self.assertIsNone(a.attach)
+        self.assertIsNone(a.attach_params)
+
+    def test_alarm_with_attach_extraction(self):
+        c = Calendar(cal25)
+        a = c.events[0].alarms[0]
+        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
+
+        self.assertEqual(a.action, 'AUDIO')
+        self.assertEqual(a.trigger, arrow.get(alarm_time))
+        self.assertIsNone(a.repeat)
+        self.assertIsNone(a.duration)
+        self.assertEqual(a.attach, 'ftp://example.com/pub/sounds/bell-01.aud')
+        self.assertIn('FMTTYPE', a.attach_params.keys())
+        self.assertEqual(1, len(a.attach_params['FMTTYPE']))
+        self.assertEqual('audio/basic', a.attach_params['FMTTYPE'][0])

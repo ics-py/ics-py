@@ -29,6 +29,13 @@ DisplayAlarm
     :members:
     :special-members:
 
+AudioAlarm
+-----
+
+.. autoclass:: ics.alarm.AudioAlarm
+    :members:
+    :special-members:
+
 Timeline
 ---------
 
