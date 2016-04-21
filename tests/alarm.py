@@ -182,7 +182,7 @@ class TestAudioAlarm(unittest.TestCase):
         desired_output = CRLF.join(['BEGIN:VALARM',
                                     'TRIGGER:-PT15M',
                                     'ACTION:AUDIO',
-                                    'ATTACH;{0}:{1}'.format(';'.join('{0}={1}'.format(k, v[0]) for k, v in attach_params.iteritems()), attach),
+                                    'ATTACH;FMTTYPE=audio/basic:{0}'.format(attach),
                                     'END:VALARM'])
 
         self.assertEqual(desired_output, str(a))
