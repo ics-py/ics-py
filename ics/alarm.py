@@ -362,7 +362,7 @@ class AudioAlarm(Alarm):
 # ----- Inputs -----
 # ------------------
 @AudioAlarm._extracts('ATTACH')
-def description(alarm, line):
+def attach(alarm, line):
     if type(alarm) is AudioAlarm and line:
         if line.value:
             alarm.attach = unescape_string(line.value)
@@ -375,6 +375,6 @@ def description(alarm, line):
 # ----- Outputs -----
 # -------------------
 @AudioAlarm._outputs
-def o_description(alarm, container):
+def o_attach(alarm, container):
     if type(alarm) is AudioAlarm and alarm.attach:
         container.append(ContentLine('ATTACH', params=alarm.attach_params or {}, value=escape_string(alarm.attach)))
