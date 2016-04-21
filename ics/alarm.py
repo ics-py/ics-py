@@ -298,8 +298,7 @@ class DisplayAlarm(Alarm):
 # ------------------
 @DisplayAlarm._extracts('DESCRIPTION', required=True)
 def description(alarm, line):
-    if type(alarm) is DisplayAlarm:
-        alarm.description = unescape_string(line.value) if line else None
+    alarm.description = unescape_string(line.value) if line else None
 
 
 # -------------------
@@ -307,8 +306,7 @@ def description(alarm, line):
 # -------------------
 @DisplayAlarm._outputs
 def o_description(alarm, container):
-    if type(alarm) is DisplayAlarm:
-        container.append(ContentLine('DESCRIPTION', value=escape_string(alarm.description or '')))
+    container.append(ContentLine('DESCRIPTION', value=escape_string(alarm.description or '')))
 
 
 class AudioAlarm(Alarm):
@@ -363,7 +361,7 @@ class AudioAlarm(Alarm):
 # ------------------
 @AudioAlarm._extracts('ATTACH')
 def attach(alarm, line):
-    if type(alarm) is AudioAlarm and line:
+    if line:
         if line.value:
             alarm.attach = unescape_string(line.value)
 
@@ -376,5 +374,5 @@ def attach(alarm, line):
 # -------------------
 @AudioAlarm._outputs
 def o_attach(alarm, container):
-    if type(alarm) is AudioAlarm and alarm.attach:
+    if alarm.attach:
         container.append(ContentLine('ATTACH', params=alarm.attach_params or {}, value=escape_string(alarm.attach)))
