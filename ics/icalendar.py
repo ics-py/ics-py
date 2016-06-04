@@ -148,7 +148,7 @@ def prodid(calendar, prodid):
     calendar._creator = prodid.value
 
 
-@Calendar._extracts('VERSION', required=True)
+@Calendar._extracts('VERSION', required=True, default=['2.0'])
 def version(calendar, line):
     version = line
     # TODO : should take care of minver/maxver

@@ -13,7 +13,7 @@ from .utils import get_lines
 
 Extractor = namedtuple(
     'Extractor',
-    ['function', 'type', 'required', 'multiple']
+    ['function', 'type', 'required', 'multiple', 'default']
 )
 
 
@@ -39,9 +39,12 @@ class Component(object):
         for extractor in self._EXTRACTORS:
             lines = get_lines(container, extractor.type)
             if not lines and extractor.required:
-                raise ValueError(
-                    'A {} must have at least one {}'
-                    .format(container.name, extractor.type))
+                if extractor.default:
+                    lines = extractor.default
+                else:
+                    raise ValueError(
+                        'A {} must have at least one {}'
+                        .format(container.name, extractor.type))
 
             if not extractor.multiple and len(lines) > 1:
                 raise ValueError(
@@ -59,13 +62,14 @@ class Component(object):
         self._unused = container  # Store unused lines
 
     @classmethod
-    def _extracts(cls, line_type, required=False, multiple=False):
+    def _extracts(cls, line_type, required=False, multiple=False, default=False):
         def decorator(fn):
             extractor = Extractor(
                 function=fn,
                 type=line_type,
                 required=required,
-                multiple=multiple)
+                multiple=multiple,
+                default=default)
             cls._EXTRACTORS.append(extractor)
             return fn
         return decorator
