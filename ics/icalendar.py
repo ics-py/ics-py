@@ -148,7 +148,8 @@ def prodid(calendar, prodid):
     calendar._creator = prodid.value
 
 
-__version_default__ = ContentLine(name='VERSION', value='2.0')
+__version_default__ = [ContentLine(name='VERSION', value='2.0')]
+
 
 @Calendar._extracts('VERSION', required=True, default=__version_default__)
 def version(calendar, line):
