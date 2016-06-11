@@ -6,6 +6,7 @@ from __future__ import unicode_literals, absolute_import
 from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
+import warnings
 from collections import namedtuple
 
 from .utils import get_lines
@@ -41,6 +42,8 @@ class Component(object):
             if not lines and extractor.required:
                 if extractor.default:
                     lines = extractor.default
+                    warnings.warn(("The %s property was not found and is required by the RFC." +
+                        "A default value of \"%s\" has been used instead") % (extractor.type, extractor.default))
                 else:
                     raise ValueError(
                         'A {} must have at least one {}'
