@@ -42,8 +42,10 @@ class Component(object):
             if not lines and extractor.required:
                 if extractor.default:
                     lines = extractor.default
-                    warnings.warn(("The %s property was not found and is required by the RFC." +
-                        "A default value of \"%s\" has been used instead") % (extractor.type, extractor.default))
+                    default_str = "\\n".join(map(str, extractor.default))
+                    message = ("The %s property was not found and is required by the RFC." +
+                        " A default value of \"%s\" has been used instead") % (extractor.type, default_str)
+                    warnings.warn(message)
                 else:
                     raise ValueError(
                         'A {} must have at least one {}'
