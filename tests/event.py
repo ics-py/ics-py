@@ -1,5 +1,6 @@
 import unittest
-from datetime import timedelta
+import pytest
+from datetime import timedelta as td, datetime as dt
 import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
@@ -40,15 +41,15 @@ class TestEvent(unittest.TestCase):
     def test_event_with_duration(self):
         c = Calendar(cal12)
         e = c.events[0]
-        self.assertEqual(e._duration, timedelta(1, 3600))
-        self.assertEqual(e.end - e.begin, timedelta(1, 3600))
+        self.assertEqual(e._duration, td(1, 3600))
+        self.assertEqual(e.end - e.begin, td(1, 3600))
 
     def test_not_duration_and_end(self):
         with self.assertRaises(ValueError):
             Calendar(cal13)
 
     def test_duration_output(self):
-        e = Event(begin=0, duration=timedelta(1, 23))
+        e = Event(begin=0, duration=td(1, 23))
         lines = str(e).splitlines()
         self.assertIn('DTSTART:19700101T000000Z', lines)
         self.assertIn('DURATION:P1DT23S', lines)
@@ -127,21 +128,21 @@ class TestEvent(unittest.TestCase):
 
         e1 = Event(begin="1993/05/24")
         e1.make_all_day()
-        self.assertEqual(e1.duration, timedelta(days=1))
+        self.assertEqual(e1.duration, td(days=1))
 
         e2 = Event(begin="1993/05/24", end="1993/05/30")
-        self.assertEqual(e2.duration, timedelta(days=6))
+        self.assertEqual(e2.duration, td(days=6))
 
-        e3 = Event(begin="1993/05/24", duration=timedelta(minutes=1))
-        self.assertEqual(e3.duration, timedelta(minutes=1))
+        e3 = Event(begin="1993/05/24", duration=td(minutes=1))
+        self.assertEqual(e3.duration, td(minutes=1))
 
         e4 = Event(begin="1993/05/24")
-        self.assertEqual(e4.duration, timedelta(0))
+        self.assertEqual(e4.duration, td(0))
 
         e5 = Event(begin="1993/05/24")
         e5.duration = {'days': 6, 'hours': 2}
         self.assertEqual(e5.end, arrow.get("1993/05/30T02:00"))
-        self.assertEqual(e5.duration, timedelta(hours=146))
+        self.assertEqual(e5.duration, td(hours=146))
 
     def test_always_uid(self):
         e = Event()
@@ -233,7 +234,7 @@ class TestEvent(unittest.TestCase):
         c = Calendar(cal20)
         e = c.events[0]
         self.assertTrue(e.all_day)
-        self.assertEqual(e.duration, timedelta(days=3))
+        self.assertEqual(e.duration, td(days=3))
 
     def test_make_all_day_idempotence(self):
         c = Calendar(cal18)
@@ -279,3 +280,85 @@ class TestEvent(unittest.TestCase):
     def test_default_transparent_output(self):
         e = Event(name="Name")
         self.assertIn("TRANSP:OPAQUE", str(e).splitlines())
+
+    def test_includes(self):
+        # disjoined events
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=20))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 50), duration=td(minutes=20))
+        assert False == event_a.includes(event_b)
+        assert False == event_b.includes(event_a)
+        # intersected events
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        assert False == event_a.includes(event_b)
+        assert False == event_b.includes(event_a)
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        assert False == event_a.includes(event_b)
+        assert False == event_b.includes(event_a)
+        # included events
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        assert True  == event_a.includes(event_b)
+        assert False == event_b.includes(event_a)
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        assert False == event_a.includes(event_b)
+        assert True  == event_b.includes(event_a)
+
+    def test_intersects(self):
+        # disjoined events
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=20))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 50), duration=td(minutes=20))
+        assert False == event_a.intersects(event_b)
+        assert False == event_b.intersects(event_a)
+        # intersected events
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        assert True  == event_a.intersects(event_b)
+        assert True  == event_b.intersects(event_a)
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        assert True  == event_a.intersects(event_b)
+        assert True  == event_b.intersects(event_a)
+        # included events
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        assert True  == event_a.intersects(event_b)
+        assert True  == event_b.intersects(event_a)
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        assert True  == event_a.intersects(event_b)
+        assert True  == event_b.intersects(event_a)
+
+    def test_join(self):
+        # disjoined events
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=20))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 50), duration=td(minutes=20))
+        with pytest.raises(ValueError):
+            event_a.join(event_b)
+        with pytest.raises(ValueError):
+            event_b.join(event_a)
+        # intersected events
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        assert event_a.join(event_b) == Event(name=None, uid=event_a.uid, begin=event_a.begin, end=event_b.end)
+        assert event_b.join(event_a) == Event(name=None, uid=event_b.uid, begin=event_a.begin, end=event_b.end)
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        assert event_a.join(event_b) == Event(name=None, uid=event_a.uid, begin=event_b.begin, end=event_a.end)
+        assert event_b.join(event_a) == Event(name=None, uid=event_b.uid, begin=event_b.begin, end=event_a.end)
+        # included events
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        assert event_a.join(event_b) == Event(name=None, uid=event_a.uid, begin=event_a.begin, end=event_a.end)
+        assert event_b.join(event_a) == Event(name=None, uid=event_b.uid, begin=event_a.begin, end=event_a.end)
+        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        assert event_a.join(event_b) == Event(name=None, uid=event_a.uid, begin=event_b.begin, end=event_b.end)
+        assert event_b.join(event_a) == Event(name=None, uid=event_b.uid, begin=event_b.begin, end=event_b.end)
+        event = Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event.join(event)
+        assert event == Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+
+
