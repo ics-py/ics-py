@@ -142,7 +142,7 @@ def unfold_lines(physical_lines):
             continue
         elif not current_line:
             current_line = line.strip('\r')
-        elif str.isspace(line[0]):
+        elif line[0].isspace():
             # TODO : remove more spaces if needed
             current_line += line[1:].strip('\r')
         else:
