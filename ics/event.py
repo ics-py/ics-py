@@ -403,6 +403,11 @@ def alarms(event, lines):
 
     event.alarms = list(map(alarm_factory, lines))
 
+@Event._extracts('CATEGORIES')
+def categories(event, line):
+    if line:
+        event.categories = line.value
+
 
 # -------------------
 # ----- Outputs -----
