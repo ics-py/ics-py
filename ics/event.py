@@ -142,10 +142,7 @@ class Event(Component):
             # return the beginning + duration
             return self.begin + self._duration
         elif self._end_time:  # if end is time defined
-            if self.all_day:
-                return self._end_time + timedelta(days=1)
-            else:
-                return self._end_time
+            return self._end_time
         elif self._begin:  # if end is not defined
             if self.all_day:
                 return self._begin + timedelta(days=1)
@@ -359,6 +356,8 @@ def end(event, line):
         tz_dict = event._classmethod_kwargs['tz']
         event._end_time = iso_to_arrow(line, tz_dict)
         # one could also save the end_precision to check that if begin_precision is day, end_precision also is
+        #if iso_precision(line.value) == 'day':
+        #    event.make_all_day()
 
 
 @Event._extracts('SUMMARY')
@@ -441,7 +440,11 @@ def o_duration(event, container):
 @Event._outputs
 def o_end(event, container):
     if event.begin and event._end_time:
-        container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
+        if event.all_day:
+            container.append(ContentLine('DTEND', params={'VALUE': ('DATE',)},
+                                         value = arrow_date_to_iso(event.end)))
+        else:
+            container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
 
 
 @Event._outputs
