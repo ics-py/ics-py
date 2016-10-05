@@ -16,10 +16,12 @@ from . import parse
 tzutc = arrow.utcnow().tzinfo
 tzlocal = gettz('localtime')
 
+
 def remove_x(container):
+    """Remove non-standard (start with X-) and SEQUENCE lines"""
     for i in reversed(range(len(container))):
         item = container[i]
-        if item.name.startswith('X-'):
+        if item.name.startswith('X-') or item.name == "SEQUENCE":
             del container[i]
 
 
