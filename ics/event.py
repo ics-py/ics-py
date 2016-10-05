@@ -208,7 +208,10 @@ class Event(Component):
         """Transforms self to an all-day event.
 
         The event will span all the days from the begin to the end day.
+        If the end time is 0 (midnight the previous day),
+        the last day will not be included.
         """
+
         was_instant = self.duration == timedelta(0)
         old_end = self.end
         self._duration = None
@@ -217,14 +220,10 @@ class Event(Component):
         if was_instant:
             self._end_time = None
             return
-        floored_end = old_end.floor('day')
-        # this "overflooring" must be done because end times are not included in the interval
-        calculated_end = floored_end - timedelta(days=1) if floored_end == old_end else floored_end
-        if calculated_end == self._begin:
-            # for a one day event, we don't need to save the _end_time
+        self._end_time = old_end.ceil('day')
+        # One day is just a little short of 24 hours
+        if self.duration == timedelta(hours=23, minutes=59, seconds=59.999999):
             self._end_time = None
-        else:
-            self._end_time = calculated_end
 
     def __urepr__(self):
         """Should not be used directly. Use self.__repr__ instead.

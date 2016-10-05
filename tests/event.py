@@ -233,7 +233,7 @@ class TestEvent(unittest.TestCase):
         c = Calendar(cal20)
         e = c.events[0]
         self.assertTrue(e.all_day)
-        self.assertEqual(e.duration, timedelta(days=3))
+        self.assertEqual(e.duration, timedelta(days=2))
 
     def test_make_all_day_idempotence(self):
         c = Calendar(cal18)
