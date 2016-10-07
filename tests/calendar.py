@@ -29,7 +29,7 @@ class TestCalendar(unittest.TestCase):
             c = Calendar(fix)
             d = Calendar(str(c))
             self.assertEqual(c, d)
-            self.assertSequenceEqual(sorted(c.events), sorted(d.events))
+            self.assertEqual(c.events, d.events)
 
             e = Calendar(str(d))
             # cannot compare str(c) and str(d) because times are encoded differently
