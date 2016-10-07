@@ -96,16 +96,12 @@ class Calendar(Component):
             yield l
 
     def __eq__(self, other):
-        if len(self.events) != len(other.events):
-            return False
-        for x, y in zip(sorted(self.events), sorted(other.events)):
-            if not x == y:
-                return False
+
         for attr in ('_unused', 'scale', 'method', 'creator'):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
                 return False
 
-        return True
+        return self.events == other.events
 
     def __ne__(self, other):
         return not self.__eq__(other)
