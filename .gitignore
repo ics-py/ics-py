@@ -20,3 +20,4 @@ doc/_build/*
 #tests
 .cache/
 .coverage
+htmlcov
