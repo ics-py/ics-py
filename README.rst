@@ -90,7 +90,7 @@ Links
 * `rfc5545 <http://tools.ietf.org/html/rfc5545>`_
 * `Vulgarised RFC <http://www.kanzaki.com/docs/ical/>`_
 
-.. image:: https://i.imgur.com/8iYDvvy.jpg
+.. image:: http://i.imgur.com/KnSQg48.jpg
     :target: https://github.com/C4ptainCrunch/ics.py
     :alt: Parse ALL the calendars!
     :align: center
