@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
-from collections import Iterable
 import heapq
 
 from six import PY2, PY3, StringIO, string_types, text_type, integer_types
