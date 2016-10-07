@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals, absolute_import
 from collections import Iterable
+import heapq
 
 from six import PY2, PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
@@ -32,8 +33,13 @@ class Timeline(object):
             - chronological order is defined by the comparaison operators in :class:`ics.event.Event`
             - Events with no `begin` will not appear here. (To list all events in a `Calendar` use `Calendar.events`)
         """
-        for event in sorted(filter(lambda x: x.begin is not None, self._calendar.events)):
-            yield event
+        # Using a heap is faster than sorting if the number of events (n) is
+        # much bigger than the number of events we extract from the iterator (k).
+        # Complexity: O(n + k log n).
+        heap = [x for x in self._calendar.events if x.begin is not None]
+        heapq.heapify(heap)
+        while heap:
+            yield heapq.heappop(heap)
 
     def included(self, start, stop):
         """Iterates (in chronological order) over every event that is included
