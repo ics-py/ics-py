@@ -78,6 +78,13 @@ Testing & Docs
     $ pip install -r dev/requirements-test.txt
     $ python setup.py test
 
+    # tests coverage
+    $ pip install -r requirements.txt
+    $ pip install -r dev/requirements-test.txt
+    $ py.test --cov-report html
+    $ coverage html
+    $ firefox htmlcov/index.html
+
     # docs
     $ pip install -r requirements.txt
     $ pip install -r dev/requirements-doc.txt
