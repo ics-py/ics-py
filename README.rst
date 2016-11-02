@@ -81,7 +81,7 @@ Testing & Docs
     # tests coverage
     $ pip install -r requirements.txt
     $ pip install -r dev/requirements-test.txt
-    $ py.test --cov-report html
+    $ python setup.py test
     $ coverage html
     $ firefox htmlcov/index.html
 
