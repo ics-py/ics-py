@@ -11,18 +11,16 @@ from uuid import uuid4
 from dateutil.tz import gettz
 import arrow
 import re
-
 from . import parse
 
 tzutc = arrow.utcnow().tzinfo
-
-tzutc = arrow.utcnow().tzinfo
-
+tzlocal = gettz('localtime')
 
 def remove_x(container):
+    """Remove non-standard (start with X-) and SEQUENCE lines"""
     for i in reversed(range(len(container))):
         item = container[i]
-        if item.name.startswith('X-'):
+        if item.name.startswith('X-') or item.name == "SEQUENCE":
             del container[i]
 
 
@@ -36,8 +34,8 @@ def iso_to_arrow(time_container, available_tz={}):
     # TODO : see if timezone is registered as a VTIMEZONE
     if tz_list and len(tz_list) > 0:
         tz = tz_list[0]
-    else:
-        tz = None
+    else: # Floating event; use local time
+        tz = 'localtime'
     if ('T' not in time_container.value) and \
             'DATE' in time_container.params.get('VALUE', []):
         val = time_container.value + 'T0000'
@@ -168,7 +166,7 @@ def arrow_to_iso(instant):
 def arrow_date_to_iso(instant):
     # date-only for all day events
     # set to utc, make iso, remove timezone
-    instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDD')
+    instant = arrow.get(instant.astimezone(tzlocal)).format('YYYYMMDD')
     return instant  # no TZ for all days
 
 

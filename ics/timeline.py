@@ -62,9 +62,7 @@ class Timeline(object):
             stop : (Arrow object)
         """
         for event in self:
-            if ((start <= event.begin <= stop # if start is between the bonds
-            or start <= event.end <= stop) # or stop is between the bonds
-            or event.begin <= start and event.end >= stop): # or event is a superset of [start,stop]
+            if event.begin < stop and event.end > start:
                 yield event
 
     def start_after(self, instant):
