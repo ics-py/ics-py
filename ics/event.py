@@ -51,7 +51,8 @@ class Event(Component):
                  location=None,
                  url=None,
                  transparent=False,
-                 alarms=None):
+                 alarms=None,
+                 rrule=None):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -75,6 +76,7 @@ class Event(Component):
         self._end_time = None
         self._begin = None
         self._begin_precision = None
+        self._rrule = None
         self.uid = uid_gen() if not uid else uid
         self.description = description
         self.created = get_arrow(created)
@@ -82,6 +84,7 @@ class Event(Component):
         self.url = url
         self.transparent = transparent
         self.alarms = set()
+        self.rrule = rrule
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -106,6 +109,30 @@ class Event(Component):
         """
         return bool(self._end_time or self._duration)
 
+
+    @property
+    def rrule(self):
+        """Set the recurrence rule of the event.
+        """
+        return  self._rrule
+
+
+    @rrule.setter
+    def rrule(self,value):
+        rrule_str = ''
+        if value:
+            for key in value:
+                if isinstance( value[key],str):
+                    rvalue = value[key]
+                else:
+                    rvalue = ','.join(value[key])
+                rvalue = rvalue.upper()
+                escape_string(rvalue)
+                rrule_str += ';' if rrule_str else ''
+                rrule_str += '{}={}'.format(str(key).upper() ,rvalue)
+
+        self._rrule = rrule_str
+        
     @property
     def begin(self):
         """Get or set the beginning of the event.
@@ -490,3 +517,9 @@ def o_uid(event, container):
 def o_alarm(event, container):
     for alarm in event.alarms:
         container.append(str(alarm))
+
+
+@Event._outputs
+def o_rrule(event, container):
+    if event.rrule:
+        container.append(ContentLine('RRULE', value = (event.rrule)))
