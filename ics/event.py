@@ -109,30 +109,28 @@ class Event(Component):
         """
         return bool(self._end_time or self._duration)
 
-
     @property
     def rrule(self):
         """Set the recurrence rule of the event.
         """
-        return  self._rrule
-
+        return self._rrule
 
     @rrule.setter
-    def rrule(self,value):
+    def rrule(self, value):
         rrule_str = ''
         if value:
             for key in value:
-                if isinstance( value[key],str):
+                if isinstance(value[key], str):
                     rvalue = value[key]
                 else:
                     rvalue = ','.join(value[key])
                 rvalue = rvalue.upper()
                 escape_string(rvalue)
                 rrule_str += ';' if rrule_str else ''
-                rrule_str += '{}={}'.format(str(key).upper() ,rvalue)
+                rrule_str += '{}={}'.format(str(key).upper(), rvalue)
 
         self._rrule = rrule_str
-        
+
     @property
     def begin(self):
         """Get or set the beginning of the event.
@@ -522,4 +520,4 @@ def o_alarm(event, container):
 @Event._outputs
 def o_rrule(event, container):
     if event.rrule:
-        container.append(ContentLine('RRULE', value = (event.rrule)))
+        container.append(ContentLine('RRULE', value=event.rrule))
