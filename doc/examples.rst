@@ -5,9 +5,9 @@ Import a calendar from a file
 
     >>> from ics import Calendar
     >>> try:
-    >>>     from urllib2 import urlopen        # py2
+    >>>     from urllib2 import urlopen          # py2
     >>> except ImportError:
-    >>>     import urllib.request as urlopen   # py3
+    >>>     from urllib.request import urlopen   # py3
     >>> url = "https://calendar.google.com/calendar/ical/en.usa%23holiday%40group.v.calendar.google.com/public/basic.ics"
     >>> c = Calendar(urlopen(url).read().decode('iso-8859-1'))
 
