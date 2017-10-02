@@ -4,11 +4,16 @@ Import a calendar from a file
 .. code-block:: python
 
     >>> from ics import Calendar
-    >>> from urllib2 import urlopen # import requests
-    >>> url = "http://hackeragenda.urlab.be/events/events.ics"
+    >>> try:
+    >>>     from urllib2 import urlopen        # py2
+    >>> except ImportError:
+    >>>     import urllib.request as urlopen   # py3
+    >>> url = "https://calendar.google.com/calendar/ical/en.usa%23holiday%40group.v.calendar.google.com/public/basic.ics"
     >>> c = Calendar(urlopen(url).read().decode('iso-8859-1'))
-    >>> # could also use 'requests' here
-    >>> # c = Calendar(requests.get(url).text)
+
+    >>> import requests    # Alternative: use requests
+    >>> c = Calendar(requests.get(url).text)
+
     >>> c
     <Calendar with 42 events>
     >>> c.events
