@@ -359,6 +359,9 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
+    def time_equals(self, other):
+        return (self.begin == other.begin) and (self.end == other.end)
+
     def join(self, other, *args, **kwarg):
         """Create a new event which covers the time range of two intersecting events
 
