@@ -181,6 +181,7 @@ def escape_string(string):
     string = string.replace(";", "\\;")
     string = string.replace(",", "\\,")
     string = string.replace("\n", "\\n")
+    string = string.replace("\r", "\\r")
     return string
 
 
@@ -189,6 +190,8 @@ def unescape_string(string):
     string = string.replace("\\,", ",")
     string = string.replace("\\n", "\n")
     string = string.replace("\\N", "\n")
+    string = string.replace("\\r", "\r")
+    string = string.replace("\\R", "\r")
     string = string.replace("\\\\", "\\")
 
     return string

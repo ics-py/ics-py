@@ -8,7 +8,7 @@ Ics.py : iCalendar for Humans
 
 (Release |version|)
 
-Ics.py is a pythonic and easy iCalendar (rfc5545) library. It's goals are to read and write ics data in a developper-friendly way.
+Ics.py is a pythonic and easy iCalendar (rfc5545) library. It's goals are to read and write ics data in a developer-friendly way.
 
 It is written in Python (>=2.7 and >=3.3) and is  :ref:`Apache2 Licensed <apache2>`.
 

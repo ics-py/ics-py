@@ -87,3 +87,41 @@ class TestTimeline(unittest.TestCase):
             arrow.get(datetime(2015, 10, 10))
         ))
         self.assertSequenceEqual(overlap, [e[0]] + [e[1]])
+
+    def test_on(self):
+
+        c = Calendar()
+
+        e = [
+            Event(begin=datetime(2015, 10, 10)),
+            Event(begin=datetime(2010, 10, 10)),
+            Event(begin=datetime(2020, 10, 10)),
+            Event(begin=datetime(2015, 1, 10)),
+            Event(begin=datetime(2014, 1, 10), end=datetime(2018, 1, 10)),
+        ]
+
+        for ev in e:
+            c.events.add(ev)
+
+        now = arrow.get(datetime(2015, 10, 10, 12))
+        on = list(c.timeline.on(now))
+        self.assertSequenceEqual(on, [e[4], e[0]])
+
+    def test_on_strict(self):
+
+        c = Calendar()
+
+        e = [
+            Event(begin=datetime(2015, 10, 10)),
+            Event(begin=datetime(2010, 10, 10)),
+            Event(begin=datetime(2020, 10, 10)),
+            Event(begin=datetime(2015, 1, 10)),
+            Event(begin=datetime(2014, 1, 10), end=datetime(2018, 1, 10)),
+        ]
+
+        for ev in e:
+            c.events.add(ev)
+
+        now = arrow.get(datetime(2015, 10, 10, 12))
+        on = list(c.timeline.on(now, strict=True))
+        self.assertSequenceEqual(on, [e[0]])
