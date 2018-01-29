@@ -277,7 +277,13 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    __in__ = includes
+    def is_included_in(self, other):
+        if isinstance(other, Event):
+            return other.includes(self)
+        raise NotImplementedError(
+            'Cannot compare Event and {}'.format(type(other)))
+
+    __in__ = is_included_in
 
     def __lt__(self, other):
         if isinstance(other, Event):
@@ -316,6 +322,7 @@ class Event(Component):
     def __gt__(self, other):
         if isinstance(other, Event):
             if self.begin is None and other.begin is None:
+                # TODO : handle py3 case when a name is None
                 return self.name > other.name
             return self.begin > other.begin
         if isinstance(other, datetime):
@@ -326,6 +333,7 @@ class Event(Component):
     def __ge__(self, other):
         if isinstance(other, Event):
             if self.begin is None and other.begin is None:
+                # TODO : handle py3 case when a name is None
                 return self.name >= other.name
             return self.begin >= other.begin
         if isinstance(other, datetime):
@@ -354,17 +362,14 @@ class Event(Component):
     def join(self, other, *args, **kwarg):
         """Create a new event which covers the time range of two intersecting events
 
-        The UID of the new event is same as self event, if not overriden with the 
-        uid parameter. All extra parameters are passed to the Event constructor.
+        All extra parameters are passed to the Event constructor.
 
         Args:
             other: the other event
 
         Returns:
-            a new Event instance (with given
+            a new Event instance
         """
-        if 'uid' not in kwarg:
-            kwarg['uid'] = self.uid
         event = Event(*args, **kwarg)
         if self.intersects(other):
             if self.starts_within(other):
@@ -379,6 +384,8 @@ class Event(Component):
 
             return event
         raise ValueError('Cannot join {} with {}: they don\'t intersect.'.format(self, other))
+
+    __and__ = join
 
     def clone(self):
         """
