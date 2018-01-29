@@ -80,6 +80,13 @@ Testing & Docs
     $ pip install -r dev/requirements-test.txt
     $ python setup.py test
 
+    # tests coverage
+    $ pip install -r requirements.txt
+    $ pip install -r dev/requirements-test.txt
+    $ python setup.py test
+    $ coverage html
+    $ firefox htmlcov/index.html
+
     # docs
     $ pip install -r requirements.txt
     $ pip install -r dev/requirements-doc.txt
@@ -92,7 +99,7 @@ Links
 * `rfc5545 <http://tools.ietf.org/html/rfc5545>`_
 * `Vulgarised RFC <http://www.kanzaki.com/docs/ical/>`_
 
-.. image:: https://i.imgur.com/8iYDvvy.jpg
+.. image:: http://i.imgur.com/KnSQg48.jpg
     :target: https://github.com/C4ptainCrunch/ics.py
     :alt: Parse ALL the calendars!
     :align: center

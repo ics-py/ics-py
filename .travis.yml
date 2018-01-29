@@ -1,3 +1,5 @@
+sudo: false
+
 language: python
 
 python:
@@ -7,21 +9,17 @@ python:
   - "3.5"
 
 install:
-- "pip install -r requirements.txt --use-wheel --download-cache $HOME/.pip-cache"
-- "pip install -r dev/requirements-test.txt --use-wheel --download-cache $HOME/.pip-cache"
-- "pip install python-coveralls --use-wheel --download-cache $HOME/.pip-cache"
+  - "pip install -U pip setuptools"
+  - "pip install -r requirements.txt --use-wheel"
+  - "pip install -r dev/requirements-test.txt --use-wheel"
+  - "pip install python-coveralls --use-wheel"
 
 cache:
   directories:
     - $HOME/.pip-cache/
 
-sudo: false
-
 script:
   - "python setup.py test"
-
-after_success:
-  - "coveralls"
 
 notifications:
   email: false
@@ -32,3 +30,6 @@ notifications:
     skip_join: true
     template:
       - "build#%{build_number} (%{branch} - %{commit}): %{message}"
+
+after_success:
+  - "coveralls"
