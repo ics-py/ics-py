@@ -45,13 +45,13 @@ def iso_to_arrow(time_container, available_tz={}):
         val = time_container.value
 
     if tz and not (val[-1].upper() == 'Z'):
-        naive = arrow.get(val).naive
+        naive = arrow.get(val, 'YYYYMMDDTHHmmss').naive
         selected_tz = gettz(tz)
         if not selected_tz:
             selected_tz = available_tz.get(tz, 'UTC')
         return arrow.get(naive, selected_tz)
     else:
-        return arrow.get(val)
+        return arrow.get(val, 'YYYYMMDDTHHmmss')
 
     # TODO : support floating (ie not bound to any time zone) times (cf
     # http://www.kanzaki.com/docs/ical/dateTime.html)
