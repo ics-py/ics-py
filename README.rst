@@ -10,7 +10,7 @@ Ics.py : iCalendar for Humans
    :target: https://coveralls.io/r/C4ptainCrunch/ics.py
    :alt: Coverage
 
-.. image:: https://pypip.in/license/ics/badge.png
+.. image:: https://img.shields.io/github/license/c4ptaincrunch/ics.py.svg
     :target: https://pypi.python.org/pypi/ics/
     :alt: Apache 2 License
 
@@ -25,6 +25,8 @@ iCalendar (file extension `.ics`) is used by Sunbird, Google Calendar, Apple Cal
 
 
 Ics.py is available for Python>=2.7 *and* Python>=3.3 and is Apache2 Licensed.
+
+Note : it is highly likely that Python 2 support will be dropped before the 1.0 release.
 
 
 Quickstart
@@ -94,4 +96,3 @@ Links
     :target: https://github.com/C4ptainCrunch/ics.py
     :alt: Parse ALL the calendars!
     :align: center
-
