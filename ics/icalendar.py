@@ -13,6 +13,7 @@ import collections
 from .component import Component
 from .timeline import Timeline
 from .event import Event
+from .todo import Todo
 from .parse import (
     lines_to_container,
     string_to_container,
@@ -203,6 +204,15 @@ def events(calendar, lines):
     def event_factory(x):
         return Event._from_container(x, tz=calendar._timezones)
     calendar.events = list(map(event_factory, lines))
+
+
+@Calendar._extracts('VTODO', multiple=True)
+def todos(calendar, lines):
+    # tz=calendar._timezones gives access to the event factory to the
+    # timezones list
+    def todo_factory(x):
+        return Todo._from_container(x, tz=calendar._timezones)
+    calendar.events = list(map(todo_factory, lines))
 
 
 # -------------------
