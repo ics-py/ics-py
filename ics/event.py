@@ -482,14 +482,6 @@ def transparent(event, line):
         event.transparent = line.value == 'TRANSPARENT'
 
 
-# @Event._extracts('ATTENDEE')
-# def attendee(event, lines):
-#     def attendee_factory(x):
-#         return u''
-#
-#     event.attendees = set(list(map(attendee_factory, lines)))
-
-
 # TODO : make uid required ?
 # TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
@@ -505,11 +497,6 @@ def alarms(event, lines):
         return af._from_container(x)
 
     event.alarms = list(map(alarm_factory, lines))
-#
-# @Event._extracts('ATTENDEE')
-# def attendees(event, line):
-#     if line:
-#         event.attendees.add(AttendeeFactory.get_)
 
 
 # -------------------
