@@ -13,6 +13,10 @@ build/
 # Virtualenvs
 ve
 ve3
+bin
+include
+lib
+local
 
 # doc builds
 doc/_build/*
@@ -21,3 +25,9 @@ doc/_build/*
 .cache/
 .coverage
 htmlcov
+.pytest_cache
+
+# pffff
+.idea
+pip-selfcheck.json
+share

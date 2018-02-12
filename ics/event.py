@@ -51,7 +51,8 @@ class Event(Component):
                  location=None,
                  url=None,
                  transparent=False,
-                 alarms=None):
+                 alarms=None,
+                 attendees=None):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -66,6 +67,7 @@ class Event(Component):
             url (string)
             transparent (Boolean)
             alarms (:class:`ics.alarm.Alarm`)
+            attendees (:class:`ics.attendee.Attendee`)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -82,6 +84,7 @@ class Event(Component):
         self.url = url
         self.transparent = transparent
         self.alarms = set()
+        self.attendees = set()
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -98,6 +101,9 @@ class Event(Component):
 
         if alarms is not None:
             self.alarms.update(set(alarms))
+
+        if attendees is not None:
+            self.attendees.update(set(attendees))
 
     def has_end(self):
         """
@@ -197,6 +203,9 @@ class Event(Component):
             self._end_time = None
 
         self._duration = value
+
+    def add_attendee(self, attendee):
+        self.attendees.add(attendee)
 
     @property
     def all_day(self):
@@ -473,6 +482,14 @@ def transparent(event, line):
         event.transparent = line.value == 'TRANSPARENT'
 
 
+# @Event._extracts('ATTENDEE')
+# def attendee(event, lines):
+#     def attendee_factory(x):
+#         return u''
+#
+#     event.attendees = set(list(map(attendee_factory, lines)))
+
+
 # TODO : make uid required ?
 # TODO : add option somewhere to ignore some errors
 @Event._extracts('UID')
@@ -488,6 +505,11 @@ def alarms(event, lines):
         return af._from_container(x)
 
     event.alarms = list(map(alarm_factory, lines))
+#
+# @Event._extracts('ATTENDEE')
+# def attendees(event, line):
+#     if line:
+#         event.attendees.add(AttendeeFactory.get_)
 
 
 # -------------------
@@ -534,6 +556,11 @@ def o_end(event, container):
 def o_summary(event, container):
     if event.name:
         container.append(ContentLine('SUMMARY', value=escape_string(event.name)))
+
+@Event._outputs
+def o_attendee(event, container):
+    for attendee in event.attendees:
+        container.append(str(attendee))
 
 
 @Event._outputs
