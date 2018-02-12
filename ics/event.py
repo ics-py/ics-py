@@ -544,6 +544,7 @@ def o_summary(event, container):
     if event.name:
         container.append(ContentLine('SUMMARY', value=escape_string(event.name)))
 
+
 @Event._outputs
 def o_attendee(event, container):
     for attendee in event.attendees:
