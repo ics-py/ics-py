@@ -250,7 +250,8 @@ class Todo(Component):
                     return self.name < other.name
             return self.due < other.due
         if isinstance(other, datetime):
-            return self.due < other
+            if self.due:
+                return self.due < other
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
 
@@ -267,29 +268,44 @@ class Todo(Component):
                     return self.name <= other.name
             return self.due <= other.due
         if isinstance(other, datetime):
-            return self.due <= other
+            if self.due:
+                return self.due <= other
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
 
     def __gt__(self, other):
         if isinstance(other, Todo):
             if self.due is None and other.due is None:
-                # TODO : handle py3 case when a name is None
-                return self.name > other.name
+                if self.name is None and other.name is None:
+                    return False
+                elif self.name is None:
+                    return False
+                elif other.name is None:
+                    return True
+                else:
+                    return self.name > other.name
             return self.due > other.due
         if isinstance(other, datetime):
-            return self.due > other
+            if self.due:
+                return self.due > other
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
 
     def __ge__(self, other):
         if isinstance(other, Todo):
             if self.due is None and other.due is None:
-                # TODO : handle py3 case when a name is None
-                return self.name >= other.name
+                if self.name is None and other.name is None:
+                    return True
+                elif self.name is None:
+                    return True
+                elif other.name is None:
+                    return False
+                else:
+                    return self.name >= other.name
             return self.due >= other.due
         if isinstance(other, datetime):
-            return self.due >= other
+            if self.due:
+                return self.due >= other
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
 
