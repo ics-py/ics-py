@@ -37,6 +37,7 @@ class Todo(Component):
     _OUTPUTS = []
 
     def __init__(self,
+                 dtstamp=None,
                  uid=None,
                  completed=None,
                  created=None,
@@ -54,6 +55,7 @@ class Todo(Component):
 
         Args:
             uid (string): must be unique
+            dtstamp (Arrow-compatible)
             completed (Arrow-compatible)
             created (Arrow-compatible)
             description (string)
@@ -76,6 +78,7 @@ class Todo(Component):
         self._duration = None
 
         self.uid = uid_gen() if not uid else uid
+        self.dtstamp = arrow.now() if not dtstamp else get_arrow(dtstamp)
         self.completed = get_arrow(completed)
         self.created = get_arrow(created)
         self.description = description
@@ -336,13 +339,12 @@ class Todo(Component):
 # ------------------
 # ----- Inputs -----
 # ------------------
-# TODO why does DTSTAMP map to created?
 @Todo._extracts('DTSTAMP', required=True)
 def dtstamp(todo, line):
     if line:
         # get the dict of vtimezones passed to the classmethod
         tz_dict = todo._classmethod_kwargs['tz']
-        todo.created = iso_to_arrow(line, tz_dict)
+        todo.dtstamp = iso_to_arrow(line, tz_dict)
 
 
 # TODO : add option somewhere to ignore some errors
@@ -360,13 +362,12 @@ def completed(todo, line):
         todo.completed = iso_to_arrow(line, tz_dict)
 
 
-# TODO why does DTSTAMP map to created?
-# @Todo._extracts('CREATED')
-# def created(todo, line):
-#     if line:
-#         # get the dict of vtimezones passed to the classmethod
-#         tz_dict = todo._classmethod_kwargs['tz']
-#         todo.created = iso_to_arrow(line, tz_dict)
+@Todo._extracts('CREATED')
+def created(todo, line):
+    if line:
+        # get the dict of vtimezones passed to the classmethod
+        tz_dict = todo._classmethod_kwargs['tz']
+        todo.created = iso_to_arrow(line, tz_dict)
 
 
 @Todo._extracts('DESCRIPTION')
@@ -443,15 +444,14 @@ def alarms(todo, lines):
 # -------------------
 # ----- Outputs -----
 # -------------------
-# TODO why isn't there an output for dtstamp in addition to created
-# @Todo._outputs
-# def o_dtstamp(todo, container):
-#     if todo.created:
-#         instant = todo.created
-#     else:
-#         instant = arrow.now()
-#
-#     container.append(ContentLine('DTSTAMP', value=arrow_to_iso(instant)))
+@Todo._outputs
+def o_dtstamp(todo, container):
+    if todo.created:
+        instant = todo.created
+    else:
+        instant = arrow.now()
+
+    container.append(ContentLine('DTSTAMP', value=arrow_to_iso(instant)))
 
 
 @Todo._outputs
@@ -474,7 +474,6 @@ def o_completed(todo, container):
     container.append(ContentLine('COMPLETED', value=arrow_to_iso(instant)))
 
 
-# TODO why isn't there an output for dtstamp in addition to created
 @Todo._outputs
 def o_created(todo, container):
     if todo.created:
@@ -482,8 +481,7 @@ def o_created(todo, container):
     else:
         instant = arrow.now()
 
-    # TODO this should be 'CREATED'
-    container.append(ContentLine('DTSTAMP', value=arrow_to_iso(instant)))
+    container.append(ContentLine('CREATED', value=arrow_to_iso(instant)))
 
 
 @Todo._outputs
