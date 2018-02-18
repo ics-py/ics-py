@@ -206,41 +206,6 @@ class Todo(Component):
             return "<Todo '{}' due:{}>".format(self.name, self.due)
         return "<Todo '{}' begin:{} due:{}>".format(self.name, self.begin, self.due)
 
-    def starts_within(self, other):
-        if not isinstance(other, Todo):
-            raise NotImplementedError(
-                'Cannot compare Todo and {}'.format(type(other)))
-
-        # This todo can only start within another todo if we have a begin and
-        # the other todo has a begin and due.
-        if not self.begin or not other.begin or not other.due:
-            return False
-
-        return other.begin <= self.begin <= other.due
-
-    def due_within(self, other):
-        if not isinstance(other, Todo):
-            raise NotImplementedError(
-                'Cannot compare Todo and {}'.format(type(other)))
-
-        # This todo can only end within another todo if we have a due and
-        # the other todo has a begin and due.
-        if not self.begin or not other.begin or not other.due:
-            return False
-
-        return other.begin <= self.due <= other.due
-
-    def intersects(self, other):
-        if not isinstance(other, Todo):
-            raise NotImplementedError(
-                'Cannot compare Todo and {}'.format(type(other)))
-        return (self.starts_within(other)
-                or self.due_within(other)
-                or other.starts_within(self)
-                or other.due_within(self))
-
-    __xor__ = intersects
-
     def __lt__(self, other):
         if isinstance(other, Todo):
             if self.due is None and other.due is None:
@@ -326,19 +291,6 @@ class Todo(Component):
             return self.uid != other.uid
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
-
-    def time_equals(self, other):
-        if not self.begin or not other.begin:
-            if self.due and other.due:
-                return self.due == other.due
-            else:
-                return False
-        elif not self.due or not other.due:
-            if self.begin and other.begin:
-                return self.begin == other.begin
-            else:
-                return False
-        return (self.begin == other.begin) and (self.due == other.due)
 
     def clone(self):
         """
