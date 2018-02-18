@@ -73,6 +73,8 @@ class Todo(Component):
             ValueError: if `duration` and `due` are specified at the same time
         """
 
+        self._percent = None
+        self._priority = None
         self._begin = None
         self._due_time = None
         self._duration = None
@@ -106,6 +108,30 @@ class Todo(Component):
 
         if alarms is not None:
             self.alarms.update(set(alarms))
+
+    @property
+    def percent(self):
+        return self._percent
+
+    @percent.setter
+    def percent(self, value):
+        if value:
+            value = int(value)
+            if value < 0 or value > 100:
+                raise ValueError('percent must be [0, 100]')
+        self._percent = value
+
+    @property
+    def priority(self):
+        return self._priority
+
+    @priority.setter
+    def priority(self, value):
+        if value:
+            value = int(value)
+            if value < 0 or value > 9:
+                raise ValueError('priority must be [0, 9]')
+        self._priority = value
 
     @property
     def begin(self):
@@ -362,15 +388,11 @@ def location(todo, line):
 
 @Todo._extracts('PERCENT-COMPLETE')
 def percent(todo, line):
-    if line.value < 0 or line.value > 100:
-        raise ValueError('PERCENT-COMPLETE must be [0, 100]')
     todo.percent = line.value if line else None
 
 
 @Todo._extracts('PRIORITY')
 def priority(todo, line):
-    if line.value < 0 or line.value > 9:
-        raise ValueError('PRIORITY must be [0, 9]')
     todo.priority = line.value if line else None
 
 
@@ -475,13 +497,13 @@ def o_location(todo, container):
 @Todo._outputs
 def o_percent(todo, container):
     if todo.percent:
-        container.append(ContentLine('PERCENT-COMPLETE', value=todo.percent))
+        container.append(ContentLine('PERCENT-COMPLETE', value=str(todo.percent)))
 
 
 @Todo._outputs
 def o_priority(todo, container):
     if todo.priority:
-        container.append(ContentLine('PRIORITY', value=todo.priority))
+        container.append(ContentLine('PRIORITY', value=str(todo.priority)))
 
 
 @Todo._outputs
