@@ -468,8 +468,6 @@ def o_uid(todo, container):
 def o_completed(todo, container):
     if todo.completed:
         instant = todo.completed
-    else:
-        instant = arrow.now()
 
     container.append(ContentLine('COMPLETED', value=arrow_to_iso(instant)))
 
