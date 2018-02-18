@@ -6,7 +6,10 @@ from arrow.arrow import Arrow
 
 from ics.utils import get_arrow
 from ics.parse import Container
-from ics.alarm import AlarmFactory
+from ics.alarm import AlarmFactory, DisplayAlarm
+from ics.icalendar import Calendar
+from .fixture import cal27
+
 from ics.todo import Todo
 
 
@@ -31,12 +34,12 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t._unused, Container(name='VTODO'))
 
     def test_init_non_exclusive_arguments(self):
-        # attributes begin, due, and duration aren't tested here
+        # attributes percent, priority, begin, due, and duration
+        # aren't tested here
         dtstamp = datetime.strptime('2018-02-18 12:19:00 +0000',
                                     TIME_FORMAT)
         completed = dtstamp + timedelta(days=1)
         created = dtstamp + timedelta(seconds=1)
-        begin = dtstamp + timedelta(hours=1)
         alarm = [AlarmFactory().get_type_from_action('DISPLAY')]
         alarms = set()
         alarms.update(alarm)
@@ -47,10 +50,7 @@ class TestTodo(unittest.TestCase):
             completed=completed,
             created=created,
             description='description',
-            begin=begin,
             location='location',
-            percent=0,
-            priority=0,
             name='name',
             url='url',
             alarms=alarm)
@@ -60,22 +60,36 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t.completed, get_arrow(completed))
         self.assertEqual(t.created, get_arrow(created))
         self.assertEqual(t.description, 'description')
-        self.assertEqual(t.begin, get_arrow(begin))
         self.assertEqual(t.location, 'location')
-        self.assertEqual(t.percent, 0)
-        self.assertEqual(t.priority, 0)
         self.assertEqual(t.name, 'name')
         self.assertEqual(t.url, 'url')
         self.assertSetEqual(t.alarms, alarms)
 
-    def test_invalid_timing_attributes(self):
-        # due and duration must not be set at the same time
+    def test_percent(self):
+        t1 = Todo(percent=0)
+        self.assertEqual(t1.percent, 0)
+        t2 = Todo(percent=100)
+        self.assertEqual(t2.percent, 100)
         with self.assertRaises(ValueError):
-            Todo(begin=1, due=2, duration=1)
+            Todo(percent=-1)
+        with self.assertRaises(ValueError):
+            Todo(percent=101)
 
-        # duration requires begin
+    def test_priority(self):
+        t1 = Todo(priority=0)
+        self.assertEqual(t1.priority, 0)
+        t2 = Todo(priority=9)
+        self.assertEqual(t2.priority, 9)
         with self.assertRaises(ValueError):
-            Todo(duration=1)
+            Todo(priority=-1)
+        with self.assertRaises(ValueError):
+            Todo(priority=10)
+
+    def test_begin(self):
+        begin = datetime.strptime('2018-02-18 12:19:00 +0000',
+                                  TIME_FORMAT)
+        t = Todo(begin=begin)
+        self.assertEqual(t.begin, get_arrow(begin))
 
         # begin after due
         t = Todo(due=1)
@@ -110,6 +124,35 @@ class TestTodo(unittest.TestCase):
         # Calculate due from begin and duration value
         t2 = Todo(begin=begin, duration=1)
         self.assertEqual(t2.due, begin + timedelta(1))
+
+    def test_invalid_time_attributes(self):
+        # due and duration must not be set at the same time
+        with self.assertRaises(ValueError):
+            Todo(begin=1, due=2, duration=1)
+
+        # duration requires begin
+        with self.assertRaises(ValueError):
+            Todo(duration=1)
+
+    def test_repr(self):
+        begin = datetime.strptime('2018-02-18 12:19:00 +0000',
+                                  TIME_FORMAT)
+
+        t1 = Todo()
+        self.assertEqual(repr(t1), '<Todo>')
+
+        t2 = Todo(name='foo')
+        self.assertEqual(repr(t2), "<Todo 'foo'>")
+
+        t3 = Todo(name='foo', begin=begin)
+        self.assertEqual(repr(t3), "<Todo 'foo' begin:2018-02-18T12:19:00+00:00>")
+
+        t4 = Todo(name='foo', due=begin)
+        self.assertEqual(repr(t4), "<Todo 'foo' due:2018-02-18T12:19:00+00:00>")
+
+        t4 = Todo(name='foo', begin=begin, due=begin + timedelta(1))
+        self.assertEqual(repr(t4),
+                         "<Todo 'foo' begin:2018-02-18T12:19:00+00:00 due:2018-02-19T12:19:00+00:00>")
 
     def test_todo_lt(self):
         t1 = Todo()
@@ -276,4 +319,18 @@ class TestTodo(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             t1 != 1
 
-
+    def test_extract(self):
+        c = Calendar(cal27)
+        t = c.todos[0]
+        self.assertEqual(t.dtstamp, get_arrow('20180218T154741Z'))
+        self.assertEqual(t.uid, 'Uid')
+        self.assertEqual(t.completed, get_arrow('20180418T150001Z+00:00'))
+        self.assertEqual(t.created, get_arrow('20180218T154800Z+00:00'))
+        self.assertEqual(t.description, 'Lorem ipsum dolor sit amet.')
+        self.assertEqual(t.begin, get_arrow('20180218T164800Z+00:00'))
+        self.assertEqual(t.location, 'Earth')
+        self.assertEqual(t.percent, 0)
+        self.assertEqual(t.priority, 0)
+        self.assertEqual(t.name, 'Name')
+        self.assertEqual(t.url, 'Url')
+        self.assertEqual(len(t.alarms), 1)
