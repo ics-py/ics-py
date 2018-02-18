@@ -4,8 +4,13 @@ from datetime import datetime
 from datetime import timedelta
 from arrow.arrow import Arrow
 
+from ics.utils import get_arrow
 from ics.parse import Container
+from ics.alarm import AlarmFactory
 from ics.todo import Todo
+
+
+TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
 
 class TestTodo(unittest.TestCase):
@@ -25,6 +30,87 @@ class TestTodo(unittest.TestCase):
         self.assertIsNone(t.url)
         self.assertEqual(t._unused, Container(name='VTODO'))
 
+    def test_init_non_exclusive_arguments(self):
+        # attributes begin, due, and duration aren't tested here
+        dtstamp = datetime.strptime('2018-02-18 12:19:00 +0000',
+                                    TIME_FORMAT)
+        completed = dtstamp + timedelta(days=1)
+        created = dtstamp + timedelta(seconds=1)
+        begin = dtstamp + timedelta(hours=1)
+        alarm = [AlarmFactory().get_type_from_action('DISPLAY')]
+        alarms = set()
+        alarms.update(alarm)
+
+        t = Todo(
+            uid='uid',
+            dtstamp=dtstamp,
+            completed=completed,
+            created=created,
+            description='description',
+            begin=begin,
+            location='location',
+            percent=0,
+            priority=0,
+            name='name',
+            url='url',
+            alarms=alarm)
+
+        self.assertEqual(t.uid, 'uid')
+        self.assertEqual(t.dtstamp, get_arrow(dtstamp))
+        self.assertEqual(t.completed, get_arrow(completed))
+        self.assertEqual(t.created, get_arrow(created))
+        self.assertEqual(t.description, 'description')
+        self.assertEqual(t.begin, get_arrow(begin))
+        self.assertEqual(t.location, 'location')
+        self.assertEqual(t.percent, 0)
+        self.assertEqual(t.priority, 0)
+        self.assertEqual(t.name, 'name')
+        self.assertEqual(t.url, 'url')
+        self.assertSetEqual(t.alarms, alarms)
+
+    def test_invalid_timing_attributes(self):
+        # due and duration must not be set at the same time
+        with self.assertRaises(ValueError):
+            Todo(begin=1, due=2, duration=1)
+
+        # duration requires begin
+        with self.assertRaises(ValueError):
+            Todo(duration=1)
+
+        # begin after due
+        t = Todo(due=1)
+        with self.assertRaises(ValueError):
+            t.begin = 2
+
+    def test_duration(self):
+        begin = datetime.strptime('2018-02-18 12:19:00 +0000',
+                                  TIME_FORMAT)
+        t1 = Todo(begin=begin, duration={'hours': 1})
+        self.assertEqual(t1.duration, timedelta(hours=1))
+        t2 = Todo(begin=begin, duration=1)
+        self.assertEqual(t2.duration, timedelta(days=1))
+        t3 = Todo(begin=begin, duration=timedelta(minutes=1))
+        self.assertEqual(t3.duration, timedelta(minutes=1))
+
+        # Calculate duration from begin and due values
+        t4 = Todo(begin=begin, due=begin + timedelta(1))
+        self.assertEqual(t4.duration, timedelta(1))
+
+    def test_due(self):
+        begin = datetime.strptime('2018-02-18 12:19:00 +0000',
+                                  TIME_FORMAT)
+        due = begin + timedelta(1)
+        t1 = Todo(due=due)
+        self.assertEqual(t1.due, begin + timedelta(1))
+
+        due = begin - timedelta(1)
+        with self.assertRaises(ValueError):
+            Todo(begin=begin, due=due)
+
+        # Calculate due from begin and duration value
+        t2 = Todo(begin=begin, duration=1)
+        self.assertEqual(t2.due, begin + timedelta(1))
+
     def test_todo_lt(self):
         t1 = Todo()
         t2 = Todo(name='a')
@@ -32,7 +118,7 @@ class TestTodo(unittest.TestCase):
         t4 = Todo(due=10)
         t5 = Todo(due=20)
         due_time = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                     '%Y-%m-%d %H:%M:%S %z')
+                                     TIME_FORMAT)
         t6 = Todo(due=Arrow.fromdatetime(due_time))
 
         # Check comparison by name
@@ -66,7 +152,7 @@ class TestTodo(unittest.TestCase):
         t4 = Todo(due=10)
         t5 = Todo(due=20)
         due_time = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                     '%Y-%m-%d %H:%M:%S %z')
+                                     TIME_FORMAT)
         t6 = Todo(due=Arrow.fromdatetime(due_time))
         t7 = Todo(due=Arrow.fromdatetime(due_time + timedelta(days=1)))
 
@@ -103,7 +189,7 @@ class TestTodo(unittest.TestCase):
         t4 = Todo(due=10)
         t5 = Todo(due=20)
         due_time = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                     '%Y-%m-%d %H:%M:%S %z')
+                                     TIME_FORMAT)
         t6 = Todo(due=Arrow.fromdatetime(due_time))
         t7 = Todo(due=Arrow.fromdatetime(due_time + timedelta(days=1)))
 
@@ -140,7 +226,7 @@ class TestTodo(unittest.TestCase):
         t4 = Todo(due=10)
         t5 = Todo(due=20)
         due_time = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                     '%Y-%m-%d %H:%M:%S %z')
+                                     TIME_FORMAT)
         t6 = Todo(due=Arrow.fromdatetime(due_time))
         t7 = Todo(due=Arrow.fromdatetime(due_time + timedelta(days=1)))
 
