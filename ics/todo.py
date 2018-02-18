@@ -196,11 +196,15 @@ class Todo(Component):
         Returns:
             unicode: a unicode representation (__repr__) of the todo.
         """
-        name = "'{}' ".format(self.name) if self.name else ''
+        if self.name is None:
+            return "<Todo>"
+        if self.begin is None and self.due is None:
+            return "<Todo '{}'>".format(self.name)
+        if self.due is None:
+            return "<Todo '{}' begin:{}>".format(self.name, self.begin)
         if self.begin is None:
-            return "<Todo '{}'>".format(self.name) if self.name else "<Todo>"
-        else:
-            return "<Todo {}begin:{} due:{}>".format(name, self.begin, self.due)
+            return "<Todo '{}' due:{}>".format(self.name, self.due)
+        return "<Todo '{}' begin:{} due:{}>".format(self.name, self.begin, self.due)
 
     def starts_within(self, other):
         if not isinstance(other, Todo):
