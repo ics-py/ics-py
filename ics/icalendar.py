@@ -31,12 +31,13 @@ class Calendar(Component):
     _EXTRACTORS = []
     _OUTPUTS = []
 
-    def __init__(self, imports=None, events=None, creator=None):
+    def __init__(self, imports=None, events=None, todos=None, creator=None):
         """Instantiates a new Calendar.
 
         Args:
             imports (string or list of lines/strings): data to be imported into the Calendar(),
-            events (list of Events): :class:`ics.event.Event`s to be added to the calendar
+            events (list of Event): :class:`ics.event.Event`s to be added to the calendar
+            todos (list of Todo): :class:`ics.event.Todo`s to be added to the calendar
             creator (string): uid of the creator program.
 
         If `imports` is specified, every other argument will be ignored.
@@ -45,6 +46,7 @@ class Calendar(Component):
 
         self._timezones = {}
         self.events = set()
+        self.todos = set()
         self._unused = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
@@ -68,6 +70,8 @@ class Calendar(Component):
         else:
             if events is not None:
                 self.events.update(set(events))
+            if todos is not None:
+                self.todos.update(set(todos))
             self._creator = creator
 
     def __urepr__(self):
@@ -76,8 +80,11 @@ class Calendar(Component):
 
         Should not be used directly. Use self.__repr__ instead.
         """
-        return "<Calendar with {} event{}>" \
-            .format(len(self.events), "s" if len(self.events) > 1 else "")
+        return "<Calendar with {} event{} and {} todo{}>" \
+            .format(len(self.events),
+                    "s" if len(self.events) > 1 else "",
+                    len(self.todos),
+                    "s" if len(self.todos) > 1 else "")
 
     def __iter__(self):
         """Returns:
@@ -102,7 +109,7 @@ class Calendar(Component):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
                 return False
 
-        return self.events == other.events
+        return (self.events == other.events) and (self.todos == other.todos)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -132,6 +139,7 @@ class Calendar(Component):
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
         clone.events = copy.copy(self.events)
+        clone.todos = copy.copy(self.todos)
         clone._timezones = copy.copy(self._timezones)
         return clone
 
@@ -212,7 +220,7 @@ def todos(calendar, lines):
     # timezones list
     def todo_factory(x):
         return Todo._from_container(x, tz=calendar._timezones)
-    calendar.events = list(map(todo_factory, lines))
+    calendar.todos = list(map(todo_factory, lines))
 
 
 # -------------------
@@ -247,3 +255,9 @@ def o_method(calendar, container):
 def o_events(calendar, container):
     for event in calendar.events:
         container.append(str(event))
+
+
+@Calendar._outputs
+def o_todos(calendar, container):
+    for todo in calendar.todos:
+        container.append(str(todo))
