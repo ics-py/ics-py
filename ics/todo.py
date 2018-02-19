@@ -462,75 +462,79 @@ def o_uid(todo, container):
 @Todo._outputs
 def o_completed(todo, container):
     if todo.completed:
-        instant = todo.completed
-
-    container.append(ContentLine('COMPLETED', value=arrow_to_iso(instant)))
+        container.append(ContentLine('COMPLETED',
+                                     value=arrow_to_iso(todo.completed)))
 
 
 @Todo._outputs
 def o_created(todo, container):
     if todo.created:
-        instant = todo.created
-    else:
-        instant = arrow.now()
-
-    container.append(ContentLine('CREATED', value=arrow_to_iso(instant)))
+        container.append(ContentLine('CREATED',
+                                     value=arrow_to_iso(todo.created)))
 
 
 @Todo._outputs
 def o_description(todo, container):
     if todo.description:
-        container.append(ContentLine('DESCRIPTION', value=escape_string(todo.description)))
+        container.append(ContentLine('DESCRIPTION',
+                                     value=escape_string(todo.description)))
 
 
 @Todo._outputs
 def o_start(todo, container):
     if todo.begin:
-        container.append(ContentLine('DTSTART', value=arrow_to_iso(todo.begin)))
+        container.append(ContentLine('DTSTART',
+                                     value=arrow_to_iso(todo.begin)))
 
 
 @Todo._outputs
 def o_location(todo, container):
     if todo.location:
-        container.append(ContentLine('LOCATION', value=escape_string(todo.location)))
+        container.append(ContentLine('LOCATION',
+                                     value=escape_string(todo.location)))
 
 
 @Todo._outputs
 def o_percent(todo, container):
-    if todo.percent:
-        container.append(ContentLine('PERCENT-COMPLETE', value=str(todo.percent)))
+    if todo.percent is not None:
+        container.append(ContentLine('PERCENT-COMPLETE',
+                                     value=str(todo.percent)))
 
 
 @Todo._outputs
 def o_priority(todo, container):
-    if todo.priority:
-        container.append(ContentLine('PRIORITY', value=str(todo.priority)))
+    if todo.priority is not None:
+        container.append(ContentLine('PRIORITY',
+                                     value=str(todo.priority)))
 
 
 @Todo._outputs
 def o_summary(todo, container):
     if todo.name:
-        container.append(ContentLine('SUMMARY', value=escape_string(todo.name)))
+        container.append(ContentLine('SUMMARY',
+                                     value=escape_string(todo.name)))
 
 
 @Todo._outputs
 def o_url(todo, container):
     if todo.url:
-        container.append(ContentLine('URL', value=escape_string(todo.url)))
+        container.append(ContentLine('URL',
+                                     value=escape_string(todo.url)))
 
 
 @Todo._outputs
 def o_due(todo, container):
     if todo._due_time:
-        container.append(ContentLine('DUE', value=arrow_to_iso(todo._due_time)))
+        container.append(ContentLine('DUE',
+                                     value=arrow_to_iso(todo._due_time)))
 
 
 @Todo._outputs
 def o_duration(todo, container):
-    # TODO : DURATION
-    if todo._duration and todo.begin:
+    if todo._duration:
         representation = timedelta_to_duration(todo._duration)
-        container.append(ContentLine('DURATION', value=representation))
+        container.append(ContentLine('DURATION',
+                                     value=representation))
 
 
 @Todo._outputs
