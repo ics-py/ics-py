@@ -1,18 +1,18 @@
 import unittest
-import pytest
 from datetime import datetime
 from datetime import timedelta
 from arrow.arrow import Arrow
 
 from ics.utils import get_arrow
 from ics.parse import Container
-from ics.alarm import AlarmFactory, DisplayAlarm
+from ics.alarm import AlarmFactory
 from ics.icalendar import Calendar
-from .fixture import cal27
+from .fixture import cal27, cal28, cal29, cal30, cal31
 
 from ics.todo import Todo
 
 
+CRLF = "\r\n"
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
 
@@ -322,7 +322,7 @@ class TestTodo(unittest.TestCase):
     def test_extract(self):
         c = Calendar(cal27)
         t = c.todos[0]
-        self.assertEqual(t.dtstamp, get_arrow('20180218T154741Z'))
+        self.assertEqual(t.dtstamp, get_arrow('20180218T154700Z'))
         self.assertEqual(t.uid, 'Uid')
         self.assertEqual(t.completed, get_arrow('20180418T150001Z+00:00'))
         self.assertEqual(t.created, get_arrow('20180218T154800Z+00:00'))
@@ -332,5 +332,84 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t.percent, 0)
         self.assertEqual(t.priority, 0)
         self.assertEqual(t.name, 'Name')
-        self.assertEqual(t.url, 'Url')
+        self.assertEqual(t.url, 'https://www.example.com/cal.php/todo.ics')
+        self.assertEqual(t.duration, timedelta(minutes=10))
         self.assertEqual(len(t.alarms), 1)
+
+    def test_extract_due(self):
+        c = Calendar(cal28)
+        t = c.todos[0]
+        self.assertEqual(t.due, get_arrow('20180218T164800Z+00:00'))
+
+    def test_extract_due_error_duration(self):
+        with self.assertRaises(ValueError):
+            Calendar(cal29)
+
+    def test_extract_duration_error_due(self):
+        with self.assertRaises(ValueError):
+            Calendar(cal30)
+
+    def test_output(self):
+        c = Calendar(cal27)
+        t = c.todos[0]
+
+        test_str = CRLF.join(("BEGIN:VTODO",
+                              "SEQUENCE:0",
+                              "DTSTAMP:20180218T154700Z",
+                              "UID:Uid",
+                              "COMPLETED:20180418T150000Z",
+                              "CREATED:20180218T154800Z",
+                              "DESCRIPTION:Lorem ipsum dolor sit amet.",
+                              "DTSTART:20180218T164800Z",
+                              "LOCATION:Earth",
+                              "PERCENT-COMPLETE:0",
+                              "PRIORITY:0",
+                              "SUMMARY:Name",
+                              "URL:https://www.example.com/cal.php/todo.ics",
+                              "DURATION:PT10M",
+                              "BEGIN:VALARM",
+                              "TRIGGER:-PT1H",
+                              "ACTION:DISPLAY",
+                              "DESCRIPTION:Event reminder",
+                              "END:VALARM",
+                              "END:VTODO"))
+        self.assertEqual(str(t), test_str)
+
+    def test_output_due(self):
+        dtstamp = datetime.strptime('2018-02-19 21:00:00 +0000',
+                                    TIME_FORMAT)
+        due = datetime.strptime('2018-02-20 01:00:00 +0000',
+                                    TIME_FORMAT)
+        t = Todo(dtstamp=dtstamp, uid='Uid', due=due)
+
+        test_str = CRLF.join(("BEGIN:VTODO",
+                              "DTSTAMP:20180219T210000Z",
+                              "UID:Uid",
+                              "DUE:20180220T010000Z",
+                              "END:VTODO"))
+        self.assertEqual(str(t), test_str)
+
+    def test_unescape_texts(self):
+        c = Calendar(cal31)
+        t = c.todos[0]
+        self.assertEqual(t.name, "Hello, \n World; This is a backslash : \\ and another new \n line")
+        self.assertEqual(t.location, "In, every text field")
+        self.assertEqual(t.description, "Yes, all of them;")
+
+    def test_escape_output(self):
+        dtstamp = datetime.strptime('2018-02-19 21:00:00 +0000',
+                                    TIME_FORMAT)
+        t = Todo(dtstamp=dtstamp, uid='Uid')
+
+        t.name = "Hello, with \\ special; chars and \n newlines"
+        t.location = "Here; too"
+        t.description = "Every\nwhere ! Yes, yes !"
+
+        test_str = CRLF.join(("BEGIN:VTODO",
+                              "DTSTAMP:20180219T210000Z",
+                              "UID:Uid",
+                              "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
+                              "LOCATION:Here\\; too",
+                              "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
+                              "END:VTODO"))
+        self.assertEqual(str(t), test_str)
