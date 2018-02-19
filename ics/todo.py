@@ -440,12 +440,13 @@ def alarms(todo, lines):
 # -------------------
 @Todo._outputs
 def o_dtstamp(todo, container):
-    if todo.created:
-        instant = todo.created
+    if todo.dtstamp:
+        instant = todo.dtstamp
     else:
         instant = arrow.now()
 
-    container.append(ContentLine('DTSTAMP', value=arrow_to_iso(instant)))
+    container.append(ContentLine('DTSTAMP',
+                                 value=arrow_to_iso(instant)))
 
 
 @Todo._outputs
