@@ -44,6 +44,14 @@ DESCRIPTION:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
  um, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id
  sem vel, vehicula nullam.
 END:VEVENT
+BEGIN:VTODO
+DTSTAMP:20180218T154700Z
+UID:Uid
+DESCRIPTION:Lorem ipsum dolor sit amet.
+PERCENT-COMPLETE:0
+PRIORITY:0
+SUMMARY:Name
+END:VTODO
 END:VCALENDAR
 """
 
