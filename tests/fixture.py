@@ -547,6 +547,14 @@ quamdolor luctus augue, id cursus purus justo vel lorem. \
 Ut feugiat enim ipsum, quis porta nibh ultricies congue. \
 Pellentesque nisl mi, molestie idsem vel, vehicula nullam.',
     'END:VEVENT',
+    'BEGIN:VTODO',
+    'DTSTAMP:20180218T154700Z',
+    'UID:Uid',
+    'DESCRIPTION:Lorem ipsum dolor sit amet.',
+    'PERCENT-COMPLETE:0',
+    'PRIORITY:0',
+    'SUMMARY:Name',
+    'END:VTODO',
     'END:VCALENDAR',
 ]
 
