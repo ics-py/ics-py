@@ -1,9 +1,28 @@
 import unittest
-from datetime import datetime
-from datetime import timedelta
-from arrow.arrow import Arrow
+import arrow
+from datetime import datetime, timedelta
 
-from ics.utils import get_arrow
+try:
+    from datetime import timezone
+    utc = timezone.utc
+except ImportError:
+    # Python2
+
+    from datetime import tzinfo
+
+    class UTC(tzinfo):
+
+        def utcoffset(self, dt):
+            return timedelta(0)
+
+        def tzname(self, dt):
+            return "UTC"
+
+        def dst(self, dt):
+            return timedelta(0)
+
+    utc = UTC()
+
 from ics.parse import Container
 from ics.alarm import AlarmFactory
 from ics.icalendar import Calendar
@@ -13,7 +32,6 @@ from ics.todo import Todo
 
 
 CRLF = "\r\n"
-TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
 
 class TestTodo(unittest.TestCase):
@@ -36,8 +54,7 @@ class TestTodo(unittest.TestCase):
     def test_init_non_exclusive_arguments(self):
         # attributes percent, priority, begin, due, and duration
         # aren't tested here
-        dtstamp = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                    TIME_FORMAT)
+        dtstamp = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         completed = dtstamp + timedelta(days=1)
         created = dtstamp + timedelta(seconds=1)
         alarm = [AlarmFactory().get_type_from_action('DISPLAY')]
@@ -56,9 +73,9 @@ class TestTodo(unittest.TestCase):
             alarms=alarm)
 
         self.assertEqual(t.uid, 'uid')
-        self.assertEqual(t.dtstamp, get_arrow(dtstamp))
-        self.assertEqual(t.completed, get_arrow(completed))
-        self.assertEqual(t.created, get_arrow(created))
+        self.assertEqual(t.dtstamp, arrow.get(dtstamp))
+        self.assertEqual(t.completed, arrow.get(completed))
+        self.assertEqual(t.created, arrow.get(created))
         self.assertEqual(t.description, 'description')
         self.assertEqual(t.location, 'location')
         self.assertEqual(t.name, 'name')
@@ -86,10 +103,9 @@ class TestTodo(unittest.TestCase):
             Todo(priority=10)
 
     def test_begin(self):
-        begin = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                  TIME_FORMAT)
+        begin = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         t = Todo(begin=begin)
-        self.assertEqual(t.begin, get_arrow(begin))
+        self.assertEqual(t.begin, arrow.get(begin))
 
         # begin after due
         t = Todo(due=1)
@@ -97,8 +113,7 @@ class TestTodo(unittest.TestCase):
             t.begin = 2
 
     def test_duration(self):
-        begin = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                  TIME_FORMAT)
+        begin = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         t1 = Todo(begin=begin, duration={'hours': 1})
         self.assertEqual(t1.duration, timedelta(hours=1))
         t2 = Todo(begin=begin, duration=1)
@@ -111,8 +126,7 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t4.duration, timedelta(1))
 
     def test_due(self):
-        begin = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                  TIME_FORMAT)
+        begin = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         due = begin + timedelta(1)
         t1 = Todo(due=due)
         self.assertEqual(t1.due, begin + timedelta(1))
@@ -135,8 +149,7 @@ class TestTodo(unittest.TestCase):
             Todo(duration=1)
 
     def test_repr(self):
-        begin = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                  TIME_FORMAT)
+        begin = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
 
         t1 = Todo()
         self.assertEqual(repr(t1), '<Todo>')
@@ -160,9 +173,8 @@ class TestTodo(unittest.TestCase):
         t3 = Todo(name='b')
         t4 = Todo(due=10)
         t5 = Todo(due=20)
-        due_time = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                     TIME_FORMAT)
-        t6 = Todo(due=Arrow.fromdatetime(due_time))
+        due_time = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
+        t6 = Todo(due=due_time)
 
         # Check comparison by name
         self.assertFalse(t1 < t1)
@@ -194,10 +206,9 @@ class TestTodo(unittest.TestCase):
         t3 = Todo(name='b')
         t4 = Todo(due=10)
         t5 = Todo(due=20)
-        due_time = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                     TIME_FORMAT)
-        t6 = Todo(due=Arrow.fromdatetime(due_time))
-        t7 = Todo(due=Arrow.fromdatetime(due_time + timedelta(days=1)))
+        due_time = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
+        t6 = Todo(due=due_time)
+        t7 = Todo(due=due_time + timedelta(days=1))
 
         # Check comparison by name
         self.assertTrue(t1 <= t1)
@@ -231,10 +242,9 @@ class TestTodo(unittest.TestCase):
         t3 = Todo(name='b')
         t4 = Todo(due=10)
         t5 = Todo(due=20)
-        due_time = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                     TIME_FORMAT)
-        t6 = Todo(due=Arrow.fromdatetime(due_time))
-        t7 = Todo(due=Arrow.fromdatetime(due_time + timedelta(days=1)))
+        due_time = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
+        t6 = Todo(due=due_time)
+        t7 = Todo(due=due_time + timedelta(days=1))
 
         # Check comparison by name
         self.assertFalse(t1 > t1)
@@ -268,10 +278,9 @@ class TestTodo(unittest.TestCase):
         t3 = Todo(name='b')
         t4 = Todo(due=10)
         t5 = Todo(due=20)
-        due_time = datetime.strptime('2018-02-18 12:19:00 +0000',
-                                     TIME_FORMAT)
-        t6 = Todo(due=Arrow.fromdatetime(due_time))
-        t7 = Todo(due=Arrow.fromdatetime(due_time + timedelta(days=1)))
+        due_time = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
+        t6 = Todo(due=due_time)
+        t7 = Todo(due=due_time + timedelta(days=1))
 
         # Check comparison by name
         self.assertTrue(t1 >= t1)
@@ -322,12 +331,12 @@ class TestTodo(unittest.TestCase):
     def test_extract(self):
         c = Calendar(cal27)
         t = c.todos[0]
-        self.assertEqual(t.dtstamp, get_arrow('20180218T154700Z'))
+        self.assertEqual(t.dtstamp, arrow.get('20180218T154700Z'))
         self.assertEqual(t.uid, 'Uid')
-        self.assertEqual(t.completed, get_arrow('20180418T150001Z+00:00'))
-        self.assertEqual(t.created, get_arrow('20180218T154800Z+00:00'))
+        self.assertEqual(t.completed, arrow.get('20180418T150001Z+00:00'))
+        self.assertEqual(t.created, arrow.get('20180218T154800Z+00:00'))
         self.assertEqual(t.description, 'Lorem ipsum dolor sit amet.')
-        self.assertEqual(t.begin, get_arrow('20180218T164800Z+00:00'))
+        self.assertEqual(t.begin, arrow.get('20180218T164800Z+00:00'))
         self.assertEqual(t.location, 'Earth')
         self.assertEqual(t.percent, 0)
         self.assertEqual(t.priority, 0)
@@ -339,7 +348,7 @@ class TestTodo(unittest.TestCase):
     def test_extract_due(self):
         c = Calendar(cal28)
         t = c.todos[0]
-        self.assertEqual(t.due, get_arrow('20180218T164800Z+00:00'))
+        self.assertEqual(t.due, arrow.get('20180218T164800Z+00:00'))
 
     def test_extract_due_error_duration(self):
         with self.assertRaises(ValueError):
@@ -376,10 +385,8 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(str(t), test_str)
 
     def test_output_due(self):
-        dtstamp = datetime.strptime('2018-02-19 21:00:00 +0000',
-                                    TIME_FORMAT)
-        due = datetime.strptime('2018-02-20 01:00:00 +0000',
-                                    TIME_FORMAT)
+        dtstamp = datetime(2018, 2, 19, 21, 00, tzinfo=utc)
+        due = datetime(2018, 2, 20, 1, 00, tzinfo=utc)
         t = Todo(dtstamp=dtstamp, uid='Uid', due=due)
 
         test_str = CRLF.join(("BEGIN:VTODO",
@@ -397,8 +404,7 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t.description, "Yes, all of them;")
 
     def test_escape_output(self):
-        dtstamp = datetime.strptime('2018-02-19 21:00:00 +0000',
-                                    TIME_FORMAT)
+        dtstamp = datetime(2018, 2, 19, 21, 00, tzinfo=utc)
         t = Todo(dtstamp=dtstamp, uid='Uid')
 
         t.name = "Hello, with \\ special; chars and \n newlines"
