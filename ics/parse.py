@@ -76,7 +76,7 @@ class ContentLine:
         params = {}
         for paramstr in params_strings:
             if '=' not in paramstr:
-                raise ParseError("No '=' in line '{}'".format(line))
+                raise ParseError("No '=' in line '{}'".format(paramstr))
             pname, pvals = paramstr.split('=', 1)
             params[pname] = pvals.split(',')
         return cls(name, params, value)
