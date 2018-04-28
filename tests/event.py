@@ -44,6 +44,11 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e._duration, td(1, 3600))
         self.assertEqual(e.end - e.begin, td(1, 3600))
 
+    def test_event_with_geo(self):
+        c = Calendar(cal12)
+        e = c.events[0]
+        self.assertEqual(e.geo, (40.779897,-73.968565))
+
     def test_not_duration_and_end(self):
         with self.assertRaises(ValueError):
             Calendar(cal13)
@@ -53,6 +58,11 @@ class TestEvent(unittest.TestCase):
         lines = str(e).splitlines()
         self.assertIn('DTSTART:19700101T000000Z', lines)
         self.assertIn('DURATION:P1DT23S', lines)
+
+    def test_geo_output(self):
+        e = Event(geo=(40.779897, -73.968565))
+        lines = str(e).splitlines()
+        self.assertIn('GEO:40.779897;-73.968565', lines)
 
     def test_make_all_day(self):
         e = Event(begin=0, end=20)
@@ -108,6 +118,7 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.description, None)
         self.assertEqual(e.created, None)
         self.assertEqual(e.location, None)
+        self.assertEqual(e.geo, None)
         self.assertEqual(e.url, None)
         self.assertEqual(e._unused, Container(name='VEVENT'))
 
@@ -143,6 +154,16 @@ class TestEvent(unittest.TestCase):
         e5.duration = {'days': 6, 'hours': 2}
         self.assertEqual(e5.end, arrow.get("1993/05/30T02:00"))
         self.assertEqual(e5.duration, td(hours=146))
+
+    def test_geo(self):
+        e = Event()
+        self.assertIsNone(e.geo)
+
+        e1 = Event(geo=(40.779897, -73.968565))
+        self.assertEqual(e1.geo, (40.779897, -73.968565))
+
+        e2 = Event(geo={'lat': 40.779897, 'lng': -73.968565})
+        self.assertEqual(e2.geo, (40.779897, -73.968565))
 
     def test_always_uid(self):
         e = Event()

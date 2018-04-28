@@ -8,6 +8,8 @@ from six.moves import filter, map, range
 
 import arrow
 import copy
+from collections import namedtuple
+from decimal import Decimal
 from datetime import timedelta, datetime
 
 from .alarm import AlarmFactory
@@ -25,6 +27,8 @@ from .utils import (
     escape_string,
 )
 from .parse import ContentLine, Container
+
+Geo = namedtuple('Geo', 'lat, lng')
 
 
 class Event(Component):
@@ -51,7 +55,8 @@ class Event(Component):
                  location=None,
                  url=None,
                  transparent=False,
-                 alarms=None):
+                 alarms=None,
+                 geo=None):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -66,6 +71,7 @@ class Event(Component):
             url (string)
             transparent (Boolean)
             alarms (:class:`ics.alarm.Alarm`)
+            geo (namedtuple)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -79,6 +85,7 @@ class Event(Component):
         self.description = description
         self.created = get_arrow(created)
         self.location = location
+        self.geo = geo
         self.url = url
         self.transparent = transparent
         self.alarms = set()
@@ -197,6 +204,27 @@ class Event(Component):
             self._end_time = None
 
         self._duration = value
+
+    @property
+    def geo(self):
+        """Get or set the geo position of the event.
+
+        |  Will return a namedtuple object.
+        |  May be set to any Geo, tuple or dict with lat and lng keys.
+        |  If set to a non null value, removes any already
+            existing geo.
+        """
+        return self._geo
+
+    @geo.setter
+    def geo(self, value):
+        if isinstance(value, dict):
+            lat, lng = value['lat'], value['lng']
+            value = Geo(lat, lng)
+        elif value is not None:
+            lat, lng = value
+            value = Geo(lat, lng)
+        self._geo = value
 
     @property
     def all_day(self):
@@ -462,6 +490,13 @@ def location(event, line):
     event.location = unescape_string(line.value) if line else None
 
 
+@Event._extracts('GEO')
+def geo(event, line):
+    if line:
+        lat, _, lng = unescape_string(line.value).partition(';')
+        event.geo = Decimal(lat), Decimal(lng)
+
+
 @Event._extracts('URL')
 def url(event, line):
     event.url = unescape_string(line.value) if line else None
@@ -546,6 +581,12 @@ def o_description(event, container):
 def o_location(event, container):
     if event.location:
         container.append(ContentLine('LOCATION', value=escape_string(event.location)))
+
+
+@Event._outputs
+def o_geo(event, container):
+    if event.geo:
+        container.append(ContentLine('GEO', value=escape_string('%f;%f' % event.geo)))
 
 
 @Event._outputs
