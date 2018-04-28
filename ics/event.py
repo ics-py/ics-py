@@ -51,7 +51,8 @@ class Event(Component):
                  location=None,
                  url=None,
                  transparent=False,
-                 alarms=None):
+                 alarms=None,
+                 status=None):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -66,6 +67,7 @@ class Event(Component):
             url (string)
             transparent (Boolean)
             alarms (:class:`ics.alarm.Alarm`)
+            status (string)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -98,6 +100,7 @@ class Event(Component):
 
         if alarms is not None:
             self.alarms.update(set(alarms))
+        self.status = status
 
     def has_end(self):
         """
@@ -228,6 +231,17 @@ class Event(Component):
             self._end_time = None
         else:
             self._end_time = calculated_end
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        statuses = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
+        if value not in statues:
+            raise ValueError('status must be one of %s' % statuses)
+        self._status = value
 
     def __urepr__(self):
         """Should not be used directly. Use self.__repr__ instead.
@@ -490,6 +504,12 @@ def alarms(event, lines):
     event.alarms = list(map(alarm_factory, lines))
 
 
+@Event._extracts('STATUS')
+def status(event, line):
+    if line:
+        event.status = line.value
+
+
 # -------------------
 # ----- Outputs -----
 # -------------------
@@ -576,3 +596,9 @@ def o_uid(event, container):
 def o_alarm(event, container):
     for alarm in event.alarms:
         container.append(str(alarm))
+
+
+@Event._outputs
+def o_status(event, container):
+    if event.status:
+        container.append(ContentLine('STATUS', value=event.status))

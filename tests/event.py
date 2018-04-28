@@ -110,6 +110,7 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.location, None)
         self.assertEqual(e.url, None)
         self.assertEqual(e._unused, Container(name='VEVENT'))
+        self.assertEqual(e.status, None)
 
     def test_has_end(self):
         e = Event()
@@ -219,6 +220,16 @@ class TestEvent(unittest.TestCase):
         URL = "http://example.com/pub/calendars/jsmith/mytime.ics"
         e = Event(name="Name", url=URL)
         self.assertIn("URL:"+URL, str(e).splitlines())
+
+    def test_status_input(self):
+        c = Calendar(cal16)
+        e = c.events[0]
+        self.assertEqual(e.status, "CONFIRMED")
+
+    def test_status_output(self):
+        STATUS = "CONFIRMED"
+        e = Event(name="Name", status=URL)
+        self.assertIn("URL:"+STATUS, str(e).splitlines())
 
     def test_all_day_with_end(self):
         c = Calendar(cal20)

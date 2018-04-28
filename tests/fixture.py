@@ -197,7 +197,7 @@ END:VEVENT
 END:VCALENDAR
 """
 
-# Event with URL
+# Event with URL and STATUS
 cal16 = u"""
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -209,6 +209,7 @@ DTSTART;TZID=Europe/Berlin:20120608T202500
 DTEND;TZID=Europe/Berlin:20120608T212500
 LOCATION:MUC
 URL:http://example.com/pub/calendars/jsmith/mytime.ics
+STATUS:CONFIRMED
 END:VEVENT
 
 END:VCALENDAR
@@ -596,5 +597,3 @@ unfolded_cal26 = [
     'END:VEVENT',
     'END:VCALENDAR',
 ]
-
-
