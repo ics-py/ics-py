@@ -8,9 +8,11 @@ from .fixture import (
     cal7,
     cal8,
     cal9,
+    cal26,
     unfolded_cal1,
     unfolded_cal2,
     unfolded_cal6,
+    unfolded_cal26,
 )
 
 
@@ -24,6 +26,9 @@ class TestUnfoldLines(unittest.TestCase):
 
     def test_last_line_folded(self):
         self.assertEqual(list(unfold_lines(cal6.split('\n'))), unfolded_cal6)
+
+    def test_tabbed_folding(self):
+        self.assertEqual(list(unfold_lines(cal26.split('\n'))), unfolded_cal26)
 
     def test_simple(self):
         dataset = {

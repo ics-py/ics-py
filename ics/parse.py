@@ -76,7 +76,7 @@ class ContentLine:
         params = {}
         for paramstr in params_strings:
             if '=' not in paramstr:
-                raise ParseError("No '=' in line '{}'".format(line))
+                raise ParseError("No '=' in line '{}'".format(paramstr))
             pname, pvals = paramstr.split('=', 1)
             params[pname] = pvals.split(',')
         return cls(name, params, value)
@@ -142,7 +142,7 @@ def unfold_lines(physical_lines):
             continue
         elif not current_line:
             current_line = line.strip('\r')
-        elif line[0] == ' ':
+        elif line[0] in (' ', '\t'):
             # TODO : remove more spaces if needed
             current_line += line[1:].strip('\r')
         else:
