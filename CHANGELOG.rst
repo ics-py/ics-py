@@ -1,3 +1,24 @@
+0.4 : (in dev)
+    Hilights:
+
+    - Last version to support Python 2.7 and 3.3
+    - Todo/VTODO support (thanks @tgamauf)
+    - Add event arithmetics (thanks @guyzmo)
+    - Support for alarms/VALARM (thanks @rkeilty)
+
+    Misc:
+
+    - Make the parser work with tabbed whistspace (thanks @mrmadcow)
+    - Better error messages (thanks @guyzmo)
+    - Support input with missing VERSION (thanks @prashnts)
+    - Support for Time Transparency/TRANSP (thanks @GMLudo)
+    - All day events not omit the timezone (thanks @Trii)
+    - Multi-day events fixes (thanks @ConnyOnny)
+    - Fix TZID drop when VTIMEZONE is empty (thanks @ConnyOnny)
+    - Better test coverage (thanks @aureooms)
+
+    Thank you also to @davidjb, @etnarek, @jammon
+
 0.3.1 :
     - Pin arrow to 0.4.2
 

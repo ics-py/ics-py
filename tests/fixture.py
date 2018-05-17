@@ -44,6 +44,14 @@ DESCRIPTION:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
  um, quis porta nibh ultricies congue. Pellentesque nisl mi, molestie id
  sem vel, vehicula nullam.
 END:VEVENT
+BEGIN:VTODO
+DTSTAMP:20180218T154700Z
+UID:Uid
+DESCRIPTION:Lorem ipsum dolor sit amet.
+PERCENT-COMPLETE:0
+PRIORITY:0
+SUMMARY:Name
+END:VTODO
 END:VCALENDAR
 """
 
@@ -398,6 +406,87 @@ END:VEVENT
 END:VCALENDAR
 """
 
+# All VTODO attributes beside duration.
+cal27 = """
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+BEGIN:VTODO
+DTSTAMP:20180218T154700Z
+UID:Uid
+COMPLETED:20180418T150000Z
+CREATED:20180218T154800Z
+DESCRIPTION:Lorem ipsum dolor sit amet.
+DTSTART:20180218T164800Z
+LOCATION:Earth
+PERCENT-COMPLETE:0
+PRIORITY:0
+SUMMARY:Name
+URL:https://www.example.com/cal.php/todo.ics
+DURATION:PT10M
+SEQUENCE:0
+BEGIN:VALARM
+TRIGGER:-PT1H
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+END:VALARM
+END:VTODO
+END:VCALENDAR
+"""
+
+# Test due.
+cal28 = """
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+BEGIN:VTODO
+DTSTAMP:20180218T154741Z
+UID:Uid
+DUE:20180218T164800Z
+END:VTODO
+END:VCALENDAR
+"""
+
+# Test error due and duration.
+cal29 = """
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+BEGIN:VTODO
+DTSTAMP:20180218T154741Z
+UID:Uid
+DURATION:PT10M
+DUE:20180218T164800Z
+END:VTODO
+END:VCALENDAR
+"""
+
+cal30 = """
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+BEGIN:VTODO
+DTSTAMP:20180218T154741Z
+UID:Uid
+DUE:20180218T164800Z
+DURATION:PT10M
+END:VTODO
+END:VCALENDAR
+"""
+
+cal31 = """
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+BEGIN:VTODO
+DTSTAMP:20180218T154741Z
+UID:Uid
+SUMMARY:Hello, \\n World\\; This is a backslash : \\\\ and another new \\N line
+LOCATION:In\\, every text field
+DESCRIPTION:Yes\\, all of them\\;
+END:VTODO
+END:VCALENDAR
+"""
 
 unfolded_cal2 = [
     'BEGIN:VCALENDAR',
@@ -458,6 +547,14 @@ quamdolor luctus augue, id cursus purus justo vel lorem. \
 Ut feugiat enim ipsum, quis porta nibh ultricies congue. \
 Pellentesque nisl mi, molestie idsem vel, vehicula nullam.',
     'END:VEVENT',
+    'BEGIN:VTODO',
+    'DTSTAMP:20180218T154700Z',
+    'UID:Uid',
+    'DESCRIPTION:Lorem ipsum dolor sit amet.',
+    'PERCENT-COMPLETE:0',
+    'PRIORITY:0',
+    'SUMMARY:Name',
+    'END:VTODO',
     'END:VCALENDAR',
 ]
 

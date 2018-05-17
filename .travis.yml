@@ -10,9 +10,9 @@ python:
 
 install:
   - "pip install -U pip setuptools"
-  - "pip install -r requirements.txt --use-wheel"
-  - "pip install -r dev/requirements-test.txt --use-wheel"
-  - "pip install python-coveralls --use-wheel"
+  - "pip install -r requirements.txt"
+  - "pip install -r dev/requirements-test.txt"
+  - "pip install python-coveralls"
 
 cache:
   directories:
