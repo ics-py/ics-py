@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
-from six.moves import filter, map, range
 
 import collections
 

@@ -5,7 +5,6 @@ from __future__ import unicode_literals, absolute_import
 import heapq
 
 from six import StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
 
 from arrow.arrow import Arrow
 import arrow
