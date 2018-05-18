@@ -84,17 +84,6 @@ class Component(object):
         cls._OUTPUTS.append(fn)
         return fn
 
-    def __repr__(self):
-        """ - In python2: returns self.__urepr__() encoded into utf-8.
-            - In python3: returns self.__urepr__()
-        """
-        if hasattr(self, '__urepr__'):
-            return self.__urepr__().encode('utf-8') if PY2 else self.__urepr__()
-        else:
-            t = self.__class__.__name__
-            adress = hex(id(self))
-            return '<{} at {}>'.format(t, adress)
-
     def __str__(self):
         """Returns the component in an iCalendar format."""
         container = self._unused.clone()

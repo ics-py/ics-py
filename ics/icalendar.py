@@ -74,12 +74,7 @@ class Calendar(Component):
                 self.todos.update(set(todos))
             self._creator = creator
 
-    def __urepr__(self):
-        """Returns:
-            unicode: representation (__repr__) of the calendar.
-
-        Should not be used directly. Use self.__repr__ instead.
-        """
+    def __repr__(self):
         return "<Calendar with {} event{} and {} todo{}>" \
             .format(len(self.events),
                     "s" if len(self.events) > 1 else "",

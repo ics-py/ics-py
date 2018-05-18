@@ -236,12 +236,7 @@ class Event(Component):
         else:
             self._end_time = calculated_end
 
-    def __urepr__(self):
-        """Should not be used directly. Use self.__repr__ instead.
-
-        Returns:
-            unicode: a unicode representation (__repr__) of the event.
-        """
+    def __repr__(self):
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
             if not self._end_time or self._begin == self._end_time:

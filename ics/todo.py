@@ -216,12 +216,7 @@ class Todo(Component):
         if value:
             self._due_time = None
 
-    def __urepr__(self):
-        """Should not be used directly. Use self.__repr__ instead.
-
-        Returns:
-            unicode: a unicode representation (__repr__) of the todo.
-        """
+    def __repr__(self):
         if self.name is None:
             return "<Todo>"
         if self.begin is None and self.due is None:
