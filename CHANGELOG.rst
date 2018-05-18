@@ -1,5 +1,6 @@
 0.4 : (in dev)
-    Hilights:
+
+    Highlights:
 
     - Last version to support Python 2.7 and 3.3
     - Todo/VTODO support (thanks @tgamauf)
@@ -8,7 +9,7 @@
 
     Misc:
 
-    - Make the parser work with tabbed whistspace (thanks @mrmadcow)
+    - Make the parser work with tabbed whitespace (thanks @mrmadcow)
     - Better error messages (thanks @guyzmo)
     - Support input with missing VERSION (thanks @prashnts)
     - Support for Time Transparency/TRANSP (thanks @GMLudo)

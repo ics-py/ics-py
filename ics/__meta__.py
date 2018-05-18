@@ -1,5 +1,5 @@
 __title__ = 'ics'
-__version__ = '0.3.1'
+__version__ = '0.4dev'
 __author__ = 'Nikita Marchant'
 __license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2013 Nikita Marchant'
+__copyright__ = 'Copyright 2013-2018 Nikita Marchant and individual contributors'
