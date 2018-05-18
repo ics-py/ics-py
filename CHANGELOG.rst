@@ -3,7 +3,7 @@ Ics.py changelog
 ============
 
 **************
-0.4 (in dev)
+0.4
 **************
 
 Last version to support Python 2.7 and 3.3.
