@@ -209,6 +209,7 @@ DTSTART;TZID=Europe/Berlin:20120608T202500
 DTEND;TZID=Europe/Berlin:20120608T212500
 LOCATION:MUC
 URL:http://example.com/pub/calendars/jsmith/mytime.ics
+CATEGORIES:Simple Category,My "Quoted" Category,Category\\, with comma
 END:VEVENT
 
 END:VCALENDAR

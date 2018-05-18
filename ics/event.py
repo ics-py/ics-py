@@ -8,6 +8,7 @@ from six.moves import filter, map, range
 
 import arrow
 import copy
+import re
 from datetime import timedelta, datetime
 
 from .alarm import AlarmFactory
@@ -51,7 +52,8 @@ class Event(Component):
                  location=None,
                  url=None,
                  transparent=False,
-                 alarms=None):
+                 alarms=None,
+                 categories=None):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -65,7 +67,8 @@ class Event(Component):
             location (string)
             url (string)
             transparent (Boolean)
-            alarms (:class:`ics.alarm.Alarm`)
+            alarms (:class:`ics.alarm.Alarm`
+            categories (set of string)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -82,6 +85,7 @@ class Event(Component):
         self.url = url
         self.transparent = transparent
         self.alarms = set()
+        self.categories = set()
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -98,6 +102,9 @@ class Event(Component):
 
         if alarms is not None:
             self.alarms.update(set(alarms))
+
+        if categories is not None:
+            self.categories.update(set(categories))
 
     def has_end(self):
         """
@@ -397,6 +404,7 @@ class Event(Component):
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
         clone.alarms = copy.copy(self.alarms)
+        clone.categories = copy.copy(self.categories)
         return clone
 
     def __hash__(self):
@@ -486,8 +494,16 @@ def alarms(event, lines):
     def alarm_factory(x):
         af = AlarmFactory.get_type_from_container(x)
         return af._from_container(x)
-
     event.alarms = list(map(alarm_factory, lines))
+
+
+@Event._extracts('CATEGORIES')
+def categories(event, line):
+    event.categories = set()
+    if line:
+        # In the regular expression: Only match unquoted commas.
+        for cat in re.split("(?<!\\\\),", line.value):
+            event.categories.update({unescape_string(cat)})
 
 
 # -------------------
@@ -576,3 +592,9 @@ def o_uid(event, container):
 def o_alarm(event, container):
     for alarm in event.alarms:
         container.append(str(alarm))
+
+
+@Event._outputs
+def o_categories(event, container):
+    if bool(event.categories):
+        container.append(ContentLine('CATEGORIES', value=','.join([escape_string(s) for s in event.categories])))
