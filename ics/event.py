@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import PY3, StringIO, string_types, text_type, integer_types
+from six import StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
 import arrow
