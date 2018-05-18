@@ -3,10 +3,24 @@ Ics.py is written and maintained by Nikita Marchant <nikita.marchant@gmail.com>.
 
 Other contributors, listed alphabetically, are:
 
-* Gatien Bovyn <gatien.bovyn@gmail.com> -- Tests, grammar/orthography + misc
+* @aureooms
+* @ConnyOnny
+* @ConnyOnny
+* @davidjb
+* @etnarek
+* @gbovyn
+* @GMLudo
+* @guyzmo
+* @guyzmo
+* @jammon
+* @mrmadcow
+* @perette
+* @prashnts
+* @rkeilty
+* @tgamauf
+* @Trii
 
-Many thanks for all contributions!
-
+Many thanks for your contributions!
 
 
 There are also a few modules or functions incorporated from other

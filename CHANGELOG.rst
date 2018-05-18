@@ -6,6 +6,7 @@
     - Todo/VTODO support (thanks @tgamauf)
     - Add event arithmetics (thanks @guyzmo)
     - Support for alarms/VALARM (thanks @rkeilty)
+    - Support for categories (thanks @perette)
 
     Misc:
 
