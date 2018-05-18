@@ -1,6 +1,5 @@
 import unittest
 from collections import Iterable
-from six import PY2
 import arrow
 
 from ics.parse import Container

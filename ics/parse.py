@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
-from six import PY2, PY3
+from six import PY3
 from six.moves import filter, map, range
 
 import collections
@@ -41,8 +41,7 @@ class ContentLine:
         params_str = ''
         for pname in self.params:
             params_str += ';{}={}'.format(pname, ','.join(self.params[pname]))
-        ret = "{}{}:{}".format(self.name, params_str, self.value)
-        return ret.encode('utf-8') if PY2 else ret
+        return "{}{}:{}".format(self.name, params_str, self.value)
 
     def __repr__(self):
         return "<ContentLine '{}' with {} parameter{}. Value='{}'>" \
@@ -99,8 +98,6 @@ class Container(list):
 
     def __str__(self):
         name = self.name
-        if PY2:
-            name = name.encode('utf-8')  # can self.name ever contain a non-ASCII character?
         ret = ['BEGIN:' + name]
         for line in self:
             ret.append(str(line))

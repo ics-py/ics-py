@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
+from six import PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 
 from dateutil.tz import tzical
@@ -94,8 +94,6 @@ class Calendar(Component):
         """
         for line in str(self).split('\n'):
             l = line + '\n'
-            if PY2:
-                l = l.encode('utf-8')
             yield l
 
     def __eq__(self, other):

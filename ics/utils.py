@@ -5,7 +5,7 @@ from __future__ import unicode_literals, absolute_import
 
 from arrow.arrow import Arrow
 from datetime import timedelta
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
+from six import PY3, StringIO, string_types, text_type, integer_types
 from six.moves import filter, map, range
 from uuid import uuid4
 from dateutil.tz import gettz
