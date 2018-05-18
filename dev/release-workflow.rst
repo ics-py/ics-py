@@ -5,7 +5,6 @@ Release HOWTO
 * Bump version
 * pyroma .
 * check-manifest
-* `python setup.py egg_info sdist bdist_wheel bdist_egg`
 * `python3 setup.py egg_info bdist_egg bdist_wheel`
 * Test the package
 * Upload `twine upload dist/*`
