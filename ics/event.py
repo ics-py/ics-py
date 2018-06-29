@@ -297,7 +297,15 @@ class Event(Component):
                     return False
                 else:
                     return self.name < other.name
-            return self.begin < other.begin
+            elif self.begin == other.begin:
+                if self.end is None:
+                    return True
+                elif other.end is None:
+                    return False
+                else:
+                    return self.end < other.end
+            else:
+                return self.begin < other.begin
         if isinstance(other, datetime):
             return self.begin < other
         raise NotImplementedError(
@@ -314,7 +322,15 @@ class Event(Component):
                     return False
                 else:
                     return self.name <= other.name
-            return self.begin <= other.begin
+            elif self.begin == other.begin:
+                if self.end is None:
+                    return True
+                elif other.end is None:
+                    return False
+                else:
+                    return self.end <= other.end
+            else:
+                return self.begin <= other.begin
         if isinstance(other, datetime):
             return self.begin <= other
         raise NotImplementedError(
