@@ -225,6 +225,7 @@ class Todo(Component):
 
     @status.setter
     def status(self, value):
+        value = value.upper()
         statuses = (None, 'NEEDS-ACTION', 'COMPLETED', 'IN-PROCESS', 'CANCELLED')
         if value not in statuses:
             raise ValueError('status must be one of %s' % statuses)

@@ -238,6 +238,7 @@ class Event(Component):
 
     @status.setter
     def status(self, value):
+        value = value.upper()
         statuses = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
         if value not in statuses:
             raise ValueError('status must be one of %s' % statuses)
