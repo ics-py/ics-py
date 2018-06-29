@@ -219,7 +219,7 @@ class TestEvent(unittest.TestCase):
     def test_url_output(self):
         URL = "http://example.com/pub/calendars/jsmith/mytime.ics"
         e = Event(name="Name", url=URL)
-        self.assertIn("URL:"+URL, str(e).splitlines())
+        self.assertIn("URL:" + URL, str(e).splitlines())
 
     def test_status_input(self):
         c = Calendar(cal16)
@@ -228,8 +228,8 @@ class TestEvent(unittest.TestCase):
 
     def test_status_output(self):
         STATUS = "CONFIRMED"
-        e = Event(name="Name", status=URL)
-        self.assertIn("URL:"+STATUS, str(e).splitlines())
+        e = Event(name="Name", status=STATUS)
+        self.assertIn("STATUS:" + STATUS, str(e).splitlines())
 
     def test_all_day_with_end(self):
         c = Calendar(cal20)
