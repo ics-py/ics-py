@@ -3,8 +3,7 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
+from six import StringIO, string_types, text_type, integer_types
 
 import warnings
 from collections import namedtuple
@@ -83,17 +82,6 @@ class Component(object):
     def _outputs(cls, fn):
         cls._OUTPUTS.append(fn)
         return fn
-
-    def __repr__(self):
-        """ - In python2: returns self.__urepr__() encoded into utf-8.
-            - In python3: returns self.__urepr__()
-        """
-        if hasattr(self, '__urepr__'):
-            return self.__urepr__().encode('utf-8') if PY2 else self.__urepr__()
-        else:
-            t = self.__class__.__name__
-            adress = hex(id(self))
-            return '<{} at {}>'.format(t, adress)
 
     def __str__(self):
         """Returns the component in an iCalendar format."""

@@ -231,6 +231,18 @@ class TestEvent(unittest.TestCase):
         e = Event(name="Name", status=STATUS)
         self.assertIn("STATUS:" + STATUS, str(e).splitlines())
 
+    def test_category_input(self):
+        c = Calendar(cal16)
+        e = c.events[0]
+        self.assertIn("Simple Category", e.categories)
+        self.assertIn("My \"Quoted\" Category", e.categories)
+        self.assertIn("Category, with comma", e.categories)
+
+    def test_category_output(self):
+        cat = "Simple category"
+        e = Event(name="Name", categories={cat})
+        self.assertIn("CATEGORIES:"+cat, str(e).splitlines())
+
     def test_all_day_with_end(self):
         c = Calendar(cal20)
         e = c.events[0]

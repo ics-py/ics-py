@@ -24,9 +24,8 @@ It should be able to parse every calendar that respects the `rfc5545 <http://too
 iCalendar (file extension `.ics`) is used by Sunbird, Google Calendar, Apple Calendar, Android…
 
 
-Ics.py is available for Python>=2.7 *and* Python>=3.3 and is Apache2 Licensed.
+Ics.py is available for Python>=3.4 and is Apache2 Licensed.
 
-Note : it is highly likely that Python 2 support will be dropped before the 1.0 release.
 
 
 Quickstart
@@ -40,17 +39,17 @@ Quickstart
 
 .. code-block:: python
 
-    >>> from ics import Calendar, Event
-    >>> c = Calendar()
-    >>> e = Event()
-    >>> e.name = "My cool event"
-    >>> e.begin = '20140101 00:00:00'
-    >>> c.events.append(e)
-    >>> c.events
-    [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
-    >>> with open('my.ics', 'w') as my_file:
-    >>>     my_file.writelines(c)
-    >>> # and it's done !
+    from ics import Calendar, Event
+    c = Calendar()
+    e = Event()
+    e.name = "My cool event"
+    e.begin = '20140101 00:00:00'
+    c.add.append(e)
+    c.events
+    # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
+    with open('my.ics', 'w') as my_file:
+        my_file.writelines(c)
+    # and it's done !
 
 More examples are available in the `documentation <http://icspy.readthedocs.org/>`_.
 

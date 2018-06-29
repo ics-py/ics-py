@@ -1,6 +1,5 @@
 import unittest
 from collections import Iterable
-from six import PY2
 import arrow
 
 from ics.parse import Container
@@ -38,22 +37,18 @@ class TestCalendar(unittest.TestCase):
             # cannot compare str(c) and str(d) because times are encoded differently
             self.assertEqual(str(d), str(e))
 
-    def test_urepr(self):
+    def test_repr(self):
         # TODO : more cases
         c = Calendar()
-        self.assertEqual(c.__urepr__(), '<Calendar with 0 event and 0 todo>')
+        self.assertEqual(c.__repr__(), '<Calendar with 0 event and 0 todo>')
 
         c.events.add(Event())
         c.todos.add(Todo())
-        self.assertEqual(c.__urepr__(), '<Calendar with 1 event and 1 todo>')
+        self.assertEqual(c.__repr__(), '<Calendar with 1 event and 1 todo>')
 
         c.events.add(Event())
         c.todos.add(Todo())
-        self.assertEqual(c.__urepr__(), '<Calendar with 2 events and 2 todos>')
-
-    def test_repr(self):
-        c = Calendar()
-        self.assertEqual(c.__urepr__(), repr(c))
+        self.assertEqual(c.__repr__(), '<Calendar with 2 events and 2 todos>')
 
     def test_iter(self):
         for fix in self.fixtures:
@@ -220,4 +215,3 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(t.dtstamp, arrow.get(2018, 2, 18, 15, 47))
         self.assertEqual(t.uid, 'Uid')
         self.assertEqual(len(c.todos), 1)
-

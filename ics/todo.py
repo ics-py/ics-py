@@ -225,18 +225,14 @@ class Todo(Component):
 
     @status.setter
     def status(self, value):
-        value = value.upper()
+        if isinstance(value, str):
+            value = value.upper()
         statuses = (None, 'NEEDS-ACTION', 'COMPLETED', 'IN-PROCESS', 'CANCELLED')
         if value not in statuses:
             raise ValueError('status must be one of %s' % statuses)
         self._status = value
 
-    def __urepr__(self):
-        """Should not be used directly. Use self.__repr__ instead.
-
-        Returns:
-            unicode: a unicode representation (__repr__) of the todo.
-        """
+    def __repr__(self):
         if self.name is None:
             return "<Todo>"
         if self.begin is None and self.due is None:
