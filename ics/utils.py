@@ -5,16 +5,14 @@ from __future__ import unicode_literals, absolute_import
 
 from arrow.arrow import Arrow
 from datetime import timedelta
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
+from six import StringIO, string_types, text_type, integer_types
+
 from uuid import uuid4
 from dateutil.tz import gettz
 import arrow
 import re
 
 from . import parse
-
-tzutc = arrow.utcnow().tzinfo
 
 tzutc = arrow.utcnow().tzinfo
 

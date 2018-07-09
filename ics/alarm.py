@@ -148,29 +148,12 @@ class Alarm(Component):
         """
         raise NotImplementedError('Base class cannot be instantiated directly')
 
-    def __urepr__(self):
-        """Should not be used directly. Use self.__repr__ instead.
-
-        Returns:
-            unicode: a unicode representation (__repr__) of the alarm.
-        """
-        value = '<{0} trigger:{1}'.format(type(self), self.trigger)
+    def __repr__(self):
+        value = '{0} trigger:{1}'.format(type(self), self.trigger)
         if self.repeat:
             value += ' repeat:{0} duration:{1}'.format(self.repeat, self.duration)
 
-        extra_urepr = self.__extra_urepr__()
-        if extra_urepr:
-            value += ' {0}'.format(extra_urepr)
-
-        return '{0}>'.format(value)
-
-    def __extra_urepr__(self):
-        """Should not be used directly. Used with self.__repr__.
-
-        Returns:
-            unicode: a unicode representation (__repr__) of the alarm.
-        """
-        return None
+        return '<{0}>'.format(value)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -284,13 +267,14 @@ class DisplayAlarm(Alarm):
     def action(self):
         return 'DISPLAY'
 
-    def __extra_urepr__(self):
-        """Should not be used directly. Used with self.__repr__.
+    def __repr__(self):
+        value = '{0} trigger:{1}'.format(type(self), self.trigger)
+        if self.repeat:
+            value += ' repeat:{0} duration:{1}'.format(self.repeat, self.duration)
 
-        Returns:
-            unicode: a unicode representation (__repr__) of the alarm.
-        """
-        return 'description:{0}'.format(self.description)
+        value += ' description:{0}'.format(self.description)
+
+        return '<{0}>'.format(value)
 
 
 # ------------------
@@ -340,20 +324,17 @@ class AudioAlarm(Alarm):
     def action(self):
         return 'AUDIO'
 
-    def __extra_urepr__(self):
-        """Should not be used directly. Used with self.__repr__.
+    def __repr__(self):
+        value = '{0} trigger:{1}'.format(type(self), self.trigger)
+        if self.repeat:
+            value += ' repeat:{0} duration:{1}'.format(self.repeat, self.duration)
 
-        Returns:
-            unicode: a unicode representation (__repr__) of the alarm.
-        """
         if self.attach:
-            value = 'attach:{0}'.format(self.attach)
+            value += ' attach:{0}'.format(self.attach)
             if self.attach_params:
                 value += ' attach_params:{0}'.format(self.attach_params)
 
-            return value
-
-        return None
+        return '<{0}>'.format(value)
 
 
 # ------------------

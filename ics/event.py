@@ -3,11 +3,11 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
+from six import StringIO, string_types, text_type, integer_types
 
 import arrow
 import copy
+import re
 from datetime import timedelta, datetime
 
 from .alarm import AlarmFactory
@@ -52,7 +52,10 @@ class Event(Component):
                  url=None,
                  transparent=False,
                  alarms=None,
-                 attendees=None):
+                 categories=None,
+                 status=None,
+                 attendees=None,
+                 ):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -67,6 +70,8 @@ class Event(Component):
             url (string)
             transparent (Boolean)
             alarms (:class:`ics.alarm.Alarm`)
+            categories (set of string)
+            status (string)
             attendees (:class:`ics.attendee.Attendee`)
 
         Raises:
@@ -85,6 +90,7 @@ class Event(Component):
         self.transparent = transparent
         self.alarms = set()
         self.attendees = set()
+        self.categories = set()
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -101,6 +107,10 @@ class Event(Component):
 
         if alarms is not None:
             self.alarms.update(set(alarms))
+        self.status = status
+
+        if categories is not None:
+            self.categories.update(set(categories))
 
         if attendees is not None:
             self.attendees.update(set(attendees))
@@ -238,18 +248,26 @@ class Event(Component):
         else:
             self._end_time = calculated_end
 
-    def __urepr__(self):
-        """Should not be used directly. Use self.__repr__ instead.
+    @property
+    def status(self):
+        return self._status
 
-        Returns:
-            unicode: a unicode representation (__repr__) of the event.
-        """
+    @status.setter
+    def status(self, value):
+        if isinstance(value, str):
+            value = value.upper()
+        statuses = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
+        if value not in statuses:
+            raise ValueError('status must be one of %s' % statuses)
+        self._status = value
+
+    def __repr__(self):
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
             if not self._end_time or self._begin == self._end_time:
-                return "<all-day Event {}{}>".format(name, self.begin.strftime("%F"))
+                return "<all-day Event {}{}>".format(name, self.begin.strftime('%Y-%m-%d'))
             else:
-                return "<all-day Event {}begin:{} end:{}>".format(name, self._begin.strftime("%F"), self._end_time.strftime("%F"))
+                return "<all-day Event {}begin:{} end:{}>".format(name, self._begin.strftime('%Y-%m-%d'), self._end_time.strftime('%Y-%m-%d'))
         elif self.begin is None:
             return "<Event '{}'>".format(self.name) if self.name else "<Event>"
         else:
@@ -406,6 +424,7 @@ class Event(Component):
         clone = copy.copy(self)
         clone._unused = clone._unused.clone()
         clone.alarms = copy.copy(self.alarms)
+        clone.categories = copy.copy(self.categories)
         return clone
 
     def __hash__(self):
@@ -495,8 +514,22 @@ def alarms(event, lines):
     def alarm_factory(x):
         af = AlarmFactory.get_type_from_container(x)
         return af._from_container(x)
-
     event.alarms = list(map(alarm_factory, lines))
+
+
+@Event._extracts('STATUS')
+def status(event, line):
+    if line:
+        event.status = line.value
+
+
+@Event._extracts('CATEGORIES')
+def categories(event, line):
+    event.categories = set()
+    if line:
+        # In the regular expression: Only match unquoted commas.
+        for cat in re.split("(?<!\\\\),", line.value):
+            event.categories.update({unescape_string(cat)})
 
 
 # -------------------
@@ -591,3 +624,15 @@ def o_uid(event, container):
 def o_alarm(event, container):
     for alarm in event.alarms:
         container.append(str(alarm))
+
+
+@Event._outputs
+def o_status(event, container):
+    if event.status:
+        container.append(ContentLine('STATUS', value=event.status))
+
+
+@Event._outputs
+def o_categories(event, container):
+    if event.categories:
+        container.append(ContentLine('CATEGORIES', value=','.join([escape_string(s) for s in event.categories])))

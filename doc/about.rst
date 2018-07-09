@@ -1,9 +1,6 @@
 About
 =====
 
-Authors
--------
-
 .. include:: ../AUTHORS.rst
 
 .. _`apache2`:
@@ -11,7 +8,7 @@ Authors
 License
 -------
 
-ics.py is under the Apache 2 software license because… bah! Why not?
+``ics.py`` is under the Apache 2 software license.
 
 .. include:: ../LICENSE
 
@@ -37,4 +34,4 @@ Here is a pizza for you!
 
 .. image:: _static/pizza.jpg
 
-(`Source <https://secure.flickr.com/photos/rdpeyton/3495871394/>`_  ©rdpeyton, CC by-nc-sa)
+(`Source <https://secure.flickr.com/photos/rdpeyton/3495871394/>`_  © rdpeyton, CC by-nc-sa)

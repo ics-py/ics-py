@@ -3,8 +3,7 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
+from six import StringIO, string_types, text_type, integer_types
 
 from dateutil.tz import tzical
 import copy
@@ -74,12 +73,7 @@ class Calendar(Component):
                 self.todos.update(set(todos))
             self._creator = creator
 
-    def __urepr__(self):
-        """Returns:
-            unicode: representation (__repr__) of the calendar.
-
-        Should not be used directly. Use self.__repr__ instead.
-        """
+    def __repr__(self):
         return "<Calendar with {} event{} and {} todo{}>" \
             .format(len(self.events),
                     "s" if len(self.events) > 1 else "",
@@ -99,8 +93,6 @@ class Calendar(Component):
         """
         for line in str(self).split('\n'):
             l = line + '\n'
-            if PY2:
-                l = l.encode('utf-8')
             yield l
 
     def __eq__(self, other):

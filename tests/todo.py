@@ -2,26 +2,7 @@ import unittest
 import arrow
 from datetime import datetime, timedelta
 
-try:
-    from datetime import timezone
-    utc = timezone.utc
-except ImportError:
-    # Python2
-
-    from datetime import tzinfo
-
-    class UTC(tzinfo):
-
-        def utcoffset(self, dt):
-            return timedelta(0)
-
-        def tzname(self, dt):
-            return "UTC"
-
-        def dst(self, dt):
-            return timedelta(0)
-
-    utc = UTC()
+from datetime import timezone
 
 from ics.parse import Container
 from ics.alarm import AlarmFactory
@@ -30,6 +11,7 @@ from .fixture import cal27, cal28, cal29, cal30, cal31
 
 from ics.todo import Todo
 
+utc = timezone.utc
 
 CRLF = "\r\n"
 
@@ -49,6 +31,7 @@ class TestTodo(unittest.TestCase):
         self.assertIsNone(t.priority)
         self.assertIsNone(t.name)
         self.assertIsNone(t.url)
+        self.assertIsNone(t.status)
         self.assertEqual(t._unused, Container(name='VTODO'))
 
     def test_init_non_exclusive_arguments(self):
