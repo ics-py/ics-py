@@ -25,6 +25,7 @@ from .utils import (
     escape_string,
 )
 from .parse import ContentLine, Container
+from .attendee import Attendee
 
 
 class Event(Component):
@@ -530,6 +531,17 @@ def categories(event, line):
         # In the regular expression: Only match unquoted commas.
         for cat in re.split("(?<!\\\\),", line.value):
             event.categories.update({unescape_string(cat)})
+
+
+@Event._extracts('ATTENDEE')
+def attendee(event, line):
+    if line:
+        # skip the "mailto:" part to get only email
+        email = line.value[7:]
+        common_name = line.params.get('CN', [''])[0]
+        rsvp = line.params.get('RSVP', [None])[0]
+        a = Attendee(email=email, common_name=common_name, rsvp=rsvp)
+        event.add_attendee(a)
 
 
 # -------------------

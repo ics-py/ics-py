@@ -149,11 +149,11 @@ class TestEvent(unittest.TestCase):
     def test_attendee(self):
         a = Attendee(email='email@email.com')
         line = str(a)
-        self.assertIn("ATTENDEE;CN='email@email.com", line)
+        self.assertIn("ATTENDEE;CN=email@email.com", line)
 
         a2 = Attendee(email='email@email.com', common_name='Email')
         line = str(a2)
-        self.assertIn("ATTENDEE;CN='Email':mailto:email@email.com", line)
+        self.assertIn("ATTENDEE;CN=Email:mailto:email@email.com", line)
 
         with self.assertRaises(ValueError):
             Attendee(email=None)
@@ -181,7 +181,7 @@ class TestEvent(unittest.TestCase):
         a = Attendee(email='email@email.com')
         e.add_attendee(a)
         lines = str(e).splitlines()
-        self.assertIn("ATTENDEE;CN='email@email.com':mailto:email@email.com", lines)
+        self.assertIn("ATTENDEE;CN=email@email.com:mailto:email@email.com", lines)
 
     def test_always_uid(self):
         e = Event()
@@ -448,5 +448,16 @@ class TestEvent(unittest.TestCase):
 
         text = str(event_a)
 
-        self.assertIn("ATTENDEE;CN='Test';RSVP=TRUE:mailto:test@test.com", text)
-        self.assertIn("ATTENDEE;CN='test2@test.com':mailto:test2@test.com", text)
+        self.assertIn("ATTENDEE;CN=Test;RSVP=TRUE:mailto:test@test.com", text)
+        self.assertIn("ATTENDEE;CN=test2@test.com:mailto:test2@test.com", text)
+
+    def test_attendee_input(self):
+        c = Calendar(cal12)
+
+        self.assertEqual(len(c.events), 1)
+        self.assertEqual(len(c.events[0].attendees), 1)
+        a = c.events[0].attendees.pop()
+
+        self.assertEqual(a.email, "test@test.com")
+        self.assertEqual(a.common_name, "test")
+        self.assertFalse(a.rsvp)

@@ -61,7 +61,7 @@ class Attendee(object):
     def get_params(self):
         params = {}
         if self.common_name:
-            params.update({'CN': ["'%s'" % self.common_name]})
+            params.update({'CN': ['%s' % self.common_name]})
 
         if self.rsvp is not None:
             params.update({'RSVP': ["TRUE" if self.rsvp else "FALSE"]})
