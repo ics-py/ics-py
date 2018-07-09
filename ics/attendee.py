@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
+
 from .parse import ContentLine
 
 
@@ -59,7 +61,7 @@ class Attendee(object):
         return str(ContentLine('ATTENDEE', params=self.get_params(), value='mailto:%s' % self.email))
 
     def get_params(self):
-        params = {}
+        params = OrderedDict()
         if self.common_name:
             params.update({'CN': ['%s' % self.common_name]})
 
