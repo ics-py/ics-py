@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
-from six import PY2, PY3
-from six.moves import filter, map, range
+
 
 cal1 = """
 BEGIN:VCALENDAR
@@ -197,7 +196,7 @@ END:VEVENT
 END:VCALENDAR
 """
 
-# Event with URL
+# Event with URL and STATUS
 cal16 = u"""
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -209,6 +208,8 @@ DTSTART;TZID=Europe/Berlin:20120608T202500
 DTEND;TZID=Europe/Berlin:20120608T212500
 LOCATION:MUC
 URL:http://example.com/pub/calendars/jsmith/mytime.ics
+STATUS:CONFIRMED
+CATEGORIES:Simple Category,My "Quoted" Category,Category\\, with comma
 END:VEVENT
 
 END:VCALENDAR
@@ -596,5 +597,3 @@ unfolded_cal26 = [
     'END:VEVENT',
     'END:VCALENDAR',
 ]
-
-

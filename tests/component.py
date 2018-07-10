@@ -26,13 +26,6 @@ class TestComponent(unittest.TestCase):
         with self.assertRaises(ValueError):
             Calendar._from_container(container)
 
-    def test_no_urepr(self):
-        class Dummy(Component):
-            pass
-        d = Dummy()
-        adress = hex(id(d))
-        self.assertEqual('<Dummy at {}>'.format(adress), repr(d))
-
     def test_extractor(self):
         c = CT1()
         c.some_attr = "foobar"
