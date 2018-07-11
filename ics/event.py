@@ -168,7 +168,7 @@ class Event(Component):
     @end.setter
     def end(self, value):
         value = get_arrow(value)
-        if value and value < self._begin:
+        if value and self._begin and value < self._begin:
             raise ValueError('End must be after begin')
 
         self._end_time = value

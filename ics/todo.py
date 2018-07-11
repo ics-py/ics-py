@@ -179,7 +179,7 @@ class Todo(Component):
     @due.setter
     def due(self, value):
         value = get_arrow(value)
-        if value and value < self._begin:
+        if value and self._begin and value < self._begin:
             raise ValueError('Due must be after begin')
 
         self._due_time = value
