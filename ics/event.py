@@ -56,7 +56,7 @@ class Event(Component):
                  categories=None,
                  status=None,
                  ):
-      
+
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
