@@ -13,6 +13,10 @@ build/
 # Virtualenvs
 ve
 ve3
+/bin
+/include/
+/lib/
+/pip-selfcheck.json
 
 # doc builds
 doc/_build/*
@@ -21,3 +25,4 @@ doc/_build/*
 .cache/
 .coverage
 htmlcov
+/.pytest_cache/
