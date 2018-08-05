@@ -206,12 +206,12 @@ class TestCalendar(unittest.TestCase):
         c = Calendar(cal1)
         self.assertEqual(c.creator, '-//Apple Inc.//Mac OS X 10.9//EN')
         self.assertEqual(c.method, 'PUBLISH')
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertFalse(e.all_day)
         self.assertEqual(arrow.get(2013, 10, 29, 9, 30), e.begin)
         self.assertEqual(arrow.get(2013, 10, 29, 10, 30), e.end)
         self.assertEqual(1, len(c.events))
-        t = c.todos[0]
+        t = next(iter(c.todos))
         self.assertEqual(t.dtstamp, arrow.get(2018, 2, 18, 15, 47))
         self.assertEqual(t.uid, 'Uid')
         self.assertEqual(len(c.todos), 1)
