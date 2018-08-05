@@ -74,6 +74,13 @@ Testing & Docs
 
 .. code-block:: bash
 
+    # setup virtual environment
+    $ sudo pip install virtualenv
+    $ virtualenv .
+    $ source bin/activate      # bash
+    $ source bin/activate.csh  # csh
+    $ source bin/activate.fish # fish
+
     # tests
     $ pip install -r requirements.txt
     $ pip install -r dev/requirements-test.txt
