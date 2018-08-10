@@ -504,7 +504,7 @@ def uid(event, line):
 def alarms(event, lines):
     def alarm_factory(x):
         af = AlarmFactory.get_type_from_container(x)
-        if af != None:
+        if af is not None:
             return af._from_container(x)
     event.alarms = list(map(alarm_factory, lines))
 
