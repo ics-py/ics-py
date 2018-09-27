@@ -551,6 +551,7 @@ def o_all_day(event, container):
             container.append(ContentLine('DTEND', params={'VALUE': ('DATE',)},
                                          value=arrow_date_to_iso(event.end)))
 
+
 @Event._outputs
 def o_duration(event, container):
     # TODO : DURATION
