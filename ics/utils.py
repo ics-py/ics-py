@@ -49,7 +49,7 @@ def iso_to_arrow(time_container, available_tz={}):
             selected_tz = available_tz.get(tz, 'UTC')
         return arrow.get(naive, selected_tz)
     else:
-        return arrow.get(val)
+        return arrow.get(val, 'YYYYMMDDTHHmmZ')
 
     # TODO : support floating (ie not bound to any time zone) times (cf
     # http://www.kanzaki.com/docs/ical/dateTime.html)
@@ -154,7 +154,10 @@ def get_arrow(value):
     elif isinstance(value, dict):
         return arrow.get(**value)
     else:
-        return arrow.get(value)
+        try:
+            return arrow.get(value, 'YYYYMMDDTHHmmZ')
+        except arrow.parser.ParserError:
+            return arrow.get(value)
 
 
 def arrow_to_iso(instant):

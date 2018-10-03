@@ -7,6 +7,7 @@ Ics.py is written and maintained by Nikita Marchant <nikita.marchant@gmail.com>.
 Other contributors, listed alphabetically, are:
 
 * `@aureooms <https://github.com/aureooms>`_
+* `@chauffer <https://github.com/chauffer>`_
 * `@ConnyOnny <https://github.com/ConnyOnny>`_
 * `@ConnyOnny <https://github.com/ConnyOnny>`_
 * `@davidjb <https://github.com/davidjb>`_
