@@ -7,6 +7,7 @@ Ics.py changelog
 **************
 
  - Drop support for Python 2.7 and 3.3.
+ - Improve TRIGGER DURATION parsing logic
 
 **************
 0.4
