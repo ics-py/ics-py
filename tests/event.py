@@ -3,6 +3,7 @@ import pytest
 from datetime import timedelta as td, datetime as dt
 import arrow
 from ics.attendee import Attendee
+from ics.organizer import Organizer
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
@@ -112,6 +113,7 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.url, None)
         self.assertEqual(e._unused, Container(name='VEVENT'))
         self.assertEqual(e.status, None)
+        self.assertEqual(e.organizer, None)
 
     def test_has_end(self):
         e = Event()
@@ -161,6 +163,12 @@ class TestEvent(unittest.TestCase):
         e.add_attendee(a)
         lines = str(e).splitlines()
         self.assertIn("ATTENDEE;CN='email@email.com':mailto:email@email.com", lines)
+
+    def test_organizer(self):
+        e = Event()
+        e.organizer = Organizer(email='email@email.com', common_name='Mister Email')
+        lines = str(e).splitlines()
+        self.assertIn("ORGANIZER;CN='email@email.com':mailto:email@email.com", lines)
 
     def test_always_uid(self):
         e = Event()

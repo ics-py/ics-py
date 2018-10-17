@@ -55,6 +55,7 @@ class Event(Component):
                  attendees=None,
                  categories=None,
                  status=None,
+                 organizer=None,
                  ):
 
         """Instantiates a new :class:`ics.event.Event`.
@@ -74,6 +75,7 @@ class Event(Component):
             attendees (:class:`ics.attendee.Attendee`)
             categories (set of string)
             status (string)
+            organizer (:class:`ics.organizer.Organizer`)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -83,6 +85,7 @@ class Event(Component):
         self._end_time = None
         self._begin = None
         self._begin_precision = None
+        self.organizer = None
         self.uid = uid_gen() if not uid else uid
         self.description = description
         self.created = get_arrow(created)
@@ -481,6 +484,11 @@ def summary(event, line):
     event.name = unescape_string(line.value) if line else None
 
 
+@Event._extracts('ORGANIZER')
+def organizer(event, line):
+    event.organizer = unescape_string(line.value) if line else None
+
+
 @Event._extracts('DESCRIPTION')
 def description(event, line):
     event.description = unescape_string(line.value) if line else None
@@ -577,6 +585,12 @@ def o_end(event, container):
 def o_summary(event, container):
     if event.name:
         container.append(ContentLine('SUMMARY', value=escape_string(event.name)))
+
+
+@Event._outputs
+def o_organizer(event, container):
+    if event.organizer:
+        container.append(str(event.organizer))
 
 
 @Event._outputs
