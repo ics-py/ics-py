@@ -168,7 +168,7 @@ class TestEvent(unittest.TestCase):
         e = Event()
         e.organizer = Organizer(email='email@email.com', common_name='Mister Email')
         lines = str(e).splitlines()
-        self.assertIn("ORGANIZER;CN='email@email.com':mailto:email@email.com", lines)
+        self.assertIn("ORGANIZER;CN='Mister Email':mailto:email@email.com", lines)
 
     def test_always_uid(self):
         e = Event()
