@@ -125,7 +125,7 @@ class TestDisplayAlarm(unittest.TestCase):
 
     def test_alarm_without_repeat_extraction(self):
         c = Calendar(cal21)
-        a = c.events[0].alarms[0]
+        a = next(iter(c.events)).alarms[0]
         self.assertEqual(a.trigger, timedelta(hours=1))
         self.assertIsNone(a.repeat)
         self.assertIsNone(a.duration)
@@ -133,7 +133,7 @@ class TestDisplayAlarm(unittest.TestCase):
 
     def test_alarm_with_repeat_extraction(self):
         c = Calendar(cal22)
-        a = c.events[0].alarms[0]
+        a = next(iter(c.events)).alarms[0]
         self.assertEqual(a.trigger, timedelta(hours=1))
         self.assertEqual(a.repeat, 2)
         self.assertEqual(a.duration, timedelta(minutes=10))
@@ -141,7 +141,7 @@ class TestDisplayAlarm(unittest.TestCase):
 
     def test_alarm_without_repeat_datetime_trigger_extraction(self):
         c = Calendar(cal23)
-        a = c.events[0].alarms[0]
+        a = next(iter(c.events)).alarms[0]
 
         alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
         self.assertEqual(a.trigger, arrow.get(alarm_time))
@@ -189,7 +189,7 @@ class TestAudioAlarm(unittest.TestCase):
 
     def test_alarm_without_attach_extraction(self):
         c = Calendar(cal24)
-        a = c.events[0].alarms[0]
+        a = next(iter(c.events)).alarms[0]
         alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
 
         self.assertEqual(a.action, 'AUDIO')
@@ -201,7 +201,7 @@ class TestAudioAlarm(unittest.TestCase):
 
     def test_alarm_with_attach_extraction(self):
         c = Calendar(cal25)
-        a = c.events[0].alarms[0]
+        a = next(iter(c.events)).alarms[0]
         alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
 
         self.assertEqual(a.action, 'AUDIO')

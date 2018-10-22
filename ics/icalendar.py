@@ -35,8 +35,8 @@ class Calendar(Component):
 
         Args:
             imports (string or list of lines/strings): data to be imported into the Calendar(),
-            events (list of Event): :class:`ics.event.Event`s to be added to the calendar
-            todos (list of Todo): :class:`ics.event.Todo`s to be added to the calendar
+            events (set of Event): :class:`ics.event.Event`s to be added to the calendar
+            todos (set of Todo): :class:`ics.event.Todo`s to be added to the calendar
             creator (string): uid of the creator program.
 
         If `imports` is specified, every other argument will be ignored.
@@ -203,7 +203,7 @@ def events(calendar, lines):
     # timezones list
     def event_factory(x):
         return Event._from_container(x, tz=calendar._timezones)
-    calendar.events = list(map(event_factory, lines))
+    calendar.events = set(map(event_factory, lines))
 
 
 @Calendar._extracts('VTODO', multiple=True)
@@ -212,7 +212,7 @@ def todos(calendar, lines):
     # timezones list
     def todo_factory(x):
         return Todo._from_container(x, tz=calendar._timezones)
-    calendar.todos = list(map(todo_factory, lines))
+    calendar.todos = set(map(todo_factory, lines))
 
 
 # -------------------
