@@ -7,6 +7,7 @@ Ics.py changelog
 **************
 
  - Drop support for Python 2.7 and 3.3.
+ - Fixed NONE type support for Alarms
 
 **************
 0.4
