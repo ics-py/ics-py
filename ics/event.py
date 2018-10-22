@@ -314,7 +314,18 @@ class Event(Component):
                     return False
                 else:
                     return self.name < other.name
-            return self.begin < other.begin
+            # if we arrive here, at least one of self.begin
+            # and other.begin is not None
+            # so if they are equal, they are both Arrow
+            elif self.begin == other.begin:
+                if self.end is None:
+                    return True
+                elif other.end is None:
+                    return False
+                else:
+                    return self.end < other.end
+            else:
+                return self.begin < other.begin
         if isinstance(other, datetime):
             return self.begin < other
         raise NotImplementedError(
@@ -331,33 +342,25 @@ class Event(Component):
                     return False
                 else:
                     return self.name <= other.name
-            return self.begin <= other.begin
+            elif self.begin == other.begin:
+                if self.end is None:
+                    return True
+                elif other.end is None:
+                    return False
+                else:
+                    return self.end <= other.end
+            else:
+                return self.begin <= other.begin
         if isinstance(other, datetime):
             return self.begin <= other
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
     def __gt__(self, other):
-        if isinstance(other, Event):
-            if self.begin is None and other.begin is None:
-                # TODO : handle py3 case when a name is None
-                return self.name > other.name
-            return self.begin > other.begin
-        if isinstance(other, datetime):
-            return self.begin > other
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
+        return not self.__le__(other)
 
     def __ge__(self, other):
-        if isinstance(other, Event):
-            if self.begin is None and other.begin is None:
-                # TODO : handle py3 case when a name is None
-                return self.name >= other.name
-            return self.begin >= other.begin
-        if isinstance(other, datetime):
-            return self.begin >= other
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
+        return not self.__lt__(other)
 
     def __or__(self, other):
         if isinstance(other, Event):

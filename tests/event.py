@@ -1,6 +1,6 @@
 import unittest
 import pytest
-from datetime import timedelta as td, datetime as dt
+from datetime import datetime, timedelta as td, datetime as dt
 import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
@@ -180,6 +180,35 @@ class TestEvent(unittest.TestCase):
         self.assertFalse(Event(name="a") > Event(name="a"))
         self.assertFalse(Event(name="b") < Event(name="b"))
 
+    def test_cmp_by_start_time(self):
+        ev1 = Event(begin=datetime(2018, 6, 29, 6))
+        ev2 = Event(begin=datetime(2018, 6, 29, 7))
+        self.assertLess(ev1, ev2)
+        self.assertGreaterEqual(ev2, ev1)
+        self.assertLessEqual(ev1, ev2)
+        self.assertGreater(ev2, ev1)
+
+    def test_cmp_by_start_time_with_end_time(self):
+        ev1 = Event(begin=datetime(2018, 6, 29, 5), end=datetime(2018, 6, 29, 7))
+        ev2 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 8))
+        ev3 = Event(begin=datetime(2018, 6, 29, 6))
+        self.assertLess(ev1, ev2)
+        self.assertGreaterEqual(ev2, ev1)
+        self.assertLessEqual(ev1, ev2)
+        self.assertGreater(ev2, ev1)
+        self.assertLess(ev3, ev2)
+        self.assertGreaterEqual(ev2, ev3)
+        self.assertLessEqual(ev3, ev2)
+        self.assertGreater(ev2, ev3)
+
+    def test_cmp_by_end_time(self):
+        ev1 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 7))
+        ev2 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 8))
+        self.assertLess(ev1, ev2)
+        self.assertGreaterEqual(ev2, ev1)
+        self.assertLessEqual(ev1, ev2)
+        self.assertGreater(ev2, ev1)
+
     def test_unescape_summary(self):
         c = Calendar(cal15)
         e = c.events[0]
@@ -241,7 +270,7 @@ class TestEvent(unittest.TestCase):
     def test_category_output(self):
         cat = "Simple category"
         e = Event(name="Name", categories={cat})
-        self.assertIn("CATEGORIES:"+cat, str(e).splitlines())
+        self.assertIn("CATEGORIES:" + cat, str(e).splitlines())
 
     def test_all_day_with_end(self):
         c = Calendar(cal20)
