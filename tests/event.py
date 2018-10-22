@@ -1,6 +1,6 @@
 import unittest
 import pytest
-from datetime import timedelta as td, datetime as dt
+from datetime import datetime, timedelta as td, datetime as dt
 import arrow
 from ics.attendee import Attendee
 from ics.organizer import Organizer
@@ -42,7 +42,7 @@ class TestEvent(unittest.TestCase):
 
     def test_event_with_duration(self):
         c = Calendar(cal12)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertEqual(e._duration, td(1, 3600))
         self.assertEqual(e.end - e.begin, td(1, 3600))
 
@@ -205,14 +205,43 @@ class TestEvent(unittest.TestCase):
         self.assertFalse(Event(name="a") > Event(name="a"))
         self.assertFalse(Event(name="b") < Event(name="b"))
 
+    def test_cmp_by_start_time(self):
+        ev1 = Event(begin=datetime(2018, 6, 29, 6))
+        ev2 = Event(begin=datetime(2018, 6, 29, 7))
+        self.assertLess(ev1, ev2)
+        self.assertGreaterEqual(ev2, ev1)
+        self.assertLessEqual(ev1, ev2)
+        self.assertGreater(ev2, ev1)
+
+    def test_cmp_by_start_time_with_end_time(self):
+        ev1 = Event(begin=datetime(2018, 6, 29, 5), end=datetime(2018, 6, 29, 7))
+        ev2 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 8))
+        ev3 = Event(begin=datetime(2018, 6, 29, 6))
+        self.assertLess(ev1, ev2)
+        self.assertGreaterEqual(ev2, ev1)
+        self.assertLessEqual(ev1, ev2)
+        self.assertGreater(ev2, ev1)
+        self.assertLess(ev3, ev2)
+        self.assertGreaterEqual(ev2, ev3)
+        self.assertLessEqual(ev3, ev2)
+        self.assertGreater(ev2, ev3)
+
+    def test_cmp_by_end_time(self):
+        ev1 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 7))
+        ev2 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 8))
+        self.assertLess(ev1, ev2)
+        self.assertGreaterEqual(ev2, ev1)
+        self.assertLessEqual(ev1, ev2)
+        self.assertGreater(ev2, ev1)
+
     def test_unescape_summary(self):
         c = Calendar(cal15)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertEqual(e.name, "Hello, \n World; This is a backslash : \\ and another new \n line")
 
     def test_unescapte_texts(self):
         c = Calendar(cal17)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertEqual(e.name, "Some special ; chars")
         self.assertEqual(e.location, "In, every text field")
         self.assertEqual(e.description, "Yes, all of them;")
@@ -238,7 +267,7 @@ class TestEvent(unittest.TestCase):
 
     def test_url_input(self):
         c = Calendar(cal16)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertEqual(e.url, "http://example.com/pub/calendars/jsmith/mytime.ics")
 
     def test_url_output(self):
@@ -248,7 +277,7 @@ class TestEvent(unittest.TestCase):
 
     def test_status_input(self):
         c = Calendar(cal16)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertEqual(e.status, "CONFIRMED")
 
     def test_status_output(self):
@@ -258,7 +287,7 @@ class TestEvent(unittest.TestCase):
 
     def test_category_input(self):
         c = Calendar(cal16)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertIn("Simple Category", e.categories)
         self.assertIn("My \"Quoted\" Category", e.categories)
         self.assertIn("Category, with comma", e.categories)
@@ -266,27 +295,27 @@ class TestEvent(unittest.TestCase):
     def test_category_output(self):
         cat = "Simple category"
         e = Event(name="Name", categories={cat})
-        self.assertIn("CATEGORIES:"+cat, str(e).splitlines())
+        self.assertIn("CATEGORIES:" + cat, str(e).splitlines())
 
     def test_all_day_with_end(self):
         c = Calendar(cal20)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertTrue(e.all_day)
 
     def test_not_all_day(self):
         c = Calendar(cal16)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertFalse(e.all_day)
 
     def test_all_day_duration(self):
         c = Calendar(cal20)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertTrue(e.all_day)
         self.assertEqual(e.duration, td(days=3))
 
     def test_make_all_day_idempotence(self):
         c = Calendar(cal18)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertFalse(e.all_day)
         e2 = e.clone()
         e2.make_all_day()
@@ -312,7 +341,7 @@ class TestEvent(unittest.TestCase):
 
     def test_transparent_input(self):
         c = Calendar(cal19)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertEqual(e.transparent, False)
 
     def test_transparent_output(self):
@@ -322,7 +351,7 @@ class TestEvent(unittest.TestCase):
 
     def test_default_transparent_input(self):
         c = Calendar(cal18)
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertEqual(e.transparent, False)
 
     def test_default_transparent_output(self):
