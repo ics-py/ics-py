@@ -76,10 +76,8 @@ Testing & Docs
 
     # setup virtual environment
     $ sudo pip install virtualenv
-    $ virtualenv .
-    $ source bin/activate      # bash
-    $ source bin/activate.csh  # csh
-    $ source bin/activate.fish # fish
+    $ virtualenv ve
+    $ source ve/bin/activate
 
     # tests
     $ pip install -r requirements.txt
