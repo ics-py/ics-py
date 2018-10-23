@@ -7,6 +7,12 @@ import sys
 
 from meta import __version__, __title__, __license__, __author__
 
+with open("requirements.txt") as f:
+    install_requires = [line for line in f if line and line[0] not in "#-"]
+
+with open("dev/requirements-test.txt") as f:
+    tests_require = [line for line in f if line and line[0] not in "#-"]
+
 
 class PyTest(TestCommand):
 
@@ -58,16 +64,12 @@ setup(
     url='http://github.com/C4ptainCrunch/ics.py',
     author=__author__,
     author_email='nikita.marchant@gmail.com',
-    install_requires=[
-        "python-dateutil",
-        "arrow==0.4.2",
-        "six>1.5",
-    ],
+    install_requires=install_requires,
     license=__license__,
     packages=['ics'],
     include_package_data=True,
     cmdclass={'test': PyTest},
-    tests_require=['pytest', 'pytest-cov', 'pytest-flakes', 'pytest-pep8'],
+    tests_require=tests_require,
     test_suite="py.test",
     zip_safe=False,
 )

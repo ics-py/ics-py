@@ -7,6 +7,10 @@ Ics.py changelog
 **************
 
  - Drop support for Python 2.7 and 3.3.
+ - Fixed NONE type support for Alarms
+ - Upgrade arrow to 0.11 and fix internal call to arrow to specify the string
+   format (thanks @muffl0n, @e-c-d and @chauffer)
+
 
 **************
 0.4
