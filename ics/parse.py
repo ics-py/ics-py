@@ -169,6 +169,7 @@ def lines_to_container(lines):
 def string_to_container(txt):
     return lines_to_container(txt.splitlines())
 
+
 if __name__ == "__main__":
     from tests.fixture import cal1
 
