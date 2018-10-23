@@ -23,12 +23,15 @@ def remove_x(container):
         if item.name.startswith('X-'):
             del container[i]
 
-_abbreviated_date_formats = dict((len(k), k) for k in (
+
+DATE_FORMATS = dict((len(k), k) for k in (
     'YYYYMM',
     'YYYYMMDD',
     'YYYYMMDDTHH',
     'YYYYMMDDTHHmm',
     'YYYYMMDDTHHmmss'))
+
+
 def arrow_get(string):
     '''this function exists because ICS uses ISO 8601 without dashes or
     colons, i.e. not ISO 8601 at all.'''
@@ -42,7 +45,8 @@ def arrow_get(string):
         return arrow.get(string)
 
     string = string.rstrip('Z')
-    return arrow.get(string, _abbreviated_date_formats[len(string)])
+    return arrow.get(string, DATE_FORMATS[len(string)])
+
 
 def iso_to_arrow(time_container, available_tz={}):
     if time_container is None:
