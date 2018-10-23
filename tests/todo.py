@@ -313,13 +313,13 @@ class TestTodo(unittest.TestCase):
 
     def test_extract(self):
         c = Calendar(cal27)
-        t = c.todos[0]
-        self.assertEqual(t.dtstamp, arrow.get('20180218T154700Z'))
+        t = next(iter(c.todos))
+        self.assertEqual(t.dtstamp, arrow.get('2018-02-18T15:47:00Z'))
         self.assertEqual(t.uid, 'Uid')
-        self.assertEqual(t.completed, arrow.get('20180418T150001Z+00:00'))
-        self.assertEqual(t.created, arrow.get('20180218T154800Z+00:00'))
+        self.assertEqual(t.completed, arrow.get('2018-04-18T15:00:00Z'))
+        self.assertEqual(t.created, arrow.get('2018-02-18T15:48:00Z'))
         self.assertEqual(t.description, 'Lorem ipsum dolor sit amet.')
-        self.assertEqual(t.begin, arrow.get('20180218T164800Z+00:00'))
+        self.assertEqual(t.begin, arrow.get('2018-02-18T16:48:00Z'))
         self.assertEqual(t.location, 'Earth')
         self.assertEqual(t.percent, 0)
         self.assertEqual(t.priority, 0)
@@ -330,8 +330,8 @@ class TestTodo(unittest.TestCase):
 
     def test_extract_due(self):
         c = Calendar(cal28)
-        t = c.todos[0]
-        self.assertEqual(t.due, arrow.get('20180218T164800Z+00:00'))
+        t = next(iter(c.todos))
+        self.assertEqual(t.due, arrow.get('2018-02-18T16:48:00Z'))
 
     def test_extract_due_error_duration(self):
         with self.assertRaises(ValueError):
@@ -343,7 +343,7 @@ class TestTodo(unittest.TestCase):
 
     def test_output(self):
         c = Calendar(cal27)
-        t = c.todos[0]
+        t = next(iter(c.todos))
 
         test_str = CRLF.join(("BEGIN:VTODO",
                               "SEQUENCE:0",
@@ -381,7 +381,7 @@ class TestTodo(unittest.TestCase):
 
     def test_unescape_texts(self):
         c = Calendar(cal31)
-        t = c.todos[0]
+        t = next(iter(c.todos))
         self.assertEqual(t.name, "Hello, \n World; This is a backslash : \\ and another new \n line")
         self.assertEqual(t.location, "In, every text field")
         self.assertEqual(t.description, "Yes, all of them;")

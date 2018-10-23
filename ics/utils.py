@@ -24,6 +24,30 @@ def remove_x(container):
             del container[i]
 
 
+DATE_FORMATS = dict((len(k), k) for k in (
+    'YYYYMM',
+    'YYYYMMDD',
+    'YYYYMMDDTHH',
+    'YYYYMMDDTHHmm',
+    'YYYYMMDDTHHmmss'))
+
+
+def arrow_get(string):
+    '''this function exists because ICS uses ISO 8601 without dashes or
+    colons, i.e. not ISO 8601 at all.'''
+
+    # replace slashes with dashes
+    if '/' in string:
+        string = string.replace('/', '-')
+
+    # if string contains dashes, assume it to be proper ISO 8601
+    if '-' in string:
+        return arrow.get(string)
+
+    string = string.rstrip('Z')
+    return arrow.get(string, DATE_FORMATS[len(string)])
+
+
 def iso_to_arrow(time_container, available_tz={}):
     if time_container is None:
         return None
@@ -43,13 +67,13 @@ def iso_to_arrow(time_container, available_tz={}):
         val = time_container.value
 
     if tz and not (val[-1].upper() == 'Z'):
-        naive = arrow.get(val).naive
+        naive = arrow_get(val).naive
         selected_tz = gettz(tz)
         if not selected_tz:
             selected_tz = available_tz.get(tz, 'UTC')
         return arrow.get(naive, selected_tz)
     else:
-        return arrow.get(val)
+        return arrow_get(val)
 
     # TODO : support floating (ie not bound to any time zone) times (cf
     # http://www.kanzaki.com/docs/ical/dateTime.html)
