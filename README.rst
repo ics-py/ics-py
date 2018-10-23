@@ -74,6 +74,11 @@ Testing & Docs
 
 .. code-block:: bash
 
+    # setup virtual environment
+    $ sudo pip install virtualenv
+    $ virtualenv ve
+    $ source ve/bin/activate
+
     # tests
     $ pip install -r requirements.txt
     $ pip install -r dev/requirements-test.txt
