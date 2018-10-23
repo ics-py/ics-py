@@ -32,6 +32,8 @@ class AlarmFactory(object):
             return DisplayAlarm
         elif action_type == 'AUDIO':
             return AudioAlarm
+        elif action_type == 'NONE':
+            return None
 
         raise ValueError('Invalid alarm action')
 

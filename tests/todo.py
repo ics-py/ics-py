@@ -31,6 +31,7 @@ class TestTodo(unittest.TestCase):
         self.assertIsNone(t.priority)
         self.assertIsNone(t.name)
         self.assertIsNone(t.url)
+        self.assertIsNone(t.status)
         self.assertEqual(t._unused, Container(name='VTODO'))
 
     def test_init_non_exclusive_arguments(self):
@@ -312,7 +313,7 @@ class TestTodo(unittest.TestCase):
 
     def test_extract(self):
         c = Calendar(cal27)
-        t = c.todos[0]
+        t = next(iter(c.todos))
         self.assertEqual(t.dtstamp, arrow.get('2018-02-18T15:47:00Z'))
         self.assertEqual(t.uid, 'Uid')
         self.assertEqual(t.completed, arrow.get('2018-04-18T15:00:00Z'))
@@ -329,7 +330,7 @@ class TestTodo(unittest.TestCase):
 
     def test_extract_due(self):
         c = Calendar(cal28)
-        t = c.todos[0]
+        t = next(iter(c.todos))
         self.assertEqual(t.due, arrow.get('2018-02-18T16:48:00Z'))
 
     def test_extract_due_error_duration(self):
@@ -342,7 +343,7 @@ class TestTodo(unittest.TestCase):
 
     def test_output(self):
         c = Calendar(cal27)
-        t = c.todos[0]
+        t = next(iter(c.todos))
 
         test_str = CRLF.join(("BEGIN:VTODO",
                               "SEQUENCE:0",
@@ -380,7 +381,7 @@ class TestTodo(unittest.TestCase):
 
     def test_unescape_texts(self):
         c = Calendar(cal31)
-        t = c.todos[0]
+        t = next(iter(c.todos))
         self.assertEqual(t.name, "Hello, \n World; This is a backslash : \\ and another new \n line")
         self.assertEqual(t.location, "In, every text field")
         self.assertEqual(t.description, "Yes, all of them;")

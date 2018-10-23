@@ -50,7 +50,8 @@ class Todo(Component):
                  url=None,
                  due=None,
                  duration=None,
-                 alarms=None):
+                 alarms=None,
+                 status=None):
         """Instantiates a new :class:`ics.todo.Todo`.
 
         Args:
@@ -68,6 +69,7 @@ class Todo(Component):
             due (Arrow-compatible)
             duration (datetime.timedelta)
             alarms (:class:`ics.alarm.Alarm`)
+            status (string)
 
         Raises:
             ValueError: if `duration` and `due` are specified at the same time
@@ -108,6 +110,7 @@ class Todo(Component):
 
         if alarms is not None:
             self.alarms.update(set(alarms))
+        self.status = status
 
     @property
     def percent(self):
@@ -215,6 +218,19 @@ class Todo(Component):
 
         if value:
             self._due_time = None
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        if isinstance(value, str):
+            value = value.upper()
+        statuses = (None, 'NEEDS-ACTION', 'COMPLETED', 'IN-PROCESS', 'CANCELLED')
+        if value not in statuses:
+            raise ValueError('status must be one of %s' % statuses)
+        self._status = value
 
     def __repr__(self):
         if self.name is None:
@@ -430,6 +446,12 @@ def alarms(todo, lines):
     todo.alarms = list(map(alarm_factory, lines))
 
 
+@Todo._extracts('STATUS')
+def status(event, line):
+    if line:
+        event.status = line.value
+
+
 # -------------------
 # ----- Outputs -----
 # -------------------
@@ -536,3 +558,9 @@ def o_duration(todo, container):
 def o_alarm(todo, container):
     for alarm in todo.alarms:
         container.append(str(alarm))
+
+
+@Todo._outputs
+def o_status(todo, container):
+    if todo.status:
+        container.append(ContentLine('STATUS', value=todo.status))

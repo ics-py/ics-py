@@ -52,7 +52,9 @@ class Event(Component):
                  url=None,
                  transparent=False,
                  alarms=None,
-                 categories=None):
+                 categories=None,
+                 status=None,
+                 ):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -66,8 +68,9 @@ class Event(Component):
             location (string)
             url (string)
             transparent (Boolean)
-            alarms (:class:`ics.alarm.Alarm`
+            alarms (:class:`ics.alarm.Alarm`)
             categories (set of string)
+            status (string)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -101,6 +104,7 @@ class Event(Component):
 
         if alarms is not None:
             self.alarms.update(set(alarms))
+        self.status = status
 
         if categories is not None:
             self.categories.update(set(categories))
@@ -235,6 +239,19 @@ class Event(Component):
         else:
             self._end_time = calculated_end
 
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        if isinstance(value, str):
+            value = value.upper()
+        statuses = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
+        if value not in statuses:
+            raise ValueError('status must be one of %s' % statuses)
+        self._status = value
+
     def __repr__(self):
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
@@ -297,7 +314,18 @@ class Event(Component):
                     return False
                 else:
                     return self.name < other.name
-            return self.begin < other.begin
+            # if we arrive here, at least one of self.begin
+            # and other.begin is not None
+            # so if they are equal, they are both Arrow
+            elif self.begin == other.begin:
+                if self.end is None:
+                    return True
+                elif other.end is None:
+                    return False
+                else:
+                    return self.end < other.end
+            else:
+                return self.begin < other.begin
         if isinstance(other, datetime):
             return self.begin < other
         raise NotImplementedError(
@@ -314,33 +342,25 @@ class Event(Component):
                     return False
                 else:
                     return self.name <= other.name
-            return self.begin <= other.begin
+            elif self.begin == other.begin:
+                if self.end is None:
+                    return True
+                elif other.end is None:
+                    return False
+                else:
+                    return self.end <= other.end
+            else:
+                return self.begin <= other.begin
         if isinstance(other, datetime):
             return self.begin <= other
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
     def __gt__(self, other):
-        if isinstance(other, Event):
-            if self.begin is None and other.begin is None:
-                # TODO : handle py3 case when a name is None
-                return self.name > other.name
-            return self.begin > other.begin
-        if isinstance(other, datetime):
-            return self.begin > other
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
+        return not self.__le__(other)
 
     def __ge__(self, other):
-        if isinstance(other, Event):
-            if self.begin is None and other.begin is None:
-                # TODO : handle py3 case when a name is None
-                return self.name >= other.name
-            return self.begin >= other.begin
-        if isinstance(other, datetime):
-            return self.begin >= other
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
+        return not self.__lt__(other)
 
     def __or__(self, other):
         if isinstance(other, Event):
@@ -487,8 +507,15 @@ def uid(event, line):
 def alarms(event, lines):
     def alarm_factory(x):
         af = AlarmFactory.get_type_from_container(x)
-        return af._from_container(x)
+        if af is not None:
+            return af._from_container(x)
     event.alarms = list(map(alarm_factory, lines))
+
+
+@Event._extracts('STATUS')
+def status(event, line):
+    if line:
+        event.status = line.value
 
 
 @Event._extracts('CATEGORIES')
@@ -589,6 +616,12 @@ def o_alarm(event, container):
 
 
 @Event._outputs
+def o_status(event, container):
+    if event.status:
+        container.append(ContentLine('STATUS', value=event.status))
+
+
+@Event._outputs
 def o_categories(event, container):
-    if bool(event.categories):
+    if event.categories:
         container.append(ContentLine('CATEGORIES', value=','.join([escape_string(s) for s in event.categories])))
