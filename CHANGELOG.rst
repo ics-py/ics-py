@@ -12,7 +12,7 @@ Ics.py changelog
  - Upgrade arrow to 0.11 and fix internal call to arrow to specify the string
    format (thanks @muffl0n, @e-c-d and @chauffer)
  - Fix all-day events lasting multiple days by using a DTEND with a date and not a datetime (thanks @raspbeguy)
-
+ - Fix off by one error on the DTEND on all day events (issues #92 and #150)
 
 **************
 0.4

@@ -153,7 +153,7 @@ class Event(Component):
             return self.begin + self._duration
         elif self._end_time:  # if end is time defined
             if self.all_day:
-                return self._end_time + timedelta(days=1)
+                return self._end_time
             else:
                 return self._end_time
         elif self._begin:  # if end is not defined
@@ -222,22 +222,23 @@ class Event(Component):
 
         The event will span all the days from the begin to the end day.
         """
-        was_instant = self.duration == timedelta(0)
-        old_end = self.end
-        self._duration = None
-        self._begin_precision = 'day'
-        self._begin = self._begin.floor('day')
-        if was_instant:
-            self._end_time = None
+        if self.all_day:
+            # Do nothing if we already are a all day event
             return
-        floored_end = old_end.floor('day')
-        # this "overflooring" must be done because end times are not included in the interval
-        calculated_end = floored_end - timedelta(days=1) if floored_end == old_end else floored_end
-        if calculated_end == self._begin:
-            # for a one day event, we don't need to save the _end_time
+
+        begin_day = self.begin.floor('day')
+        end_day = self.end.floor('day')
+
+        self._begin = begin_day
+
+        # for a one day event, we don't need a _end_time
+        if begin_day == end_day:
             self._end_time = None
         else:
-            self._end_time = calculated_end
+            self._end_time = end_day + timedelta(days=1)
+
+        self._duration = None
+        self._begin_precision = 'day'
 
     @property
     def status(self):

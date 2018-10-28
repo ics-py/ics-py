@@ -5,7 +5,7 @@ import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20
+from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20, cal32
 
 CRLF = "\r\n"
 
@@ -61,6 +61,25 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.begin, begin)
         self.assertEqual(e._end_time, None)
         self.assertEqual(e._duration, None)
+
+    def test_make_all_day2(self):
+        e = Event(begin="1993/05/24")
+        begin = arrow.get("1993/05/24")
+
+        self.assertEqual(e._begin, begin)
+        self.assertEqual(e.begin, begin)
+
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e.end, begin)
+
+        e.make_all_day()
+
+        self.assertEqual(e._begin, begin)
+        self.assertEqual(e.begin, begin)
+        self.assertEqual(e._begin_precision, "day")
+
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e.end, arrow.get("1993/05/25"))
 
     def test_init_duration_end(self):
         with self.assertRaises(ValueError):
@@ -286,7 +305,7 @@ class TestEvent(unittest.TestCase):
         c = Calendar(cal20)
         e = next(iter(c.events))
         self.assertTrue(e.all_day)
-        self.assertEqual(e.duration, td(days=3))
+        self.assertEqual(e.duration, td(days=2))
 
     def test_make_all_day_idempotence(self):
         c = Calendar(cal18)
@@ -431,3 +450,10 @@ class TestEvent(unittest.TestCase):
         event = Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
         event.join(event)
         assert event == Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+
+    def test_issue_92(self):
+        c = Calendar(cal32)
+        e = list(c.events)[0]
+
+        assert e.begin == arrow.get('2016-10-04')
+        assert e.end == arrow.get('2016-10-05')
