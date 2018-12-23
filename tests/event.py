@@ -1,3 +1,5 @@
+# vim: ts=4:sw=4:expandtab
+
 import unittest
 import pytest
 from datetime import datetime, timedelta as td, datetime as dt
@@ -62,6 +64,7 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e._end_time, None)
         self.assertEqual(e._duration, None)
 
+    # Check all-day without an end time.
     def test_make_all_day2(self):
         e = Event(begin="1993/05/24")
         begin = arrow.get("1993/05/24")
@@ -80,6 +83,95 @@ class TestEvent(unittest.TestCase):
 
         self.assertEqual(e._end_time, None)
         self.assertEqual(e.end, arrow.get("1993/05/25"))
+
+    # Check all-day with an end time.
+    def test_make_all_day3(self):
+        begin = arrow.get("2018-12-23")
+        end = arrow.get("2018-12-25")
+        e = Event(begin=begin, end=end)
+
+        self.assertEqual(e._begin, begin)
+        self.assertEqual(e.begin, begin)
+
+        self.assertEqual(e._end_time, end)
+        self.assertEqual(e.end, end)
+
+        e.make_all_day()
+
+        self.assertEqual(e._begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e.begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e._begin_precision, "day")
+
+        self.assertEqual(e._end_time, arrow.get("2018-12-26"))
+        self.assertEqual(e.end, arrow.get("2018-12-26"))
+
+    # Check that adding an all-day end time works
+    def test_make_all_day4(self):
+        e = Event(begin="2018-12-23 14:35")
+        begin = arrow.get("2018-12-23 14:35")
+
+        self.assertEqual(e._begin, begin)
+        self.assertEqual(e.begin, begin)
+
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e.end, begin)
+
+        e.make_all_day()
+
+        self.assertEqual(e._begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e.begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e._begin_precision, "day")
+
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e.end, arrow.get("2018-12-24"))
+
+        e.end = "2018-12-25"
+        self.assertEqual(e._end_time, arrow.get ("2018-12-25"))
+        self.assertEqual(e.end, arrow.get("2018-12-25"))
+        self.assertEqual(e._begin_precision, "day")
+        self.assertEqual(e.duration, td(days=2))
+
+        e.end = "2018-12-25 11:02"
+        self.assertEqual(e._end_time, arrow.get ("2018-12-26"))
+        self.assertEqual(e.end, arrow.get("2018-12-26"))
+        self.assertEqual(e._begin_precision, "day")
+        self.assertEqual(e.duration, td(days=3))
+
+        self.assertEqual(e._begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e.begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e._begin_precision, "day")
+
+    # Check that all-day events with durations work
+    def test_make_all_day5(self):
+        e = Event(begin="2018-12-23 14:35", duration=td(days=2, seconds=4*3600))
+        begin = arrow.get("2018-12-23 14:35")
+
+        self.assertEqual(e._begin, begin)
+        self.assertEqual(e.begin, begin)
+
+        self.assertEqual(e.duration, td(days=2, seconds=4*3600))
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e.end, arrow.get("2018-12-25 18:35"))
+
+        e.make_all_day()
+
+        self.assertEqual(e._begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e.begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e._begin_precision, "day")
+
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e.end, arrow.get("2018-12-26"))
+        self.assertEqual(e.duration, td(days=3))
+
+        # When start time is changed, end time should too.
+        e.begin = "2018-12-25"
+        self.assertEqual(e._begin, arrow.get ("2018-12-25"))
+        self.assertEqual(e.begin, arrow.get ("2018-12-25"))
+        self.assertEqual(e._begin_precision, "day")
+
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e.end, arrow.get("2018-12-28"))
+        self.assertEqual(e.duration, td(days=3))
 
     def test_init_duration_end(self):
         with self.assertRaises(ValueError):
