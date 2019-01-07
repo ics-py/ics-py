@@ -254,7 +254,7 @@ class Event(Component):
         if value and self._end_time and value < self._end_time:
             raise ValueError('Due must be the or after the end')
         self._due = value
-        self._due_precision = 'minute'
+        self._due_precision = 'second'
 
     @property
     def all_day(self):
