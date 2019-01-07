@@ -40,6 +40,11 @@ class Event(Component):
     _EXTRACTORS = []
     _OUTPUTS = []
 
+    _HIGHER_PRIORITY = 4
+    _HIGH_PRIORITY = 3
+    _MEDIUM_PRIORITY = 2
+    _LOW_PRIORITY = 1
+
     def __init__(self,
                  name=None,
                  begin=None,
@@ -54,6 +59,8 @@ class Event(Component):
                  alarms=None,
                  categories=None,
                  status=None,
+                 priority=_LOW_PRIORITY,
+                 due=None
                  ):
         """Instantiates a new :class:`ics.event.Event`.
 
@@ -71,15 +78,22 @@ class Event(Component):
             alarms (:class:`ics.alarm.Alarm`)
             categories (set of string)
             status (string)
+            priority (float)
+            due (Arrow-compatible)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
+            ValueError: if `due` is set before `end`
         """
 
         self._duration = None
         self._end_time = None
         self._begin = None
         self._begin_precision = None
+        self._priority = self._LOW_PRIORITY
+        self._due = None
+        self._due_precision = None
+
         self.uid = uid_gen() if not uid else uid
         self.description = description
         self.created = get_arrow(created)
@@ -88,6 +102,8 @@ class Event(Component):
         self.transparent = transparent
         self.alarms = set()
         self.categories = set()
+        self.priority = priority
+        self.due = due
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -207,6 +223,38 @@ class Event(Component):
             self._end_time = None
 
         self._duration = value
+
+    @property
+    def priority(self):
+        """Get or set the priority.
+
+        |   Will return a float.
+        |   Maybe set to a int or float.
+        """
+        return self._priority
+
+    @priority.setter
+    def priority(self, value):
+        self._priority = float(value)
+
+    @property
+    def due(self):
+        """Get or set the the event's due date.
+
+        |  Will return an :class:`Arrow` object.
+        |  May be set to anything that :func:`Arrow.get` understands.
+        |  If an end is defined, .due must not
+            be set to a inferior value.
+        """
+        return self._due
+
+    @due.setter
+    def due(self, value):
+        value = get_arrow(value)
+        if value and self._end_time and value < self._end_time:
+            raise ValueError('Due must be the or after the end')
+        self._due = value
+        self._due_precision = 'minute'
 
     @property
     def all_day(self):
@@ -528,6 +576,21 @@ def categories(event, line):
             event.categories.update({unescape_string(cat)})
 
 
+@Event._extracts('PRIORITY')
+def status(event, line):
+    if line:
+        event.priority = line.value
+
+
+@Event._extracts('DTDUE')
+def start(event, line):
+    if line:
+        # get the dict of vtimezones passed to the classmethod
+        tz_dict = event._classmethod_kwargs['tz']
+        event.due = iso_to_arrow(line, tz_dict)
+        event._due_precision = iso_precision(line.value)
+
+
 # -------------------
 # ----- Outputs -----
 # -------------------
@@ -629,3 +692,15 @@ def o_status(event, container):
 def o_categories(event, container):
     if event.categories:
         container.append(ContentLine('CATEGORIES', value=','.join([escape_string(s) for s in event.categories])))
+
+
+@Event._outputs
+def o_priority(event, container):
+    if event.priority:
+        container.append(ContentLine('PRIORITY', value=event.priority))
+
+
+@Event._outputs
+def o_due(event, container):
+    if event.due:
+        container.append(ContentLine('DTDUE', value=arrow_to_iso(event.due)))
