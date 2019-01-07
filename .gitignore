@@ -28,3 +28,6 @@ doc/_build/*
 .coverage
 htmlcov
 /.pytest_cache/
+
+# PyCharm
+.idea*
