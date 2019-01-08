@@ -40,11 +40,6 @@ class Event(Component):
     _EXTRACTORS = []
     _OUTPUTS = []
 
-    _HIGHER_PRIORITY = 4
-    _HIGH_PRIORITY = 3
-    _MEDIUM_PRIORITY = 2
-    _LOW_PRIORITY = 1
-
     def __init__(self,
                  name=None,
                  begin=None,
@@ -59,7 +54,7 @@ class Event(Component):
                  alarms=None,
                  categories=None,
                  status=None,
-                 priority=_LOW_PRIORITY,
+                 priority=0,
                  due=None
                  ):
         """Instantiates a new :class:`ics.event.Event`.
@@ -90,7 +85,7 @@ class Event(Component):
         self._end_time = None
         self._begin = None
         self._begin_precision = None
-        self._priority = self._LOW_PRIORITY
+        self._priority = None
         self._due = None
         self._due_precision = None
 
