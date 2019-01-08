@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import StringIO, string_types, text_type, integer_types
+# from six import StringIO, string_types, text_type, integer_types
 
 import arrow
 import copy
@@ -87,7 +87,6 @@ class Event(Component):
         self._begin_precision = None
         self._priority = None
         self._due = None
-        self._due_precision = None
 
         self.uid = uid_gen() if not uid else uid
         self.description = description
@@ -249,7 +248,6 @@ class Event(Component):
         if value and self._end_time and value < self._end_time:
             raise ValueError('Due must be the or after the end')
         self._due = value
-        self._due_precision = 'second'
 
     @property
     def all_day(self):
@@ -572,18 +570,17 @@ def categories(event, line):
 
 
 @Event._extracts('PRIORITY')
-def status(event, line):
+def priority(event, line):
     if line:
         event.priority = line.value
 
 
 @Event._extracts('DTDUE')
-def start(event, line):
+def due(event, line):
     if line:
         # get the dict of vtimezones passed to the classmethod
         tz_dict = event._classmethod_kwargs['tz']
         event.due = iso_to_arrow(line, tz_dict)
-        event._due_precision = iso_precision(line.value)
 
 
 # -------------------
