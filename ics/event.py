@@ -12,6 +12,7 @@ from datetime import timedelta, datetime
 
 from .alarm import AlarmFactory
 from .component import Component
+from .repeatable import Repeatable
 from .utils import (
     parse_duration,
     timedelta_to_duration,
@@ -52,6 +53,7 @@ class Event(Component):
                  url=None,
                  transparent=False,
                  alarms=None,
+                 rrule=None,
                  categories=None,
                  status=None,
                  priority=0,
@@ -71,6 +73,7 @@ class Event(Component):
             url (string)
             transparent (Boolean)
             alarms (:class:`ics.alarm.Alarm`)
+            rrule (Repeatable)
             categories (set of string)
             status (string)
             priority (float)
@@ -95,6 +98,7 @@ class Event(Component):
         self.url = url
         self.transparent = transparent
         self.alarms = set()
+        self.rrule = rrule
         self.categories = set()
         self.priority = priority
         self.due = due
@@ -469,6 +473,153 @@ class Event(Component):
             int: hash of self. Based on self.uid."""
         return int(''.join(map(lambda x: '%.3d' % ord(x), self.uid)))
 
+    def is_included(self, start, stop):
+        """Return True if event is fits on start-stop interval.
+
+        :param start: Arrow object
+        :param stop: Arrow object
+
+        :return: boolean
+        """
+        for event in self.repeat():
+            # if start is between the bonds and stop is between the bonds
+            if start <= event.begin <= stop and start <= event.end <= stop:
+                return True
+
+        return False
+
+    def overlaps(self, start, stop):
+        """Return True if event overlaps start-stop interval.
+
+        :param start: Arrow object
+        :param stop: Arrow object
+
+        :return: boolean
+        """
+        for event in self.repeat():
+            # if start is between the bonds or stop is between the bonds or event is a superset of [start,stop]
+            if (start <= event.begin <= stop or start <= event.end <= stop) or event.begin <= start and event.end >= stop:
+                return True
+
+        return False
+
+    def starts_after(self, instant):
+        """Return True if event starts after instant.
+
+        :param instant: Arrow object
+
+        :return: boolean
+        """
+        for event in self.repeat():
+            if event.begin > instant:
+                return True
+
+        return False
+
+    def occurs_at(self, instant):
+        """Return True if event occurs at instant.
+
+        :param instant: Arrow object
+
+        :return: boolean
+        """
+        for event in self.repeat():
+            if event.begin <= instant <= event.end:
+                return True
+
+        return False
+
+    def repeat(self):
+        """Iterate over the events according with rrule.
+
+        :return: iterator
+        """
+        if not self.rrule:
+            yield self
+        else:
+            count = 0
+            total = -self.rrule.interval
+
+            while True:
+                event = self.clone()
+                event.end = eval("event.end.shift({}=total + self.rrule.interval)".format(self.rrule.delta_index))
+                event.begin = eval("event.begin.shift({}=total + self.rrule.interval)".format(self.rrule.delta_index))
+
+                if not self.rrule.freq == 'DAILY':
+
+                    if self.rrule.freq == 'WEEKLY':
+                        for day in self.rrule.byday:
+                            event.end = event.end.shift(weekday=day)
+                            event.begin = event.begin.shift(weekday=day)
+
+                            if event.in_bound(count):
+                                count += 1
+                                yield event
+                            else:
+                                break
+
+                    else:
+                        if self.rrule.freq == 'YEARLY':
+                            month = self.rrule.bymonth[0]
+                            event.end = event.end.replace(month=month)
+                            event.begin = event.begin.replace(month=month)
+
+                        for day in self.rrule.byday:
+                            duration = event.duration
+                            time = event.begin.time()
+
+                            if day.n > 0:
+                                begin = event.begin.floor('month')
+                            elif day.n < 0:
+                                begin = event.begin.ceil('month')
+                            else:
+                                begin = event.begin
+
+                            begin = begin.replace(hour=time.hour, minute=time.minute, second=time.second)
+                            event.end = begin + duration
+
+                            event.end = event.end.shift(weekday=day)
+                            event.begin = begin.shift(weekday=day)
+
+                            if event.in_bound(count):
+                                count += 1
+                                yield event
+                            else:
+                                break
+
+                        for dayno in self.rrule.bymonthday:
+                            duration = event.duration
+
+                            event.begin = event.begin.replace(day=dayno)
+                            event.end = event.begin + duration
+
+                            if event.in_bound(count):
+                                count += 1
+                                yield event
+                            else:
+                                break
+                else:
+                    if event.in_bound(count):
+                        count += 1
+                        yield event
+                    else:
+                        break
+
+                total += self.rrule.interval
+
+    def in_bound(self, count):
+        """Check if event is in rrule bounds until/count.
+
+        :param count: int
+
+        :return: boolean
+        """
+        if self.rrule.count:
+            return count < self.rrule.count
+
+        if self.rrule.until:
+            return self.begin <= self.rrule.until
+
 
 # ------------------
 # ----- Inputs -----
@@ -552,6 +703,12 @@ def alarms(event, lines):
         if af is not None:
             return af._from_container(x)
     event.alarms = list(map(alarm_factory, lines))
+
+
+@Event._extracts('RRULE')
+def rrule(event, line):
+    if line:
+        event.rrule = Repeatable.from_line(line)
 
 
 @Event._extracts('STATUS')
@@ -672,6 +829,12 @@ def o_uid(event, container):
 def o_alarm(event, container):
     for alarm in event.alarms:
         container.append(str(alarm))
+
+
+@Event._outputs
+def o_rrule(event, container):
+    if event.rrule:
+        container.append(ContentLine('RRULE', value=str(event.rrule)))
 
 
 @Event._outputs

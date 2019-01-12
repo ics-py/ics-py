@@ -48,8 +48,7 @@ class Timeline(object):
             stop : (Arrow object)
         """
         for event in self:
-            if (start <= event.begin <= stop # if start is between the bonds
-            and start <= event.end <= stop): # and stop is between the bonds
+            if event.is_included(start, stop):
                 yield event
 
     def overlapping(self, start, stop):
@@ -61,9 +60,7 @@ class Timeline(object):
             stop : (Arrow object)
         """
         for event in self:
-            if ((start <= event.begin <= stop # if start is between the bonds
-            or start <= event.end <= stop) # or stop is between the bonds
-            or event.begin <= start and event.end >= stop): # or event is a superset of [start,stop]
+            if event.overlaps(start, stop):
                 yield event
 
     def start_after(self, instant):
@@ -74,7 +71,7 @@ class Timeline(object):
             instant : (Arrow object) starting point of the iteration
         """
         for event in self:
-            if event.begin > instant:
+            if event.starts_after(instant):
                 yield event
 
     def at(self, instant):
@@ -85,7 +82,7 @@ class Timeline(object):
         """
 
         for event in self:
-            if event.begin <= instant <= event.end:
+            if event.occurs_at(instant):
                 yield event
 
     def on(self, day, strict=False):
