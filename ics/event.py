@@ -488,6 +488,7 @@ def end(event, line):
 def summary(event, line):
     event.name = unescape_string(line.value) if line else None
 
+
 @Event._extracts('ORGANIZER')
 def organizer(event, line):
     event.organizer = unescape_string(line.value) if line else None
@@ -601,7 +602,7 @@ def o_organizer(event, container):
         container.append(str(event.organizer))
 
 
- @Event._outputs
+@Event._outputs
 def o_attendee(event, container):
     for attendee in event.attendees:
         container.append(str(attendee))

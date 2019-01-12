@@ -172,18 +172,18 @@ class TestEvent(unittest.TestCase):
         line = str(a)
         self.assertIn("ATTENDEE;CN='email@email.com", line)
 
-         a2 = Attendee(email='email@email.com', common_name='Email')
+        a2 = Attendee(email='email@email.com', common_name='Email')
         line = str(a2)
         self.assertIn("ATTENDEE;CN='Email':mailto:email@email.com", line)
 
-     def test_add_attendees(self):
+    def test_add_attendees(self):
         e = Event()
         a = Attendee(email='email@email.com')
         e.add_attendee(a)
         lines = str(e).splitlines()
         self.assertIn("ATTENDEE;CN='email@email.com':mailto:email@email.com", lines)
 
-     def test_organizer(self):
+    def test_organizer(self):
         e = Event()
         e.organizer = Organizer(email='email@email.com', common_name='Mister Email')
         lines = str(e).splitlines()
