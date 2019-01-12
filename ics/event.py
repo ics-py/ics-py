@@ -76,7 +76,7 @@ class Event(Component):
             status (string)
             organizer (:class:`ics.organizer.Organizer`)
 
-            Raises:
+        Raises:
             ValueError: if `end` and `duration` are specified at the same time
         """
 
