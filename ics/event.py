@@ -484,9 +484,9 @@ class Event(Component):
         for event in self.repeat():
             # if start is between the bonds and stop is between the bonds
             if start <= event.begin <= stop and start <= event.end <= stop:
-                return True
+                return event
 
-        return False
+        return None
 
     def overlaps(self, start, stop):
         """Return True if event overlaps start-stop interval.
@@ -499,9 +499,9 @@ class Event(Component):
         for event in self.repeat():
             # if start is between the bonds or stop is between the bonds or event is a superset of [start,stop]
             if (start <= event.begin <= stop or start <= event.end <= stop) or event.begin <= start and event.end >= stop:
-                return True
+                return event
 
-        return False
+        return None
 
     def starts_after(self, instant):
         """Return True if event starts after instant.
@@ -512,9 +512,9 @@ class Event(Component):
         """
         for event in self.repeat():
             if event.begin > instant:
-                return True
+                return event
 
-        return False
+        return None
 
     def occurs_at(self, instant):
         """Return True if event occurs at instant.
@@ -525,9 +525,9 @@ class Event(Component):
         """
         for event in self.repeat():
             if event.begin <= instant <= event.end:
-                return True
+                return event
 
-        return False
+        return None
 
     def repeat(self):
         """Iterate over the events according with rrule.
@@ -539,18 +539,26 @@ class Event(Component):
         else:
             count = 0
             total = -self.rrule.interval
+            event = self.clone()
 
-            while True:
+            while event.in_bound(count):
                 event = self.clone()
-                event.end = eval("event.end.shift({}=total + self.rrule.interval)".format(self.rrule.delta_index))
-                event.begin = eval("event.begin.shift({}=total + self.rrule.interval)".format(self.rrule.delta_index))
+                begin_shifted = eval("event.begin.shift({}=total + self.rrule.interval)".format(self.rrule.delta_index))
+                end_shifted = eval("event.end.shift({}=total + self.rrule.interval)".format(self.rrule.delta_index))
+                duration = event.duration
+
+                event.end = end_shifted
+                event.begin = begin_shifted
 
                 if not self.rrule.freq == 'DAILY':
 
+                    event.begin = arrow.Arrow.fromdatetime(datetime.min)
+                    event.end = event.begin
+
                     if self.rrule.freq == 'WEEKLY':
                         for day in self.rrule.byday:
-                            event.end = event.end.shift(weekday=day)
-                            event.begin = event.begin.shift(weekday=day)
+                            event.end = end_shifted.shift(weekday=day)
+                            event.begin = begin_shifted.shift(weekday=day)
 
                             if event.in_bound(count):
                                 count += 1
@@ -561,25 +569,27 @@ class Event(Component):
                     else:
                         if self.rrule.freq == 'YEARLY':
                             month = self.rrule.bymonth[0]
-                            event.end = event.end.replace(month=month)
-                            event.begin = event.begin.replace(month=month)
+                            begin_shifted = begin_shifted.replace(month=month)
 
                         for day in self.rrule.byday:
-                            duration = event.duration
-                            time = event.begin.time()
+                            time = begin_shifted.time()
 
                             if day.n > 0:
-                                begin = event.begin.floor('month')
+                                begin = begin_shifted.floor('month')
                             elif day.n < 0:
-                                begin = event.begin.ceil('month')
+                                begin = begin_shifted.ceil('month')
                             else:
-                                begin = event.begin
+                                begin = begin_shifted
 
                             begin = begin.replace(hour=time.hour, minute=time.minute, second=time.second)
-                            event.end = begin + duration
+                            begin = begin.floor('second')
+                            begin = begin.shift(weekday=day)
 
-                            event.end = event.end.shift(weekday=day)
-                            event.begin = begin.shift(weekday=day)
+                            end = begin + duration
+                            end = end.shift(weekday=day)
+
+                            event.end = end
+                            event.begin = begin
 
                             if event.in_bound(count):
                                 count += 1
@@ -588,10 +598,13 @@ class Event(Component):
                                 break
 
                         for dayno in self.rrule.bymonthday:
-                            duration = event.duration
+                            begin = begin_shifted
+                            begin = begin.replace(day=dayno)
 
-                            event.begin = event.begin.replace(day=dayno)
-                            event.end = event.begin + duration
+                            end = begin + duration
+
+                            event.end = end
+                            event.begin = begin
 
                             if event.in_bound(count):
                                 count += 1
@@ -615,7 +628,7 @@ class Event(Component):
         :return: boolean
         """
         if self.rrule.count:
-            return count < self.rrule.count
+            return count <= self.rrule.count
 
         if self.rrule.until:
             return self.begin <= self.rrule.until
