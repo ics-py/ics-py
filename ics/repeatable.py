@@ -1,5 +1,6 @@
 from arrow import Arrow
 from .utils import arrow_to_iso
+from dateutil import relativedelta
 
 
 class Repeatable:
@@ -18,29 +19,23 @@ class Repeatable:
                           "TH": "Thursday",
                           "FR": "Friday",
                           "SA": "Saturday"}
+
     def __init__(self,
                  freq="DAILY",
                  until=None,
                  count=None,
                  interval=1,
-                 byday=None,
-                 bymonthday=None,
-                 byyearday=None,
-                 byweekno=None,
-                 bymonth=None):
+                 byday=[],
+                 bymonthday=[],
+                 bymonth=[]):
         """Instantiate a new Repeatable rule.
 
         :param freq: str
         :param until: Arrow-compatible
         :param count: int
         :param interval: int
-        :param bysecond: list
-        :param byminute: list
-        :param byhour: list
         :param byday: list
         :param bymonthday: list
-        :param byyearday: list
-        :param byweekno: list
         :param bymonth: list
         """
         self._freq = None
@@ -49,8 +44,6 @@ class Repeatable:
         self._interval = None
         self._byday = None
         self._bymonthday = None
-        self._byyearday = None
-        self._byweekno = None
         self._bymonth = None
 
         self.freq = freq
@@ -59,8 +52,6 @@ class Repeatable:
         self.interval = interval
         self.byday = byday
         self.bymonthday = bymonthday
-        self.byyearday = byyearday
-        self.byweekno = byweekno
         self.bymonth = bymonth
 
     @property
@@ -144,7 +135,7 @@ class Repeatable:
 
     @byday.setter
     def byday(self, values):
-        if not values:
+        if type(values) not in [str, list]:
             return
 
         if type(values) is str:
@@ -161,7 +152,7 @@ class Repeatable:
 
             value = v.replace(str(digit), '')
 
-            if value not in self._WEEKDAY_POSSIBLES or digit not in range(1, 54):
+            if value not in self._WEEKDAY_POSSIBLES or abs(digit) not in range(0, 54):
                 raise ValueError("{} is not a possible value for byday.".format(v))
 
             day = eval('relativedelta.{}({})'.format(value, digit))
@@ -179,7 +170,7 @@ class Repeatable:
 
     @bymonthday.setter
     def bymonthday(self, values):
-        if not values:
+        if type(values) not in [str, list]:
             return
 
         if type(values) is str:
@@ -194,54 +185,6 @@ class Repeatable:
         self._bymonthday = values
 
     @property
-    def byyearday(self):
-        """Get/set byyearday list.
-
-        :return: list
-        """
-        return self._bymonthday
-
-    @byyearday.setter
-    def byyearday(self, values):
-        if not values:
-            return
-
-        if type(values) is str:
-            values = values.split(',')
-
-        values = [int(v) for v in list(values)]
-
-        for v in values:
-            if abs(v) not in range(1, 367):
-                raise ValueError("{} is out of range +/- 1-366.".format(v))
-
-        self._byyearday = values
-
-    @property
-    def byweekno(self):
-        """Get/set byweekno list.
-
-        :return: list
-        """
-        return self._byweekno
-
-    @byweekno.setter
-    def byweekno(self, values):
-        if not values:
-            return
-
-        if type(values) is str:
-            values = values.split(',')
-
-        values = [int(v) for v in list(values)]
-
-        for v in values:
-            if abs(v) not in range(1, 54):
-                raise ValueError("{} is out of range +/- 1-53.".format(v))
-
-        self._byweekno = values
-
-    @property
     def bymonth(self):
         """Get/set bymonth list.
 
@@ -251,7 +194,7 @@ class Repeatable:
 
     @bymonth.setter
     def bymonth(self, values):
-        if not values:
+        if type(values) not in [str, list]:
             return
 
         if type(values) is str:
@@ -311,7 +254,8 @@ class Repeatable:
             res.append("INTERVAL={}".format(self.interval))
 
         if self.bysecond:
-            values = str(self.bysecond).replace('[', '').replace(']', '').replace(' ', '')
+            values = str(self.bysecond).replace('[', '')\
+                .replace(']', '').replace(' ', '')
             res.append("BYSECOND={}".format(values))
 
         if self.byminute:
@@ -319,7 +263,8 @@ class Repeatable:
             res.append("BYMINUTE={}".format(values))
 
         if self.byhour:
-            values = str(self.byhour).replace('[', '').replace(']', '').replace(' ', '')
+            values = str(self.byhour).replace('[', '')\
+                .replace(']', '').replace(' ', '')
             res.append("BYHOUR={}".format(values))
 
         if self.byday:
@@ -333,19 +278,23 @@ class Repeatable:
             res.append("BYDAY={}".format(values))
 
         if self.bymonthday:
-            values = str(self.bymonthday).replace('[', '').replace(']', '').replace(' ', '')
+            values = str(self.bymonthday).replace('[', '')\
+                .replace(']', '').replace(' ', '')
             res.append("BYMONTHDAY={}".format(values))
 
         if self.byyearday:
-            values = str(self.byyearday).replace('[', '').replace(']', '').replace(' ', '')
+            values = str(self.byyearday).replace('[', '')\
+                .replace(']', '').replace(' ', '')
             res.append("BYYEARDAY={}".format(values))
 
         if self.byweekno:
-            values = str(self.byweekno).replace('[', '').replace(']', '').replace(' ', '')
+            values = str(self.byweekno).replace('[', '')\
+                .replace(']', '').replace(' ', '')
             res.append("BYWEEKNO={}".format(values))
 
         if self.bymonth:
-            values = str(self.bymonth).replace('[', '').replace(']', '').replace(' ', '')
+            values = str(self.bymonth).replace('[', '')\
+                .replace(']', '').replace(' ', '')
             res.append("BYMONTH={}".format(values))
 
         return ';'.join(res)
