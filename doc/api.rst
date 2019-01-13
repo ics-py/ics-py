@@ -39,7 +39,13 @@ AudioAlarm
 Timeline
 ---------
 
-
 .. autoclass:: ics.timeline.Timeline
+    :members:
+    :special-members:
+
+Repeatable
+-----
+
+.. autoclass:: ics.repeatable.Repeatable
     :members:
     :special-members:
