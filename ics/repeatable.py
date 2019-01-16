@@ -253,20 +253,6 @@ class Repeatable:
         if self.interval:
             res.append("INTERVAL={}".format(self.interval))
 
-        if self.bysecond:
-            values = str(self.bysecond).replace('[', '')\
-                .replace(']', '').replace(' ', '')
-            res.append("BYSECOND={}".format(values))
-
-        if self.byminute:
-            values = ','.join(self.byminute)
-            res.append("BYMINUTE={}".format(values))
-
-        if self.byhour:
-            values = str(self.byhour).replace('[', '')\
-                .replace(']', '').replace(' ', '')
-            res.append("BYHOUR={}".format(values))
-
         if self.byday:
             values = []
             for day in self.byday:
@@ -281,16 +267,6 @@ class Repeatable:
             values = str(self.bymonthday).replace('[', '')\
                 .replace(']', '').replace(' ', '')
             res.append("BYMONTHDAY={}".format(values))
-
-        if self.byyearday:
-            values = str(self.byyearday).replace('[', '')\
-                .replace(']', '').replace(' ', '')
-            res.append("BYYEARDAY={}".format(values))
-
-        if self.byweekno:
-            values = str(self.byweekno).replace('[', '')\
-                .replace(']', '').replace(' ', '')
-            res.append("BYWEEKNO={}".format(values))
 
         if self.bymonth:
             values = str(self.bymonth).replace('[', '')\
