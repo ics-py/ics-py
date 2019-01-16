@@ -557,6 +557,9 @@ class Event(Component):
 
                     if self.rrule.freq == 'WEEKLY':
                         for day in self.rrule.byday:
+                            event.begin = arrow.Arrow.fromdatetime(datetime.min)
+                            event.end = event.begin
+                            
                             event.end = end_shifted.shift(weekday=day)
                             event.begin = begin_shifted.shift(weekday=day)
 
