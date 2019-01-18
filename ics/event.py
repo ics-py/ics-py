@@ -484,11 +484,9 @@ class Event(Component):
         for event in self.repeat():
             # if start is between the bonds and stop is between the bonds
             if start <= event.begin <= stop and start <= event.end <= stop:
-                return event
+                yield event
             elif event.begin > stop:
                 break
-
-        return None
 
     def overlaps(self, start, stop):
         """Return True if event overlaps start-stop interval.
@@ -501,11 +499,9 @@ class Event(Component):
         for event in self.repeat():
             # if start is between the bonds or stop is between the bonds or event is a superset of [start,stop]
             if (start <= event.begin <= stop or start <= event.end <= stop) or event.begin <= start and event.end >= stop:
-                return event
+                yield event
             elif event.begin > stop:
                 break
-
-        return None
 
     def starts_after(self, instant):
         """Return True if event starts after instant.
@@ -516,9 +512,7 @@ class Event(Component):
         """
         for event in self.repeat():
             if event.begin > instant:
-                return event
-
-        return None
+                yield event
 
     def occurs_at(self, instant):
         """Return True if event occurs at instant.
@@ -529,11 +523,9 @@ class Event(Component):
         """
         for event in self.repeat():
             if event.begin <= instant <= event.end:
-                return event
+                yield event
             elif event.begin > instant:
                 break
-
-        return None
 
     def repeat(self):
         """Iterate over the events according with rrule.

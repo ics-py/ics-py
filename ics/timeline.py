@@ -48,9 +48,9 @@ class Timeline(object):
             stop : (Arrow object)
         """
         for event in self:
-            included_event = event.is_included(start, stop)
-            if included_event:
-                yield included_event
+            for included_event in event.is_included(start, stop):
+                if included_event:
+                    yield included_event
 
     def overlapping(self, start, stop):
         """Iterates (in chronological order) over every event that has an intersection
@@ -61,9 +61,9 @@ class Timeline(object):
             stop : (Arrow object)
         """
         for event in self:
-            overlapped_event = event.overlaps(start, stop)
-            if overlapped_event:
-                yield overlapped_event
+            for overlapped_event in event.overlaps(start, stop):
+                if overlapped_event:
+                    yield overlapped_event
 
     def start_after(self, instant):
         """Iterates (in chronological order) on every event from the :class:`ics.icalendar.Calendar` in chronological order.
@@ -73,9 +73,9 @@ class Timeline(object):
             instant : (Arrow object) starting point of the iteration
         """
         for event in self:
-            after_event = event.starts_after(instant)
-            if after_event:
-                yield after_event
+            for after_event in event.starts_after(instant):
+                if after_event:
+                    yield after_event
 
     def at(self, instant):
         """Iterates (in chronological order) over all events that are occuring during `instant`.
@@ -85,9 +85,9 @@ class Timeline(object):
         """
 
         for event in self:
-            at_event = event.occurs_at(instant)
-            if at_event:
-                yield at_event
+            for at_event in event.occurs_at(instant):
+                if at_event:
+                    yield at_event
 
     def on(self, day, strict=False):
         """Iterates (in chronological order) over all events that occurs on `day`
