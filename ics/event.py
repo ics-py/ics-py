@@ -485,6 +485,8 @@ class Event(Component):
             # if start is between the bonds and stop is between the bonds
             if start <= event.begin <= stop and start <= event.end <= stop:
                 return event
+            elif event.begin > stop:
+                break
 
         return None
 
@@ -500,6 +502,8 @@ class Event(Component):
             # if start is between the bonds or stop is between the bonds or event is a superset of [start,stop]
             if (start <= event.begin <= stop or start <= event.end <= stop) or event.begin <= start and event.end >= stop:
                 return event
+            elif event.begin > stop:
+                break
 
         return None
 
@@ -526,6 +530,8 @@ class Event(Component):
         for event in self.repeat():
             if event.begin <= instant <= event.end:
                 return event
+            elif event.begin > instant:
+                break
 
         return None
 
