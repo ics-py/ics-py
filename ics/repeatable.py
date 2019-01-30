@@ -224,7 +224,7 @@ class Repeatable:
         :return: Repeatable
         """
         repeatable = cls()
-        contents = line.split(';')
+        contents = line..value.split(';')
 
         for content in contents:
             properties = content.split('=')
@@ -232,7 +232,7 @@ class Repeatable:
             value = properties[1]
 
             try:
-                exec('repeatable.{} = {}'.format(name, value))
+                exec('repeatable.{} = "{}"'.format(name, value))
             except AttributeError:
                 continue
 
