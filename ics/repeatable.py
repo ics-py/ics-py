@@ -1,6 +1,5 @@
 from arrow import Arrow
 from .utils import arrow_to_iso
-from dateutil import relativedelta
 
 
 class Repeatable:
@@ -224,7 +223,7 @@ class Repeatable:
         :return: Repeatable
         """
         repeatable = cls()
-        contents = line..value.split(';')
+        contents = line.value.split(';')
 
         for content in contents:
             properties = content.split('=')
