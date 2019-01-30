@@ -634,6 +634,8 @@ class Event(Component):
         if self.rrule.until:
             return self.begin <= self.rrule.until
 
+        return True
+
 
 # ------------------
 # ----- Inputs -----
