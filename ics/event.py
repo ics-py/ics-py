@@ -467,6 +467,15 @@ class Event(Component):
         clone.categories = copy.copy(self.categories)
         return clone
 
+    def copy(self):
+        """
+        Returns:
+            Event: a clone with different uid
+        """
+        new_event = self.clone()
+        new_event.uid = uid_gen()
+        return new_event
+
     def __hash__(self):
         """
         Returns:
