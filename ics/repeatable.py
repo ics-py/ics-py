@@ -1,6 +1,6 @@
 from arrow import Arrow
-from .utils import arrow_to_iso
 from dateutil import relativedelta
+from .utils import arrow_to_iso, iso_to_arrow
 
 
 class Repeatable:
@@ -87,11 +87,8 @@ class Repeatable:
 
     @until.setter
     def until(self, value):
-        if not value:
-            return
-
         if not isinstance(value, Arrow):
-            raise ValueError("Until should be an instance of Arrow.")
+            value = iso_to_arrow(value)
 
         self._until = value
 
