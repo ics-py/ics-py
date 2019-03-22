@@ -440,6 +440,13 @@ def created(event, line):
         event.created = iso_to_arrow(line, tz_dict)
 
 
+@Event._extracts('LAST-MODIFIED')
+def last_modified(event, line):
+    if line:
+        tz_dict = event._classmethod_kwargs['tz']
+        event.last_modified = iso_to_arrow(line, tz_dict)
+
+
 @Event._extracts('DTSTART')
 def start(event, line):
     if line:
