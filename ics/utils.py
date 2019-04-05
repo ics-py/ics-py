@@ -190,7 +190,7 @@ def arrow_to_iso(instant):
 def arrow_date_to_iso(instant):
     # date-only for all day events
     # set to utc, make iso, remove timezone
-    instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDD')
+    instant = arrow.get(instant).format('YYYYMMDD')
     return instant  # no TZ for all days
 
 
