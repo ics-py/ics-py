@@ -17,6 +17,7 @@ Other contributors, listed alphabetically, are:
 * `@guyzmo <https://github.com/guyzmo>`_
 * `@jammon <https://github.com/jammon>`_
 * `@mrmadcow <https://github.com/mrmadcow>`_
+* `@PascalBru <https://github.com/pascalbru>`_
 * `@perette <https://github.com/perette>`_
 * `@prashnts <https://github.com/prashnts>`_
 * `@rkeilty <https://github.com/rkeilty>`_
