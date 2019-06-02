@@ -5,7 +5,7 @@ import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20, cal32
+from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20, cal32, cal33, cal34, cal35
 
 CRLF = "\r\n"
 
@@ -457,3 +457,31 @@ class TestEvent(unittest.TestCase):
 
         assert e.begin == arrow.get('2016-10-04')
         assert e.end == arrow.get('2016-10-05')
+
+    def test_classification_input(self):
+        c = Calendar(cal33)
+        e = next(iter(c.events))
+        self.assertEqual('PUBLIC', e.classification)
+
+        c = Calendar(cal34)
+        e = next(iter(c.events))
+        self.assertEqual('PRIVATE', e.classification)
+
+    def test_classification_input_wrong_value(self):
+        with pytest.raises(ValueError):
+            Calendar(cal35)
+
+    def test_classification_output(self):
+        e = Event(name="Name", classification='PUBLIC')
+        self.assertIn("CLASS:PUBLIC", str(e).splitlines())
+
+        e = Event(name="Name", classification='PRIVATE')
+        self.assertIn("CLASS:PRIVATE", str(e).splitlines())
+
+    def test_classification_bool(self):
+        with pytest.raises(ValueError):
+            Event(name="Name", classification=True)
+
+    def test_classification_wrong_value(self):
+        with pytest.raises(ValueError):
+            Event(name="Name", classification='wrong_value')
