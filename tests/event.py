@@ -5,7 +5,8 @@ import arrow
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20, cal32, cal33, cal34, cal35
+from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20, cal32,\
+    cal33_1, cal33_2, cal33_3, cal33_4, cal33_5, cal34
 
 CRLF = "\r\n"
 
@@ -459,17 +460,29 @@ class TestEvent(unittest.TestCase):
         assert e.end == arrow.get('2016-10-05')
 
     def test_classification_input(self):
-        c = Calendar(cal33)
+        c = Calendar(cal33_1)
         e = next(iter(c.events))
         self.assertEqual('PUBLIC', e.classification)
 
-        c = Calendar(cal34)
+        c = Calendar(cal33_2)
         e = next(iter(c.events))
         self.assertEqual('PRIVATE', e.classification)
 
+        c = Calendar(cal33_3)
+        e = next(iter(c.events))
+        self.assertEqual('CONFIDENTIAL', e.classification)
+
+        c = Calendar(cal33_4)
+        e = next(iter(c.events))
+        self.assertEqual('iana-token', e.classification)
+
+        c = Calendar(cal33_5)
+        e = next(iter(c.events))
+        self.assertEqual('x-name', e.classification)
+
     def test_classification_input_wrong_value(self):
         with pytest.raises(ValueError):
-            Calendar(cal35)
+            Calendar(cal34)
 
     def test_classification_output(self):
         e = Event(name="Name", classification='PUBLIC')
@@ -477,6 +490,15 @@ class TestEvent(unittest.TestCase):
 
         e = Event(name="Name", classification='PRIVATE')
         self.assertIn("CLASS:PRIVATE", str(e).splitlines())
+
+        e = Event(name="Name", classification='CONFIDENTIAL')
+        self.assertIn("CLASS:CONFIDENTIAL", str(e).splitlines())
+
+        e = Event(name="Name", classification='iana-token')
+        self.assertIn("CLASS:iana-token", str(e).splitlines())
+
+        e = Event(name="Name", classification='x-name')
+        self.assertIn("CLASS:x-name", str(e).splitlines())
 
     def test_classification_bool(self):
         with pytest.raises(ValueError):
