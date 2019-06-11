@@ -7,7 +7,7 @@ from ics.organizer import Organizer
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20
+from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20, cal32
 
 CRLF = "\r\n"
 
@@ -64,6 +64,25 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e._end_time, None)
         self.assertEqual(e._duration, None)
 
+    def test_make_all_day2(self):
+        e = Event(begin="1993/05/24")
+        begin = arrow.get("1993/05/24")
+
+        self.assertEqual(e._begin, begin)
+        self.assertEqual(e.begin, begin)
+
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e.end, begin)
+
+        e.make_all_day()
+
+        self.assertEqual(e._begin, begin)
+        self.assertEqual(e.begin, begin)
+        self.assertEqual(e._begin_precision, "day")
+
+        self.assertEqual(e._end_time, None)
+        self.assertEqual(e.end, arrow.get("1993/05/25"))
+
     def test_init_duration_end(self):
         with self.assertRaises(ValueError):
             Event(name="plop", begin=0, end=10, duration=1)
@@ -109,6 +128,7 @@ class TestEvent(unittest.TestCase):
         self.assertNotEqual(e.uid, None)
         self.assertEqual(e.description, None)
         self.assertEqual(e.created, None)
+        self.assertEqual(e.last_modified, None)
         self.assertEqual(e.location, None)
         self.assertEqual(e.url, None)
         self.assertEqual(e._unused, Container(name='VEVENT'))
@@ -145,7 +165,7 @@ class TestEvent(unittest.TestCase):
 
         e5 = Event(begin="1993/05/24")
         e5.duration = {'days': 6, 'hours': 2}
-        self.assertEqual(e5.end, arrow.get("1993/05/30T02:00"))
+        self.assertEqual(e5.end, arrow.get("1993-05-30T02:00"))
         self.assertEqual(e5.duration, td(hours=146))
 
     def test_attendee(self):
@@ -311,7 +331,7 @@ class TestEvent(unittest.TestCase):
         c = Calendar(cal20)
         e = next(iter(c.events))
         self.assertTrue(e.all_day)
-        self.assertEqual(e.duration, td(days=3))
+        self.assertEqual(e.duration, td(days=2))
 
     def test_make_all_day_idempotence(self):
         c = Calendar(cal18)
@@ -456,3 +476,16 @@ class TestEvent(unittest.TestCase):
         event = Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
         event.join(event)
         assert event == Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+
+    def test_issue_92(self):
+        c = Calendar(cal32)
+        e = list(c.events)[0]
+
+        assert e.begin == arrow.get('2016-10-04')
+        assert e.end == arrow.get('2016-10-05')
+
+    def test_last_modified(self):
+        c = Calendar(cal18)
+        e = list(c.events)[0]
+
+        assert e.last_modified == arrow.get('2015-11-13 00:48:09')

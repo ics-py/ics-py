@@ -17,7 +17,7 @@ Import a calendar from a file
     # {<Event 'Visite de "Fab Bike"' begin:2016-06-21T15:00:00+00:00 end:2016-06-21T17:00:00+00:00>,
     # <Event 'Le lundi de l'embarqué: Adventure in Espressif Non OS SDK edition' begin:2018-02-19T17:00:00+00:00 end:2018-02-19T22:00:00+00:00>,
     #  ...}
-    e = min(c.events, key=lambda event: event.begin):
+    e = list(c.timeline)[0]
     "Event '{}' started {}".format(e.name, e.begin.humanize())
     # "Event 'Workshop Git' started 2 years ago"
 

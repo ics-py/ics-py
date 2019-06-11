@@ -182,7 +182,7 @@ class Alarm(Component):
 # ------------------
 @Alarm._extracts('TRIGGER', required=True)
 def trigger(alarm, line):
-    if not line.params:
+    if not line.params or 'DURATION' in line.params.get('VALUE', ''):
         alarm.trigger = parse_duration(line.value[1:])
     else:
         if len(line.params) > 1:

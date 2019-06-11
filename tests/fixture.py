@@ -268,13 +268,13 @@ END:VEVENT
 END:VCALENDAR
 """
 
-# 3 days all-day event including end date
+# 2 days all-day event
 cal20 = u"""
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:manually crafted from an ownCloud 8.0 ics
 BEGIN:VEVENT
-SUMMARY:3 days party
+SUMMARY:2 days party
 DTSTART;VALUE=DATE:20151114
 DTEND;VALUE=DATE:20151116
 END:VEVENT
@@ -486,6 +486,20 @@ SUMMARY:Hello, \\n World\\; This is a backslash : \\\\ and another new \\N line
 LOCATION:In\\, every text field
 DESCRIPTION:Yes\\, all of them\\;
 END:VTODO
+END:VCALENDAR
+"""
+
+cal32 = """
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-
+
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20161004
+DTEND;VALUE=DATE:20161005
+SUMMARY:An all day event: October 4 2016.
+END:VEVENT
+
 END:VCALENDAR
 """
 

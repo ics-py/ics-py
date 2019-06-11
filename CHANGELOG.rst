@@ -7,7 +7,13 @@ Ics.py changelog
 **************
 
  - Drop support for Python 2.7 and 3.3.
+ - Improve TRIGGER DURATION parsing logic
  - Fixed NONE type support for Alarms
+ - Upgrade arrow to 0.11 and fix internal call to arrow to specify the string
+   format (thanks @muffl0n, @e-c-d and @chauffer)
+ - Fix all-day events lasting multiple days by using a DTEND with a date and not a datetime (thanks @raspbeguy)
+ - Fix off by one error on the DTEND on all day events (issues #92 and #150)
+ - Added LAST-MODIFIED attribute support
 
 **************
 0.4
@@ -32,6 +38,9 @@ Misc:
     - Multi-day events fixes (thanks @ConnyOnny)
     - Fix `TZID` drop when `VTIMEZONE` is empty (thanks @ConnyOnny)
     - Better test coverage (thanks @aureooms)
+    
+Breaking Changes:
+    - Removed EventList class
 
 Thank you also to @davidjb, @etnarek, @jammon
 

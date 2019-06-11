@@ -48,6 +48,7 @@ class Event(Component):
                  uid=None,
                  description=None,
                  created=None,
+                 last_modified=None,
                  location=None,
                  url=None,
                  transparent=False,
@@ -68,6 +69,7 @@ class Event(Component):
             uid (string): must be unique
             description (string)
             created (Arrow-compatible)
+            last_modified (Arrow-compatible)
             location (string)
             url (string)
             transparent (Boolean)
@@ -89,6 +91,7 @@ class Event(Component):
         self.uid = uid_gen() if not uid else uid
         self.description = description
         self.created = get_arrow(created)
+        self.last_modified = get_arrow(last_modified)
         self.location = location
         self.url = url
         self.transparent = transparent
@@ -163,7 +166,7 @@ class Event(Component):
             return self.begin + self._duration
         elif self._end_time:  # if end is time defined
             if self.all_day:
-                return self._end_time + timedelta(days=1)
+                return self._end_time
             else:
                 return self._end_time
         elif self._begin:  # if end is not defined
@@ -178,7 +181,7 @@ class Event(Component):
     @end.setter
     def end(self, value):
         value = get_arrow(value)
-        if value and value < self._begin:
+        if value and self._begin and value < self._begin:
             raise ValueError('End must be after begin')
 
         self._end_time = value
@@ -235,22 +238,23 @@ class Event(Component):
 
         The event will span all the days from the begin to the end day.
         """
-        was_instant = self.duration == timedelta(0)
-        old_end = self.end
-        self._duration = None
-        self._begin_precision = 'day'
-        self._begin = self._begin.floor('day')
-        if was_instant:
-            self._end_time = None
+        if self.all_day:
+            # Do nothing if we already are a all day event
             return
-        floored_end = old_end.floor('day')
-        # this "overflooring" must be done because end times are not included in the interval
-        calculated_end = floored_end - timedelta(days=1) if floored_end == old_end else floored_end
-        if calculated_end == self._begin:
-            # for a one day event, we don't need to save the _end_time
+
+        begin_day = self.begin.floor('day')
+        end_day = self.end.floor('day')
+
+        self._begin = begin_day
+
+        # for a one day event, we don't need a _end_time
+        if begin_day == end_day:
             self._end_time = None
         else:
-            self._end_time = calculated_end
+            self._end_time = end_day + timedelta(days=1)
+
+        self._duration = None
+        self._begin_precision = 'day'
 
     @property
     def status(self):
@@ -452,6 +456,13 @@ def created(event, line):
         event.created = iso_to_arrow(line, tz_dict)
 
 
+@Event._extracts('LAST-MODIFIED')
+def last_modified(event, line):
+    if line:
+        tz_dict = event._classmethod_kwargs['tz']
+        event.last_modified = iso_to_arrow(line, tz_dict)
+
+
 @Event._extracts('DTSTART')
 def start(event, line):
     if line:
@@ -558,6 +569,14 @@ def o_created(event, container):
     container.append(ContentLine('DTSTAMP', value=arrow_to_iso(instant)))
 
 
+# TODO: Should the output be equal to `created` attribute?
+@Event._outputs
+def o_last_modified(event, container):
+    if event.last_modified:
+        instant = event.last_modified
+        container.append(ContentLine('LAST-MODIFIED', value=arrow_to_iso(instant)))
+
+
 @Event._outputs
 def o_start(event, container):
     if event.begin and not event.all_day:
@@ -569,6 +588,9 @@ def o_all_day(event, container):
     if event.begin and event.all_day:
         container.append(ContentLine('DTSTART', params={'VALUE': ('DATE',)},
                                      value=arrow_date_to_iso(event.begin)))
+        if event._end_time:
+            container.append(ContentLine('DTEND', params={'VALUE': ('DATE',)},
+                                         value=arrow_date_to_iso(event.end)))
 
 
 @Event._outputs
@@ -581,7 +603,7 @@ def o_duration(event, container):
 
 @Event._outputs
 def o_end(event, container):
-    if event.begin and event._end_time:
+    if event.begin and event._end_time and not event.all_day:
         container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
 
 
