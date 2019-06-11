@@ -5,7 +5,7 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
 
-from meta import __version__, __title__, __license__, __author__
+from ics.__meta__ import __version__, __title__, __license__, __author__
 
 with open("requirements.txt") as f:
     install_requires = [line for line in f if line and line[0] not in "#-"]
