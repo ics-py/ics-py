@@ -37,6 +37,9 @@ Misc:
     - Multi-day events fixes (thanks @ConnyOnny)
     - Fix `TZID` drop when `VTIMEZONE` is empty (thanks @ConnyOnny)
     - Better test coverage (thanks @aureooms)
+    
+Breaking Changes:
+    - Removed EventList class
 
 Thank you also to @davidjb, @etnarek, @jammon
 
