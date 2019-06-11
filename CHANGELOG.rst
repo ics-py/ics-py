@@ -15,6 +15,7 @@ Ics.py changelog
  - Fix off by one error on the DTEND on all day events (issues #92 and #150)
  - Adds support for Organizers to Events
  - Adds support for Attendees to Events
+ - Added LAST-MODIFIED attribute support
 
 **************
 0.4
@@ -39,6 +40,9 @@ Misc:
     - Multi-day events fixes (thanks @ConnyOnny)
     - Fix `TZID` drop when `VTIMEZONE` is empty (thanks @ConnyOnny)
     - Better test coverage (thanks @aureooms)
+    
+Breaking Changes:
+    - Removed EventList class
 
 Thank you also to @davidjb, @etnarek, @jammon
 

@@ -48,6 +48,7 @@ class Event(Component):
                  uid=None,
                  description=None,
                  created=None,
+                 last_modified=None,
                  location=None,
                  url=None,
                  transparent=False,
@@ -57,6 +58,7 @@ class Event(Component):
                  status=None,
                  organizer=None,
                  ):
+
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -67,6 +69,7 @@ class Event(Component):
             uid (string): must be unique
             description (string)
             created (Arrow-compatible)
+            last_modified (Arrow-compatible)
             location (string)
             url (string)
             transparent (Boolean)
@@ -88,6 +91,7 @@ class Event(Component):
         self.uid = uid_gen() if not uid else uid
         self.description = description
         self.created = get_arrow(created)
+        self.last_modified = get_arrow(last_modified)
         self.location = location
         self.url = url
         self.transparent = transparent
@@ -221,6 +225,9 @@ class Event(Component):
             self._end_time = None
 
         self._duration = value
+
+    def add_attendee(self, attendee):
+        self.attendees.add(attendee)
 
     @property
     def all_day(self):
@@ -454,6 +461,13 @@ def created(event, line):
         event.created = iso_to_arrow(line, tz_dict)
 
 
+@Event._extracts('LAST-MODIFIED')
+def last_modified(event, line):
+    if line:
+        tz_dict = event._classmethod_kwargs['tz']
+        event.last_modified = iso_to_arrow(line, tz_dict)
+
+
 @Event._extracts('DTSTART')
 def start(event, line):
     if line:
@@ -558,6 +572,14 @@ def o_created(event, container):
         instant = arrow.now()
 
     container.append(ContentLine('DTSTAMP', value=arrow_to_iso(instant)))
+
+
+# TODO: Should the output be equal to `created` attribute?
+@Event._outputs
+def o_last_modified(event, container):
+    if event.last_modified:
+        instant = event.last_modified
+        container.append(ContentLine('LAST-MODIFIED', value=arrow_to_iso(instant)))
 
 
 @Event._outputs

@@ -128,6 +128,7 @@ class TestEvent(unittest.TestCase):
         self.assertNotEqual(e.uid, None)
         self.assertEqual(e.description, None)
         self.assertEqual(e.created, None)
+        self.assertEqual(e.last_modified, None)
         self.assertEqual(e.location, None)
         self.assertEqual(e.url, None)
         self.assertEqual(e._unused, Container(name='VEVENT'))
@@ -482,3 +483,9 @@ class TestEvent(unittest.TestCase):
 
         assert e.begin == arrow.get('2016-10-04')
         assert e.end == arrow.get('2016-10-05')
+
+    def test_last_modified(self):
+        c = Calendar(cal18)
+        e = list(c.events)[0]
+
+        assert e.last_modified == arrow.get('2015-11-13 00:48:09')
