@@ -25,6 +25,8 @@ Other contributors, listed alphabetically, are:
 * `@Trii <https://github.com/Trii>`_
 * `@jessejoe <https://github.com/jessejoe>`_
 * `@zagnut007 <https://github.com/zagnut007>`_
+* `@danieltellez <https://github.com/danieltellez>`_
+* `@kayluhb <https://github.com/kayluhb>`_
 
 Many thanks for your contributions!
 

@@ -129,6 +129,11 @@ class Event(Component):
         """
         return bool(self._end_time or self._duration)
 
+    def add_attendee(self, attendee):
+        """ Add an attendee to the attendees set
+        """
+        self.attendees.add(attendee)
+
     @property
     def begin(self):
         """Get or set the beginning of the event.
@@ -220,9 +225,6 @@ class Event(Component):
             self._end_time = None
 
         self._duration = value
-
-    def add_attendee(self, attendee):
-        self.attendees.add(attendee)
 
     @property
     def all_day(self):
