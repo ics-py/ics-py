@@ -3,6 +3,7 @@ import pytest
 from datetime import datetime, timedelta as td, datetime as dt
 import arrow
 from ics.event import Event
+from ics.repeatable import Repeatable
 from ics.icalendar import Calendar
 from ics.parse import Container
 from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20, cal32
@@ -457,3 +458,130 @@ class TestEvent(unittest.TestCase):
 
         assert e.begin == arrow.get('2016-10-04')
         assert e.end == arrow.get('2016-10-05')
+
+    def test_no_repeat(self):
+        event = Event(name="Test repeatable #1", begin=dt(2019, 1, 14, 13, 30), duration=td(minutes=60))
+        for e in event.repeat():
+            self.assertEqual(e, event)
+
+    def test_repeat_daily(self):
+        repeatable = Repeatable("DAILY", count=3, interval=2)
+        event = Event(name="Test repeatable #1", begin=dt(2019, 1, 14, 13, 30), duration=td(minutes=60),
+                      rrule=repeatable)
+
+        events = [event,
+                  Event(name="Test repeatable #1", begin=dt(2019, 1, 16, 13, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2019, 1, 18, 13, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2019, 1, 20, 13, 30), duration=td(minutes=60),
+                        rrule=repeatable)]
+
+        i = 0
+        for e in event.repeat():
+            self.assertTrue(e.time_equals(events[i]))
+            i += 1
+
+    def test_repeat_weekly(self):
+        repeatable = Repeatable("WEEKLY", count=2, byday=["MO", "WE"])
+        event = Event(name="Test repeatable #1", begin=dt(2019, 1, 14, 13, 30), duration=td(minutes=60),
+                      rrule=repeatable)
+
+        events = [event,
+                  Event(name="Test repeatable #1", begin=dt(2019, 1, 16, 13, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2019, 1, 21, 13, 30), duration=td(minutes=60),
+                        rrule=repeatable)]
+
+        i = 0
+        for e in event.repeat():
+            self.assertTrue(e.time_equals(events[i]))
+            i += 1
+
+    def test_repeat_monthly_by_day(self):
+        repeatable = Repeatable("MONTHLY", until=arrow.Arrow.fromdatetime(dt(2019, 6, 30, 16, 00)),
+                                interval=2, byday=["1SU", "-1SU"])
+
+        event = Event(name="Test repeatable #1", begin=dt(2019, 3, 3, 15, 30), duration=td(minutes=60),
+                      rrule=repeatable)
+
+        events = [event,
+                  Event(name="Test repeatable #1", begin=dt(2019, 3, 31, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2019, 5, 5, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2019, 5, 26, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable)]
+
+        i = 0
+        for e in event.repeat():
+            self.assertTrue(e.time_equals(events[i]))
+            i += 1
+
+    def test_repeat_monthly_by_date(self):
+        repeatable = Repeatable("MONTHLY", until=arrow.Arrow.fromdatetime(dt(2019, 9, 30, 16, 00)),
+                                interval=3, bymonthday=[1, 20])
+
+        event = Event(name="Test repeatable #1", begin=dt(2019, 1, 1, 15, 30), duration=td(minutes=60),
+                      rrule=repeatable)
+
+        events = [event,
+                  Event(name="Test repeatable #1", begin=dt(2019, 1, 20, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2019, 4, 1, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2019, 4, 20, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2019, 7, 1, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2019, 7, 20, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable)]
+
+        i = 0
+        for e in event.repeat():
+            self.assertTrue(e.time_equals(events[i]))
+            i += 1
+
+    def test_repeat_yearly_by_day(self):
+        repeatable = Repeatable("YEARLY", until=arrow.Arrow.fromdatetime(dt(2022, 1, 30, 16, 00)),
+                                interval=2, byday=["1SU", "-1SU"], bymonth=[1])
+
+        event = Event(name="Test repeatable #1", begin=dt(2019, 1, 6, 15, 30), duration=td(minutes=60),
+                      rrule=repeatable)
+
+        events = [event,
+                  Event(name="Test repeatable #1", begin=dt(2019, 1, 27, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2021, 1, 3, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2021, 1, 31, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable)]
+
+        i = 0
+        for e in event.repeat():
+            self.assertTrue(e.time_equals(events[i]))
+            i += 1
+
+    def test_repeat_yearly_by_date(self):
+        repeatable = Repeatable("YEARLY", until=arrow.Arrow.fromdatetime(dt(2022, 1, 30, 16, 00)),
+                                bymonthday=[1, 15], bymonth=[5])
+
+        event = Event(name="Test repeatable #1", begin=dt(2019, 5, 1, 15, 30), duration=td(minutes=60),
+                      rrule=repeatable)
+
+        events = [event,
+                  Event(name="Test repeatable #1", begin=dt(2019, 5, 15, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2020, 5, 1, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2020, 5, 15, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2021, 5, 1, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable),
+                  Event(name="Test repeatable #1", begin=dt(2021, 5, 15, 15, 30), duration=td(minutes=60),
+                        rrule=repeatable)]
+
+        i = 0
+        for e in event.repeat():
+            self.assertTrue(e.time_equals(events[i]))
+            i += 1

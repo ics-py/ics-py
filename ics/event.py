@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import StringIO, string_types, text_type, integer_types
+# from six import StringIO, string_types, text_type, integer_types
 
 import arrow
 import copy
@@ -12,6 +12,7 @@ from datetime import timedelta, datetime
 
 from .alarm import AlarmFactory
 from .component import Component
+from .repeatable import Repeatable
 from .utils import (
     parse_duration,
     timedelta_to_duration,
@@ -52,8 +53,11 @@ class Event(Component):
                  url=None,
                  transparent=False,
                  alarms=None,
+                 rrule=None,
                  categories=None,
                  status=None,
+                 priority=0,
+                 due=None
                  ):
         """Instantiates a new :class:`ics.event.Event`.
 
@@ -69,17 +73,24 @@ class Event(Component):
             url (string)
             transparent (Boolean)
             alarms (:class:`ics.alarm.Alarm`)
+            rrule (Repeatable)
             categories (set of string)
             status (string)
+            priority (float)
+            due (Arrow-compatible)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
+            ValueError: if `due` is set before `end`
         """
 
         self._duration = None
         self._end_time = None
         self._begin = None
         self._begin_precision = None
+        self._priority = None
+        self._due = None
+
         self.uid = uid_gen() if not uid else uid
         self.description = description
         self.created = get_arrow(created)
@@ -87,7 +98,10 @@ class Event(Component):
         self.url = url
         self.transparent = transparent
         self.alarms = set()
+        self.rrule = rrule
         self.categories = set()
+        self.priority = priority
+        self.due = due
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -207,6 +221,37 @@ class Event(Component):
             self._end_time = None
 
         self._duration = value
+
+    @property
+    def priority(self):
+        """Get or set the priority.
+
+        |   Will return a float.
+        |   Maybe set to a int or float.
+        """
+        return self._priority
+
+    @priority.setter
+    def priority(self, value):
+        self._priority = float(value)
+
+    @property
+    def due(self):
+        """Get or set the the event's due date.
+
+        |  Will return an :class:`Arrow` object.
+        |  May be set to anything that :func:`Arrow.get` understands.
+        |  If an end is defined, .due must not
+            be set to a inferior value.
+        """
+        return self._due
+
+    @due.setter
+    def due(self, value):
+        value = get_arrow(value)
+        if value and self._end_time and value < self._end_time:
+            raise ValueError('Due must be the or after the end')
+        self._due = value
 
     @property
     def all_day(self):
@@ -422,11 +467,183 @@ class Event(Component):
         clone.categories = copy.copy(self.categories)
         return clone
 
+    def copy(self):
+        """
+        Returns:
+            Event: a clone with different uid
+        """
+        new_event = self.clone()
+        new_event.uid = uid_gen()
+        return new_event
+
     def __hash__(self):
         """
         Returns:
             int: hash of self. Based on self.uid."""
         return int(''.join(map(lambda x: '%.3d' % ord(x), self.uid)))
+
+    def is_included(self, start, stop):
+        """Return True if event is fits on start-stop interval.
+
+        :param start: Arrow object
+        :param stop: Arrow object
+
+        :return: boolean
+        """
+        for event in self.repeat():
+            # if start is between the bonds and stop is between the bonds
+            if start <= event.begin <= stop and start <= event.end <= stop:
+                yield event
+            elif event.begin > stop:
+                break
+
+    def overlaps(self, start, stop):
+        """Return True if event overlaps start-stop interval.
+
+        :param start: Arrow object
+        :param stop: Arrow object
+
+        :return: boolean
+        """
+        for event in self.repeat():
+            # if start is between the bonds or stop is between the bonds or event is a superset of [start,stop]
+            if (start <= event.begin <= stop or start <= event.end <= stop) or event.begin <= start and event.end >= stop:
+                yield event
+            elif event.begin > stop:
+                break
+
+    def starts_after(self, instant):
+        """Return True if event starts after instant.
+
+        :param instant: Arrow object
+
+        :return: boolean
+        """
+        for event in self.repeat():
+            if event.begin > instant:
+                yield event
+
+    def occurs_at(self, instant):
+        """Return True if event occurs at instant.
+
+        :param instant: Arrow object
+
+        :return: boolean
+        """
+        for event in self.repeat():
+            if event.begin <= instant <= event.end:
+                yield event
+            elif event.begin > instant:
+                break
+
+    def repeat(self):
+        """Iterate over the events according with rrule.
+
+        :return: iterator
+        """
+        if not self.rrule:
+            yield self
+        else:
+            count = 0
+            total = -self.rrule.interval
+            event = self.clone()
+
+            while event.in_bound(count):
+                event = self.clone()
+                begin_shifted = eval("event.begin.shift({}=total + self.rrule.interval)".format(self.rrule.delta_index))
+                end_shifted = eval("event.end.shift({}=total + self.rrule.interval)".format(self.rrule.delta_index))
+                duration = event.duration
+
+                event.end = end_shifted
+                event.begin = begin_shifted
+
+                if not self.rrule.freq == 'DAILY':
+
+                    event.begin = arrow.Arrow.fromdatetime(datetime.min)
+                    event.end = event.begin
+
+                    if self.rrule.freq == 'WEEKLY':
+                        for day in self.rrule.byday:
+                            event.begin = arrow.Arrow.fromdatetime(datetime.min)
+                            event.end = event.begin
+
+                            event.end = end_shifted.shift(weekday=day)
+                            event.begin = begin_shifted.shift(weekday=day)
+
+                            if event.in_bound(count):
+                                count += 1
+                                yield event
+                            else:
+                                break
+
+                    else:
+                        if self.rrule.freq == 'YEARLY':
+                            month = self.rrule.bymonth[0]
+                            begin_shifted = begin_shifted.replace(month=month)
+
+                        for day in self.rrule.byday:
+                            time = begin_shifted.time()
+
+                            if day.n > 0:
+                                begin = begin_shifted.floor('month')
+                            elif day.n < 0:
+                                begin = begin_shifted.ceil('month')
+                            else:
+                                begin = begin_shifted
+
+                            begin = begin.replace(hour=time.hour, minute=time.minute, second=time.second)
+                            begin = begin.floor('second')
+                            begin = begin.shift(weekday=day)
+
+                            end = begin + duration
+                            end = end.shift(weekday=day)
+
+                            event.end = end
+                            event.begin = begin
+
+                            if event.in_bound(count):
+                                count += 1
+                                yield event
+                            else:
+                                break
+
+                        for dayno in self.rrule.bymonthday:
+                            begin = begin_shifted
+                            begin = begin.replace(day=dayno)
+
+                            end = begin + duration
+
+                            event.end = end
+                            event.begin = begin
+
+                            if event.in_bound(count):
+                                count += 1
+                                yield event
+                            else:
+                                break
+                else:
+                    if event.in_bound(count):
+                        count += 1
+                        yield event
+                    else:
+                        break
+
+                total += self.rrule.interval
+
+    def in_bound(self, count):
+        """Check if event is in rrule bounds until/count.
+
+        :param count: int
+
+        :return: boolean
+        """
+        if self.rrule.count:
+            return count <= self.rrule.count
+
+        if self.rrule.until:
+            return self.begin <= self.rrule.until
+
+        return True
 
 
 # ------------------
@@ -513,6 +730,12 @@ def alarms(event, lines):
     event.alarms = list(map(alarm_factory, lines))
 
 
+@Event._extracts('RRULE')
+def rrule(event, line):
+    if line:
+        event.rrule = Repeatable.from_line(line)
+
+
 @Event._extracts('STATUS')
 def status(event, line):
     if line:
@@ -526,6 +749,20 @@ def categories(event, line):
         # In the regular expression: Only match unquoted commas.
         for cat in re.split("(?<!\\\\),", line.value):
             event.categories.update({unescape_string(cat)})
+
+
+@Event._extracts('PRIORITY')
+def priority(event, line):
+    if line:
+        event.priority = line.value
+
+
+@Event._extracts('DTDUE')
+def due(event, line):
+    if line:
+        # get the dict of vtimezones passed to the classmethod
+        tz_dict = event._classmethod_kwargs['tz']
+        event.due = iso_to_arrow(line, tz_dict)
 
 
 # -------------------
@@ -620,6 +857,12 @@ def o_alarm(event, container):
 
 
 @Event._outputs
+def o_rrule(event, container):
+    if event.rrule:
+        container.append(ContentLine('RRULE', value=str(event.rrule)))
+
+
+@Event._outputs
 def o_status(event, container):
     if event.status:
         container.append(ContentLine('STATUS', value=event.status))
@@ -629,3 +872,15 @@ def o_status(event, container):
 def o_categories(event, container):
     if event.categories:
         container.append(ContentLine('CATEGORIES', value=','.join([escape_string(s) for s in event.categories])))
+
+
+@Event._outputs
+def o_priority(event, container):
+    if event.priority:
+        container.append(ContentLine('PRIORITY', value=event.priority))
+
+
+@Event._outputs
+def o_due(event, container):
+    if event.due:
+        container.append(ContentLine('DTDUE', value=arrow_to_iso(event.due)))
