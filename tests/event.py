@@ -2,6 +2,8 @@ import unittest
 import pytest
 from datetime import datetime, timedelta as td, datetime as dt
 import arrow
+from ics.attendee import Attendee
+from ics.organizer import Organizer
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
@@ -131,6 +133,7 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.url, None)
         self.assertEqual(e._unused, Container(name='VEVENT'))
         self.assertEqual(e.status, None)
+        self.assertEqual(e.organizer, None)
 
     def test_has_end(self):
         e = Event()
@@ -164,6 +167,28 @@ class TestEvent(unittest.TestCase):
         e5.duration = {'days': 6, 'hours': 2}
         self.assertEqual(e5.end, arrow.get("1993-05-30T02:00"))
         self.assertEqual(e5.duration, td(hours=146))
+
+    def test_attendee(self):
+        a = Attendee(email='email@email.com')
+        line = str(a)
+        self.assertIn("ATTENDEE;CN='email@email.com", line)
+
+        a2 = Attendee(email='email@email.com', common_name='Email')
+        line = str(a2)
+        self.assertIn("ATTENDEE;CN='Email':mailto:email@email.com", line)
+
+    def test_add_attendees(self):
+        e = Event()
+        a = Attendee(email='email@email.com')
+        e.add_attendee(a)
+        lines = str(e).splitlines()
+        self.assertIn("ATTENDEE;CN='email@email.com':mailto:email@email.com", lines)
+
+    def test_organizer(self):
+        e = Event()
+        e.organizer = Organizer(email='email@email.com', common_name='Mister Email')
+        lines = str(e).splitlines()
+        self.assertIn("ORGANIZER;CN='Mister Email':mailto:email@email.com", lines)
 
     def test_always_uid(self):
         e = Event()

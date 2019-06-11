@@ -53,9 +53,12 @@ class Event(Component):
                  url=None,
                  transparent=False,
                  alarms=None,
+                 attendees=None,
                  categories=None,
                  status=None,
+                 organizer=None,
                  ):
+
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -71,8 +74,10 @@ class Event(Component):
             url (string)
             transparent (Boolean)
             alarms (:class:`ics.alarm.Alarm`)
+            attendees (:class:`ics.attendee.Attendee`)
             categories (set of string)
             status (string)
+            organizer (:class:`ics.organizer.Organizer`)
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -82,6 +87,7 @@ class Event(Component):
         self._end_time = None
         self._begin = None
         self._begin_precision = None
+        self.organizer = None
         self.uid = uid_gen() if not uid else uid
         self.description = description
         self.created = get_arrow(created)
@@ -90,6 +96,7 @@ class Event(Component):
         self.url = url
         self.transparent = transparent
         self.alarms = set()
+        self.attendees = set()
         self.categories = set()
         self._unused = Container(name='VEVENT')
 
@@ -111,6 +118,9 @@ class Event(Component):
 
         if categories is not None:
             self.categories.update(set(categories))
+
+        if attendees is not None:
+            self.attendees.update(set(attendees))
 
     def has_end(self):
         """
@@ -210,6 +220,9 @@ class Event(Component):
             self._end_time = None
 
         self._duration = value
+
+    def add_attendee(self, attendee):
+        self.attendees.add(attendee)
 
     @property
     def all_day(self):
@@ -485,6 +498,11 @@ def summary(event, line):
     event.name = unescape_string(line.value) if line else None
 
 
+@Event._extracts('ORGANIZER')
+def organizer(event, line):
+    event.organizer = unescape_string(line.value) if line else None
+
+
 @Event._extracts('DESCRIPTION')
 def description(event, line):
     event.description = unescape_string(line.value) if line else None
@@ -593,6 +611,18 @@ def o_end(event, container):
 def o_summary(event, container):
     if event.name:
         container.append(ContentLine('SUMMARY', value=escape_string(event.name)))
+
+
+@Event._outputs
+def o_organizer(event, container):
+    if event.organizer:
+        container.append(str(event.organizer))
+
+
+@Event._outputs
+def o_attendee(event, container):
+    for attendee in event.attendees:
+        container.append(str(attendee))
 
 
 @Event._outputs
