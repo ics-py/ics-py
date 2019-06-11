@@ -226,9 +226,6 @@ class Event(Component):
 
         self._duration = value
 
-    def add_attendee(self, attendee):
-        self.attendees.add(attendee)
-
     @property
     def all_day(self):
         """
