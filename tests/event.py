@@ -339,13 +339,15 @@ class TestEvent(unittest.TestCase):
         """
         for tz in range(-3, 3):
             for hour in range(-3, 3):
-                e = Event(begin=Arrow(2019, 05, 29, tzinfo="%+02d:00" % tz).shift(hours=hour))
-                e.make_all_day()
-                if hour < 0:
-                    self.assertIn('DTSTART;VALUE=DATE:20190528', str(e).splitlines())
-                else:
-                    self.assertIn('DTSTART;VALUE=DATE:20190529', str(e).splitlines())
-        
+                for duration in range(0, 4):
+                    start = arrow.Arrow(2019, 5, 29, tzinfo="%+03d:00" % tz).shift(hours=hour)
+                    e = Event(begin=start, duration=td(days=duration))
+                    e.make_all_day()
+                    lines = str(e).splitlines()
+                    self.assertEqual(e.duration.days, duration)
+                    self.assertIn('DTSTART;VALUE=DATE:%s' % start.format('YYYYMMDD'), lines)
+                    self.assertIn('DTEND;VALUE=DATE:%s' % start.shift(days=duration).format('YYYYMMDD'), lines)
+
     def test_transparent_input(self):
         c = Calendar(cal19)
         e = next(iter(c.events))
