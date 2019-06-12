@@ -333,6 +333,19 @@ class TestEvent(unittest.TestCase):
         # no time or tz specifier
         self.assertIn('DTSTART;VALUE=DATE:20151221', str(e).splitlines())
 
+    def test_all_day_tz_independent(self):
+        """
+        see Issue #173
+        """
+        for tz in range(-3, 3):
+            for hour in range(-3, 3):
+                e = Event(begin=Arrow(2019, 05, 29, tzinfo="%+02d:00" % tz).shift(hours=hour))
+                e.make_all_day()
+                if hour < 0:
+                    self.assertIn('DTSTART;VALUE=DATE:20190528', str(e).splitlines())
+                else:
+                    self.assertIn('DTSTART;VALUE=DATE:20190529', str(e).splitlines())
+        
     def test_transparent_input(self):
         c = Calendar(cal19)
         e = next(iter(c.events))
