@@ -14,13 +14,13 @@ Other contributors, listed alphabetically, are:
 * `@gbovyn <https://github.com/gbovyn>`_
 * `@GMLudo <https://github.com/GMLudo>`_
 * `@guyzmo <https://github.com/guyzmo>`_
-* `@guyzmo <https://github.com/guyzmo>`_
 * `@jammon <https://github.com/jammon>`_
 * `@mrmadcow <https://github.com/mrmadcow>`_
 * `@perette <https://github.com/perette>`_
 * `@prashnts <https://github.com/prashnts>`_
 * `@rkeilty <https://github.com/rkeilty>`_
 * `@tgamauf <https://github.com/tgamauf>`_
+* `@timfaner <https://github.com/timfaner>`_
 * `@Timic3 <https://github.com/Timic3>`_
 * `@Trii <https://github.com/Trii>`_
 * `@jessejoe <https://github.com/jessejoe>`_

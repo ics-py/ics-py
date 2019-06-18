@@ -74,6 +74,7 @@ class Event(Component):
             url (string)
             transparent (Boolean)
             alarms (:class:`ics.alarm.Alarm`)
+            rrule (dict or string)
             attendees (:class:`ics.attendee.Attendee`)
             categories (set of string)
             status (string)
@@ -107,7 +108,7 @@ class Event(Component):
         # TODO: DRY [1]
         if duration and end:
             raise ValueError('Event() may not specify an end and a duration \
-                at the same time')
+                at the same time'                                 )
         elif end:  # End was specified
             self.end = end
         elif duration:  # Duration was specified
@@ -137,14 +138,26 @@ class Event(Component):
 
     @property
     def rrule(self):
-        """Set the recurrence rule of the event.
+        """ Set the recurrence rule of the event.
+        |  The type of input value can be a :class:`dict` object or a :class:`str` object,
+        |  and the type of `dict's key and value` must be :class:`str`
+        |  You can find more information about the "RRULE" property in: https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html
+        |  You can use this tool to generate repeating rule strings: https://icalendar.org/rrule-tool.html
+        Example:
+
+            >>> e = Event()
+            >>> e.rrule = "FREQ=DAILY;INTERVAL=1;UNTIL=20190618T000000Z"
+
+            Or:
+            >>> e = Event()
+            >>> e.rrule = {'freq': 'daily', 'interval': '1', 'until': '20190618T000000Z'}
         """
         return self._rrule
 
     @rrule.setter
     def rrule(self, value):
         rrule_str = ''
-        if value:
+        if isinstance(value, dict):
             for key in value:
                 if isinstance(value[key], str):
                     rvalue = value[key]
@@ -154,7 +167,8 @@ class Event(Component):
                 escape_string(rvalue)
                 rrule_str += ';' if rrule_str else ''
                 rrule_str += '{}={}'.format(str(key).upper(), rvalue)
-
+        elif isinstance(value, str):
+            rrule_str = value
         self._rrule = rrule_str
 
     @property

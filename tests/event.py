@@ -489,3 +489,19 @@ class TestEvent(unittest.TestCase):
         e = list(c.events)[0]
 
         assert e.last_modified == arrow.get('2015-11-13 00:48:09')
+
+    def test_create_rrule_repeat_everyday_forever(self):
+        '''
+        test example is from: https://icalendar.org/rrule-tool.html
+        '''
+        e = Event()
+        e.rrule = {'freq': 'daily', 'interval': 1}
+        assert e.rrule == "FREQ=DAILY;INTERVAL=1"
+
+    def test_create_rrule_directly(self):
+        '''
+        test example is from: https://icalendar.org/rrule-tool.html
+        '''
+        e = Event()
+        e.rrule = "FREQ=YEARLY;INTERVAL=1;BYMONTH=06;BYDAY=3TU;COUNT=12"
+        assert e.rrule == "FREQ=YEARLY;INTERVAL=1;BYMONTH=06;BYDAY=3TU;COUNT=12"

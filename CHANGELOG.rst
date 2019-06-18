@@ -16,6 +16,7 @@ Ics.py changelog
  - Adds support for Organizers to Events
  - Adds support for Attendees to Events
  - Added LAST-MODIFIED attribute support
+ - Add an event component RRULE
 
 **************
 0.4
