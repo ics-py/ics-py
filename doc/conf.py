@@ -19,8 +19,6 @@ sys.path.insert(0, os.path.abspath('..'))
 
 import ics
 from ics import __version__
-#__version__ = 'indev'
-
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -60,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ics.py'
-copyright = u'2013-2015, Nikita Marchant'
+copyright = u'see AUTHORS.rst'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

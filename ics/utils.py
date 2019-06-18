@@ -5,8 +5,8 @@ from __future__ import unicode_literals, absolute_import
 
 from arrow.arrow import Arrow
 from datetime import timedelta
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
+from six import StringIO, string_types, text_type, integer_types
+
 from uuid import uuid4
 from dateutil.tz import gettz
 import arrow
@@ -16,14 +16,36 @@ from . import parse
 
 tzutc = arrow.utcnow().tzinfo
 
-tzutc = arrow.utcnow().tzinfo
-
 
 def remove_x(container):
     for i in reversed(range(len(container))):
         item = container[i]
         if item.name.startswith('X-'):
             del container[i]
+
+
+DATE_FORMATS = dict((len(k), k) for k in (
+    'YYYYMM',
+    'YYYYMMDD',
+    'YYYYMMDDTHH',
+    'YYYYMMDDTHHmm',
+    'YYYYMMDDTHHmmss'))
+
+
+def arrow_get(string):
+    '''this function exists because ICS uses ISO 8601 without dashes or
+    colons, i.e. not ISO 8601 at all.'''
+
+    # replace slashes with dashes
+    if '/' in string:
+        string = string.replace('/', '-')
+
+    # if string contains dashes, assume it to be proper ISO 8601
+    if '-' in string:
+        return arrow.get(string)
+
+    string = string.rstrip('Z')
+    return arrow.get(string, DATE_FORMATS[len(string)])
 
 
 def iso_to_arrow(time_container, available_tz={}):
@@ -45,13 +67,13 @@ def iso_to_arrow(time_container, available_tz={}):
         val = time_container.value
 
     if tz and not (val[-1].upper() == 'Z'):
-        naive = arrow.get(val).naive
+        naive = arrow_get(val).naive
         selected_tz = gettz(tz)
         if not selected_tz:
             selected_tz = available_tz.get(tz, 'UTC')
         return arrow.get(naive, selected_tz)
     else:
-        return arrow.get(val)
+        return arrow_get(val)
 
     # TODO : support floating (ie not bound to any time zone) times (cf
     # http://www.kanzaki.com/docs/ical/dateTime.html)

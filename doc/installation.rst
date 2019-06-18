@@ -14,17 +14,10 @@ Installing ics.py is simple with `pip <http://www.pip-installer.org/>`_::
 
     $ pip install ics
 
-or, with `easy_install <http://pypi.python.org/pypi/setuptools>`_::
-
-    $ easy_install ics
-
-But, you really `shouldn't do that <http://www.pip-installer.org/en/latest/other-tools.html#pip-compared-to-easy-install>`_.
-
-
 Get the Code
 ------------
 
-Ics.py is actively developed on GitHub, where the code is
+Ics.py is developed on GitHub, where the code is
 `always available <https://github.com/C4ptainCrunch/ics.py>`_.
 
 You can either clone the public repository::

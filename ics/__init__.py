@@ -7,6 +7,8 @@ from .icalendar import Calendar
 from .event import Event
 from .todo import Todo
 from .alarm import AudioAlarm, DisplayAlarm
+from .attendee import Attendee
+from .organizer import Organizer
 from .__meta__ import (
     __title__,
     __version__,
