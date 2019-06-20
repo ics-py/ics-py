@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
+from collections import Iterable
 
 from six import StringIO, string_types, text_type, integer_types
 
@@ -108,7 +109,7 @@ class Event(Component):
         # TODO: DRY [1]
         if duration and end:
             raise ValueError('Event() may not specify an end and a duration \
-                at the same time'                                 )
+                at the same time'                                                                                                                                                                     )
         elif end:  # End was specified
             self.end = end
         elif duration:  # Duration was specified
@@ -155,19 +156,24 @@ class Event(Component):
         return self._rrule
 
     @rrule.setter
-    def rrule(self, value):
+    def rrule(self, value: dict or str):
         rrule_str = ''
         if isinstance(value, dict):
             for key in value:
-                if isinstance(value[key], str):
-                    rvalue = value[key]
+                if isinstance(value[key], str) or isinstance(value[key], int):
+                    _value = str(value[key]).strip()
+                    rvalue = _value
+                elif isinstance(value[key], Iterable):
+                    _value = map(lambda x: str(x), value[key])
+                    rvalue = ','.join(_value)
                 else:
-                    rvalue = ','.join(value[key])
+                    raise TypeError('rrule value must be iterable or str')
                 rvalue = rvalue.upper()
                 escape_string(rvalue)
                 rrule_str += ';' if rrule_str else ''
                 rrule_str += '{}={}'.format(str(key).upper(), rvalue)
         elif isinstance(value, str):
+            rvalue = rvalue.upper()
             rrule_str = value
         self._rrule = rrule_str
 
@@ -730,6 +736,7 @@ def o_rrule(event, container):
         container.append(ContentLine('RRULE', value=event.rrule))
 
 
+@Event._outputs
 def o_status(event, container):
     if event.status:
         container.append(ContentLine('STATUS', value=event.status))
