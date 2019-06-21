@@ -108,8 +108,7 @@ class Event(Component):
         self.begin = begin
         # TODO: DRY [1]
         if duration and end:
-            raise ValueError('Event() may not specify an end and a duration \
-                at the same time'                                                                                                                                                                     )
+            raise ValueError('Event() may not specify an end and a duration at the same time')
         elif end:  # End was specified
             self.end = end
         elif duration:  # Duration was specified
@@ -156,25 +155,22 @@ class Event(Component):
         return self._rrule
 
     @rrule.setter
-    def rrule(self, value: dict or str):
+    def rrule(self, rrule_: dict or str):
         rrule_str = ''
-        if isinstance(value, dict):
-            for key in value:
-                if isinstance(value[key], str) or isinstance(value[key], int):
-                    _value = str(value[key]).strip()
-                    rvalue = _value
-                elif isinstance(value[key], Iterable):
-                    _value = map(lambda x: str(x), value[key])
-                    rvalue = ','.join(_value)
+        if isinstance(rrule_, dict):
+            for k, v in rrule_.items():
+                if isinstance(v, str):
+                    rvalue = v.strip()
+                elif isinstance(v, Iterable):
+                    rvalue = ','.join(v)
                 else:
-                    raise TypeError('rrule value must be iterable or str')
+                    raise TypeError('RRULE\'s value must be iterable or str')
                 rvalue = rvalue.upper()
                 escape_string(rvalue)
                 rrule_str += ';' if rrule_str else ''
-                rrule_str += '{}={}'.format(str(key).upper(), rvalue)
-        elif isinstance(value, str):
-            rvalue = rvalue.upper()
-            rrule_str = value
+                rrule_str += '{}={}'.format(str(k).upper(), rvalue)
+        elif isinstance(rrule_, str):
+            rrule_str = rrule_.upper()
         self._rrule = rrule_str
 
     @property

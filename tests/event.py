@@ -495,7 +495,7 @@ class TestEvent(unittest.TestCase):
         test example is from: https://icalendar.org/rrule-tool.html
         '''
         e = Event()
-        e.rrule = {'freq': 'daily', 'interval': 1}
+        e.rrule = {'freq': 'daily', 'interval': '1'}
         assert e.rrule == "FREQ=DAILY;INTERVAL=1"
 
     def test_create_rrule_directly(self):
@@ -505,3 +505,12 @@ class TestEvent(unittest.TestCase):
         e = Event()
         e.rrule = "FREQ=YEARLY;INTERVAL=1;BYMONTH=06;BYDAY=3TU;COUNT=12"
         assert e.rrule == "FREQ=YEARLY;INTERVAL=1;BYMONTH=06;BYDAY=3TU;COUNT=12"
+
+    def test_create_rrule_repeat(self):
+        '''
+        test example is from: https://icalendar.org/rrule-tool.html
+        '''
+        e = Event()
+        e.rrule = {'freq': 'WEEKLY', 'interval': '1', 'byday': ['SU', 'TU']}
+        assert e.rrule == "FREQ=WEEKLY;INTERVAL=1;BYDAY=SU,TU"
+        
