@@ -47,7 +47,7 @@ class AlarmFactory(object):
         return AlarmFactory.get_type_from_action(action_type.value)
 
 
-class Alarm(Component):
+class BaseAlarm(Component):
     """
     A calendar event VALARM base class
     """
@@ -61,7 +61,7 @@ class Alarm(Component):
                  repeat=None,
                  duration=None):
         """
-        Instantiates a new :class:`ics.alarm.Alarm`.
+        Instantiates a new :class:`ics.alarm.BaseAlarm`.
 
         Adheres to RFC5545 VALARM standard: http://icalendar.org/iCalendar-RFC-5545/3-6-6-alarm-component.html
 
@@ -180,7 +180,7 @@ class Alarm(Component):
 # ------------------
 # ----- Inputs -----
 # ------------------
-@Alarm._extracts('TRIGGER', required=True)
+@BaseAlarm._extracts('TRIGGER', required=True)
 def trigger(alarm, line):
     if not line.params or 'DURATION' in line.params.get('VALUE', ''):
         alarm.trigger = parse_duration(line.value[1:])
@@ -194,13 +194,13 @@ def trigger(alarm, line):
             raise ValueError('TRIGGER has invalid parameters')
 
 
-@Alarm._extracts('DURATION')
+@BaseAlarm._extracts('DURATION')
 def duration(alarm, line):
     if line:
         alarm._duration = parse_duration(line.value)
 
 
-@Alarm._extracts('REPEAT')
+@BaseAlarm._extracts('REPEAT')
 def repeat(alarm, line):
     if line:
         alarm._repeat = int(line.value)
@@ -209,7 +209,7 @@ def repeat(alarm, line):
 # -------------------
 # ----- Outputs -----
 # -------------------
-@Alarm._outputs
+@BaseAlarm._outputs
 def o_trigger(alarm, container):
     if not alarm.trigger:
         raise ValueError('Alarm must have a trigger')
@@ -223,32 +223,32 @@ def o_trigger(alarm, container):
                                      value=arrow_to_iso(alarm.trigger)))
 
 
-@Alarm._outputs
+@BaseAlarm._outputs
 def o_duration(alarm, container):
     if alarm.duration:
         representation = timedelta_to_duration(alarm.duration)
         container.append(ContentLine('DURATION', value=representation))
 
 
-@Alarm._outputs
+@BaseAlarm._outputs
 def o_repeat(alarm, container):
     if alarm.repeat:
         container.append(ContentLine('REPEAT', value=alarm.repeat))
 
 
-@Alarm._outputs
+@BaseAlarm._outputs
 def o_action(alarm, container):
     container.append(ContentLine('ACTION', value=alarm.action))
 
 
-class DisplayAlarm(Alarm):
+class DisplayAlarm(BaseAlarm):
     """
     A calendar event VALARM with DISPLAY option.
     """
 
     # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
-    _EXTRACTORS = copy.copy(Alarm._EXTRACTORS)
-    _OUTPUTS = copy.copy(Alarm._OUTPUTS)
+    _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
+    _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
 
     def __init__(self,
                  description=None,
@@ -295,14 +295,14 @@ def o_description(alarm, container):
     container.append(ContentLine('DESCRIPTION', value=escape_string(alarm.description or '')))
 
 
-class AudioAlarm(Alarm):
+class AudioAlarm(BaseAlarm):
     """
     A calendar event VALARM with AUDIO option.
     """
 
     # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
-    _EXTRACTORS = copy.copy(Alarm._EXTRACTORS)
-    _OUTPUTS = copy.copy(Alarm._OUTPUTS)
+    _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
+    _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
 
     def __init__(self,
                  attach=None,
