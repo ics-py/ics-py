@@ -18,6 +18,7 @@ Other contributors, listed alphabetically, are:
 * `@jammon <https://github.com/jammon>`_
 * `@mrmadcow <https://github.com/mrmadcow>`_
 * `@perette <https://github.com/perette>`_
+* `@Philiptpp <https://github.com/Philiptpp>`_
 * `@prashnts <https://github.com/prashnts>`_
 * `@rkeilty <https://github.com/rkeilty>`_
 * `@tgamauf <https://github.com/tgamauf>`_
