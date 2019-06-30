@@ -40,9 +40,7 @@ class TestTodo(unittest.TestCase):
         dtstamp = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         completed = dtstamp + timedelta(days=1)
         created = dtstamp + timedelta(seconds=1)
-        alarm = [AlarmFactory().get_type_from_action('DISPLAY')]
-        alarms = set()
-        alarms.update(alarm)
+        alarms = [AlarmFactory().get_type_from_action('DISPLAY')]
 
         t = Todo(
             uid='uid',
@@ -53,7 +51,7 @@ class TestTodo(unittest.TestCase):
             location='location',
             name='name',
             url='url',
-            alarms=alarm)
+            alarms=alarms)
 
         self.assertEqual(t.uid, 'uid')
         self.assertEqual(t.dtstamp, arrow.get(dtstamp))
@@ -63,7 +61,7 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t.location, 'location')
         self.assertEqual(t.name, 'name')
         self.assertEqual(t.url, 'url')
-        self.assertSetEqual(t.alarms, alarms)
+        self.assertEqual(t.alarms, alarms)
 
     def test_percent(self):
         t1 = Todo(percent=0)

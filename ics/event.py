@@ -95,7 +95,7 @@ class Event(Component):
         self.location = location
         self.url = url
         self.transparent = transparent
-        self.alarms = set()
+        self.alarms = list()
         self.attendees = set()
         self.categories = set()
         self._unused = Container(name='VEVENT')
@@ -113,7 +113,7 @@ class Event(Component):
             self.duration = duration
 
         if alarms is not None:
-            self.alarms.update(set(alarms))
+            self.alarms = alarms
         self.status = status
 
         if categories is not None:

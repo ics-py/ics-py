@@ -92,7 +92,7 @@ class Todo(Component):
         self.priority = priority
         self.name = name
         self.url = url
-        self.alarms = set()
+        self.alarms = list()
         self._unused = Container(name='VTODO')
 
         if duration and due:
@@ -109,7 +109,7 @@ class Todo(Component):
             self.due = due
 
         if alarms is not None:
-            self.alarms.update(set(alarms))
+            self.alarms = alarms
         self.status = status
 
     @property
