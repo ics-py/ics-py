@@ -88,7 +88,7 @@ class Calendar(Component):
         Example:
             Can be used to write calendar to a file:
 
-            >>> c = Calendar(); c.append(Event(name="My cool event"))
+            >>> c = Calendar(); c.events.add(Event(name="My cool event"))
             >>> open('my.ics', 'w').writelines(c)
         """
         for line in str(self).split('\n'):
