@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from datetime import timezone
 
 from ics.parse import Container
-from ics.alarm import AlarmFactory
+from ics.alarm.display import DisplayAlarm
 from ics.icalendar import Calendar
 from .fixture import cal27, cal28, cal29, cal30, cal31
 
@@ -40,7 +40,7 @@ class TestTodo(unittest.TestCase):
         dtstamp = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         completed = dtstamp + timedelta(days=1)
         created = dtstamp + timedelta(seconds=1)
-        alarm = [AlarmFactory().get_type_from_action('DISPLAY')]
+        alarm = [DisplayAlarm]
         alarms = set()
         alarms.update(alarm)
 

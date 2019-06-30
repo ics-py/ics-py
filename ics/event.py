@@ -3,14 +3,11 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import StringIO, string_types, text_type, integer_types
-
-import arrow
 import copy
 import re
 from datetime import timedelta, datetime
 
-from .alarm import AlarmFactory
+from .alarm.utils import get_type_from_container
 from .component import Component
 from .utils import (
     parse_duration,
@@ -549,11 +546,7 @@ def uid(event, line):
 
 @Event._extracts('VALARM', multiple=True)
 def alarms(event, lines):
-    def alarm_factory(x):
-        af = AlarmFactory.get_type_from_container(x)
-        if af is not None:
-            return af._from_container(x)
-    event.alarms = list(map(alarm_factory, lines))
+    event.alarms = [get_type_from_container(x)._from_container(x) for x in lines]
 
 
 @Event._extracts('STATUS')

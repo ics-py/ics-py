@@ -100,7 +100,7 @@ class TestDisplayAlarm(unittest.TestCase):
         test_description = 'Test description'
         a = DisplayAlarm(trigger=timedelta(minutes=15),
                          description=test_description)
-        self.assertEqual(repr(a), "<<class 'ics.alarm.DisplayAlarm'> trigger:0:15:00 description:Test description>")
+        self.assertEqual(repr(a), "<DisplayAlarm trigger:0:15:00 description:Test description>")
 
     def test_repeat_repr(self):
         test_description = 'Test description'
@@ -108,7 +108,7 @@ class TestDisplayAlarm(unittest.TestCase):
                          repeat=2,
                          duration=timedelta(minutes=10),
                          description=test_description)
-        self.assertEqual(repr(a), "<<class 'ics.alarm.DisplayAlarm'> trigger:0:15:00 repeat:2 "
+        self.assertEqual(repr(a), "<DisplayAlarm trigger:0:15:00 repeat:2 "
                                   "duration:0:10:00 description:Test description>")
 
     def test_alarm_output(self):
@@ -158,7 +158,7 @@ class TestAudioAlarm(unittest.TestCase):
 
     def test_plain_repr(self):
         a = AudioAlarm(trigger=timedelta(minutes=15))
-        self.assertEqual(repr(a), "<<class 'ics.alarm.AudioAlarm'> trigger:0:15:00>")
+        self.assertEqual(repr(a), "<AudioAlarm trigger:0:15:00>")
 
     def test_attach_repr(self):
         attach = 'ftp://example.com/pub/sounds/bell-01.aud'
@@ -168,7 +168,7 @@ class TestAudioAlarm(unittest.TestCase):
                        duration=timedelta(minutes=10),
                        attach=attach,
                        attach_params=attach_params)
-        self.assertEqual(repr(a), "<<class 'ics.alarm.AudioAlarm'> trigger:0:15:00 repeat:2 "
+        self.assertEqual(repr(a), "<AudioAlarm trigger:0:15:00 repeat:2 "
                                   "duration:0:10:00 attach:ftp://example.com/pub/sounds/bell-01.aud "
                                   "attach_params:{'FMTTYPE': ['audio/basic']}>")
 

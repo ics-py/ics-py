@@ -9,7 +9,7 @@ import arrow
 import copy
 from datetime import timedelta, datetime
 
-from .alarm import AlarmFactory
+from .alarm.utils import get_type_from_container
 from .component import Component
 from .utils import (
     parse_duration,
@@ -439,11 +439,7 @@ def duration(todo, line):
 
 @Todo._extracts('VALARM', multiple=True)
 def alarms(todo, lines):
-    def alarm_factory(x):
-        af = AlarmFactory.get_type_from_container(x)
-        return af._from_container(x)
-
-    todo.alarms = list(map(alarm_factory, lines))
+    todo.alarms = [get_type_from_container(x)._from_container(x) for x in lines]
 
 
 @Todo._extracts('STATUS')

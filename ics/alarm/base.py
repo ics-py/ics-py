@@ -6,45 +6,15 @@ from __future__ import unicode_literals, absolute_import
 import copy
 from datetime import timedelta
 
-from .component import Component
-from .utils import (
+from ics.component import Component
+from ics.utils import (
     arrow_to_iso,
-    escape_string,
     get_arrow,
-    get_lines,
     iso_to_arrow,
     parse_duration,
     timedelta_to_duration,
-    unescape_string
 )
-from .parse import ContentLine, Container
-
-
-class AlarmFactory(object):
-    """
-    Factory class to get specific VALARM types, useful with `ics.component.Component._from_container` method.
-    """
-
-    @classmethod
-    def get_type_from_action(cls, action_type):
-        # TODO: Implement EMAIL action
-        if action_type == 'DISPLAY':
-            return DisplayAlarm
-        elif action_type == 'AUDIO':
-            return AudioAlarm
-        elif action_type == 'NONE':
-            return None
-
-        raise ValueError('Invalid alarm action')
-
-    @classmethod
-    def get_type_from_container(cls, container):
-        action_type_lines = get_lines(container, 'ACTION')
-        if len(action_type_lines) > 1:
-            raise ValueError('Too many ACTION parameters in VALARM')
-
-        action_type = action_type_lines[0]
-        return AlarmFactory.get_type_from_action(action_type.value)
+from ics.parse import ContentLine, Container
 
 
 class BaseAlarm(Component):
@@ -151,7 +121,7 @@ class BaseAlarm(Component):
         raise NotImplementedError('Base class cannot be instantiated directly')
 
     def __repr__(self):
-        value = '{0} trigger:{1}'.format(type(self), self.trigger)
+        value = '{0} trigger:{1}'.format(type(self).__name__, self.trigger)
         if self.repeat:
             value += ' repeat:{0} duration:{1}'.format(self.repeat, self.duration)
 
@@ -163,10 +133,10 @@ class BaseAlarm(Component):
     def __eq__(self, other):
         """Two alarms are considered equal if they have the same type and base values."""
 
-        return (type(self) is type(other) and
-                self.trigger == other.trigger and
-                self.repeat == other.repeat and
-                self.duration == other.duration)
+        return (type(self) is type(other)
+                and self.trigger == other.trigger
+                and self.repeat == other.repeat
+                and self.duration == other.duration)
 
     def clone(self):
         """
@@ -239,123 +209,3 @@ def o_repeat(alarm, container):
 @BaseAlarm._outputs
 def o_action(alarm, container):
     container.append(ContentLine('ACTION', value=alarm.action))
-
-
-class DisplayAlarm(BaseAlarm):
-    """
-    A calendar event VALARM with DISPLAY option.
-    """
-
-    # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
-    _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
-    _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
-
-    def __init__(self,
-                 description=None,
-                 **kwargs):
-        """
-        Instantiates a new :class:`ics.alarm.DisplayAlarm`.
-
-        Adheres to RFC5545 VALARM standard: http://icalendar.org/iCalendar-RFC-5545/3-6-6-alarm-component.html
-
-        Args:
-            description (string) : RFC5545 DESCRIPTION property
-            kwargs (dict) : Args to :func:`ics.alarm.Alarm.__init__`
-        """
-        super(DisplayAlarm, self).__init__(**kwargs)
-        self.description = description
-
-    @property
-    def action(self):
-        return 'DISPLAY'
-
-    def __repr__(self):
-        value = '{0} trigger:{1}'.format(type(self), self.trigger)
-        if self.repeat:
-            value += ' repeat:{0} duration:{1}'.format(self.repeat, self.duration)
-
-        value += ' description:{0}'.format(self.description)
-
-        return '<{0}>'.format(value)
-
-
-# ------------------
-# ----- Inputs -----
-# ------------------
-@DisplayAlarm._extracts('DESCRIPTION', required=True)
-def description(alarm, line):
-    alarm.description = unescape_string(line.value) if line else None
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-@DisplayAlarm._outputs
-def o_description(alarm, container):
-    container.append(ContentLine('DESCRIPTION', value=escape_string(alarm.description or '')))
-
-
-class AudioAlarm(BaseAlarm):
-    """
-    A calendar event VALARM with AUDIO option.
-    """
-
-    # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
-    _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
-    _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
-
-    def __init__(self,
-                 attach=None,
-                 attach_params=None,
-                 **kwargs):
-        """
-        Instantiates a new :class:`ics.alarm.AudioAlarm`.
-
-        Adheres to RFC5545 VALARM standard: http://icalendar.org/iCalendar-RFC-5545/3-6-6-alarm-component.html
-
-        Args:
-            attach (string) : RFC5545 ATTACH property, pointing to an audio object
-            attach_params (dict) : RFC5545 attachparam values
-            kwargs (dict) : Args to :func:`ics.alarm.Alarm.__init__`
-        """
-        super(AudioAlarm, self).__init__(**kwargs)
-        self.attach = attach
-        self.attach_params = attach_params
-
-    @property
-    def action(self):
-        return 'AUDIO'
-
-    def __repr__(self):
-        value = '{0} trigger:{1}'.format(type(self), self.trigger)
-        if self.repeat:
-            value += ' repeat:{0} duration:{1}'.format(self.repeat, self.duration)
-
-        if self.attach:
-            value += ' attach:{0}'.format(self.attach)
-            if self.attach_params:
-                value += ' attach_params:{0}'.format(self.attach_params)
-
-        return '<{0}>'.format(value)
-
-
-# ------------------
-# ----- Inputs -----
-# ------------------
-@AudioAlarm._extracts('ATTACH')
-def attach(alarm, line):
-    if line:
-        if line.value:
-            alarm.attach = unescape_string(line.value)
-
-        if line.params:
-            alarm.attach_params = line.params
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-@AudioAlarm._outputs
-def o_attach(alarm, container):
-    if alarm.attach:
-        container.append(ContentLine('ATTACH', params=alarm.attach_params or {}, value=escape_string(alarm.attach)))
