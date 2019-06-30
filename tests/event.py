@@ -489,3 +489,15 @@ class TestEvent(unittest.TestCase):
         e = list(c.events)[0]
 
         assert e.last_modified == arrow.get('2015-11-13 00:48:09')
+
+    def equality(self):
+        ev1 = Event(begin=datetime(2018, 6, 29, 5), end=datetime(2018, 6, 29, 7), name="my name")
+        ev2 = ev1.clone()
+
+        assert ev1 == ev2
+
+        ev2.uid = "something else"
+        assert ev1 == ev2
+
+        ev2.name = "other name"
+        assert ev1 != ev2

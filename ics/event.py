@@ -393,9 +393,22 @@ class Event(Component):
             'Cannot compare Event and {}'.format(type(other)))
 
     def __eq__(self, other):
-        """Two events are considered equal if they have the same uid."""
         if isinstance(other, Event):
-            return self.uid == other.uid
+            return (self.name == other.name
+            and self.begin == other.begin
+            and self.end == other.end
+            and self.duration == other.duration
+            and self.description == other.description
+            and self.created == other.created
+            and self.last_modified == other.last_modified
+            and self.location == other.location
+            and self.url == other.url
+            and self.transparent == other.transparent
+            and self.alarms == other.alarms
+            and self.attendees == other.attendees
+            and self.categories == other.categories
+            and self.status == other.status
+            and self.organizer == other.organizer)
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
@@ -564,11 +577,7 @@ def categories(event, line):
 @Event._outputs
 def o_created(event, container):
     if event.created:
-        instant = event.created
-    else:
-        instant = arrow.now()
-
-    container.append(ContentLine('DTSTAMP', value=arrow_to_iso(instant)))
+        container.append(ContentLine('DTSTAMP', value=arrow_to_iso(event.created)))
 
 
 # TODO: Should the output be equal to `created` attribute?
