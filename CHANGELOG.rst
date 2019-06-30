@@ -7,6 +7,7 @@ Ics.py changelog
 **************
 
  - Drop support for Python 2.7 and 3.3.
+ - Add support upto Python 3.8
  - Improve TRIGGER DURATION parsing logic
  - Fixed NONE type support for Alarms
  - Upgrade arrow to 0.11 and fix internal call to arrow to specify the string

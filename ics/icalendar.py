@@ -55,7 +55,7 @@ class Calendar(Component):
         if imports is not None:
             if isinstance(imports, string_types):
                 container = string_to_container(imports)
-            elif isinstance(imports, collections.Iterable):
+            elif isinstance(imports, collections.abc.Iterable):
                 container = lines_to_container(imports)
             else:
                 raise TypeError("Expecting a sequence or a string")

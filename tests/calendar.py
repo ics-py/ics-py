@@ -1,5 +1,5 @@
 import unittest
-from collections import Iterable
+from collections.abc import Iterable
 import arrow
 
 from ics.parse import Container
