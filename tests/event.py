@@ -460,6 +460,10 @@ class TestEvent(unittest.TestCase):
         assert e.end == arrow.get('2016-10-05')
 
     def test_classification_input(self):
+        c = Calendar(cal12)
+        e = next(iter(c.events))
+        self.assertEqual(None, e.classification)
+
         c = Calendar(cal33_1)
         e = next(iter(c.events))
         self.assertEqual('PUBLIC', e.classification)
@@ -485,6 +489,9 @@ class TestEvent(unittest.TestCase):
             Calendar(cal34)
 
     def test_classification_output(self):
+        e = Event(name="Name")
+        self.assertNotIn("CLASS:PUBLIC", str(e).splitlines())
+
         e = Event(name="Name", classification='PUBLIC')
         self.assertIn("CLASS:PUBLIC", str(e).splitlines())
 
