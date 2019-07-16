@@ -242,15 +242,13 @@ class Event(Component):
         # the event may have an end, also given in 'day' precision
         return self._begin_precision == 'day'
 
-    def cancel_all_day(self):
-        """Transforms self to a non-all-day event.
+    def make_all_day(self, become_all_day=True):
+        """Transforms self to an all-day event or a time-based event.
 
-        """
-        self._begin_precision = 'second'
-
-    def make_all_day(self):
-        """Transforms self to an all-day event.
-
+        |  If become_all_day is False, the event is set to a time-based
+            event.  Any rounding performed when the event was made all-day
+            is *not* undone.
+        |  Otherwise:
         |  The event will span all the days from the begin to *and including*
             the end day.  For example, assume begin = 2018-01-01 10:37,
             end = 2018-01-02 14:44.  After make_all_day, begin = 2018-01-01
@@ -260,6 +258,10 @@ class Event(Component):
         |  If neither duration not end are set, a duration of one day is implied.
         |  If self is already all-day, it is unchanged.
         """
+        if not become_all_day:
+            self._begin_precision = 'second'
+            return
+
         if self.all_day:
             # Do nothing if we already are a all day event
             return

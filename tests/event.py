@@ -1,4 +1,3 @@
-# vim: ts=4:sw=4:expandtab
 
 import unittest
 import pytest
@@ -98,8 +97,8 @@ class TestEvent(unittest.TestCase):
 
         e.make_all_day()
 
-        self.assertEqual(e._begin, arrow.get ("2018-12-23"))
-        self.assertEqual(e.begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e._begin, arrow.get("2018-12-23"))
+        self.assertEqual(e.begin, arrow.get("2018-12-23"))
         self.assertEqual(e._begin_precision, "day")
 
         self.assertEqual(e._end_time, arrow.get("2018-12-26"))
@@ -118,27 +117,27 @@ class TestEvent(unittest.TestCase):
 
         e.make_all_day()
 
-        self.assertEqual(e._begin, arrow.get ("2018-12-23"))
-        self.assertEqual(e.begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e._begin, arrow.get("2018-12-23"))
+        self.assertEqual(e.begin, arrow.get("2018-12-23"))
         self.assertEqual(e._begin_precision, "day")
 
         self.assertEqual(e._end_time, None)
         self.assertEqual(e.end, arrow.get("2018-12-24"))
 
         e.end = "2018-12-25"
-        self.assertEqual(e._end_time, arrow.get ("2018-12-25"))
+        self.assertEqual(e._end_time, arrow.get("2018-12-25"))
         self.assertEqual(e.end, arrow.get("2018-12-25"))
         self.assertEqual(e._begin_precision, "day")
         self.assertEqual(e.duration, td(days=2))
 
         e.end = "2018-12-25 11:02"
-        self.assertEqual(e._end_time, arrow.get ("2018-12-26"))
+        self.assertEqual(e._end_time, arrow.get("2018-12-26"))
         self.assertEqual(e.end, arrow.get("2018-12-26"))
         self.assertEqual(e._begin_precision, "day")
         self.assertEqual(e.duration, td(days=3))
 
-        self.assertEqual(e._begin, arrow.get ("2018-12-23"))
-        self.assertEqual(e.begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e._begin, arrow.get("2018-12-23"))
+        self.assertEqual(e.begin, arrow.get("2018-12-23"))
         self.assertEqual(e._begin_precision, "day")
 
     # Check that all-day events with durations work
@@ -155,8 +154,8 @@ class TestEvent(unittest.TestCase):
 
         e.make_all_day()
 
-        self.assertEqual(e._begin, arrow.get ("2018-12-23"))
-        self.assertEqual(e.begin, arrow.get ("2018-12-23"))
+        self.assertEqual(e._begin, arrow.get("2018-12-23"))
+        self.assertEqual(e.begin, arrow.get("2018-12-23"))
         self.assertEqual(e._begin_precision, "day")
 
         self.assertEqual(e._end_time, None)
@@ -165,8 +164,8 @@ class TestEvent(unittest.TestCase):
 
         # When start time is changed, end time should too.
         e.begin = "2018-12-25"
-        self.assertEqual(e._begin, arrow.get ("2018-12-25"))
-        self.assertEqual(e.begin, arrow.get ("2018-12-25"))
+        self.assertEqual(e._begin, arrow.get("2018-12-25"))
+        self.assertEqual(e.begin, arrow.get("2018-12-25"))
         self.assertEqual(e._begin_precision, "day")
 
         self.assertEqual(e._end_time, None)
