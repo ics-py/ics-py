@@ -19,7 +19,7 @@ from .parse import (
     ContentLine,
     Container,
 )
-from .utils import remove_x
+from .utils import remove_x, remove_sequence
 
 
 class Calendar(Component):
@@ -188,6 +188,7 @@ def timezone(calendar, vtimezones):
     """
     for vtimezone in vtimezones:
         remove_x(vtimezone)  # Remove non standard lines from the block
+        remove_sequence(vtimezone)  # Remove SEQUENCE lines because tzical does not understand them
         fake_file = StringIO()
         fake_file.write(str(vtimezone))  # Represent the block as a string
         fake_file.seek(0)

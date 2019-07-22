@@ -5,7 +5,6 @@ from __future__ import unicode_literals, absolute_import
 
 from arrow.arrow import Arrow
 from datetime import timedelta
-from six import StringIO, string_types, text_type, integer_types
 
 from uuid import uuid4
 from dateutil.tz import gettz
@@ -21,6 +20,13 @@ def remove_x(container):
     for i in reversed(range(len(container))):
         item = container[i]
         if item.name.startswith('X-'):
+            del container[i]
+
+
+def remove_sequence(container):
+    for i in reversed(range(len(container))):
+        item = container[i]
+        if item.name == 'SEQUENCE':
             del container[i]
 
 

@@ -19,6 +19,7 @@ Ics.py changelog
  - Added LAST-MODIFIED attribute support
  - Event equality now checks all fields (except uid)
  - alarms in Event and Todo are now consistently lists and not a mix between set() and list()
+ - Fix SEQUENCE in VTIMEZONE error
 
 **************
 0.4
