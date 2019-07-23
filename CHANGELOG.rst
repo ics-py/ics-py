@@ -3,23 +3,45 @@ Ics.py changelog
 ============
 
 **************
-0.5 (in dev)
+0.5
 **************
 
- - Drop support for Python 2.7 and 3.3.
- - Add support upto Python 3.8
- - Improve TRIGGER DURATION parsing logic
- - Fixed NONE type support for Alarms
+This is the first version to be Python 3 only.
+
+This release happens a bit more than a year after the previous one and was made to
+distribute latest changes to everyone and remove the confusion between master and PyPi.
+
+Please note that it may contain (lot of) bugs and not be fully polished.
+This is still alpha quality software!
+
+Highlights and breaking changes:
+ - Drop support for Python 2, support Python from 3.5 to 3.8
  - Upgrade arrow to 0.11 and fix internal call to arrow to specify the string
    format (thanks @muffl0n, @e-c-d and @chauffer)
+
+Additions:
+ - LAST-MODIFIED attribute support (thanks @Timic3)
+ - Support for Organizers to Events (thanks @danieltellez and kayluhb)
+ - Support for Attendees to Events (thanks @danieltellez and kayluhb)
+ - Support for Event and Todo status (thanks @johnnoone)
+
+Bugfixes:
  - Fix all-day events lasting multiple days by using a DTEND with a date and not a datetime (thanks @raspbeguy)
  - Fix off by one error on the DTEND on all day events (issues #92 and #150)
- - Adds support for Organizers to Events
- - Adds support for Attendees to Events
- - Added LAST-MODIFIED attribute support
- - Event equality now checks all fields (except uid)
- - alarms in Event and Todo are now consistently lists and not a mix between set() and list()
  - Fix SEQUENCE in VTIMEZONE error
+ - Fixed NONE type support for Alarms (thanks @zagnut007)
+
+Known issues:
+ - There are known problems with all-day events. This GitHub issue summarizes them
+   well: https://github.com/C4ptainCrunch/ics.py/issues/155. You can expect them to
+   be fixed in 0.6 but not before.
+
+Misc:
+ - Improve TRIGGER DURATION parsing logic (thanks @jessejoe)
+ - Event equality now checks all fields (except uid)
+ - Alarms in Event and Todo are now consistently lists and not a mix between set() and list()
+
+Thanks also to @t00n, @aureooms, @chauffer, @seants, @davidjb, @xaratustrah, @Philiptpp
 
 **************
 0.4

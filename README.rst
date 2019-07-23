@@ -24,7 +24,7 @@ It should be able to parse every calendar that respects the `rfc5545 <http://too
 iCalendar (file extension `.ics`) is used by Sunbird, Google Calendar, Apple Calendar, Android…
 
 
-Ics.py is available for Python>=3.4 and is Apache2 Licensed.
+Ics.py is available for Python>=3.5 and is Apache2 Licensed.
 
 
 
