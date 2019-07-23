@@ -17,4 +17,3 @@ Release HOWTO
 * `git push --tags && git push`
 * Build documentation for the tag v{version} on rtfd.org
 * Set the default rtfd version to {version}
-* Bump again the version to <version+1>-indev
