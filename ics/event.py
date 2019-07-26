@@ -3,15 +3,14 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import StringIO, string_types, text_type, integer_types
-
-import arrow
+from typing import Iterable, Union, Set, Dict, List, Callable
 import copy
 import re
 from datetime import timedelta, datetime
 
-from .alarm import AlarmFactory
-from .component import Component
+from .alarm import AlarmFactory, Alarm
+from .attendee import Attendee
+from .component import Component, Extractor
 from .utils import (
     parse_duration,
     timedelta_to_duration,
@@ -37,8 +36,8 @@ class Event(Component):
     """
 
     _TYPE = "VEVENT"
-    _EXTRACTORS = []
-    _OUTPUTS = []
+    _EXTRACTORS: List[Extractor] = []
+    _OUTPUTS: List[Callable] = []
 
     def __init__(self,
                  name=None,
@@ -58,7 +57,6 @@ class Event(Component):
                  status=None,
                  organizer=None,
                  ):
-
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -95,9 +93,9 @@ class Event(Component):
         self.location = location
         self.url = url
         self.transparent = transparent
-        self.alarms = list()
-        self.attendees = set()
-        self.categories = set()
+        self.alarms: List[Alarm] = list()
+        self.attendees: Set[Attendee] = set()
+        self.categories: Set[str] = set()
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -268,7 +266,7 @@ class Event(Component):
             value = value.upper()
         statuses = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
         if value not in statuses:
-            raise ValueError('status must be one of %s' % statuses)
+            raise ValueError('status must be one of %s' % ", ".join([repr(x) for x in statuses]))
         self._status = value
 
     def __repr__(self):

@@ -33,6 +33,7 @@ doc/_build/*
 htmlcov
 .pytest_cache
 /.pytest_cache/
+.mypy_cache/
 
 # pffff
 .idea

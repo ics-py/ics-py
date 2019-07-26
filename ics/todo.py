@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
+from typing import Iterable, Union, Set, Dict, List, Callable
+
 
 from six.moves import map
 
@@ -9,8 +11,8 @@ import arrow
 import copy
 from datetime import timedelta, datetime
 
-from .alarm import AlarmFactory
-from .component import Component
+from .alarm import AlarmFactory, Alarm
+from .component import Component, Extractor
 from .utils import (
     parse_duration,
     timedelta_to_duration,
@@ -33,8 +35,8 @@ class Todo(Component):
     """
 
     _TYPE = "VTODO"
-    _EXTRACTORS = []
-    _OUTPUTS = []
+    _EXTRACTORS: List[Extractor] = []
+    _OUTPUTS: List[Callable] = []
 
     def __init__(self,
                  dtstamp=None,
@@ -92,7 +94,7 @@ class Todo(Component):
         self.priority = priority
         self.name = name
         self.url = url
-        self.alarms = list()
+        self.alarms: List[Alarm] = list()
         self._unused = Container(name='VTODO')
 
         if duration and due:
@@ -229,7 +231,7 @@ class Todo(Component):
             value = value.upper()
         statuses = (None, 'NEEDS-ACTION', 'COMPLETED', 'IN-PROCESS', 'CANCELLED')
         if value not in statuses:
-            raise ValueError('status must be one of %s' % statuses)
+            raise ValueError('status must be one of %s' % ", ".join([repr(x) for x in statuses]))
         self._status = value
 
     def __repr__(self):

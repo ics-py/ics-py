@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
+from typing import Iterable, Union, Set, Dict, List, Callable
 
 import copy
 from datetime import timedelta
 
-from .component import Component
+from .component import Component, Extractor
 from .utils import (
     arrow_to_iso,
     escape_string,
@@ -53,8 +54,8 @@ class Alarm(Component):
     """
 
     _TYPE = 'VALARM'
-    _EXTRACTORS = []
-    _OUTPUTS = []
+    _EXTRACTORS: List[Extractor] = []
+    _OUTPUTS: List[Callable] = []
 
     def __init__(self,
                  trigger=None,

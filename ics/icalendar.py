@@ -3,13 +3,14 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import StringIO, string_types, text_type, integer_types
+from six import StringIO, string_types, text_type
+from typing import Iterable, Union, Set, Dict, List, Callable
 
 from dateutil.tz import tzical
 import copy
 import collections
 
-from .component import Component
+from .component import Component, Extractor
 from .timeline import Timeline
 from .event import Event
 from .todo import Todo
@@ -27,10 +28,16 @@ class Calendar(Component):
     """Represents an unique rfc5545 iCalendar."""
 
     _TYPE = 'VCALENDAR'
-    _EXTRACTORS = []
-    _OUTPUTS = []
+    _EXTRACTORS: List[Extractor] = []
+    _OUTPUTS: List[Callable] = []
 
-    def __init__(self, imports=None, events=None, todos=None, creator=None):
+    def __init__(
+        self,
+        imports: Union[str, Iterable[str]] = None,
+        events: Iterable[Event] = None,
+        todos: Iterable[Todo] = None,
+        creator: str = None
+    ):
         """Instantiates a new Calendar.
 
         Args:
@@ -43,9 +50,9 @@ class Calendar(Component):
         """
         # TODO : implement a file-descriptor import and a filename import
 
-        self._timezones = {}
-        self.events = set()
-        self.todos = set()
+        self._timezones: Dict = {} # FIXME mypy
+        self.events: Set[Event] = set()
+        self.todos: Set[Todo] = set()
         self._unused = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
