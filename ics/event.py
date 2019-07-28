@@ -61,22 +61,22 @@ class Event(Component):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
-            name (string) : rfc5545 SUMMARY property
+            name: rfc5545 SUMMARY property
             begin (Arrow-compatible)
             end (Arrow-compatible)
-            duration (datetime.timedelta)
-            uid (string): must be unique
-            description (string)
+            duration
+            uid: must be unique
+            description
             created (Arrow-compatible)
             last_modified (Arrow-compatible)
-            location (string)
-            url (string)
-            transparent (Boolean)
-            alarms (:class:`ics.alarm.Alarm`)
-            attendees (:class:`ics.attendee.Attendee`)
-            categories (set of string)
-            status (string)
-            organizer (:class:`ics.organizer.Organizer`)
+            location
+            url
+            transparent
+            alarms
+            attendees
+            categories
+            status
+            organizer
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
