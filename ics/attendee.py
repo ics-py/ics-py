@@ -6,7 +6,7 @@ from .parse import ContentLine
 
 class Attendee(object):
 
-    def __init__(self, email, common_name=None, rsvp=None):
+    def __init__(self, email: str, common_name: str = None, rsvp: bool = None):
         self.email = email
         self.common_name = common_name or email
         self.rsvp = rsvp

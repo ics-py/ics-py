@@ -3,13 +3,14 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from typing import Iterable, Union, Set, Dict, List, Callable
+from typing import Iterable, Union, Set, Dict, List, Callable, Optional
 import copy
 import re
 from datetime import timedelta, datetime
 
 from .alarm import AlarmFactory, Alarm
 from .attendee import Attendee
+from .organizer import Organizer
 from .component import Component, Extractor
 from .utils import (
     parse_duration,
@@ -40,22 +41,22 @@ class Event(Component):
     _OUTPUTS: List[Callable] = []
 
     def __init__(self,
-                 name=None,
+                 name: str = None,
                  begin=None,
                  end=None,
-                 duration=None,
-                 uid=None,
-                 description=None,
+                 duration: timedelta = None,
+                 uid: str = None,
+                 description: str = None,
                  created=None,
                  last_modified=None,
-                 location=None,
-                 url=None,
-                 transparent=False,
-                 alarms=None,
-                 attendees=None,
-                 categories=None,
-                 status=None,
-                 organizer=None,
+                 location: str = None,
+                 url: str = None,
+                 transparent: bool = False,
+                 alarms: Iterable[Alarm] = None,
+                 attendees: Iterable[Attendee] = None,
+                 categories: Iterable[str] = None,
+                 status: str = None,
+                 organizer: Organizer = None,
                  ):
         """Instantiates a new :class:`ics.event.Event`.
 
@@ -111,7 +112,7 @@ class Event(Component):
             self.duration = duration
 
         if alarms is not None:
-            self.alarms = alarms
+            self.alarms = list(alarms)
         self.status = status
 
         if categories is not None:
@@ -120,14 +121,14 @@ class Event(Component):
         if attendees is not None:
             self.attendees.update(set(attendees))
 
-    def has_end(self):
+    def has_end(self) -> bool:
         """
         Return:
             bool: self has an end
         """
         return bool(self._end_time or self._duration)
 
-    def add_attendee(self, attendee):
+    def add_attendee(self, attendee: Attendee):
         """ Add an attendee to the attendees set
         """
         self.attendees.add(attendee)
@@ -225,7 +226,7 @@ class Event(Component):
         self._duration = value
 
     @property
-    def all_day(self):
+    def all_day(self) -> bool:
         """
         Return:
             bool: self is an all-day event
@@ -257,11 +258,11 @@ class Event(Component):
         self._begin_precision = 'day'
 
     @property
-    def status(self):
+    def status(self) -> Optional[str]:
         return self._status
 
     @status.setter
-    def status(self, value):
+    def status(self, value: Optional[str]):
         if isinstance(value, str):
             value = value.upper()
         statuses = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
@@ -281,19 +282,19 @@ class Event(Component):
         else:
             return "<Event {}begin:{} end:{}>".format(name, self.begin, self.end)
 
-    def starts_within(self, other):
+    def starts_within(self, other) -> bool:
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         return self.begin >= other.begin and self.begin <= other.end
 
-    def ends_within(self, other):
+    def ends_within(self, other) -> bool:
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         return self.end >= other.begin and self.end <= other.end
 
-    def intersects(self, other):
+    def intersects(self, other) -> bool:
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
@@ -304,7 +305,7 @@ class Event(Component):
 
     __xor__ = intersects
 
-    def includes(self, other):
+    def includes(self, other) -> bool:
         if isinstance(other, Event):
             return other.starts_within(self) and other.ends_within(self)
         if isinstance(other, datetime):
@@ -312,7 +313,7 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def is_included_in(self, other):
+    def is_included_in(self, other) -> bool:
         if isinstance(other, Event):
             return other.includes(self)
         raise NotImplementedError(
@@ -320,7 +321,7 @@ class Event(Component):
 
     __in__ = is_included_in
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         if isinstance(other, Event):
             if self.begin is None and other.begin is None:
                 if self.name is None and other.name is None:
@@ -348,7 +349,7 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         if isinstance(other, Event):
             if self.begin is None and other.begin is None:
                 if self.name is None and other.name is None:
@@ -373,24 +374,13 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         return not self.__le__(other)
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return not self.__lt__(other)
 
-    def __or__(self, other):
-        if isinstance(other, Event):
-            begin, end = None, None
-            if self.begin and other.begin:
-                begin = max(self.begin, other.begin)
-            if self.end and other.end:
-                end = min(self.end, other.end)
-            return (begin, end) if begin and end and begin < end else (None, None)
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
-
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, Event):
             return (self.name == other.name
             and self.begin == other.begin
@@ -410,7 +400,7 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def time_equals(self, other):
+    def time_equals(self, other) -> bool:
         return (self.begin == other.begin) and (self.end == other.end)
 
     def join(self, other, *args, **kwarg):

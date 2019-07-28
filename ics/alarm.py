@@ -5,7 +5,7 @@ from __future__ import unicode_literals, absolute_import
 from typing import Iterable, Union, Set, Dict, List, Callable, Optional, Type
 
 import copy
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from .component import Component, Extractor
 from .utils import (
@@ -31,9 +31,9 @@ class Alarm(Component):
     _OUTPUTS: List[Callable] = []
 
     def __init__(self,
-                 trigger=None,
-                 repeat=None,
-                 duration=None):
+                 trigger: Union[timedelta, datetime] = None,
+                 repeat: int = None,
+                 duration: timedelta = None):
         """
         Instantiates a new :class:`ics.alarm.Alarm`.
 
@@ -48,9 +48,9 @@ class Alarm(Component):
             ValueError: If trigger, repeat, or duration do not match the RFC spec.
         """
         # Set initial values
-        self._trigger = None
-        self._repeat = None
-        self._duration = None
+        self._trigger: Optional[Union[timedelta, datetime]] = None
+        self._repeat: Optional[int] = None
+        self._duration: Optional[timedelta] = None
 
         # Validate and parse
         self.trigger = trigger
@@ -68,7 +68,7 @@ class Alarm(Component):
         self._unused = Container(name='VALARM')
 
     @property
-    def trigger(self):
+    def trigger(self) -> Optional[Union[timedelta, datetime]]:
         """The trigger condition for the alarm
 
         | Returns either a timedelta or datetime object
@@ -78,16 +78,16 @@ class Alarm(Component):
         return self._trigger
 
     @trigger.setter
-    def trigger(self, value):
-        if type(value) is timedelta and value.total_seconds() < 0:
+    def trigger(self, value: Optional[Union[timedelta, datetime]]):
+        if isinstance(value, timedelta) and value.total_seconds() < 0:
             raise ValueError('Trigger timespan must be positive')
-        elif type(value) is not timedelta:
+        elif isinstance(value, datetime):
             value = get_arrow(value)
 
         self._trigger = value
 
     @property
-    def repeat(self):
+    def repeat(self) -> Optional[int]:
         """Number of times to repeat alarm
 
         | Returns an integer for number of alarm repeats
@@ -96,14 +96,14 @@ class Alarm(Component):
         return self._repeat
 
     @repeat.setter
-    def repeat(self, value):
-        if value < 0:
+    def repeat(self, value: Optional[int]):
+        if value is not None and value < 0:
             raise ValueError('Repeat must be great than or equal to 0.')
 
         self._repeat = value
 
     @property
-    def duration(self):
+    def duration(self) -> Optional[timedelta]:
         """Duration between alarm repeats
 
         | Returns a timedelta object
@@ -112,8 +112,8 @@ class Alarm(Component):
         return self._duration
 
     @duration.setter
-    def duration(self, value):
-        if value.total_seconds() < 0:
+    def duration(self, value: Optional[timedelta]):
+        if value is not None and value.total_seconds() < 0:
             raise ValueError('Alarm duration timespan must be positive.')
 
         self._duration = value
@@ -124,7 +124,7 @@ class Alarm(Component):
         """
         raise NotImplementedError('Base class cannot be instantiated directly')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         value = '{0} trigger:{1}'.format(type(self), self.trigger)
         if self.repeat:
             value += ' repeat:{0} duration:{1}'.format(self.repeat, self.duration)
@@ -134,10 +134,10 @@ class Alarm(Component):
     def __hash__(self):
         return hash(repr(self))
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Two alarms are considered equal if they have the same type and base values."""
 
         return (type(self) is type(other) and
@@ -186,7 +186,7 @@ class AlarmFactory(object):
 # ----- Inputs -----
 # ------------------
 @Alarm._extracts('TRIGGER', required=True)
-def trigger(alarm, line):
+def trigger(alarm: Alarm, line: ContentLine):
     if not line.params or 'DURATION' in line.params.get('VALUE', ''):
         alarm.trigger = parse_duration(line.value[1:])
     else:
@@ -200,13 +200,13 @@ def trigger(alarm, line):
 
 
 @Alarm._extracts('DURATION')
-def duration(alarm, line):
+def duration(alarm: Alarm, line: ContentLine):
     if line:
         alarm._duration = parse_duration(line.value)
 
 
 @Alarm._extracts('REPEAT')
-def repeat(alarm, line):
+def repeat(alarm: Alarm, line: ContentLine):
     if line:
         alarm._repeat = int(line.value)
 
@@ -288,7 +288,7 @@ class DisplayAlarm(Alarm):
 # ----- Inputs -----
 # ------------------
 @DisplayAlarm._extracts('DESCRIPTION', required=True)
-def description(alarm, line):
+def description(alarm: DisplayAlarm, line: ContentLine):
     alarm.description = unescape_string(line.value) if line else None
 
 
@@ -348,7 +348,7 @@ class AudioAlarm(Alarm):
 # ----- Inputs -----
 # ------------------
 @AudioAlarm._extracts('ATTACH')
-def attach(alarm, line):
+def attach(alarm: AudioAlarm, line: ContentLine):
     if line:
         if line.value:
             alarm.attach = unescape_string(line.value)
