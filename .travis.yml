@@ -1,13 +1,12 @@
 sudo: false
-dist: xenial
+dist: bionic
 
 language: python
 
 python:
-  - "3.5"
   - "3.6"
   - "3.7"
-  # - "3.8" # not yet supported by travis
+  - "3.8-dev"
 
 install:
   - "pip install -U pip setuptools"
@@ -18,8 +17,10 @@ install:
 cache:
   directories:
     - $HOME/.pip-cache/
+    - $HOME/.mypy_cache/
 
 script:
+  - "mypy ics"
   - "python setup.py test"
 
 notifications:
