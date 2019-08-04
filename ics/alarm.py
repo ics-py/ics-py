@@ -33,7 +33,7 @@ class Alarm(Component):
     def __init__(self,
                  trigger: Union[timedelta, datetime] = None,
                  repeat: int = None,
-                 duration: timedelta = None):
+                 duration: timedelta = None) -> None:
         """
         Instantiates a new :class:`ics.alarm.Alarm`.
 
@@ -78,7 +78,7 @@ class Alarm(Component):
         return self._trigger
 
     @trigger.setter
-    def trigger(self, value: Optional[Union[timedelta, datetime]]):
+    def trigger(self, value: Optional[Union[timedelta, datetime]]) -> None:
         if isinstance(value, timedelta) and value.total_seconds() < 0:
             raise ValueError('Trigger timespan must be positive')
         elif isinstance(value, datetime):
@@ -96,7 +96,7 @@ class Alarm(Component):
         return self._repeat
 
     @repeat.setter
-    def repeat(self, value: Optional[int]):
+    def repeat(self, value: Optional[int]) -> None:
         if value is not None and value < 0:
             raise ValueError('Repeat must be great than or equal to 0.')
 
@@ -112,7 +112,7 @@ class Alarm(Component):
         return self._duration
 
     @duration.setter
-    def duration(self, value: Optional[timedelta]):
+    def duration(self, value: Optional[timedelta]) -> None:
         if value is not None and value.total_seconds() < 0:
             raise ValueError('Alarm duration timespan must be positive.')
 
@@ -131,7 +131,7 @@ class Alarm(Component):
 
         return '<{0}>'.format(value)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(repr(self))
 
     def __ne__(self, other) -> bool:
@@ -145,7 +145,7 @@ class Alarm(Component):
                 self.repeat == other.repeat and
                 self.duration == other.duration)
 
-    def clone(self):
+    def clone(self) -> Alarm:
         """
         Returns:
             Alarm: an exact copy of self"""
