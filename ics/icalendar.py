@@ -23,8 +23,8 @@ from .parse import (
 from .utils import remove_x, remove_sequence
 from typing import Optional
 
-class Calendar(Component):
 
+class Calendar(Component):
     """Represents an unique rfc5545 iCalendar."""
 
     _TYPE = 'VCALENDAR'
@@ -131,7 +131,7 @@ class Calendar(Component):
             raise ValueError('Event.creator must be unicode data not {}'.format(type(value)))
         self._creator = value
 
-    def clone(self) -> Calendar:
+    def clone(self):
         """
         Returns:
             Calendar: an exact deep copy of self

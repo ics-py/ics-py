@@ -145,7 +145,7 @@ class Alarm(Component):
                 self.repeat == other.repeat and
                 self.duration == other.duration)
 
-    def clone(self) -> Alarm:
+    def clone(self):
         """
         Returns:
             Alarm: an exact copy of self"""

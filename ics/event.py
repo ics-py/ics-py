@@ -285,19 +285,19 @@ class Event(Component):
         else:
             return "<Event {}begin:{} end:{}>".format(name, self.begin, self.end)
 
-    def starts_within(self, other: Event) -> bool:
+    def starts_within(self, other) -> bool:
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         return self.begin >= other.begin and self.begin <= other.end
 
-    def ends_within(self, other: Event) -> bool:
+    def ends_within(self, other) -> bool:
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         return self.end >= other.begin and self.end <= other.end
 
-    def intersects(self, other: Event) -> bool:
+    def intersects(self, other) -> bool:
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
@@ -308,7 +308,7 @@ class Event(Component):
 
     __xor__ = intersects
 
-    def includes(self, other: Union[datetime, Event]) -> bool:
+    def includes(self, other) -> bool:
         if isinstance(other, Event):
             return other.starts_within(self) and other.ends_within(self)
         if isinstance(other, datetime):
@@ -316,7 +316,7 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def is_included_in(self, other: Event) -> bool:
+    def is_included_in(self, other) -> bool:
         if isinstance(other, Event):
             return other.includes(self)
         raise NotImplementedError(
@@ -324,7 +324,7 @@ class Event(Component):
 
     __in__ = is_included_in
 
-    def __lt__(self, other: Union[Event, datetime]) -> bool:
+    def __lt__(self, other) -> bool:
         if isinstance(other, Event):
             if self.begin is None and other.begin is None:
                 if self.name is None and other.name is None:
@@ -352,7 +352,7 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def __le__(self, other: Union[Event, datetime]) -> bool:
+    def __le__(self, other) -> bool:
         if isinstance(other, Event):
             if self.begin is None and other.begin is None:
                 if self.name is None and other.name is None:
@@ -377,10 +377,10 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def __gt__(self, other: Union[Event, datetime]) -> bool:
+    def __gt__(self, other) -> bool:
         return not self.__le__(other)
 
-    def __ge__(self, other: Union[Event, datetime]) -> bool:
+    def __ge__(self, other) -> bool:
         return not self.__lt__(other)
 
     def __eq__(self, other: object) -> bool:
@@ -403,10 +403,10 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def time_equals(self, other: Event) -> bool:
+    def time_equals(self, other) -> bool:
         return (self.begin == other.begin) and (self.end == other.end)
 
-    def join(self, other: Event, *args, **kwarg) -> Event:
+    def join(self, other, *args, **kwarg):
         """Create a new event which covers the time range of two intersecting events
 
         All extra parameters are passed to the Event constructor.
@@ -434,7 +434,7 @@ class Event(Component):
 
     __and__ = join
 
-    def clone(self) -> Event:
+    def clone(self):
         """
         Returns:
             Event: an exact copy of self"""

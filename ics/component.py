@@ -29,7 +29,7 @@ class Component(object):
     _classmethod_kwargs: Dict
 
     @classmethod
-    def _from_container(cls, container: Container, *args: Any, **kwargs: Any) -> Component:
+    def _from_container(cls, container: Container, *args: Any, **kwargs: Any):
         if cls._TYPE == "ABSTRACT":
             raise NotImplementedError('Abstract class, cannot instantiate.')
 

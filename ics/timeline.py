@@ -12,12 +12,11 @@ import arrow
 from .utils import get_arrow
 from .event import Event
 from typing import Iterator
-from .icalendar import Calendar
 
 
 class Timeline(object):
 
-    def __init__(self, calendar: Calendar) -> None:
+    def __init__(self, calendar) -> None:
         """Instanciates a new Timeline.
         (You should not have to instanciate a new timeline by yourself)
 
