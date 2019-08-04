@@ -275,6 +275,7 @@ class Event(Component):
     def __repr__(self) -> str:
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
+            assert self._begin
             if not self._end_time or self._begin == self._end_time:
                 return "<all-day Event {}{}>".format(name, self.begin.strftime('%Y-%m-%d'))
             else:
