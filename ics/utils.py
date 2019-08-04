@@ -10,27 +10,29 @@ from uuid import uuid4
 from dateutil.tz import gettz
 import arrow
 import re
+from typing import Dict, Optional, List, Union, Tuple
+from .parse import Container, ContentLine
 
 from . import parse
 
 tzutc = arrow.utcnow().tzinfo
 
 
-def remove_x(container):
+def remove_x(container: Container) -> None:
     for i in reversed(range(len(container))):
         item = container[i]
         if item.name.startswith('X-'):
             del container[i]
 
 
-def remove_sequence(container):
+def remove_sequence(container: Container) -> None:
     for i in reversed(range(len(container))):
         item = container[i]
         if item.name == 'SEQUENCE':
             del container[i]
 
 
-DATE_FORMATS = dict((len(k), k) for k in (
+DATE_FORMATS: Dict[int, str] = dict((len(k), k) for k in (
     'YYYYMM',
     'YYYYMMDD',
     'YYYYMMDDTHH',
@@ -38,7 +40,7 @@ DATE_FORMATS = dict((len(k), k) for k in (
     'YYYYMMDDTHHmmss'))
 
 
-def arrow_get(string):
+def arrow_get(string: str) -> Arrow:
     '''this function exists because ICS uses ISO 8601 without dashes or
     colons, i.e. not ISO 8601 at all.'''
 
@@ -54,7 +56,7 @@ def arrow_get(string):
     return arrow.get(string, DATE_FORMATS[len(string)])
 
 
-def iso_to_arrow(time_container, available_tz={}):
+def iso_to_arrow(time_container: Optional[ContentLine], available_tz={}) -> Arrow:
     if time_container is None:
         return None
 
@@ -85,7 +87,7 @@ def iso_to_arrow(time_container, available_tz={}):
     # http://www.kanzaki.com/docs/ical/dateTime.html)
 
 
-def iso_precision(string):
+def iso_precision(string: str) -> str:
     has_time = 'T' in string
 
     if has_time:
@@ -102,7 +104,7 @@ def iso_precision(string):
         return 'day'
 
 
-def get_lines(container, name):
+def get_lines(container: Container, name: str) -> List[ContentLine]:
     lines = []
     for i in reversed(range(len(container))):
         item = container[i]
@@ -112,7 +114,7 @@ def get_lines(container, name):
     return lines
 
 
-def parse_duration(line):
+def parse_duration(line: str) -> timedelta:
     """
     Return a timedelta object from a string in the DURATION property format
     """
@@ -149,7 +151,7 @@ def parse_duration(line):
     return timedelta(sign * days, sign * secs)
 
 
-def timedelta_to_duration(dt):
+def timedelta_to_duration(dt: timedelta) -> str:
     """
     Return a string according to the DURATION property format
     from a timedelta object
@@ -174,7 +176,7 @@ def timedelta_to_duration(dt):
     return res
 
 
-def get_arrow(value):
+def get_arrow(value: Union[None, Arrow, Tuple, Dict]) -> Arrow:
     if value is None:
         return None
     elif isinstance(value, Arrow):
@@ -187,25 +189,25 @@ def get_arrow(value):
         return arrow.get(value)
 
 
-def arrow_to_iso(instant):
+def arrow_to_iso(instant: Arrow) -> str:
     # set to utc, make iso, remove timezone
     instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDDTHHmmss')
     return instant + 'Z'
 
 
-def arrow_date_to_iso(instant):
+def arrow_date_to_iso(instant: Arrow) -> str:
     # date-only for all day events
     # set to utc, make iso, remove timezone
     instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDD')
     return instant  # no TZ for all days
 
 
-def uid_gen():
+def uid_gen() -> str:
     uid = str(uuid4())
     return "{}@{}.org".format(uid, uid[:4])
 
 
-def escape_string(string):
+def escape_string(string: str) -> str:
     string = string.replace("\\", "\\\\")
     string = string.replace(";", "\\;")
     string = string.replace(",", "\\,")
@@ -214,7 +216,7 @@ def escape_string(string):
     return string
 
 
-def unescape_string(string):
+def unescape_string(string: str) -> str:
     string = string.replace("\\;", ";")
     string = string.replace("\\,", ",")
     string = string.replace("\\n", "\n")

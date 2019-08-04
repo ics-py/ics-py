@@ -3,13 +3,14 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import StringIO, string_types, text_type, integer_types
+from six import StringIO, string_types, text_type
+from typing import Iterable, Union, Set, Dict, List, Callable
 
 from dateutil.tz import tzical
 import copy
 import collections
 
-from .component import Component
+from .component import Component, Extractor
 from .timeline import Timeline
 from .event import Event
 from .todo import Todo
@@ -20,17 +21,23 @@ from .parse import (
     Container,
 )
 from .utils import remove_x, remove_sequence
+from typing import Optional
 
 
 class Calendar(Component):
-
     """Represents an unique rfc5545 iCalendar."""
 
     _TYPE = 'VCALENDAR'
-    _EXTRACTORS = []
-    _OUTPUTS = []
+    _EXTRACTORS: List[Extractor] = []
+    _OUTPUTS: List[Callable] = []
 
-    def __init__(self, imports=None, events=None, todos=None, creator=None):
+    def __init__(
+        self,
+        imports: Union[str, Iterable[str]] = None,
+        events: Iterable[Event] = None,
+        todos: Iterable[Todo] = None,
+        creator: str = None
+    ) -> None:
         """Instantiates a new Calendar.
 
         Args:
@@ -43,9 +50,9 @@ class Calendar(Component):
         """
         # TODO : implement a file-descriptor import and a filename import
 
-        self._timezones = {}
-        self.events = set()
-        self.todos = set()
+        self._timezones: Dict = {} # FIXME mypy
+        self.events: Set[Event] = set()
+        self.todos: Set[Todo] = set()
         self._unused = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
@@ -73,14 +80,14 @@ class Calendar(Component):
                 self.todos.update(set(todos))
             self._creator = creator
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<Calendar with {} event{} and {} todo{}>" \
             .format(len(self.events),
                     "s" if len(self.events) > 1 else "",
                     len(self.todos),
                     "s" if len(self.todos) > 1 else "")
 
-    def __iter__(self):
+    def __iter__(self) -> Iterable[str]:
         """Returns:
         iterable: an iterable version of __str__, line per line
         (with line-endings).
@@ -95,19 +102,20 @@ class Calendar(Component):
             l = line + '\n'
             yield l
 
-    def __eq__(self, other):
-
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Calendar):
+            raise NotImplementedError
         for attr in ('_unused', 'scale', 'method', 'creator'):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
                 return False
 
         return (self.events == other.events) and (self.todos == other.todos)
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
 
     @property
-    def creator(self):
+    def creator(self) -> Optional[str]:
         """Get or set the calendar's creator.
 
         |  Will return a string.
@@ -118,7 +126,7 @@ class Calendar(Component):
         return self._creator
 
     @creator.setter
-    def creator(self, value):
+    def creator(self, value: Optional[str]) -> None:
         if not isinstance(value, text_type):
             raise ValueError('Event.creator must be unicode data not {}'.format(type(value)))
         self._creator = value
