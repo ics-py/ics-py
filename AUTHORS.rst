@@ -18,6 +18,7 @@ Other contributors, listed alphabetically, are:
 * `@guyzmo <https://github.com/guyzmo>`_
 * `@jammon <https://github.com/jammon>`_
 * `@jessejoe <https://github.com/jessejoe>`_
+* `@johnnoone <https://github.com/johnnoone>`_
 * `@kayluhb <https://github.com/kayluhb>`_
 * `@mrmadcow <https://github.com/mrmadcow>`_
 * `@perette <https://github.com/perette>`_

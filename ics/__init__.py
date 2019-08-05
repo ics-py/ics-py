@@ -4,7 +4,7 @@
 from __future__ import unicode_literals, absolute_import
 
 from .icalendar import Calendar
-from .event import Event
+from .event import Event, Geo
 from .todo import Todo
 from .alarm import AudioAlarm, DisplayAlarm
 from .attendee import Attendee

@@ -3,10 +3,11 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from typing import Iterable, Union, Set, Dict, List, Callable, Optional
+from typing import Iterable, Union, Set, Dict, List, Callable, Optional, Tuple
 from arrow import Arrow
 from .types import ArrowLike
 import copy
+from typing import NamedTuple
 import re
 from datetime import timedelta, datetime
 
@@ -27,6 +28,11 @@ from .utils import (
     escape_string,
 )
 from .parse import ContentLine, Container
+
+
+class Geo(NamedTuple):
+    latitude: float
+    longitude: float
 
 
 class Event(Component):
@@ -59,6 +65,7 @@ class Event(Component):
                  categories: Iterable[str] = None,
                  status: str = None,
                  organizer: Organizer = None,
+                 geo=None,
                  ) -> None:
         """Instantiates a new :class:`ics.event.Event`.
 
@@ -99,6 +106,7 @@ class Event(Component):
         self.alarms: List[Alarm] = list()
         self.attendees: Set[Attendee] = set()
         self.categories: Set[str] = set()
+        self.geo = geo
         self._unused = Container(name='VEVENT')
 
         self.name = name
@@ -228,7 +236,28 @@ class Event(Component):
         self._duration = value
 
     @property
-    def all_day(self) -> bool:
+    def geo(self) -> Optional[Geo]:
+        """Get or set the geo position of the event.
+
+        |  Will return a namedtuple object.
+        |  May be set to any Geo, tuple or dict with latitude and longitude keys.
+        |  If set to a non null value, removes any already
+            existing geo.
+        """
+        return self._geo
+
+    @geo.setter
+    def geo(self, value: Union[Dict[str, float], Tuple[float, float], Geo, None]):
+        if isinstance(value, dict):
+            latitude, longitude = value['latitude'], value['longitude']
+            value = Geo(latitude, longitude)
+        elif value is not None:
+            latitude, longitude = value
+            value = Geo(latitude, longitude)
+        self._geo = value
+
+    @property
+    def all_day(self):
         """
         Return:
             bool: self is an all-day event
@@ -519,6 +548,13 @@ def location(event, line):
     event.location = unescape_string(line.value) if line else None
 
 
+@Event._extracts('GEO')
+def geo(event, line):
+    if line:
+        latitude, _, longitude = unescape_string(line.value).partition(';')
+        event.geo = float(latitude), float(longitude)
+
+
 @Event._extracts('URL')
 def url(event, line):
     event.url = unescape_string(line.value) if line else None
@@ -637,6 +673,12 @@ def o_description(event, container):
 def o_location(event, container):
     if event.location:
         container.append(ContentLine('LOCATION', value=escape_string(event.location)))
+
+
+@Event._outputs
+def o_geo(event, container):
+    if event.geo:
+        container.append(ContentLine('GEO', value='%f;%f' % event.geo))
 
 
 @Event._outputs

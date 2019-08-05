@@ -10,6 +10,7 @@ Ics.py changelog
  - Add mypy
  - Drop support for Python 3.5. Python 3.7 is now distributed in both Ubuntu LTS and Debian stable,
    the PSF is providing only security fixes. It's time to move on !
+ - Add GEO (thanks @johnnoone !)
 
 Bug fixes:
  - Events no longer have the TRANSP property by default (Fixes #190)
