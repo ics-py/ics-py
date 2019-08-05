@@ -11,6 +11,9 @@ Ics.py changelog
  - Drop support for Python 3.5. Python 3.7 is now distributed in both Ubuntu LTS and Debian stable,
    the PSF is providing only security fixes. It's time to move on !
 
+Bug fixes:
+ - Events no longer have the TRANSP property by default (Fixes #190)
+
 
 **************
 0.5
@@ -35,7 +38,7 @@ Additions:
  - Support for Attendees to Events (thanks @danieltellez and kayluhb)
  - Support for Event and Todo status (thanks @johnnoone)
 
-Bugfixes:
+Bug fixes:
  - Fix all-day events lasting multiple days by using a DTEND with a date and not a datetime (thanks @raspbeguy)
  - Fix off by one error on the DTEND on all day events (issues #92 and #150)
  - Fix SEQUENCE in VTIMEZONE error
