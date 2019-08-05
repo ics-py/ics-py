@@ -7,7 +7,7 @@ from ics.organizer import Organizer
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20, cal32
+from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal19bis, cal20, cal32
 
 CRLF = "\r\n"
 
@@ -267,7 +267,6 @@ class TestEvent(unittest.TestCase):
                 "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
                 "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
                 "LOCATION:Here\\; too",
-                "TRANSP:OPAQUE",
                 "UID:empty-uid",
                 "END:VEVENT"))
         self.assertEqual(str(e), eq)
@@ -348,21 +347,27 @@ class TestEvent(unittest.TestCase):
 
     def test_transparent_input(self):
         c = Calendar(cal19)
-        e = next(iter(c.events))
-        self.assertEqual(e.transparent, False)
+        e1 = list(c.events)[0]
+        self.assertEqual(e1.transparent, False)
 
-    def test_transparent_output(self):
-        TRANSPARENT = True
-        e = Event(name="Name", transparent=TRANSPARENT)
-        self.assertIn("TRANSP:TRANSPARENT", str(e).splitlines())
+        c2 = Calendar(cal19bis)
+        e2 = list(c2.events)[0]
+        self.assertEqual(e2.transparent, True)
 
     def test_default_transparent_input(self):
         c = Calendar(cal18)
         e = next(iter(c.events))
-        self.assertEqual(e.transparent, False)
+        self.assertEqual(e.transparent, None)
 
     def test_default_transparent_output(self):
         e = Event(name="Name")
+        self.assertNotIn("TRANSP:OPAQUE", str(e).splitlines())
+
+    def test_transparent_output(self):
+        e = Event(name="Name", transparent=True)
+        self.assertIn("TRANSP:TRANSPARENT", str(e).splitlines())
+
+        e = Event(name="Name", transparent=False)
         self.assertIn("TRANSP:OPAQUE", str(e).splitlines())
 
     def test_includes_disjoined(self):
