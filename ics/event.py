@@ -53,7 +53,7 @@ class Event(Component):
                  last_modified: ArrowLike = None,
                  location: str = None,
                  url: str = None,
-                 transparent: bool = False,
+                 transparent: bool = None,
                  alarms: Iterable[Alarm] = None,
                  attendees: Iterable[Attendee] = None,
                  categories: Iterable[str] = None,
@@ -526,8 +526,8 @@ def url(event, line):
 
 @Event._extracts('TRANSP')
 def transparent(event, line):
-    if line:
-        event.transparent = line.value == 'TRANSPARENT'
+    if line and line.value in ['TRANSPARENT', 'OPAQUE']:
+        event.transparent = (line.value == 'TRANSPARENT')
 
 
 # TODO : make uid required ?
@@ -647,6 +647,8 @@ def o_url(event, container):
 
 @Event._outputs
 def o_transparent(event, container):
+    if event.transparent is None:
+        return
     if event.transparent:
         container.append(ContentLine('TRANSP', value=escape_string('TRANSPARENT')))
     else:
