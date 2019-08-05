@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from typing import Iterable, Union, Set, Dict, List, Callable, Optional
+from typing import Iterable, Union, Set, Dict, List, Callable, Optional, Tuple
 from arrow import Arrow
 from .types import ArrowLike
 import copy
@@ -30,7 +30,7 @@ from .utils import (
 )
 from .parse import ContentLine, Container
 
-Geo = namedtuple('Geo', 'lat, lng')
+Geo = namedtuple('Geo', 'latitude, longitude')
 
 
 class Event(Component):
@@ -234,24 +234,24 @@ class Event(Component):
         self._duration = value
 
     @property
-    def geo(self) -> bool:
+    def geo(self) -> Optional[Geo]:
         """Get or set the geo position of the event.
 
         |  Will return a namedtuple object.
-        |  May be set to any Geo, tuple or dict with lat and lng keys.
+        |  May be set to any Geo, tuple or dict with latitude and longitude keys.
         |  If set to a non null value, removes any already
             existing geo.
         """
         return self._geo
 
     @geo.setter
-    def geo(self, value):
+    def geo(self, value: Union[Dict[str, float], Tuple[float, float], Geo, None]):
         if isinstance(value, dict):
-            lat, lng = value['lat'], value['lng']
-            value = Geo(lat, lng)
+            latitude, longitude = value['latitude'], value['longitude']
+            value = Geo(latitude, longitude)
         elif value is not None:
-            lat, lng = value
-            value = Geo(lat, lng)
+            latitude, longitude = value
+            value = Geo(latitude, longitude)
         self._geo = value
 
     @property
@@ -549,8 +549,8 @@ def location(event, line):
 @Event._extracts('GEO')
 def geo(event, line):
     if line:
-        lat, _, lng = unescape_string(line.value).partition(';')
-        event.geo = Decimal(lat), Decimal(lng)
+        latitude, _, longitude = unescape_string(line.value).partition(';')
+        event.geo = Decimal(latitude), Decimal(longitude)
 
 
 @Event._extracts('URL')

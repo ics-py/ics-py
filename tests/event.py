@@ -173,7 +173,7 @@ class TestEvent(unittest.TestCase):
         e1 = Event(geo=(40.779897, -73.968565))
         self.assertEqual(e1.geo, (40.779897, -73.968565))
 
-        e2 = Event(geo={'lat': 40.779897, 'lng': -73.968565})
+        e2 = Event(geo={'latitude': 40.779897, 'longitude': -73.968565})
         self.assertEqual(e2.geo, (40.779897, -73.968565))
 
     def test_attendee(self):
