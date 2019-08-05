@@ -7,8 +7,7 @@ from typing import Iterable, Union, Set, Dict, List, Callable, Optional, Tuple
 from arrow import Arrow
 from .types import ArrowLike
 import copy
-from collections import namedtuple
-from decimal import Decimal
+from typing import NamedTuple
 import re
 from datetime import timedelta, datetime
 
@@ -30,7 +29,10 @@ from .utils import (
 )
 from .parse import ContentLine, Container
 
-Geo = namedtuple('Geo', 'latitude, longitude')
+
+class Geo(NamedTuple):
+    latitude: float
+    longitude: float
 
 
 class Event(Component):
@@ -550,7 +552,7 @@ def location(event, line):
 def geo(event, line):
     if line:
         latitude, _, longitude = unescape_string(line.value).partition(';')
-        event.geo = Decimal(latitude), Decimal(longitude)
+        event.geo = float(latitude), float(longitude)
 
 
 @Event._extracts('URL')
@@ -676,7 +678,7 @@ def o_location(event, container):
 @Event._outputs
 def o_geo(event, container):
     if event.geo:
-        container.append(ContentLine('GEO', value=escape_string('%f;%f' % event.geo)))
+        container.append(ContentLine('GEO', value='%f;%f' % event.geo))
 
 
 @Event._outputs

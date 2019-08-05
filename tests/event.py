@@ -35,7 +35,7 @@ class TestEvent(unittest.TestCase):
 
     def test_event_with_geo(self):
         c = Calendar(cal12)
-        e = c.events[0]
+        e = list(c.events)[0]
         self.assertEqual(e.geo, (40.779897,-73.968565))
 
     def test_not_duration_and_end(self):
