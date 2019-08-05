@@ -1,6 +1,5 @@
 import unittest
-from collections import Iterable
-from six import PY2
+from collections.abc import Iterable
 import arrow
 
 from ics.parse import Container
@@ -38,22 +37,18 @@ class TestCalendar(unittest.TestCase):
             # cannot compare str(c) and str(d) because times are encoded differently
             self.assertEqual(str(d), str(e))
 
-    def test_urepr(self):
+    def test_repr(self):
         # TODO : more cases
         c = Calendar()
-        self.assertEqual(c.__urepr__(), '<Calendar with 0 event and 0 todo>')
+        self.assertEqual(c.__repr__(), '<Calendar with 0 event and 0 todo>')
 
         c.events.add(Event())
         c.todos.add(Todo())
-        self.assertEqual(c.__urepr__(), '<Calendar with 1 event and 1 todo>')
+        self.assertEqual(c.__repr__(), '<Calendar with 1 event and 1 todo>')
 
         c.events.add(Event())
         c.todos.add(Todo())
-        self.assertEqual(c.__urepr__(), '<Calendar with 2 events and 2 todos>')
-
-    def test_repr(self):
-        c = Calendar()
-        self.assertEqual(c.__urepr__(), repr(c))
+        self.assertEqual(c.__repr__(), '<Calendar with 2 events and 2 todos>')
 
     def test_iter(self):
         for fix in self.fixtures:
@@ -211,13 +206,12 @@ class TestCalendar(unittest.TestCase):
         c = Calendar(cal1)
         self.assertEqual(c.creator, '-//Apple Inc.//Mac OS X 10.9//EN')
         self.assertEqual(c.method, 'PUBLISH')
-        e = c.events[0]
+        e = next(iter(c.events))
         self.assertFalse(e.all_day)
         self.assertEqual(arrow.get(2013, 10, 29, 9, 30), e.begin)
         self.assertEqual(arrow.get(2013, 10, 29, 10, 30), e.end)
         self.assertEqual(1, len(c.events))
-        t = c.todos[0]
+        t = next(iter(c.todos))
         self.assertEqual(t.dtstamp, arrow.get(2018, 2, 18, 15, 47))
         self.assertEqual(t.uid, 'Uid')
         self.assertEqual(len(c.todos), 1)
-

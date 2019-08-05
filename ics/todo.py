@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
+from typing import Iterable, Union, Set, Dict, List, Callable, Optional
+
 
 from six.moves import map
 
@@ -9,8 +11,8 @@ import arrow
 import copy
 from datetime import timedelta, datetime
 
-from .alarm import AlarmFactory
-from .component import Component
+from .alarm import AlarmFactory, Alarm
+from .component import Component, Extractor
 from .utils import (
     parse_duration,
     timedelta_to_duration,
@@ -33,24 +35,25 @@ class Todo(Component):
     """
 
     _TYPE = "VTODO"
-    _EXTRACTORS = []
-    _OUTPUTS = []
+    _EXTRACTORS: List[Extractor] = []
+    _OUTPUTS: List[Callable] = []
 
     def __init__(self,
                  dtstamp=None,
-                 uid=None,
+                 uid: str = None,
                  completed=None,
                  created=None,
-                 description=None,
+                 description: str = None,
                  begin=None,
-                 location=None,
-                 percent=None,
-                 priority=None,
-                 name=None,
-                 url=None,
+                 location: str = None,
+                 percent: int = None,
+                 priority: int = None,
+                 name: str = None,
+                 url: str = None,
                  due=None,
-                 duration=None,
-                 alarms=None):
+                 duration: timedelta = None,
+                 alarms: Iterable[Alarm] = None,
+                 status: str = None):
         """Instantiates a new :class:`ics.todo.Todo`.
 
         Args:
@@ -68,13 +71,14 @@ class Todo(Component):
             due (Arrow-compatible)
             duration (datetime.timedelta)
             alarms (:class:`ics.alarm.Alarm`)
+            status (string)
 
         Raises:
             ValueError: if `duration` and `due` are specified at the same time
         """
 
-        self._percent = None
-        self._priority = None
+        self._percent: Optional[int] = None
+        self._priority: Optional[int] = None
         self._begin = None
         self._due_time = None
         self._duration = None
@@ -90,7 +94,7 @@ class Todo(Component):
         self.priority = priority
         self.name = name
         self.url = url
-        self.alarms = set()
+        self.alarms: List[Alarm] = list()
         self._unused = Container(name='VTODO')
 
         if duration and due:
@@ -107,14 +111,15 @@ class Todo(Component):
             self.due = due
 
         if alarms is not None:
-            self.alarms.update(set(alarms))
+            self.alarms = list(alarms)
+        self.status = status
 
     @property
-    def percent(self):
+    def percent(self) -> Optional[int]:
         return self._percent
 
     @percent.setter
-    def percent(self, value):
+    def percent(self, value: Optional[int]):
         if value:
             value = int(value)
             if value < 0 or value > 100:
@@ -122,11 +127,11 @@ class Todo(Component):
         self._percent = value
 
     @property
-    def priority(self):
+    def priority(self) -> Optional[int]:
         return self._priority
 
     @priority.setter
-    def priority(self, value):
+    def priority(self, value: Optional[int]):
         if value:
             value = int(value)
             if value < 0 or value > 9:
@@ -176,7 +181,7 @@ class Todo(Component):
     @due.setter
     def due(self, value):
         value = get_arrow(value)
-        if value and value < self._begin:
+        if value and self._begin and value < self._begin:
             raise ValueError('Due must be after begin')
 
         self._due_time = value
@@ -216,12 +221,20 @@ class Todo(Component):
         if value:
             self._due_time = None
 
-    def __urepr__(self):
-        """Should not be used directly. Use self.__repr__ instead.
+    @property
+    def status(self) -> Optional[str]:
+        return self._status
 
-        Returns:
-            unicode: a unicode representation (__repr__) of the todo.
-        """
+    @status.setter
+    def status(self, value: Optional[str]):
+        if isinstance(value, str):
+            value = value.upper()
+        statuses = (None, 'NEEDS-ACTION', 'COMPLETED', 'IN-PROCESS', 'CANCELLED')
+        if value not in statuses:
+            raise ValueError('status must be one of %s' % ", ".join([repr(x) for x in statuses]))
+        self._status = value
+
+    def __repr__(self) -> str:
         if self.name is None:
             return "<Todo>"
         if self.begin is None and self.due is None:
@@ -232,7 +245,7 @@ class Todo(Component):
             return "<Todo '{}' due:{}>".format(self.name, self.due)
         return "<Todo '{}' begin:{} due:{}>".format(self.name, self.begin, self.due)
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         if isinstance(other, Todo):
             if self.due is None and other.due is None:
                 if self.name is None and other.name is None:
@@ -250,7 +263,7 @@ class Todo(Component):
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         if isinstance(other, Todo):
             if self.due is None and other.due is None:
                 if self.name is None and other.name is None:
@@ -268,7 +281,7 @@ class Todo(Component):
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         if isinstance(other, Todo):
             if self.due is None and other.due is None:
                 if self.name is None and other.name is None:
@@ -286,7 +299,7 @@ class Todo(Component):
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         if isinstance(other, Todo):
             if self.due is None and other.due is None:
                 if self.name is None and other.name is None:
@@ -304,14 +317,14 @@ class Todo(Component):
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Two todos are considered equal if they have the same uid."""
         if isinstance(other, Todo):
             return self.uid == other.uid
         raise NotImplementedError(
             'Cannot compare Todo and {}'.format(type(other)))
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         """Two todos are considered not equal if they do not have the same uid."""
         if isinstance(other, Todo):
             return self.uid != other.uid
@@ -338,7 +351,7 @@ class Todo(Component):
 # ----- Inputs -----
 # ------------------
 @Todo._extracts('DTSTAMP', required=True)
-def dtstamp(todo, line):
+def dtstamp(todo: Todo, line: ContentLine):
     if line:
         # get the dict of vtimezones passed to the classmethod
         tz_dict = todo._classmethod_kwargs['tz']
@@ -347,13 +360,13 @@ def dtstamp(todo, line):
 
 # TODO : add option somewhere to ignore some errors
 @Todo._extracts('UID', required=True)
-def uid(todo, line):
+def uid(todo: Todo, line: ContentLine):
     if line:
         todo.uid = line.value
 
 
 @Todo._extracts('COMPLETED')
-def completed(todo, line):
+def completed(todo: Todo, line: ContentLine):
     if line:
         # get the dict of vtimezones passed to the classmethod
         tz_dict = todo._classmethod_kwargs['tz']
@@ -361,7 +374,7 @@ def completed(todo, line):
 
 
 @Todo._extracts('CREATED')
-def created(todo, line):
+def created(todo: Todo, line: ContentLine):
     if line:
         # get the dict of vtimezones passed to the classmethod
         tz_dict = todo._classmethod_kwargs['tz']
@@ -369,12 +382,12 @@ def created(todo, line):
 
 
 @Todo._extracts('DESCRIPTION')
-def description(todo, line):
+def description(todo: Todo, line: ContentLine):
     todo.description = unescape_string(line.value) if line else None
 
 
 @Todo._extracts('DTSTART')
-def start(todo, line):
+def start(todo: Todo, line: ContentLine):
     if line:
         # get the dict of vtimezones passed to the classmethod
         tz_dict = todo._classmethod_kwargs['tz']
@@ -382,32 +395,32 @@ def start(todo, line):
 
 
 @Todo._extracts('LOCATION')
-def location(todo, line):
+def location(todo: Todo, line: ContentLine):
     todo.location = unescape_string(line.value) if line else None
 
 
 @Todo._extracts('PERCENT-COMPLETE')
-def percent(todo, line):
+def percent(todo: Todo, line: ContentLine):
     todo.percent = line.value if line else None
 
 
 @Todo._extracts('PRIORITY')
-def priority(todo, line):
+def priority(todo: Todo, line: ContentLine):
     todo.priority = line.value if line else None
 
 
 @Todo._extracts('SUMMARY')
-def summary(todo, line):
+def summary(todo: Todo, line: ContentLine):
     todo.name = unescape_string(line.value) if line else None
 
 
 @Todo._extracts('URL')
-def url(todo, line):
+def url(todo: Todo, line: ContentLine):
     todo.url = unescape_string(line.value) if line else None
 
 
 @Todo._extracts('DUE')
-def due(todo, line):
+def due(todo: Todo, line: ContentLine):
     if line:
         #TODO: DRY [1]
         if todo._duration:
@@ -418,7 +431,7 @@ def due(todo, line):
 
 
 @Todo._extracts('DURATION')
-def duration(todo, line):
+def duration(todo: Todo, line: ContentLine):
     if line:
         #TODO: DRY [1]
         if todo._due_time:  # pragma: no cover
@@ -427,7 +440,7 @@ def duration(todo, line):
 
 
 @Todo._extracts('VALARM', multiple=True)
-def alarms(todo, lines):
+def alarms(todo: Todo, lines: List[ContentLine]):
     def alarm_factory(x):
         af = AlarmFactory.get_type_from_container(x)
         return af._from_container(x)
@@ -435,11 +448,17 @@ def alarms(todo, lines):
     todo.alarms = list(map(alarm_factory, lines))
 
 
+@Todo._extracts('STATUS')
+def status(todo: Todo, line: ContentLine):
+    if line:
+        todo.status = line.value
+
+
 # -------------------
 # ----- Outputs -----
 # -------------------
 @Todo._outputs
-def o_dtstamp(todo, container):
+def o_dtstamp(todo: Todo, container: Container):
     if todo.dtstamp:
         instant = todo.dtstamp
     else:
@@ -450,7 +469,7 @@ def o_dtstamp(todo, container):
 
 
 @Todo._outputs
-def o_uid(todo, container):
+def o_uid(todo: Todo, container: Container):
     if todo.uid:
         uid = todo.uid
     else:
@@ -460,77 +479,77 @@ def o_uid(todo, container):
 
 
 @Todo._outputs
-def o_completed(todo, container):
+def o_completed(todo: Todo, container: Container):
     if todo.completed:
         container.append(ContentLine('COMPLETED',
                                      value=arrow_to_iso(todo.completed)))
 
 
 @Todo._outputs
-def o_created(todo, container):
+def o_created(todo: Todo, container: Container):
     if todo.created:
         container.append(ContentLine('CREATED',
                                      value=arrow_to_iso(todo.created)))
 
 
 @Todo._outputs
-def o_description(todo, container):
+def o_description(todo: Todo, container: Container):
     if todo.description:
         container.append(ContentLine('DESCRIPTION',
                                      value=escape_string(todo.description)))
 
 
 @Todo._outputs
-def o_start(todo, container):
+def o_start(todo: Todo, container: Container):
     if todo.begin:
         container.append(ContentLine('DTSTART',
                                      value=arrow_to_iso(todo.begin)))
 
 
 @Todo._outputs
-def o_location(todo, container):
+def o_location(todo: Todo, container: Container):
     if todo.location:
         container.append(ContentLine('LOCATION',
                                      value=escape_string(todo.location)))
 
 
 @Todo._outputs
-def o_percent(todo, container):
+def o_percent(todo: Todo, container: Container):
     if todo.percent is not None:
         container.append(ContentLine('PERCENT-COMPLETE',
                                      value=str(todo.percent)))
 
 
 @Todo._outputs
-def o_priority(todo, container):
+def o_priority(todo: Todo, container: Container):
     if todo.priority is not None:
         container.append(ContentLine('PRIORITY',
                                      value=str(todo.priority)))
 
 
 @Todo._outputs
-def o_summary(todo, container):
+def o_summary(todo: Todo, container: Container):
     if todo.name:
         container.append(ContentLine('SUMMARY',
                                      value=escape_string(todo.name)))
 
 
 @Todo._outputs
-def o_url(todo, container):
+def o_url(todo: Todo, container: Container):
     if todo.url:
         container.append(ContentLine('URL',
                                      value=escape_string(todo.url)))
 
 
 @Todo._outputs
-def o_due(todo, container):
+def o_due(todo: Todo, container: Container):
     if todo._due_time:
         container.append(ContentLine('DUE',
                                      value=arrow_to_iso(todo._due_time)))
 
 
 @Todo._outputs
-def o_duration(todo, container):
+def o_duration(todo: Todo, container: Container):
     if todo._duration:
         representation = timedelta_to_duration(todo._duration)
         container.append(ContentLine('DURATION',
@@ -538,6 +557,12 @@ def o_duration(todo, container):
 
 
 @Todo._outputs
-def o_alarm(todo, container):
+def o_alarm(todo: Todo, container: Container):
     for alarm in todo.alarms:
         container.append(str(alarm))
+
+
+@Todo._outputs
+def o_status(todo: Todo, container: Container):
+    if todo.status:
+        container.append(ContentLine('STATUS', value=todo.status))

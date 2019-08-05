@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
-
-from six import PY2, PY3, StringIO, string_types, text_type, integer_types
-from six.moves import filter, map, range
-
+from typing import List, Dict, Tuple, Any, Callable, Optional, TypeVar
 import warnings
 from collections import namedtuple
 
 from .utils import get_lines
+from .parse import Container, ContentLine
 
 
 Extractor = namedtuple(
@@ -17,12 +15,21 @@ Extractor = namedtuple(
     ['function', 'type', 'required', 'multiple', 'default']
 )
 
+# FIXME Any should be Self + Union[List[ContentLine], ContentLine]
+ExtractorT = TypeVar('ExtractorT', bound=Callable[[Any, Any], None])
+OutputT = TypeVar('OutputT', bound=Callable[[Any, Container], None]) # FIXME Any should be Self
+
 
 class Component(object):
     _TYPE = "ABSTRACT"
+    _EXTRACTORS: List[Extractor]
+    _OUTPUTS: List[Callable]
+
+    _classmethod_args: Tuple
+    _classmethod_kwargs: Dict
 
     @classmethod
-    def _from_container(cls, container, *args, **kwargs):
+    def _from_container(cls, container: Container, *args: Any, **kwargs: Any):
         if cls._TYPE == "ABSTRACT":
             raise NotImplementedError('Abstract class, cannot instantiate.')
 
@@ -33,7 +40,7 @@ class Component(object):
 
         return k
 
-    def _populate(self, container):
+    def _populate(self, container: Container) -> None:
         if container.name != self._TYPE:
             raise ValueError("container isn't an {}".format(self._TYPE))
 
@@ -67,7 +74,10 @@ class Component(object):
         self._unused = container  # Store unused lines
 
     @classmethod
-    def _extracts(cls, line_type, required=False, multiple=False, default=False):
+    def _extracts(
+        cls, line_type: str, required: bool = False,
+        multiple: bool = False, default: Optional[List[ContentLine]] = None
+    ) -> Callable[[ExtractorT], ExtractorT]:
         def decorator(fn):
             extractor = Extractor(
                 function=fn,
@@ -80,22 +90,11 @@ class Component(object):
         return decorator
 
     @classmethod
-    def _outputs(cls, fn):
+    def _outputs(cls, fn: OutputT) -> OutputT:
         cls._OUTPUTS.append(fn)
         return fn
 
-    def __repr__(self):
-        """ - In python2: returns self.__urepr__() encoded into utf-8.
-            - In python3: returns self.__urepr__()
-        """
-        if hasattr(self, '__urepr__'):
-            return self.__urepr__().encode('utf-8') if PY2 else self.__urepr__()
-        else:
-            t = self.__class__.__name__
-            adress = hex(id(self))
-            return '<{} at {}>'.format(t, adress)
-
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns the component in an iCalendar format."""
         container = self._unused.clone()
         for output in self._OUTPUTS:

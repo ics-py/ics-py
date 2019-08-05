@@ -15,7 +15,7 @@ Ics.py : iCalendar for Humans
     :alt: Apache 2 License
 
 
-Ics.py is a pythonic and easy iCalendar library. It's goals are to read and write ics data in a developer friendly way.
+Ics.py is a pythonic and easy iCalendar library. Its goals are to read and write ics data in a developer friendly way.
 
 iCalendar is a widely-used and useful format but not user friendly. Ics.py is there to give you the ability of creating and reading this format without any knowledge of it.
 
@@ -24,9 +24,8 @@ It should be able to parse every calendar that respects the `rfc5545 <http://too
 iCalendar (file extension `.ics`) is used by Sunbird, Google Calendar, Apple Calendar, Android…
 
 
-Ics.py is available for Python>=2.7 *and* Python>=3.3 and is Apache2 Licensed.
+Ics.py is available for Python>=3.6 and is Apache2 Licensed.
 
-Note : it is highly likely that Python 2 support will be dropped before the 1.0 release.
 
 
 Quickstart
@@ -40,17 +39,17 @@ Quickstart
 
 .. code-block:: python
 
-    >>> from ics import Calendar, Event
-    >>> c = Calendar()
-    >>> e = Event()
-    >>> e.name = "My cool event"
-    >>> e.begin = '20140101 00:00:00'
-    >>> c.events.append(e)
-    >>> c.events
-    [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
-    >>> with open('my.ics', 'w') as my_file:
-    >>>     my_file.writelines(c)
-    >>> # and it's done !
+    from ics import Calendar, Event
+    c = Calendar()
+    e = Event()
+    e.name = "My cool event"
+    e.begin = '2014-01-01 00:00:00'
+    c.events.add(e)
+    c.events
+    # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
+    with open('my.ics', 'w') as my_file:
+        my_file.writelines(c)
+    # and it's done !
 
 More examples are available in the `documentation <http://icspy.readthedocs.org/>`_.
 
@@ -74,6 +73,11 @@ Testing & Docs
 --------------
 
 .. code-block:: bash
+
+    # setup virtual environment
+    $ sudo pip install virtualenv
+    $ virtualenv ve
+    $ source ve/bin/activate
 
     # tests
     $ pip install -r requirements.txt

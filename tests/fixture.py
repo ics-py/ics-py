@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
-from six import PY2, PY3
-from six.moves import filter, map, range
+
 
 cal1 = """
 BEGIN:VCALENDAR
@@ -198,7 +197,7 @@ END:VEVENT
 END:VCALENDAR
 """
 
-# Event with URL
+# Event with URL and STATUS
 cal16 = u"""
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -210,6 +209,8 @@ DTSTART;TZID=Europe/Berlin:20120608T202500
 DTEND;TZID=Europe/Berlin:20120608T212500
 LOCATION:MUC
 URL:http://example.com/pub/calendars/jsmith/mytime.ics
+STATUS:CONFIRMED
+CATEGORIES:Simple Category,My "Quoted" Category,Category\\, with comma
 END:VEVENT
 
 END:VCALENDAR
@@ -259,22 +260,34 @@ VERSION:2.0
 PRODID:-//Apple Inc.//Mac OS X 10.9//EN
 
 BEGIN:VEVENT
-SUMMARY:Hello, \\n World\\; This is a backslash : \\\\ and another new \\N line
-DTSTART;TZID=Europe/Berlin:20120608T202500
-DTEND;TZID=Europe/Berlin:20120608T212500
-LOCATION:MUC
+SUMMARY:E1
 TRANSP:OPAQUE
+END:VEVENT
+
+END:VCALENDAR
+"""
+
+
+# Event with TRANSP
+cal19bis = u"""
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//Mac OS X 10.9//EN
+
+BEGIN:VEVENT
+SUMMARY:E2
+TRANSP:TRANSPARENT
 END:VEVENT
 END:VCALENDAR
 """
 
-# 3 days all-day event including end date
+# 2 days all-day event
 cal20 = u"""
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:manually crafted from an ownCloud 8.0 ics
 BEGIN:VEVENT
-SUMMARY:3 days party
+SUMMARY:2 days party
 DTSTART;VALUE=DATE:20151114
 DTEND;VALUE=DATE:20151116
 END:VEVENT
@@ -487,6 +500,35 @@ LOCATION:In\\, every text field
 DESCRIPTION:Yes\\, all of them\\;
 END:VTODO
 END:VCALENDAR
+"""
+
+cal32 = """
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-
+
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20161004
+DTEND;VALUE=DATE:20161005
+SUMMARY:An all day event: October 4 2016.
+END:VEVENT
+
+END:VCALENDAR
+"""
+
+clas33 = """
+BEGIN:VTIMEZONE
+TZID:Australia/Sydney
+TZURL:http://tzurl.org/zoneinfo/Australia/Sydney
+SEQUENCE:498
+SEQUENCE:498
+BEGIN:STANDARD
+TZOFFSETFROM:+1100
+TZOFFSETTO:+1000
+TZNAME:EST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
 """
 
 unfolded_cal2 = [

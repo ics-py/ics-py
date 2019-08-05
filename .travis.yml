@@ -1,12 +1,12 @@
 sudo: false
+dist: bionic
 
 language: python
 
 python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8-dev"
 
 install:
   - "pip install -U pip setuptools"
@@ -17,8 +17,10 @@ install:
 cache:
   directories:
     - $HOME/.pip-cache/
+    - $HOME/.mypy_cache/
 
 script:
+  - "mypy ics"
   - "python setup.py test"
 
 notifications:

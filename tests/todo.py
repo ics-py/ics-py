@@ -2,26 +2,7 @@ import unittest
 import arrow
 from datetime import datetime, timedelta
 
-try:
-    from datetime import timezone
-    utc = timezone.utc
-except ImportError:
-    # Python2
-
-    from datetime import tzinfo
-
-    class UTC(tzinfo):
-
-        def utcoffset(self, dt):
-            return timedelta(0)
-
-        def tzname(self, dt):
-            return "UTC"
-
-        def dst(self, dt):
-            return timedelta(0)
-
-    utc = UTC()
+from datetime import timezone
 
 from ics.parse import Container
 from ics.alarm import AlarmFactory
@@ -30,6 +11,7 @@ from .fixture import cal27, cal28, cal29, cal30, cal31
 
 from ics.todo import Todo
 
+utc = timezone.utc
 
 CRLF = "\r\n"
 
@@ -49,6 +31,7 @@ class TestTodo(unittest.TestCase):
         self.assertIsNone(t.priority)
         self.assertIsNone(t.name)
         self.assertIsNone(t.url)
+        self.assertIsNone(t.status)
         self.assertEqual(t._unused, Container(name='VTODO'))
 
     def test_init_non_exclusive_arguments(self):
@@ -57,9 +40,7 @@ class TestTodo(unittest.TestCase):
         dtstamp = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         completed = dtstamp + timedelta(days=1)
         created = dtstamp + timedelta(seconds=1)
-        alarm = [AlarmFactory().get_type_from_action('DISPLAY')]
-        alarms = set()
-        alarms.update(alarm)
+        alarms = [AlarmFactory().get_type_from_action('DISPLAY')]
 
         t = Todo(
             uid='uid',
@@ -70,7 +51,7 @@ class TestTodo(unittest.TestCase):
             location='location',
             name='name',
             url='url',
-            alarms=alarm)
+            alarms=alarms)
 
         self.assertEqual(t.uid, 'uid')
         self.assertEqual(t.dtstamp, arrow.get(dtstamp))
@@ -80,7 +61,7 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t.location, 'location')
         self.assertEqual(t.name, 'name')
         self.assertEqual(t.url, 'url')
-        self.assertSetEqual(t.alarms, alarms)
+        self.assertEqual(t.alarms, alarms)
 
     def test_percent(self):
         t1 = Todo(percent=0)
@@ -330,13 +311,13 @@ class TestTodo(unittest.TestCase):
 
     def test_extract(self):
         c = Calendar(cal27)
-        t = c.todos[0]
-        self.assertEqual(t.dtstamp, arrow.get('20180218T154700Z'))
+        t = next(iter(c.todos))
+        self.assertEqual(t.dtstamp, arrow.get('2018-02-18T15:47:00Z'))
         self.assertEqual(t.uid, 'Uid')
-        self.assertEqual(t.completed, arrow.get('20180418T150001Z+00:00'))
-        self.assertEqual(t.created, arrow.get('20180218T154800Z+00:00'))
+        self.assertEqual(t.completed, arrow.get('2018-04-18T15:00:00Z'))
+        self.assertEqual(t.created, arrow.get('2018-02-18T15:48:00Z'))
         self.assertEqual(t.description, 'Lorem ipsum dolor sit amet.')
-        self.assertEqual(t.begin, arrow.get('20180218T164800Z+00:00'))
+        self.assertEqual(t.begin, arrow.get('2018-02-18T16:48:00Z'))
         self.assertEqual(t.location, 'Earth')
         self.assertEqual(t.percent, 0)
         self.assertEqual(t.priority, 0)
@@ -347,8 +328,8 @@ class TestTodo(unittest.TestCase):
 
     def test_extract_due(self):
         c = Calendar(cal28)
-        t = c.todos[0]
-        self.assertEqual(t.due, arrow.get('20180218T164800Z+00:00'))
+        t = next(iter(c.todos))
+        self.assertEqual(t.due, arrow.get('2018-02-18T16:48:00Z'))
 
     def test_extract_due_error_duration(self):
         with self.assertRaises(ValueError):
@@ -360,7 +341,7 @@ class TestTodo(unittest.TestCase):
 
     def test_output(self):
         c = Calendar(cal27)
-        t = c.todos[0]
+        t = next(iter(c.todos))
 
         test_str = CRLF.join(("BEGIN:VTODO",
                               "SEQUENCE:0",
@@ -398,7 +379,7 @@ class TestTodo(unittest.TestCase):
 
     def test_unescape_texts(self):
         c = Calendar(cal31)
-        t = c.todos[0]
+        t = next(iter(c.todos))
         self.assertEqual(t.name, "Hello, \n World; This is a backslash : \\ and another new \n line")
         self.assertEqual(t.location, "In, every text field")
         self.assertEqual(t.description, "Yes, all of them;")
