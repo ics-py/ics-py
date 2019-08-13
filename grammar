@@ -1,0 +1,45 @@
+@@grammar::ics
+@@whitespace :: //
+
+start = icalstream $ ;
+
+ALPHA = ?"[a-zA-Z]" ;
+DIGIT = ? "[0-9]" ;
+CRLF = "\r\n" ;
+WSP = " ";
+
+DQUOTE = '"' ;
+
+QSAFE_CHAR    = WSP | ?"\x21" | ?"[\x23-\x7E]" ; # todo add NON-US-ASCII
+SAFE_CHAR     = WSP | ?"\x21" | ?"[\x23-\x2B]" | ?"[\x2D-\x39]" | ?"[\x3C-\x7E]" ; # todo add NON-US-ASCII
+VALUE_CHAR    = WSP | ?"[\x21-\x7E]" ; # todo add NON-US-ASCII
+
+
+name          = iana_token | x_name ;
+iana_token    = {(ALPHA | DIGIT | "-")}+ ;
+x_name        = "X-" [vendorid "-"] {(ALPHA | DIGIT | "-")}+ ;
+vendorid      = (ALPHA | DIGIT) (ALPHA | DIGIT) {(ALPHA | DIGIT)}+ ;
+
+contentline   = name {(";" param )}* ":" value CRLF ;
+
+param         = param_name "=" param_value {("," param_value)}* ;
+param_name    = iana_token | x_name ;
+param_value   = paramtext | quoted_string ;
+
+paramtext     = {SAFE_CHAR}* ;
+value         = {VALUE_CHAR}* ;
+quoted_string = DQUOTE {QSAFE_CHAR}* DQUOTE ;
+
+
+icalstream = {icalobject}+ ;
+
+icalobject = "BEGIN" ":" "VCALENDAR" CRLF
+             icalbody
+             "END" ":" "VCALENDAR" CRLF ;
+
+icalbody   = {eventc}* ;
+
+eventc     = "BEGIN" ":" "VEVENT" CRLF
+             "END" ":" "VEVENT" CRLF ;
+
+eventprop  = {contentline}* ;
