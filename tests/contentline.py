@@ -43,6 +43,18 @@ class TestContentLine(unittest.TestCase):
             {'hoho': ['p1', 'p2'], 'hihi': ['p3', 'p4', 'p5']},
             'blabla:blublu'
         ),
+        r'ATTENDEE;X-A="I&rsquo\;ll be in NYC":mailto:a@a.com':
+        ContentLine(
+            'ATTENDEE',
+            {'X-A': [r"I&rsquo\;ll be in NYC"]},
+            'mailto:a@a.com',
+        ),
+        'DTEND;TZID="UTC":20190107T000000':
+        ContentLine(
+            "DTEND",
+            {'TZID': ['UTC']},
+            "20190107T000000"
+        )
     }
 
     def test_errors(self):

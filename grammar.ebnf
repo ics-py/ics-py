@@ -29,5 +29,3 @@ param_value   = quoted_string | paramtext ;
 paramtext     = {SAFE_CHAR}* ;
 value         = {VALUE_CHAR}* ;
 quoted_string = DQUOTE @:{QSAFE_CHAR}* DQUOTE ;
-
-stream       = {contentline}* ;
