@@ -10,9 +10,9 @@ WSP = " ";
 
 DQUOTE = '"' ;
 
-QSAFE_CHAR    = WSP | ?"\x21" | ?"[\x23-\x7E]" ; # todo add NON-US-ASCII
-SAFE_CHAR     = WSP | ?"\x21" | ?"[\x23-\x2B]" | ?"[\x2D-\x39]" | ?"[\x3C-\x7E]" ; # todo add NON-US-ASCII
-VALUE_CHAR    = WSP | ?"[\x21-\x7E]" ; # todo add NON-US-ASCII
+QSAFE_CHAR    = WSP | ?"\x21" | ?"[\x23-\x7E]" | ?"[\u0080-\uffff]";
+SAFE_CHAR     = WSP | ?"\x21" | ?"[\x23-\x2B]" | ?"[\x2D-\x39]" | ?"[\x3C-\x7E]" | ?"[\u0080-\uffff]" ;
+VALUE_CHAR    = WSP | ?"[\x21-\x7E]" | ?"[\u0080-\uffff]";
 
 
 name          = iana_token | x_name ;

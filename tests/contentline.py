@@ -7,7 +7,6 @@ class TestContentLine(unittest.TestCase):
 
     dataset = {
         'HAHA:': ContentLine('haha'),
-        ':hoho': ContentLine('', {}, 'hoho'),
         'HAHA:hoho': ContentLine('haha', {}, 'hoho'),
         'HAHA:hoho:hihi': ContentLine('haha', {}, 'hoho:hihi'),
         'HAHA;hoho=1:hoho': ContentLine('haha', {'hoho': ['1']}, 'hoho'),
