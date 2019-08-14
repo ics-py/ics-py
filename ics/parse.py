@@ -4,8 +4,12 @@
 from __future__ import unicode_literals, absolute_import
 
 import collections
+import tatsu
 
 CRLF = '\r\n'
+
+with open('grammar.ebnf') as fd:
+    GRAMMAR = tatsu.compile(fd.read())
 
 
 class ParseError(Exception):
@@ -58,24 +62,18 @@ class ContentLine:
 
     @classmethod
     def parse(cls, line):
-        if ':' not in line:
-            raise ParseError("No ':' in line '{}'".format(line))
+        try:
+            ast = GRAMMAR.parse(line + CRLF)
+        except tatsu.exceptions.FailedToken:
+            raise ParseError()
 
-        # Separate key and value
-        splitted = line.split(':', 1)
-        key, value = splitted[0], splitted[1].strip()
-
-        # Separate name and params
-        splitted = key.split(';')
-        name, params_strings = splitted[0], splitted[1:]
-
-        # Separate key and values for params
+        name = ''.join(ast['name'])
+        value = ''.join(ast['value'])
         params = {}
-        for paramstr in params_strings:
-            if '=' not in paramstr:
-                raise ParseError("No '=' in line '{}'".format(paramstr))
-            pname, pvals = paramstr.split('=', 1)
-            params[pname] = pvals.split(',')
+        for param_ast in ast.get('params', []):
+            param_name = ''.join(param_ast["name"])
+            param_values = [''.join(x) for x in param_ast["values_"]]
+            params[param_name] = param_values
         return cls(name, params, value)
 
     def clone(self):
@@ -170,20 +168,12 @@ def string_to_container(txt):
     return lines_to_container(txt.splitlines())
 
 
-if __name__ == "__main__":
-    from tests.fixture import cal1
-
-    def print_tree(elem, lvl=0):
-        if isinstance(elem, list) or isinstance(elem, Container):
-            if isinstance(elem, Container):
-                print("{}{}".format('   ' * lvl, elem.name))
-            for sub_elem in elem:
-                print_tree(sub_elem, lvl + 1)
-        elif isinstance(elem, ContentLine):
-            print("{}{}{}".format('   ' * lvl,
-                  elem.name, elem.params, elem.value))
-        else:
-            print('Wuuut?')
-
-    cal = string_to_container(cal1)
-    print_tree(cal)
+def interpret_ast(ast):
+    name = ''.join(ast['name'])
+    value = ''.join(ast['value'])
+    params = {}
+    for param_ast in ast.get('params', []):
+        param_name = ''.join(param_ast["name"])
+        param_values = [''.join(x) for x in param_ast["values_"]]
+        params[param_name] = param_values
+    return ContentLine(name, params, value)

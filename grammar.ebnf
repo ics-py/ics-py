@@ -1,7 +1,7 @@
-@@grammar::ics
+@@grammar::contentlines
 @@whitespace :: //
 
-start = icalstream $ ;
+start = contentline $ ;
 
 ALPHA = ?"[a-zA-Z]" ;
 DIGIT = ? "[0-9]" ;
@@ -20,26 +20,14 @@ iana_token    = {(ALPHA | DIGIT | "-")}+ ;
 x_name        = "X-" [vendorid "-"] {(ALPHA | DIGIT | "-")}+ ;
 vendorid      = (ALPHA | DIGIT) (ALPHA | DIGIT) {(ALPHA | DIGIT)}+ ;
 
-contentline   = name {(";" param )}* ":" value CRLF ;
+contentline   = name:name {(";" params+:param )}* ":" value:value CRLF ;
 
-param         = param_name "=" param_value {("," param_value)}* ;
+param         = name:param_name "=" values+:param_value {("," values+:param_value)}* ;
 param_name    = iana_token | x_name ;
-param_value   = paramtext | quoted_string ;
+param_value   = quoted_string | paramtext ;
 
 paramtext     = {SAFE_CHAR}* ;
 value         = {VALUE_CHAR}* ;
-quoted_string = DQUOTE {QSAFE_CHAR}* DQUOTE ;
+quoted_string = DQUOTE @:{QSAFE_CHAR}* DQUOTE ;
 
-
-icalstream = {icalobject}+ ;
-
-icalobject = "BEGIN" ":" "VCALENDAR" CRLF
-             icalbody
-             "END" ":" "VCALENDAR" CRLF ;
-
-icalbody   = {eventc}* ;
-
-eventc     = "BEGIN" ":" "VEVENT" CRLF
-             "END" ":" "VEVENT" CRLF ;
-
-eventprop  = {contentline}* ;
+stream       = {contentline}* ;
