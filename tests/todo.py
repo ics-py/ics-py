@@ -32,7 +32,7 @@ class TestTodo(unittest.TestCase):
         self.assertIsNone(t.name)
         self.assertIsNone(t.url)
         self.assertIsNone(t.status)
-        self.assertEqual(t._unused, Container(name='VTODO'))
+        self.assertEqual(t.extra, Container(name='VTODO'))
 
     def test_init_non_exclusive_arguments(self):
         # attributes percent, priority, begin, due, and duration

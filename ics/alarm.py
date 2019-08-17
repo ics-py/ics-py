@@ -65,7 +65,7 @@ class Alarm(Component):
         if duration:
             self.duration = duration
 
-        self._unused = Container(name='VALARM')
+        self.extra = Container(name='VALARM')
 
     @property
     def trigger(self) -> Optional[Union[timedelta, datetime]]:
@@ -150,7 +150,7 @@ class Alarm(Component):
         Returns:
             Alarm: an exact copy of self"""
         clone = copy.copy(self)
-        clone._unused = clone._unused.clone()
+        clone.extra = clone.extra.clone()
         return clone
 
 

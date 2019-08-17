@@ -22,7 +22,7 @@ class TestCalendar(unittest.TestCase):
         self.assertSequenceEqual(c.todos, [])
         self.assertEqual(c.method, None)
         self.assertEqual(c.scale, None)
-        self.assertEqual(c._unused, Container(name='VCALENDAR'))
+        self.assertEqual(c.extra, Container(name='VCALENDAR'))
         self.assertEqual(c._timezones, {})
 
     def test_selfload(self):

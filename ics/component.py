@@ -71,7 +71,7 @@ class Component(object):
                 else:
                     extractor.function(self, None)  # Send None
 
-        self._unused = container  # Store unused lines
+        self.extra = container  # Store unused lines
 
     @classmethod
     def _extracts(
@@ -96,7 +96,7 @@ class Component(object):
 
     def __str__(self) -> str:
         """Returns the component in an iCalendar format."""
-        container = self._unused.clone()
+        container = self.extra.clone()
         for output in self._OUTPUTS:
             output(self, container)
         return str(container)

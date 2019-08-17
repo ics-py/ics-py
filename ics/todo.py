@@ -95,7 +95,7 @@ class Todo(Component):
         self.name = name
         self.url = url
         self.alarms: List[Alarm] = list()
-        self._unused = Container(name='VTODO')
+        self.extra = Container(name='VTODO')
 
         if duration and due:
             raise ValueError(
@@ -336,7 +336,7 @@ class Todo(Component):
         Returns:
             Todo: an exact copy of self"""
         clone = copy.copy(self)
-        clone._unused = clone._unused.clone()
+        clone.extra = clone.extra.clone()
         clone.alarms = copy.copy(self.alarms)
         return clone
 

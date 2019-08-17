@@ -14,6 +14,8 @@ Major changes:
  - Add `竜 TatSu <https://pypi.org/project/TatSu/>`_ as a dependency.
    This enables us to have a real PEG parser and not a combination of
    regexes and string splitting.
+ - The previously private `._unused` is now renamed to public `.extra` and
+   becomes documented.
 
 Minor features:
  - Add mypy

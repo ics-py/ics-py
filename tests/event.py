@@ -129,7 +129,7 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.location, None)
         self.assertEqual(e.geo, None)
         self.assertEqual(e.url, None)
-        self.assertEqual(e._unused, Container(name='VEVENT'))
+        self.assertEqual(e.extra, Container(name='VEVENT'))
         self.assertEqual(e.status, None)
         self.assertEqual(e.organizer, None)
 

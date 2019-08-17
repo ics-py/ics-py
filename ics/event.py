@@ -42,6 +42,10 @@ class Event(Component):
     Can be full-day or between two instants.
     Can be defined by a beginning instant and
     a duration *or* end instant.
+
+    Unsupported event attributes can be found in `event.extra`,
+    a :class:`ics.parse.Container`. You may add some by appending a
+    :class:`ics.parse.ContentLine` to `.extra`
     """
 
     _TYPE = "VEVENT"
@@ -107,7 +111,7 @@ class Event(Component):
         self.attendees: Set[Attendee] = set()
         self.categories: Set[str] = set()
         self.geo = geo
-        self._unused = Container(name='VEVENT')
+        self.extra = Container(name='VEVENT')
 
         self.name = name
         self.begin = begin
@@ -468,7 +472,7 @@ class Event(Component):
         Returns:
             Event: an exact copy of self"""
         clone = copy.copy(self)
-        clone._unused = clone._unused.clone()
+        clone.extra = clone.extra.clone()
         clone.alarms = copy.copy(self.alarms)
         clone.categories = copy.copy(self.categories)
         return clone

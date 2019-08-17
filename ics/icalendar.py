@@ -53,7 +53,7 @@ class Calendar(Component):
         self._timezones: Dict = {} # FIXME mypy
         self.events: Set[Event] = set()
         self.todos: Set[Todo] = set()
-        self._unused = Container(name='VCALENDAR')
+        self.extra = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
 
@@ -105,7 +105,7 @@ class Calendar(Component):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Calendar):
             raise NotImplementedError
-        for attr in ('_unused', 'scale', 'method', 'creator'):
+        for attr in ('extra', 'scale', 'method', 'creator'):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
                 return False
 
@@ -137,7 +137,7 @@ class Calendar(Component):
             Calendar: an exact deep copy of self
         """
         clone = copy.copy(self)
-        clone._unused = clone._unused.clone()
+        clone.extra = clone.extra.clone()
         clone.events = copy.copy(self.events)
         clone.todos = copy.copy(self.todos)
         clone._timezones = copy.copy(self._timezones)

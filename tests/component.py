@@ -42,7 +42,7 @@ class TestComponent(unittest.TestCase):
     def test_empty_input(self):
         cont = Container("TEST")
         c = CT1._from_container(cont)
-        self.assertEqual(c._unused.name, "TEST")
+        self.assertEqual(c.extra.name, "TEST")
         self.assertEqual(c.some_attr, "biiip")
 
     def test_no_match_input(self):
@@ -51,20 +51,20 @@ class TestComponent(unittest.TestCase):
         cont2 = copy.deepcopy(cont)
 
         c = CT1._from_container(cont)
-        self.assertEqual(c._unused.name, "TEST")
+        self.assertEqual(c.extra.name, "TEST")
         self.assertEqual(c.some_attr, "biiip")
-        self.assertEqual(cont2, c._unused)
+        self.assertEqual(cont2, c.extra)
 
     def test_input(self):
         cont = Container("TEST")
         cont.append(ContentLine(name="ATTR", value="anything"))
 
         c = CT1._from_container(cont)
-        self.assertEqual(c._unused.name, "TEST")
+        self.assertEqual(c.extra.name, "TEST")
         self.assertEqual(c.some_attr, "anything")
-        self.assertEqual(Container("TEST"), c._unused)
+        self.assertEqual(Container("TEST"), c.extra)
 
-    def test_input_plus_unused(self):
+    def test_input_plus_extra(self):
         cont = Container("TEST")
         cont.append(ContentLine(name="ATTR", value="anything"))
         cont.append(ContentLine(name="PLOP", value="plip"))
@@ -73,9 +73,9 @@ class TestComponent(unittest.TestCase):
         unused.append(ContentLine(name="PLOP", value="plip"))
 
         c = CT1._from_container(cont)
-        self.assertEqual(c._unused.name, "TEST")
+        self.assertEqual(c.extra.name, "TEST")
         self.assertEqual(c.some_attr, "anything")
-        self.assertEqual(unused, c._unused)
+        self.assertEqual(unused, c.extra)
 
     def test_required_raises(self):
         cont = Container("TEST")
@@ -94,7 +94,7 @@ class TestComponent(unittest.TestCase):
 
         c = CT2._from_container(cont)
         self.assertEqual(c.some_attr, "anything")
-        self.assertEqual(unused, c._unused)
+        self.assertEqual(unused, c.extra)
 
     def test_multiple_non_allowed(self):
         cont = Container("TEST")
@@ -112,7 +112,7 @@ class TestComponent(unittest.TestCase):
         c = CT3._from_container(cont)
 
         self.assertEqual(c.some_attr, "plip, anything")
-        self.assertEqual(Container("TEST"), c._unused)
+        self.assertEqual(Container("TEST"), c.extra)
 
     def test_multiple_fail(self):
         cont = Container("TEST")
@@ -120,7 +120,7 @@ class TestComponent(unittest.TestCase):
         c = CT3._from_container(cont)
 
         self.assertEqual(c.some_attr, "biiip")
-        self.assertEqual(Container("TEST"), c._unused)
+        self.assertEqual(Container("TEST"), c.extra)
 
     def test_multiple_unique(self):
         cont = Container("TEST")
@@ -129,7 +129,7 @@ class TestComponent(unittest.TestCase):
         c = CT3._from_container(cont)
 
         self.assertEqual(c.some_attr, "anything")
-        self.assertEqual(Container("TEST"), c._unused)
+        self.assertEqual(Container("TEST"), c.extra)
 
     def test_multiple_unique_required(self):
         cont = Container("TEST")
@@ -145,7 +145,7 @@ class ComponentBaseTest(Component):
     def __init__(self):
         self.some_attr = "biiip"
         self.some_attr2 = "baaaaaaaaaaap"
-        self._unused = Container('BASETEST')
+        self.extra = Container('BASETEST')
 
 
 class CT1(ComponentBaseTest):
