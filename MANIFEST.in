@@ -3,6 +3,7 @@ include CHANGELOG.rst
 include LICENSE
 include AUTHORS.rst
 include CONTRIBUTING.rst
+include ics/contentline.ebnf
 include meta.py
 include tests/fixtures/README
 

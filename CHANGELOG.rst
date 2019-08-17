@@ -7,13 +7,24 @@ Ics.py changelog
 0.6
 **************
 
+Major changes:
+ - Drop support for Python 3.5. Python 3.7 is now distributed in both Ubuntu LTS
+   and Debian stable, the PSF is providing only security fixes. It's time
+   to move on !
+ - Add `竜 TatSu <https://pypi.org/project/TatSu/>`_ as a dependency.
+   This enables us to have a real PEG parser and not a combination of
+   regexes and string splitting.
+
+Minor features:
  - Add mypy
- - Drop support for Python 3.5. Python 3.7 is now distributed in both Ubuntu LTS and Debian stable,
-   the PSF is providing only security fixes. It's time to move on !
  - Add GEO (thanks @johnnoone !)
 
 Bug fixes:
  - Events no longer have the TRANSP property by default (Fixes #190)
+ - Fix parsing of quoted values as well as escaped semi-columns (#185 and #193)
+
+Regressions:
+ - Adding Tatsu might have made the parser significantly slower in some cases.
 
 
 **************
