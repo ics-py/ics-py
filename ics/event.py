@@ -70,6 +70,7 @@ class Event(Component):
                  status: str = None,
                  organizer: Organizer = None,
                  geo=None,
+                 classification: str = None,
                  ) -> None:
         """Instantiates a new :class:`ics.event.Event`.
 
@@ -90,6 +91,7 @@ class Event(Component):
             categories
             status
             organizer
+            classification
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
@@ -128,6 +130,7 @@ class Event(Component):
         if alarms is not None:
             self.alarms = list(alarms)
         self.status = status
+        self.classification = classification
 
         if categories is not None:
             self.categories.update(set(categories))
@@ -304,6 +307,19 @@ class Event(Component):
         if value not in statuses:
             raise ValueError('status must be one of %s' % ", ".join([repr(x) for x in statuses]))
         self._status = value
+
+    @property
+    def classification(self):
+        return self._classification
+
+    @classification.setter
+    def classification(self, value):
+        if value is not None:
+            if not isinstance(value, str):
+                raise ValueError('classification must be a str')
+            self._classification = value
+        else:
+            self._classification = None
 
     def __repr__(self) -> str:
         name = "'{}' ".format(self.name) if self.name else ''
@@ -593,6 +609,12 @@ def status(event, line):
         event.status = line.value
 
 
+@Event._extracts('CLASS')
+def classification(event, line):
+    if line:
+        event.classification = line.value
+
+
 @Event._extracts('CATEGORIES')
 def categories(event, line):
     event.categories = set()
@@ -721,6 +743,12 @@ def o_alarm(event, container):
 def o_status(event, container):
     if event.status:
         container.append(ContentLine('STATUS', value=event.status))
+
+
+@Event._outputs
+def o_classification(event, container):
+    if event.classification:
+        container.append(ContentLine('CLASS', value=event.classification))
 
 
 @Event._outputs

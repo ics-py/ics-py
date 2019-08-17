@@ -23,6 +23,7 @@ Minor changes:
  - `Calendar.parse_multiple()` now accepts streams of multiple calendars.
  - `Calendar()` does not accept iterables to be parsed anymore (only a single
    string)
+ - Add support for classification (#177, thanks @PascalBru !)
 
 Bug fixes:
  - Events no longer have the TRANSP property by default (Fixes #190)

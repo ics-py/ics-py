@@ -21,6 +21,7 @@ Other contributors, listed alphabetically, are:
 * `@johnnoone <https://github.com/johnnoone>`_
 * `@kayluhb <https://github.com/kayluhb>`_
 * `@mrmadcow <https://github.com/mrmadcow>`_
+* `@PascalBru <https://github.com/pascalbru>`_
 * `@perette <https://github.com/perette>`_
 * `@Philiptpp <https://github.com/Philiptpp>`_
 * `@prashnts <https://github.com/prashnts>`_
