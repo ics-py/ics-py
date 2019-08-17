@@ -1,4 +1,4 @@
 python-dateutil
 arrow>=0.11,<0.12
 six>1.5
-tatsu
+tatsu>4.2

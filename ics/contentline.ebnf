@@ -1,4 +1,4 @@
-@@grammar::contentlines
+@@grammar::contentline
 @@whitespace :: //
 
 start = contentline $ ;

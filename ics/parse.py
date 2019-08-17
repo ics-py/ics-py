@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, absolute_import
+from pathlib import Path
 
 import collections
 import tatsu
 
 CRLF = '\r\n'
 
-with open('grammar.ebnf') as fd:
+grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
+
+with open(grammar_path) as fd:
     GRAMMAR = tatsu.compile(fd.read())
 
 
