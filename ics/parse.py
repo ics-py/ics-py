@@ -180,3 +180,9 @@ def interpret_ast(ast):
         param_values = [''.join(x) for x in param_ast["values_"]]
         params[param_name] = param_values
     return ContentLine(name, params, value)
+
+
+def calendar_string_to_containers(string):
+    if not isinstance(string, str):
+        raise TypeError("Expecting a string")
+    return string_to_container(string)

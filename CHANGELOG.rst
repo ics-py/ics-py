@@ -17,9 +17,12 @@ Major changes:
  - The previously private `._unused` is now renamed to public `.extra` and
    becomes documented.
 
-Minor features:
+Minor changes:
  - Add mypy
  - Add GEO (thanks @johnnoone !)
+ - `Calendar.parse_multiple()` now accepts streams of multiple calendars.
+ - `Calendar()` does not accept iterables to be parsed anymore (only a single
+   string)
 
 Bug fixes:
  - Events no longer have the TRANSP property by default (Fixes #190)

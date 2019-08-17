@@ -4,11 +4,9 @@ Import a calendar from a file
 .. code-block:: python
 
     from ics import Calendar
-    from urllib.request import urlopen
-    url = "https://urlab.be/events/urlab.ics"
-    c = Calendar(urlopen(url).read().decode())
+    import requests
 
-    import requests    # Alternative: use requests
+    url = "https://urlab.be/events/urlab.ics"
     c = Calendar(requests.get(url).text)
 
     c

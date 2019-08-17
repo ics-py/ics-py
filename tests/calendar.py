@@ -8,7 +8,7 @@ from ics.icalendar import Calendar
 from ics.event import Event
 from ics.todo import Todo
 
-from .fixture import cal1, cal2, cal10, cal12, cal14
+from .fixture import cal1, cal2, cal10, cal12, cal14, cal34
 
 
 class TestCalendar(unittest.TestCase):
@@ -215,3 +215,12 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(t.dtstamp, arrow.get(2018, 2, 18, 15, 47))
         self.assertEqual(t.uid, 'Uid')
         self.assertEqual(len(c.todos), 1)
+
+    def test_multiple(self):
+        cals = Calendar.parse_multiple(cal34)
+        self.assertEqual(len(cals), 2)
+
+        e1 = list(cals[0].events)[0]
+        self.assertEqual(e1.name, "a")
+        e2 = list(cals[1].events)[0]
+        self.assertEqual(e2.name, "b")

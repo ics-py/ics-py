@@ -3,22 +3,20 @@
 
 from __future__ import unicode_literals, absolute_import
 
-from six import StringIO, string_types, text_type
+from six import StringIO, text_type
 from typing import Iterable, Union, Set, Dict, List, Callable
 
 from dateutil.tz import tzical
 import copy
-import collections
 
 from .component import Component, Extractor
 from .timeline import Timeline
 from .event import Event
 from .todo import Todo
 from .parse import (
-    lines_to_container,
-    string_to_container,
     ContentLine,
     Container,
+    calendar_string_to_containers
 )
 from .utils import remove_x, remove_sequence
 from typing import Optional
@@ -33,7 +31,7 @@ class Calendar(Component):
 
     def __init__(
         self,
-        imports: Union[str, Iterable[str]] = None,
+        imports: Union[str, Container] = None,
         events: Iterable[Event] = None,
         todos: Iterable[Todo] = None,
         creator: str = None
@@ -60,25 +58,30 @@ class Calendar(Component):
         self.timeline = Timeline(self)
 
         if imports is not None:
-            if isinstance(imports, string_types):
-                container = string_to_container(imports)
-            elif isinstance(imports, collections.abc.Iterable):
-                container = lines_to_container(imports)
+            if isinstance(imports, Container):
+                self._populate(imports)
             else:
-                raise TypeError("Expecting a sequence or a string")
+                containers = calendar_string_to_containers(imports)
+                if len(containers) != 1:
+                    raise NotImplementedError(
+                        'Multiple calendars in one file are not supported by this method. Use ics.Calendar.parse_multiple()')
 
-            # TODO : make a better API for multiple calendars
-            if len(container) != 1:
-                raise NotImplementedError(
-                    'Multiple calendars in one file are not supported')
-
-            self._populate(container[0])  # Use first calendar
+                self._populate(containers[0])  # Use first calendar
         else:
             if events is not None:
                 self.events.update(set(events))
             if todos is not None:
                 self.todos.update(set(todos))
             self._creator = creator
+
+    @classmethod
+    def parse_multiple(cls, string):
+        """"
+        Parses an input string that may contain mutiple calendars
+        and retruns a list of :class:`ics.event.Calendar`
+        """
+        containers = calendar_string_to_containers(string)
+        return [cls(imports=c) for c in containers]
 
     def __repr__(self) -> str:
         return "<Calendar with {} event{} and {} todo{}>" \
