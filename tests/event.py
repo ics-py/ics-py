@@ -240,17 +240,17 @@ class TestEvent(unittest.TestCase):
         self.assertFalse(Event(name="b") < Event(name="b"))
 
     def test_cmp_by_start_time(self):
-        ev1 = Event(begin=datetime(2018, 6, 29, 6))
-        ev2 = Event(begin=datetime(2018, 6, 29, 7))
+        ev1 = Event(begin=dt(2018, 6, 29, 6))
+        ev2 = Event(begin=dt(2018, 6, 29, 7))
         self.assertLess(ev1, ev2)
         self.assertGreaterEqual(ev2, ev1)
         self.assertLessEqual(ev1, ev2)
         self.assertGreater(ev2, ev1)
 
     def test_cmp_by_start_time_with_end_time(self):
-        ev1 = Event(begin=datetime(2018, 6, 29, 5), end=datetime(2018, 6, 29, 7))
-        ev2 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 8))
-        ev3 = Event(begin=datetime(2018, 6, 29, 6))
+        ev1 = Event(begin=dt(2018, 6, 29, 5), end=dt(2018, 6, 29, 7))
+        ev2 = Event(begin=dt(2018, 6, 29, 6), end=dt(2018, 6, 29, 8))
+        ev3 = Event(begin=dt(2018, 6, 29, 6))
         self.assertLess(ev1, ev2)
         self.assertGreaterEqual(ev2, ev1)
         self.assertLessEqual(ev1, ev2)
@@ -261,8 +261,8 @@ class TestEvent(unittest.TestCase):
         self.assertGreater(ev2, ev3)
 
     def test_cmp_by_end_time(self):
-        ev1 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 7))
-        ev2 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 8))
+        ev1 = Event(begin=dt(2018, 6, 29, 6), end=dt(2018, 6, 29, 7))
+        ev2 = Event(begin=dt(2018, 6, 29, 6), end=dt(2018, 6, 29, 8))
         self.assertLess(ev1, ev2)
         self.assertGreaterEqual(ev2, ev1)
         self.assertLessEqual(ev1, ev2)
@@ -558,7 +558,7 @@ class TestEvent(unittest.TestCase):
         assert e.last_modified == arrow.get('2015-11-13 00:48:09')
 
     def equality(self):
-        ev1 = Event(begin=datetime(2018, 6, 29, 5), end=datetime(2018, 6, 29, 7), name="my name")
+        ev1 = Event(begin=dt(2018, 6, 29, 5), end=dt(2018, 6, 29, 7), name="my name")
         ev2 = ev1.clone()
 
         assert ev1 == ev2

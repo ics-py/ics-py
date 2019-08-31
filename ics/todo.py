@@ -10,7 +10,7 @@ from typing import Callable, Dict, Iterable, List, Optional, Set, Union
 import arrow
 from six.moves import map
 
-from .alarm import Alarm, AlarmFactory
+from .alarm.base import BaseAlarm
 from .alarm.utils import get_type_from_container
 from .component import Component, Extractor
 from .parse import Container, ContentLine
@@ -45,7 +45,7 @@ class Todo(Component):
                  url: str = None,
                  due=None,
                  duration: timedelta = None,
-                 alarms: Iterable[Alarm] = None,
+                 alarms: Iterable[BaseAlarm] = None,
                  status: str = None):
         """Instantiates a new :class:`ics.todo.Todo`.
 

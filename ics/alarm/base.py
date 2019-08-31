@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 import copy
 from datetime import datetime, timedelta
-from typing import Callable, List, Optional, Type, Union
+from typing import Callable, List, Optional, Union
 
-from ics.parse import Container, ContentLine
-
-from ..component import Component, Extractor
-from .utils import (arrow_to_iso, get_arrow, iso_to_arrow, parse_duration,
-                    timedelta_to_duration)
+from ics.component import Component, Extractor
+from ics.utils import (
+    arrow_to_iso,
+    get_arrow,
+    iso_to_arrow,
+    parse_duration,
+    timedelta_to_duration,
+)
+from ics.parse import ContentLine, Container
 
 
 class BaseAlarm(Component):
@@ -145,34 +149,6 @@ class BaseAlarm(Component):
         clone = copy.copy(self)
         clone.extra = clone.extra.clone()
         return clone
-
-
-class AlarmFactory(object):
-    """
-    Factory class to get specific VALARM types, useful with `ics.component.Component._from_container` method.
-    """
-
-    @classmethod
-    def get_type_from_action(cls, action_type: str) -> Type[Alarm]:
-        # TODO: Implement EMAIL action
-        if action_type == 'DISPLAY':
-            return DisplayAlarm
-        elif action_type == 'AUDIO':
-            return AudioAlarm
-        # FIXME mypy
-        # elif action_type == 'NONE':
-        #     return None
-
-        raise ValueError('Invalid alarm action')
-
-    @classmethod
-    def get_type_from_container(cls, container: Container) -> Type[Alarm]:
-        action_type_lines = get_lines(container, 'ACTION')
-        if len(action_type_lines) > 1:
-            raise ValueError('Too many ACTION parameters in VALARM')
-
-        action_type = action_type_lines[0]
-        return AlarmFactory.get_type_from_action(action_type.value)
 
 
 # ------------------

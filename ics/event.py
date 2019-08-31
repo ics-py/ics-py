@@ -11,7 +11,7 @@ from typing import (Callable, Dict, Iterable, List, NamedTuple, Optional, Set,
 
 from arrow import Arrow
 
-from .alarm import Alarm, AlarmFactory
+from .alarm.base import BaseAlarm
 from .alarm.utils import get_type_from_container
 from .attendee import Attendee
 from .component import Component, Extractor
@@ -57,7 +57,7 @@ class Event(Component):
                  location: str = None,
                  url: str = None,
                  transparent: bool = None,
-                 alarms: Iterable[Alarm] = None,
+                 alarms: Iterable[BaseAlarm] = None,
                  attendees: Iterable[Attendee] = None,
                  categories: Iterable[str] = None,
                  status: str = None,
