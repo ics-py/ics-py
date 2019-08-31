@@ -357,7 +357,7 @@ class TestTodo(unittest.TestCase):
                               "URL:https://www.example.com/cal.php/todo.ics",
                               "DURATION:PT10M",
                               "BEGIN:VALARM",
-                              "TRIGGER:-PT1H",
+                              "TRIGGER:PT1H",
                               "ACTION:DISPLAY",
                               "DESCRIPTION:Event reminder",
                               "END:VALARM",

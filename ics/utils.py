@@ -127,7 +127,7 @@ def parse_duration(line: str) -> timedelta:
             sign = -1
         i += 1
     if line[i] != 'P':
-        raise parse.ParseError()
+        raise parse.ParseError("Error while parsing %s" % line)
     i += 1
     days, secs = 0, 0
     while i < len(line):
@@ -139,7 +139,7 @@ def parse_duration(line: str) -> timedelta:
         while line[j].isdigit():
             j += 1
         if i == j:
-            raise parse.ParseError()
+            raise parse.ParseError("Error while parsing %s" % line)
         val = int(line[i:j])
         if line[j] in DAYS:
             days += val * DAYS[line[j]]
@@ -148,7 +148,7 @@ def parse_duration(line: str) -> timedelta:
             secs += val * SECS[line[j]]
             SECS.pop(line[j])
         else:
-            raise parse.ParseError()
+            raise parse.ParseError("Error while parsing %s" % line)
         i = j + 1
     return timedelta(sign * days, sign * secs)
 
@@ -158,24 +158,32 @@ def timedelta_to_duration(dt: timedelta) -> str:
     Return a string according to the DURATION property format
     from a timedelta object
     """
-    days, secs = dt.days, dt.seconds
+    ONE_DAY_IN_SECS = 3600 * 24
+    total = abs(int(dt.total_seconds()))
+    days = total // ONE_DAY_IN_SECS
+    seconds = total % ONE_DAY_IN_SECS
+
     res = 'P'
     if days // 7:
         res += str(days // 7) + 'W'
         days %= 7
     if days:
         res += str(days) + 'D'
-    if secs:
+    if seconds:
         res += 'T'
-        if secs // 3600:
-            res += str(secs // 3600) + 'H'
-            secs %= 3600
-        if secs // 60:
-            res += str(secs // 60) + 'M'
-            secs %= 60
-        if secs:
-            res += str(secs) + 'S'
-    return res
+        if seconds // 3600:
+            res += str(seconds // 3600) + 'H'
+            seconds %= 3600
+        if seconds // 60:
+            res += str(seconds // 60) + 'M'
+            seconds %= 60
+        if seconds:
+            res += str(seconds) + 'S'
+
+    if dt.total_seconds() >= 0:
+        return res
+    else:
+        return "-%s" % res
 
 
 def get_arrow(value: Union[None, Arrow, Tuple, Dict]) -> Arrow:

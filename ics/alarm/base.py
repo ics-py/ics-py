@@ -75,15 +75,12 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         """The trigger condition for the alarm
 
         | Returns either a timedelta or datetime object
-        | Timedelta must have positive total_seconds()
         """
         return self._trigger
 
     @trigger.setter
     def trigger(self, value: Optional[Union[timedelta, datetime]]) -> None:
-        if isinstance(value, timedelta) and value.total_seconds() < 0:
-            raise ValueError("Trigger timespan must be positive")
-        elif isinstance(value, datetime):
+        if isinstance(value, datetime):
             value = get_arrow(value)
 
         self._trigger = value
@@ -194,7 +191,7 @@ def o_trigger(alarm, container):
 
     if type(alarm.trigger) is timedelta:
         representation = timedelta_to_duration(alarm.trigger)
-        container.append(ContentLine("TRIGGER", value="-{0}".format(representation)))
+        container.append(ContentLine("TRIGGER", value=representation))
     else:
         container.append(
             ContentLine(
