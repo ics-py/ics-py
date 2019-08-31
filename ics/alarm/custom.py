@@ -13,11 +13,13 @@ class CustomAlarm(BaseAlarm):
     _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
     _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
 
-    def __init__(self,
-                 trigger: Union[timedelta, datetime] = None,
-                 repeat: int = None,
-                 duration: timedelta = None,
-                 action: str = None) -> None:
+    def __init__(
+        self,
+        trigger: Union[timedelta, datetime] = None,
+        repeat: int = None,
+        duration: timedelta = None,
+        action: str = None,
+    ) -> None:
         super().__init__(trigger, repeat, duration)
 
         self._action = action

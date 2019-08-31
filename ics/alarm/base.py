@@ -24,14 +24,16 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     A calendar event VALARM base class
     """
 
-    _TYPE = 'VALARM'
+    _TYPE = "VALARM"
     _EXTRACTORS: List[Extractor] = []
     _OUTPUTS: List[Callable] = []
 
-    def __init__(self,
-                 trigger: Union[timedelta, datetime] = None,
-                 repeat: int = None,
-                 duration: timedelta = None) -> None:
+    def __init__(
+        self,
+        trigger: Union[timedelta, datetime] = None,
+        repeat: int = None,
+        duration: timedelta = None,
+    ) -> None:
         """
         Instantiates a new :class:`ics.alarm.BaseAlarm`.
 
@@ -55,7 +57,9 @@ class BaseAlarm(Component, metaclass=ABCMeta):
 
         # XOR repeat and duration
         if (repeat is None) ^ (duration is None):
-            raise ValueError('If either repeat or duration is specified, both must be specified')
+            raise ValueError(
+                "If either repeat or duration is specified, both must be specified"
+            )
 
         if repeat:
             self.repeat = repeat
@@ -63,7 +67,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         if duration:
             self.duration = duration
 
-        self.extra = Container(name='VALARM')
+        self.extra = Container(name="VALARM")
 
     @property
     def trigger(self) -> Optional[Union[timedelta, datetime]]:
@@ -78,7 +82,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     @trigger.setter
     def trigger(self, value: Optional[Union[timedelta, datetime]]) -> None:
         if isinstance(value, timedelta) and value.total_seconds() < 0:
-            raise ValueError('Trigger timespan must be positive')
+            raise ValueError("Trigger timespan must be positive")
         elif isinstance(value, datetime):
             value = get_arrow(value)
 
@@ -96,7 +100,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     @repeat.setter
     def repeat(self, value: Optional[int]) -> None:
         if value is not None and value < 0:
-            raise ValueError('Repeat must be great than or equal to 0.')
+            raise ValueError("Repeat must be great than or equal to 0.")
 
         self._repeat = value
 
@@ -112,7 +116,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     @duration.setter
     def duration(self, value: Optional[timedelta]) -> None:
         if value is not None and value.total_seconds() < 0:
-            raise ValueError('Alarm duration timespan must be positive.')
+            raise ValueError("Alarm duration timespan must be positive.")
 
         self._duration = value
 
@@ -121,14 +125,14 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     def action(self):
         """ VALARM action to be implemented by concrete classes
         """
-        raise NotImplementedError('Base class cannot be instantiated directly')
+        raise NotImplementedError("Base class cannot be instantiated directly")
 
     def __repr__(self):
-        value = '{0} trigger:{1}'.format(type(self).__name__, self.trigger)
+        value = "{0} trigger:{1}".format(type(self).__name__, self.trigger)
         if self.repeat:
-            value += ' repeat:{0} duration:{1}'.format(self.repeat, self.duration)
+            value += " repeat:{0} duration:{1}".format(self.repeat, self.duration)
 
-        return '<{0}>'.format(value)
+        return "<{0}>".format(value)
 
     def __hash__(self) -> int:
         return hash(repr(self))
@@ -139,10 +143,12 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     def __eq__(self, other) -> bool:
         """Two alarms are considered equal if they have the same type and base values."""
 
-        return (type(self) is type(other)
-                and self.trigger == other.trigger
-                and self.repeat == other.repeat
-                and self.duration == other.duration)
+        return (
+            type(self) is type(other)
+            and self.trigger == other.trigger
+            and self.repeat == other.repeat
+            and self.duration == other.duration
+        )
 
     def clone(self):
         """
@@ -156,27 +162,27 @@ class BaseAlarm(Component, metaclass=ABCMeta):
 # ------------------
 # ----- Inputs -----
 # ------------------
-@BaseAlarm._extracts('TRIGGER', required=True)
+@BaseAlarm._extracts("TRIGGER", required=True)
 def trigger(alarm, line):
-    if not line.params or 'DURATION' in line.params.get('VALUE', ''):
+    if not line.params or "DURATION" in line.params.get("VALUE", ""):
         alarm.trigger = parse_duration(line.value[1:])
     else:
         if len(line.params) > 1:
-            raise ValueError('TRIGGER has too many parameters')
+            raise ValueError("TRIGGER has too many parameters")
 
-        if 'VALUE' in line.params:
+        if "VALUE" in line.params:
             alarm.trigger = iso_to_arrow(line)
         else:
-            raise ValueError('TRIGGER has invalid parameters')
+            raise ValueError("TRIGGER has invalid parameters")
 
 
-@BaseAlarm._extracts('DURATION')
+@BaseAlarm._extracts("DURATION")
 def duration(alarm, line):
     if line:
         alarm._duration = parse_duration(line.value)
 
 
-@BaseAlarm._extracts('REPEAT')
+@BaseAlarm._extracts("REPEAT")
 def repeat(alarm, line):
     if line:
         alarm._repeat = int(line.value)
@@ -188,30 +194,34 @@ def repeat(alarm, line):
 @BaseAlarm._outputs
 def o_trigger(alarm, container):
     if not alarm.trigger:
-        raise ValueError('Alarm must have a trigger')
+        raise ValueError("Alarm must have a trigger")
 
     if type(alarm.trigger) is timedelta:
         representation = timedelta_to_duration(alarm.trigger)
-        container.append(ContentLine('TRIGGER', value='-{0}'.format(representation)))
+        container.append(ContentLine("TRIGGER", value="-{0}".format(representation)))
     else:
-        container.append(ContentLine('TRIGGER',
-                                     params={'VALUE': ['DATE-TIME']},
-                                     value=arrow_to_iso(alarm.trigger)))
+        container.append(
+            ContentLine(
+                "TRIGGER",
+                params={"VALUE": ["DATE-TIME"]},
+                value=arrow_to_iso(alarm.trigger),
+            )
+        )
 
 
 @BaseAlarm._outputs
 def o_duration(alarm, container):
     if alarm.duration:
         representation = timedelta_to_duration(alarm.duration)
-        container.append(ContentLine('DURATION', value=representation))
+        container.append(ContentLine("DURATION", value=representation))
 
 
 @BaseAlarm._outputs
 def o_repeat(alarm, container):
     if alarm.repeat:
-        container.append(ContentLine('REPEAT', value=alarm.repeat))
+        container.append(ContentLine("REPEAT", value=alarm.repeat))
 
 
 @BaseAlarm._outputs
 def o_action(alarm, container):
-    container.append(ContentLine('ACTION', value=alarm.action))
+    container.append(ContentLine("ACTION", value=alarm.action))

@@ -6,11 +6,11 @@ from ics.utils import get_lines
 
 
 def get_type_from_action(action_type):
-    if action_type == 'DISPLAY':
+    if action_type == "DISPLAY":
         return DisplayAlarm
-    elif action_type == 'AUDIO':
+    elif action_type == "AUDIO":
         return AudioAlarm
-    elif action_type == 'NONE':
+    elif action_type == "NONE":
         return NoneAlarm
     # elif action_type == 'EMAIL':
     #     return EmailAlarm
@@ -21,9 +21,9 @@ def get_type_from_action(action_type):
 
 
 def get_type_from_container(container):
-    action_type_lines = get_lines(container, 'ACTION')
+    action_type_lines = get_lines(container, "ACTION")
     if len(action_type_lines) > 1:
-        raise ValueError('Too many ACTION parameters in VALARM')
+        raise ValueError("Too many ACTION parameters in VALARM")
 
     action_type = action_type_lines[0]
     return get_type_from_action(action_type.value)

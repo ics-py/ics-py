@@ -3,6 +3,8 @@ import copy
 from ics.alarm.base import BaseAlarm
 from ics.parse import ContentLine
 from ics.utils import escape_string, unescape_string
+from typing import Union
+from datetime import datetime, timedelta
 
 
 class DisplayAlarm(BaseAlarm):
@@ -14,41 +16,29 @@ class DisplayAlarm(BaseAlarm):
     _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
     _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
 
-    def __init__(self,
-                 description=None,
-                 **kwargs):
-        """
-        Instantiates a new :class:`ics.alarm.DisplayAlarm`.
+    def __init__(
+        self,
+        trigger: Union[timedelta, datetime] = None,
+        repeat: int = None,
+        duration: timedelta = None,
+        display_text: str = None,
+    ):
 
-        Adheres to RFC5545 VALARM standard: http://icalendar.org/iCalendar-RFC-5545/3-6-6-alarm-component.html
+        super().__init__(trigger, repeat, duration)
 
-        Args:
-            description (string) : RFC5545 DESCRIPTION property
-            kwargs (dict) : Args to :func:`ics.alarm.Alarm.__init__`
-        """
-        super(DisplayAlarm, self).__init__(**kwargs)
-        self.description = description
+        self.display_text = display_text
 
     @property
     def action(self):
-        return 'DISPLAY'
-
-    def __repr__(self):
-        value = '{0} trigger:{1}'.format(type(self).__name__, self.trigger)
-        if self.repeat:
-            value += ' repeat:{0} duration:{1}'.format(self.repeat, self.duration)
-
-        value += ' description:{0}'.format(self.description)
-
-        return '<{0}>'.format(value)
+        return "DISPLAY"
 
 
 # ------------------
 # ----- Inputs -----
 # ------------------
-@DisplayAlarm._extracts('DESCRIPTION', required=True)
+@DisplayAlarm._extracts("DESCRIPTION", required=True)
 def description(alarm, line):
-    alarm.description = unescape_string(line.value) if line else None
+    alarm.display_text = unescape_string(line.value) if line else None
 
 
 # -------------------
@@ -56,4 +46,6 @@ def description(alarm, line):
 # -------------------
 @DisplayAlarm._outputs
 def o_description(alarm, container):
-    container.append(ContentLine('DESCRIPTION', value=escape_string(alarm.description or '')))
+    container.append(
+        ContentLine("DESCRIPTION", value=escape_string(alarm.display_text or ""))
+    )
