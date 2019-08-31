@@ -7,6 +7,7 @@ import copy
 from datetime import datetime, timedelta
 from typing import Callable, List, Optional, Union
 from abc import ABCMeta, abstractmethod
+import warnings
 
 from ics.component import Component, Extractor
 from ics.utils import (
@@ -56,9 +57,9 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         self.trigger = trigger
 
         # XOR repeat and duration
-        if (repeat is None) ^ (duration is None):
+        if (repeat is not None) and (duration is None):
             raise ValueError(
-                "If either repeat or duration is specified, both must be specified"
+                "A definition of an alarm with a repeating trigger MUST include both the DURATION and REPEAT properties."
             )
 
         if repeat:
@@ -75,7 +76,6 @@ class BaseAlarm(Component, metaclass=ABCMeta):
 
         | Returns either a timedelta or datetime object
         | Timedelta must have positive total_seconds()
-        | Datetime object is also allowed.
         """
         return self._trigger
 
@@ -164,16 +164,12 @@ class BaseAlarm(Component, metaclass=ABCMeta):
 # ------------------
 @BaseAlarm._extracts("TRIGGER", required=True)
 def trigger(alarm, line):
-    if not line.params or "DURATION" in line.params.get("VALUE", ""):
+    if line.params.get("VALUE", [""])[0] == "DATE-TIME":
+        alarm.trigger = iso_to_arrow(line)
+    elif line.params.get("VALUE", ["DURATION"])[0] == "DURATION":
         alarm.trigger = parse_duration(line.value[1:])
     else:
-        if len(line.params) > 1:
-            raise ValueError("TRIGGER has too many parameters")
-
-        if "VALUE" in line.params:
-            alarm.trigger = iso_to_arrow(line)
-        else:
-            raise ValueError("TRIGGER has invalid parameters")
+        warnings.warn("ics.py encountered a TRIGGER of unknown type '%s'. It has been ignored." % line.params["VALUE"][0])
 
 
 @BaseAlarm._extracts("DURATION")
