@@ -118,7 +118,9 @@ def parse_duration(line: str) -> timedelta:
     """
     Return a timedelta object from a string in the DURATION property format
     """
-    DAYS, SECS = {'D': 1, 'W': 7}, {'S': 1, 'M': 60, 'H': 3600}
+    DAYS = {'D': 1, 'W': 7}
+    SECS = {'S': 1, 'M': 60, 'H': 3600}
+
     sign, i = 1, 0
     if line[i] in '-+':
         if line[i] == '-':

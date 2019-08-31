@@ -167,7 +167,7 @@ def trigger(alarm, line):
     if line.params.get("VALUE", [""])[0] == "DATE-TIME":
         alarm.trigger = iso_to_arrow(line)
     elif line.params.get("VALUE", ["DURATION"])[0] == "DURATION":
-        alarm.trigger = parse_duration(line.value[1:])
+        alarm.trigger = parse_duration(line.value)
     else:
         warnings.warn("ics.py encountered a TRIGGER of unknown type '%s'. It has been ignored." % line.params["VALUE"][0])
 
