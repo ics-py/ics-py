@@ -16,6 +16,8 @@ Major changes:
    regexes and string splitting.
  - The previously private `._unused` is now renamed to public `.extra` and
    becomes documented.
+ - The Alarms have been deeply refactored (see the docs for more detail) and
+   many bugs have been fixed.
 
 Minor changes:
  - Add mypy
