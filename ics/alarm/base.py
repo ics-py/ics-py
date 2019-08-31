@@ -6,6 +6,7 @@ from __future__ import unicode_literals, absolute_import
 import copy
 from datetime import datetime, timedelta
 from typing import Callable, List, Optional, Union
+from abc import ABCMeta, abstractmethod
 
 from ics.component import Component, Extractor
 from ics.utils import (
@@ -18,7 +19,7 @@ from ics.utils import (
 from ics.parse import ContentLine, Container
 
 
-class BaseAlarm(Component):
+class BaseAlarm(Component, metaclass=ABCMeta):
     """
     A calendar event VALARM base class
     """
@@ -116,6 +117,7 @@ class BaseAlarm(Component):
         self._duration = value
 
     @property
+    @abstractmethod
     def action(self):
         """ VALARM action to be implemented by concrete classes
         """
