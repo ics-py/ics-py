@@ -1,4 +1,5 @@
 from ics.alarm.audio import AudioAlarm
+from ics.alarm.audio import NoneAlarm
 from ics.alarm.display import DisplayAlarm
 from ics.utils import get_lines
 
@@ -8,6 +9,8 @@ def get_type_from_action(action_type):
         return DisplayAlarm
     elif action_type == 'AUDIO':
         return AudioAlarm
+    elif action_type == 'NONE':
+        return NoneAlarm
     # elif action_type == 'EMAIL':
     #     return EmailAlarm
     # elif action_type == 'PROCEDURE':
