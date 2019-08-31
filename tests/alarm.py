@@ -4,11 +4,13 @@ from datetime import datetime, timedelta
 import arrow
 
 from ics.alarm.base import BaseAlarm
+from ics.alarm.none import NoneAlarm
+from ics.alarm.custom import CustomAlarm
 from ics.alarm import AudioAlarm, DisplayAlarm
 from ics.icalendar import Calendar
 from ics.parse import ContentLine
 
-from .fixture import cal21, cal22, cal23, cal24, cal25
+from .fixture import cal21, cal22, cal23, cal24, cal25, cal34, cal35
 
 CRLF = "\r\n"
 
@@ -197,3 +199,15 @@ class TestAudioAlarm(unittest.TestCase):
         self.assertIn("FMTTYPE", a.sound.params.keys())
         self.assertEqual(1, len(a.sound.params["FMTTYPE"]))
         self.assertEqual("audio/basic", a.sound.params["FMTTYPE"][0])
+
+
+def test_none():
+    c = Calendar(cal34)
+    a = next(iter(c.events)).alarms[0]
+    assert isinstance(a, NoneAlarm)
+
+
+def test_custom():
+    c = Calendar(cal35)
+    a = next(iter(c.events)).alarms[0]
+    assert isinstance(a, CustomAlarm)

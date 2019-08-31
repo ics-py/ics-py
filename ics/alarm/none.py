@@ -10,3 +10,7 @@ class NoneAlarm(BaseAlarm):
     # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
     _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
     _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
+
+    @property
+    def action(self):
+        return "NONE"

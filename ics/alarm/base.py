@@ -131,9 +131,6 @@ class BaseAlarm(Component, metaclass=ABCMeta):
 
         return "<{0}>".format(value)
 
-    def __hash__(self) -> int:
-        return hash(repr(self))
-
     def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
