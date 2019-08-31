@@ -1,5 +1,6 @@
 from ics.alarm.audio import AudioAlarm
-from ics.alarm.audio import NoneAlarm
+from ics.alarm.none import NoneAlarm
+from ics.alarm.custom import CustomAlarm
 from ics.alarm.display import DisplayAlarm
 from ics.utils import get_lines
 
@@ -16,7 +17,7 @@ def get_type_from_action(action_type):
     # elif action_type == 'PROCEDURE':
     #     return ProcedureAlarm
     else:
-        raise ValueError('Invalid alarm action')
+        return CustomAlarm
 
 
 def get_type_from_container(container):
