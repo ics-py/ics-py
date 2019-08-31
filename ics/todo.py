@@ -87,7 +87,7 @@ class Todo(Component):
         self.priority = priority
         self.name = name
         self.url = url
-        self.alarms: List[Alarm] = list()
+        self.alarms: List[BaseAlarm] = list()
         self.extra = Container(name='VTODO')
 
         if duration and due:

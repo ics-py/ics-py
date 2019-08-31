@@ -102,7 +102,7 @@ class Event(Component):
         self.location: Optional[str] = location
         self.url: Optional[str] = url
         self.transparent: Optional[bool] = transparent
-        self.alarms: List[Alarm] = list()
+        self.alarms: List[BaseAlarm] = list()
         self.attendees: Set[Attendee] = set()
         self.categories: Set[str] = set()
         self.geo = geo
