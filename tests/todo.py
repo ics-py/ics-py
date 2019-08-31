@@ -39,9 +39,7 @@ class TestTodo(unittest.TestCase):
         dtstamp = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         completed = dtstamp + timedelta(days=1)
         created = dtstamp + timedelta(seconds=1)
-        alarm = [DisplayAlarm]
-        alarms = set()
-        alarms.update(alarm)
+        alarms = [DisplayAlarm]
 
         t = Todo(
             uid='uid',
