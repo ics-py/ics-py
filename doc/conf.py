@@ -12,13 +12,14 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
 import os
-
-sys.path.insert(0, os.path.abspath('..'))
+import sys
 
 import ics
 from ics import __version__
+
+sys.path.insert(0, os.path.abspath('..'))
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -39,6 +40,8 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinxcontrib.napoleon',
+    'sphinx.ext.autodoc',
+    'sphinx_autodoc_typehints',
 ]
 
 autodoc_member_order = 'groupwise'

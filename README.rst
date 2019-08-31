@@ -6,9 +6,6 @@ Ics.py : iCalendar for Humans
 .. image:: https://travis-ci.org/C4ptainCrunch/ics.py.png?branch=master
    :target: https://travis-ci.org/C4ptainCrunch/ics.py
 
-.. image:: https://coveralls.io/repos/C4ptainCrunch/ics.py/badge.png
-   :target: https://coveralls.io/r/C4ptainCrunch/ics.py
-   :alt: Coverage
 
 .. image:: https://img.shields.io/github/license/c4ptaincrunch/ics.py.svg
     :target: https://pypi.python.org/pypi/ics/
@@ -21,10 +18,10 @@ iCalendar is a widely-used and useful format but not user friendly. Ics.py is th
 
 It should be able to parse every calendar that respects the `rfc5545 <http://tools.ietf.org/html/rfc5545>`_ and maybe some more… It also outputs rfc compliant calendars.
 
-iCalendar (file extension `.ics`) is used by Sunbird, Google Calendar, Apple Calendar, Android…
+iCalendar (file extension `.ics`) is used by Google Calendar, Apple Calendar, Android and many more.
 
 
-Ics.py is available for Python>=3.4 and is Apache2 Licensed.
+Ics.py is available for Python>=3.6 and is Apache2 Licensed.
 
 
 
@@ -43,7 +40,7 @@ Quickstart
     c = Calendar()
     e = Event()
     e.name = "My cool event"
-    e.begin = '20140101 00:00:00'
+    e.begin = '2014-01-01 00:00:00'
     c.events.add(e)
     c.events
     # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]

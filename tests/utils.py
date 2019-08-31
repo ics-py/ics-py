@@ -1,8 +1,9 @@
 import unittest
 from datetime import timedelta
-from ics.parse import ParseError, Container, string_to_container
-from ics.utils import parse_duration, timedelta_to_duration, remove_x, iso_to_arrow
 
+from ics.parse import Container, ParseError, string_to_container
+from ics.utils import (iso_to_arrow, parse_duration, remove_x,
+                       timedelta_to_duration)
 from tests.fixture import cal1, cal2
 
 

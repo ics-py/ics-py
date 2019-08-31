@@ -2,22 +2,77 @@
 Ics.py changelog
 ============
 
+
 **************
-0.5 (in dev)
+0.6
 **************
 
- - Drop support for Python 2.7 and 3.3.
- - Add support upto Python 3.8
- - Improve TRIGGER DURATION parsing logic
- - Fixed NONE type support for Alarms
+Major changes:
+ - Drop support for Python 3.5. Python 3.7 is now distributed in both Ubuntu LTS
+   and Debian stable, the PSF is providing only security fixes. It's time
+   to move on !
+ - Add `竜 TatSu <https://pypi.org/project/TatSu/>`_ as a dependency.
+   This enables us to have a real PEG parser and not a combination of
+   regexes and string splitting.
+ - The previously private `._unused` is now renamed to public `.extra` and
+   becomes documented.
+
+Minor changes:
+ - Add mypy
+ - Add GEO (thanks @johnnoone !)
+ - `Calendar.parse_multiple()` now accepts streams of multiple calendars.
+ - `Calendar()` does not accept iterables to be parsed anymore (only a single
+   string)
+ - Add support for classification (#177, thanks @PascalBru !)
+
+Bug fixes:
+ - Events no longer have the TRANSP property by default (Fixes #190)
+ - Fix parsing of quoted values as well as escaped semi-columns (#185 and #193)
+
+Regressions:
+ - Adding Tatsu might have made the parser significantly slower in some cases.
+
+
+**************
+0.5
+**************
+
+This is the first version to be Python 3 only.
+
+This release happens a bit more than a year after the previous one and was made to
+distribute latest changes to everyone and remove the confusion between master and PyPi.
+
+Please note that it may contain (lot of) bugs and not be fully polished.
+This is still alpha quality software!
+
+Highlights and breaking changes:
+ - Drop support for Python 2, support Python from 3.5 to 3.8
  - Upgrade arrow to 0.11 and fix internal call to arrow to specify the string
    format (thanks @muffl0n, @e-c-d and @chauffer)
+
+Additions:
+ - LAST-MODIFIED attribute support (thanks @Timic3)
+ - Support for Organizers to Events (thanks @danieltellez and kayluhb)
+ - Support for Attendees to Events (thanks @danieltellez and kayluhb)
+ - Support for Event and Todo status (thanks @johnnoone)
+
+Bug fixes:
  - Fix all-day events lasting multiple days by using a DTEND with a date and not a datetime (thanks @raspbeguy)
  - Fix off by one error on the DTEND on all day events (issues #92 and #150)
- - Adds support for Organizers to Events
- - Adds support for Attendees to Events
- - Added LAST-MODIFIED attribute support
+ - Fix SEQUENCE in VTIMEZONE error
+ - Fixed NONE type support for Alarms (thanks @zagnut007)
+
+Known issues:
+ - There are known problems with all-day events. This GitHub issue summarizes them
+   well: https://github.com/C4ptainCrunch/ics.py/issues/155. You can expect them to
+   be fixed in 0.6 but not before.
+
+Misc:
+ - Improve TRIGGER DURATION parsing logic (thanks @jessejoe)
  - Event equality now checks all fields (except uid)
+ - Alarms in Event and Todo are now consistently lists and not a mix between set() and list()
+
+Thanks also to @t00n, @aureooms, @chauffer, @seants, @davidjb, @xaratustrah, @Philiptpp
 
 **************
 0.4
@@ -28,55 +83,55 @@ Last version to support Python 2.7 and 3.3.
 This version is by far the one with the most contributors, thank you !
 
 Highlights:
-    - Todo/VTODO support (thanks @tgamauf)
-    - Add event arithmetics (thanks @guyzmo)
-    - Support for alarms/`VALARM` (thanks @rkeilty)
-    - Support for categories (thanks @perette)
+ - Todo/VTODO support (thanks @tgamauf)
+ - Add event arithmetics (thanks @guyzmo)
+ - Support for alarms/`VALARM` (thanks @rkeilty)
+ - Support for categories (thanks @perette)
 
 Misc:
-    - Make the parser work with tabbed whitespace (thanks @mrmadcow)
-    - Better error messages (thanks @guyzmo)
-    - Support input with missing `VERSION` (thanks @prashnts)
-    - Support for Time Transparency/`TRANSP` (thanks @GMLudo)
-    - All day events not omit the timezone (thanks @Trii)
-    - Multi-day events fixes (thanks @ConnyOnny)
-    - Fix `TZID` drop when `VTIMEZONE` is empty (thanks @ConnyOnny)
-    - Better test coverage (thanks @aureooms)
+ - Make the parser work with tabbed whitespace (thanks @mrmadcow)
+ - Better error messages (thanks @guyzmo)
+ - Support input with missing `VERSION` (thanks @prashnts)
+ - Support for Time Transparency/`TRANSP` (thanks @GMLudo)
+ - All day events not omit the timezone (thanks @Trii)
+ - Multi-day events fixes (thanks @ConnyOnny)
+ - Fix `TZID` drop when `VTIMEZONE` is empty (thanks @ConnyOnny)
+ - Better test coverage (thanks @aureooms)
 
 Breaking Changes:
-    - Removed EventList class
+ - Removed EventList class
 
 Thank you also to @davidjb, @etnarek, @jammon
 
 *******
 0.3.1
 *******
-    - Pin arrow to 0.4.2
+ - Pin arrow to 0.4.2
 
 *****
 0.3
 *****
-    - Events in an `EventList()` are now always sorted
-    - Freeze the version of Arrow (they made backwards-incompatible changes)
-    - Add a lot of tests
-    - Lots of small bugfixes
+ - Events in an `EventList()` are now always sorted
+ - Freeze the version of Arrow (they made backwards-incompatible changes)
+ - Add a lot of tests
+ - Lots of small bugfixes
 
 *******
 0.1.3
 *******
-	- FIX : broken install. Again.
+- FIX : broken install. Again.
 
 *******
 0.1.2
 *******
-    - FIX : broken install
+ - FIX : broken install
 
 *******
 0.1.1
 *******
-    - FIX : wrong `super()` and add output documentation
+ - FIX : wrong `super()` and add output documentation
 
 ****
 0.1
 ****
-    - First version
+ - First version

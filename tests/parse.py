@@ -1,15 +1,11 @@
 import unittest
 
-from .fixture import cal1, cal5, cal11
 from ics.event import Event
 from ics.icalendar import Calendar
-from ics.parse import (
-    ParseError,
-    ContentLine,
-    Container,
-    string_to_container,
-    lines_to_container,
-)
+from ics.parse import (Container, ContentLine, ParseError, lines_to_container,
+                       string_to_container)
+
+from .fixture import cal1, cal5, cal11
 
 
 class TestParse(unittest.TestCase):

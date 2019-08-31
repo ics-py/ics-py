@@ -1,11 +1,8 @@
-from ics.alarm.base import BaseAlarm
 import copy
 
-from ics.utils import (
-    escape_string,
-    unescape_string
-)
+from ics.alarm.base import BaseAlarm
 from ics.parse import ContentLine
+from ics.utils import escape_string, unescape_string
 
 
 class AudioAlarm(BaseAlarm):

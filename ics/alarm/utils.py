@@ -1,6 +1,5 @@
 from ics.alarm.audio import AudioAlarm
 from ics.alarm.display import DisplayAlarm
-
 from ics.utils import get_lines
 
 

@@ -1,36 +1,36 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
-from six import StringIO, string_types, text_type, integer_types
+import copy
+from typing import Callable, Dict, Iterable, List, Optional, Set, Union
 
 from dateutil.tz import tzical
-import copy
-import collections
+from six import StringIO, text_type
 
-from .component import Component
-from .timeline import Timeline
+from .component import Component, Extractor
 from .event import Event
+from .parse import Container, ContentLine, calendar_string_to_containers
+from .timeline import Timeline
 from .todo import Todo
-from .parse import (
-    lines_to_container,
-    string_to_container,
-    ContentLine,
-    Container,
-)
-from .utils import remove_x
+from .utils import remove_sequence, remove_x
 
 
 class Calendar(Component):
-
     """Represents an unique rfc5545 iCalendar."""
 
     _TYPE = 'VCALENDAR'
-    _EXTRACTORS = []
-    _OUTPUTS = []
+    _EXTRACTORS: List[Extractor] = []
+    _OUTPUTS: List[Callable] = []
 
-    def __init__(self, imports=None, events=None, todos=None, creator=None):
+    def __init__(
+        self,
+        imports: Union[str, Container] = None,
+        events: Iterable[Event] = None,
+        todos: Iterable[Todo] = None,
+        creator: str = None
+    ) -> None:
         """Instantiates a new Calendar.
 
         Args:
@@ -43,29 +43,25 @@ class Calendar(Component):
         """
         # TODO : implement a file-descriptor import and a filename import
 
-        self._timezones = {}
-        self.events = set()
-        self.todos = set()
-        self._unused = Container(name='VCALENDAR')
+        self._timezones: Dict = {} # FIXME mypy
+        self.events: Set[Event] = set()
+        self.todos: Set[Todo] = set()
+        self.extra = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
 
         self.timeline = Timeline(self)
 
         if imports is not None:
-            if isinstance(imports, string_types):
-                container = string_to_container(imports)
-            elif isinstance(imports, collections.abc.Iterable):
-                container = lines_to_container(imports)
+            if isinstance(imports, Container):
+                self._populate(imports)
             else:
-                raise TypeError("Expecting a sequence or a string")
+                containers = calendar_string_to_containers(imports)
+                if len(containers) != 1:
+                    raise NotImplementedError(
+                        'Multiple calendars in one file are not supported by this method. Use ics.Calendar.parse_multiple()')
 
-            # TODO : make a better API for multiple calendars
-            if len(container) != 1:
-                raise NotImplementedError(
-                    'Multiple calendars in one file are not supported')
-
-            self._populate(container[0])  # Use first calendar
+                self._populate(containers[0])  # Use first calendar
         else:
             if events is not None:
                 self.events.update(set(events))
@@ -73,14 +69,23 @@ class Calendar(Component):
                 self.todos.update(set(todos))
             self._creator = creator
 
-    def __repr__(self):
+    @classmethod
+    def parse_multiple(cls, string):
+        """"
+        Parses an input string that may contain mutiple calendars
+        and retruns a list of :class:`ics.event.Calendar`
+        """
+        containers = calendar_string_to_containers(string)
+        return [cls(imports=c) for c in containers]
+
+    def __repr__(self) -> str:
         return "<Calendar with {} event{} and {} todo{}>" \
             .format(len(self.events),
                     "s" if len(self.events) > 1 else "",
                     len(self.todos),
                     "s" if len(self.todos) > 1 else "")
 
-    def __iter__(self):
+    def __iter__(self) -> Iterable[str]:
         """Returns:
         iterable: an iterable version of __str__, line per line
         (with line-endings).
@@ -95,19 +100,20 @@ class Calendar(Component):
             l = line + '\n'
             yield l
 
-    def __eq__(self, other):
-
-        for attr in ('_unused', 'scale', 'method', 'creator'):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Calendar):
+            raise NotImplementedError
+        for attr in ('extra', 'scale', 'method', 'creator'):
             if self.__getattribute__(attr) != other.__getattribute__(attr):
                 return False
 
         return (self.events == other.events) and (self.todos == other.todos)
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
 
     @property
-    def creator(self):
+    def creator(self) -> Optional[str]:
         """Get or set the calendar's creator.
 
         |  Will return a string.
@@ -118,7 +124,7 @@ class Calendar(Component):
         return self._creator
 
     @creator.setter
-    def creator(self, value):
+    def creator(self, value: Optional[str]) -> None:
         if not isinstance(value, text_type):
             raise ValueError('Event.creator must be unicode data not {}'.format(type(value)))
         self._creator = value
@@ -129,7 +135,7 @@ class Calendar(Component):
             Calendar: an exact deep copy of self
         """
         clone = copy.copy(self)
-        clone._unused = clone._unused.clone()
+        clone.extra = clone.extra.clone()
         clone.events = copy.copy(self.events)
         clone.todos = copy.copy(self.todos)
         clone._timezones = copy.copy(self._timezones)
@@ -188,6 +194,7 @@ def timezone(calendar, vtimezones):
     """
     for vtimezone in vtimezones:
         remove_x(vtimezone)  # Remove non standard lines from the block
+        remove_sequence(vtimezone)  # Remove SEQUENCE lines because tzical does not understand them
         fake_file = StringIO()
         fake_file.write(str(vtimezone))  # Represent the block as a string
         fake_file.seek(0)

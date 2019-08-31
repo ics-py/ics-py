@@ -1,13 +1,19 @@
 import unittest
-import pytest
-from datetime import datetime, timedelta as td, datetime as dt
+from datetime import datetime as dt
+from datetime import timedelta as td
+
 import arrow
+import pytest
+
 from ics.attendee import Attendee
-from ics.organizer import Organizer
 from ics.event import Event
 from ics.icalendar import Calendar
+from ics.organizer import Organizer
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal20, cal32
+
+from .fixture import (cal12, cal13, cal15, cal16, cal17, cal18, cal19,
+                      cal19bis, cal20, cal32, cal33_1, cal33_2, cal33_3,
+                      cal33_4, cal33_5, cal34)
 
 CRLF = "\r\n"
 
@@ -27,24 +33,16 @@ class TestEvent(unittest.TestCase):
         self.assertTrue(f > e)
         self.assertTrue(f >= e)
 
-    def test_or(self):
-        g = Event(begin=0, end=10) | Event(begin=10, end=20)
-        self.assertEqual(g, (None, None))
-
-        g = Event(begin=0, end=20) | Event(begin=10, end=30)
-        self.assertEqual(tuple(map(lambda x: x.timestamp, g)), (10, 20))
-
-        g = Event(begin=0, end=20) | Event(begin=5, end=15)
-        self.assertEqual(tuple(map(lambda x: x.timestamp, g)), (5, 15))
-
-        g = Event() | Event()
-        self.assertEqual(g, (None, None))
-
     def test_event_with_duration(self):
         c = Calendar(cal12)
         e = next(iter(c.events))
         self.assertEqual(e._duration, td(1, 3600))
         self.assertEqual(e.end - e.begin, td(1, 3600))
+
+    def test_event_with_geo(self):
+        c = Calendar(cal12)
+        e = list(c.events)[0]
+        self.assertEqual(e.geo, (40.779897,-73.968565))
 
     def test_not_duration_and_end(self):
         with self.assertRaises(ValueError):
@@ -55,6 +53,11 @@ class TestEvent(unittest.TestCase):
         lines = str(e).splitlines()
         self.assertIn('DTSTART:19700101T000000Z', lines)
         self.assertIn('DURATION:P1DT23S', lines)
+
+    def test_geo_output(self):
+        e = Event(geo=(40.779897, -73.968565))
+        lines = str(e).splitlines()
+        self.assertIn('GEO:40.779897;-73.968565', lines)
 
     def test_make_all_day(self):
         e = Event(begin=0, end=20)
@@ -130,8 +133,9 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.created, None)
         self.assertEqual(e.last_modified, None)
         self.assertEqual(e.location, None)
+        self.assertEqual(e.geo, None)
         self.assertEqual(e.url, None)
-        self.assertEqual(e._unused, Container(name='VEVENT'))
+        self.assertEqual(e.extra, Container(name='VEVENT'))
         self.assertEqual(e.status, None)
         self.assertEqual(e.organizer, None)
 
@@ -167,6 +171,16 @@ class TestEvent(unittest.TestCase):
         e5.duration = {'days': 6, 'hours': 2}
         self.assertEqual(e5.end, arrow.get("1993-05-30T02:00"))
         self.assertEqual(e5.duration, td(hours=146))
+
+    def test_geo(self):
+        e = Event()
+        self.assertIsNone(e.geo)
+
+        e1 = Event(geo=(40.779897, -73.968565))
+        self.assertEqual(e1.geo, (40.779897, -73.968565))
+
+        e2 = Event(geo={'latitude': 40.779897, 'longitude': -73.968565})
+        self.assertEqual(e2.geo, (40.779897, -73.968565))
 
     def test_attendee(self):
         a = Attendee(email='email@email.com')
@@ -280,7 +294,6 @@ class TestEvent(unittest.TestCase):
                 "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
                 "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
                 "LOCATION:Here\\; too",
-                "TRANSP:OPAQUE",
                 "UID:empty-uid",
                 "END:VEVENT"))
         self.assertEqual(str(e), eq)
@@ -361,21 +374,27 @@ class TestEvent(unittest.TestCase):
 
     def test_transparent_input(self):
         c = Calendar(cal19)
-        e = next(iter(c.events))
-        self.assertEqual(e.transparent, False)
+        e1 = list(c.events)[0]
+        self.assertEqual(e1.transparent, False)
 
-    def test_transparent_output(self):
-        TRANSPARENT = True
-        e = Event(name="Name", transparent=TRANSPARENT)
-        self.assertIn("TRANSP:TRANSPARENT", str(e).splitlines())
+        c2 = Calendar(cal19bis)
+        e2 = list(c2.events)[0]
+        self.assertEqual(e2.transparent, True)
 
     def test_default_transparent_input(self):
         c = Calendar(cal18)
         e = next(iter(c.events))
-        self.assertEqual(e.transparent, False)
+        self.assertEqual(e.transparent, None)
 
     def test_default_transparent_output(self):
         e = Event(name="Name")
+        self.assertNotIn("TRANSP:OPAQUE", str(e).splitlines())
+
+    def test_transparent_output(self):
+        e = Event(name="Name", transparent=True)
+        self.assertIn("TRANSP:TRANSPARENT", str(e).splitlines())
+
+        e = Event(name="Name", transparent=False)
         self.assertIn("TRANSP:OPAQUE", str(e).splitlines())
 
     def test_includes_disjoined(self):
@@ -483,6 +502,54 @@ class TestEvent(unittest.TestCase):
 
         assert e.begin == arrow.get('2016-10-04')
         assert e.end == arrow.get('2016-10-05')
+
+    def test_classification_input(self):
+        c = Calendar(cal12)
+        e = next(iter(c.events))
+        self.assertEqual(None, e.classification)
+
+        c = Calendar(cal33_1)
+        e = next(iter(c.events))
+        self.assertEqual('PUBLIC', e.classification)
+
+        c = Calendar(cal33_2)
+        e = next(iter(c.events))
+        self.assertEqual('PRIVATE', e.classification)
+
+        c = Calendar(cal33_3)
+        e = next(iter(c.events))
+        self.assertEqual('CONFIDENTIAL', e.classification)
+
+        c = Calendar(cal33_4)
+        e = next(iter(c.events))
+        self.assertEqual('iana-token', e.classification)
+
+        c = Calendar(cal33_5)
+        e = next(iter(c.events))
+        self.assertEqual('x-name', e.classification)
+
+    def test_classification_output(self):
+        e = Event(name="Name")
+        self.assertNotIn("CLASS:PUBLIC", str(e).splitlines())
+
+        e = Event(name="Name", classification='PUBLIC')
+        self.assertIn("CLASS:PUBLIC", str(e).splitlines())
+
+        e = Event(name="Name", classification='PRIVATE')
+        self.assertIn("CLASS:PRIVATE", str(e).splitlines())
+
+        e = Event(name="Name", classification='CONFIDENTIAL')
+        self.assertIn("CLASS:CONFIDENTIAL", str(e).splitlines())
+
+        e = Event(name="Name", classification='iana-token')
+        self.assertIn("CLASS:iana-token", str(e).splitlines())
+
+        e = Event(name="Name", classification='x-name')
+        self.assertIn("CLASS:x-name", str(e).splitlines())
+
+    def test_classification_bool(self):
+        with pytest.raises(ValueError):
+            Event(name="Name", classification=True)
 
     def test_last_modified(self):
         c = Calendar(cal18)

@@ -1,15 +1,14 @@
 import unittest
+from datetime import datetime, timedelta, timezone
+
 import arrow
-from datetime import datetime, timedelta
 
-from datetime import timezone
-
-from ics.parse import Container
 from ics.alarm.display import DisplayAlarm
 from ics.icalendar import Calendar
-from .fixture import cal27, cal28, cal29, cal30, cal31
-
+from ics.parse import Container
 from ics.todo import Todo
+
+from .fixture import cal27, cal28, cal29, cal30, cal31
 
 utc = timezone.utc
 
@@ -32,7 +31,7 @@ class TestTodo(unittest.TestCase):
         self.assertIsNone(t.name)
         self.assertIsNone(t.url)
         self.assertIsNone(t.status)
-        self.assertEqual(t._unused, Container(name='VTODO'))
+        self.assertEqual(t.extra, Container(name='VTODO'))
 
     def test_init_non_exclusive_arguments(self):
         # attributes percent, priority, begin, due, and duration
@@ -53,7 +52,7 @@ class TestTodo(unittest.TestCase):
             location='location',
             name='name',
             url='url',
-            alarms=alarm)
+            alarms=alarms)
 
         self.assertEqual(t.uid, 'uid')
         self.assertEqual(t.dtstamp, arrow.get(dtstamp))
@@ -63,7 +62,7 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t.location, 'location')
         self.assertEqual(t.name, 'name')
         self.assertEqual(t.url, 'url')
-        self.assertSetEqual(t.alarms, alarms)
+        self.assertEqual(t.alarms, alarms)
 
     def test_percent(self):
         t1 = Todo(percent=0)

@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import copy
-from datetime import timedelta
+from datetime import datetime, timedelta
+from typing import Callable, List, Optional, Type, Union
 
-from ics.component import Component
-from ics.utils import (
-    arrow_to_iso,
-    get_arrow,
-    iso_to_arrow,
-    parse_duration,
-    timedelta_to_duration,
-)
-from ics.parse import ContentLine, Container
+from ics.parse import Container, ContentLine
+
+from ..component import Component, Extractor
+from .utils import (arrow_to_iso, get_arrow, iso_to_arrow, parse_duration,
+                    timedelta_to_duration)
 
 
 class BaseAlarm(Component):
@@ -23,13 +20,13 @@ class BaseAlarm(Component):
     """
 
     _TYPE = 'VALARM'
-    _EXTRACTORS = []
-    _OUTPUTS = []
+    _EXTRACTORS: List[Extractor] = []
+    _OUTPUTS: List[Callable] = []
 
     def __init__(self,
-                 trigger=None,
-                 repeat=None,
-                 duration=None):
+                 trigger: Union[timedelta, datetime] = None,
+                 repeat: int = None,
+                 duration: timedelta = None) -> None:
         """
         Instantiates a new :class:`ics.alarm.BaseAlarm`.
 
@@ -44,9 +41,9 @@ class BaseAlarm(Component):
             ValueError: If trigger, repeat, or duration do not match the RFC spec.
         """
         # Set initial values
-        self._trigger = None
-        self._repeat = None
-        self._duration = None
+        self._trigger: Optional[Union[timedelta, datetime]] = None
+        self._repeat: Optional[int] = None
+        self._duration: Optional[timedelta] = None
 
         # Validate and parse
         self.trigger = trigger
@@ -61,10 +58,10 @@ class BaseAlarm(Component):
         if duration:
             self.duration = duration
 
-        self._unused = Container(name='VALARM')
+        self.extra = Container(name='VALARM')
 
     @property
-    def trigger(self):
+    def trigger(self) -> Optional[Union[timedelta, datetime]]:
         """The trigger condition for the alarm
 
         | Returns either a timedelta or datetime object
@@ -74,16 +71,16 @@ class BaseAlarm(Component):
         return self._trigger
 
     @trigger.setter
-    def trigger(self, value):
-        if type(value) is timedelta and value.total_seconds() < 0:
+    def trigger(self, value: Optional[Union[timedelta, datetime]]) -> None:
+        if isinstance(value, timedelta) and value.total_seconds() < 0:
             raise ValueError('Trigger timespan must be positive')
-        elif type(value) is not timedelta:
+        elif isinstance(value, datetime):
             value = get_arrow(value)
 
         self._trigger = value
 
     @property
-    def repeat(self):
+    def repeat(self) -> Optional[int]:
         """Number of times to repeat alarm
 
         | Returns an integer for number of alarm repeats
@@ -92,14 +89,14 @@ class BaseAlarm(Component):
         return self._repeat
 
     @repeat.setter
-    def repeat(self, value):
-        if value < 0:
+    def repeat(self, value: Optional[int]) -> None:
+        if value is not None and value < 0:
             raise ValueError('Repeat must be great than or equal to 0.')
 
         self._repeat = value
 
     @property
-    def duration(self):
+    def duration(self) -> Optional[timedelta]:
         """Duration between alarm repeats
 
         | Returns a timedelta object
@@ -108,8 +105,8 @@ class BaseAlarm(Component):
         return self._duration
 
     @duration.setter
-    def duration(self, value):
-        if value.total_seconds() < 0:
+    def duration(self, value: Optional[timedelta]) -> None:
+        if value is not None and value.total_seconds() < 0:
             raise ValueError('Alarm duration timespan must be positive.')
 
         self._duration = value
@@ -127,10 +124,13 @@ class BaseAlarm(Component):
 
         return '<{0}>'.format(value)
 
-    def __ne__(self, other):
+    def __hash__(self) -> int:
+        return hash(repr(self))
+
+    def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Two alarms are considered equal if they have the same type and base values."""
 
         return (type(self) is type(other)
@@ -143,8 +143,36 @@ class BaseAlarm(Component):
         Returns:
             Alarm: an exact copy of self"""
         clone = copy.copy(self)
-        clone._unused = clone._unused.clone()
+        clone.extra = clone.extra.clone()
         return clone
+
+
+class AlarmFactory(object):
+    """
+    Factory class to get specific VALARM types, useful with `ics.component.Component._from_container` method.
+    """
+
+    @classmethod
+    def get_type_from_action(cls, action_type: str) -> Type[Alarm]:
+        # TODO: Implement EMAIL action
+        if action_type == 'DISPLAY':
+            return DisplayAlarm
+        elif action_type == 'AUDIO':
+            return AudioAlarm
+        # FIXME mypy
+        # elif action_type == 'NONE':
+        #     return None
+
+        raise ValueError('Invalid alarm action')
+
+    @classmethod
+    def get_type_from_container(cls, container: Container) -> Type[Alarm]:
+        action_type_lines = get_lines(container, 'ACTION')
+        if len(action_type_lines) > 1:
+            raise ValueError('Too many ACTION parameters in VALARM')
+
+        action_type = action_type_lines[0]
+        return AlarmFactory.get_type_from_action(action_type.value)
 
 
 # ------------------

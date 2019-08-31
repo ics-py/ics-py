@@ -1,21 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
+
 import heapq
+from typing import Iterator
 
-from six import StringIO, string_types, text_type, integer_types
-
-from arrow.arrow import Arrow
 import arrow
+from arrow.arrow import Arrow
+from six import StringIO, integer_types, string_types, text_type
 
-from .utils import get_arrow
 from .event import Event
+from .utils import get_arrow
 
 
 class Timeline(object):
 
-    def __init__(self, calendar):
+    def __init__(self, calendar) -> None:
         """Instanciates a new Timeline.
         (You should not have to instanciate a new timeline by yourself)
 
@@ -24,7 +25,7 @@ class Timeline(object):
         """
         self._calendar = calendar
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Event]:
         """Iterates on every event from the :class:`ics.icalendar.Calendar` in chronological order
 
         Note :
@@ -39,7 +40,7 @@ class Timeline(object):
         while heap:
             yield heapq.heappop(heap)
 
-    def included(self, start, stop):
+    def included(self, start: Arrow, stop: Arrow) -> Iterator[Event]:
         """Iterates (in chronological order) over every event that is included
         in the timespan between `start` and `stop`
 
@@ -52,7 +53,7 @@ class Timeline(object):
             and start <= event.end <= stop): # and stop is between the bonds
                 yield event
 
-    def overlapping(self, start, stop):
+    def overlapping(self, start: Arrow, stop: Arrow) -> Iterator[Event]:
         """Iterates (in chronological order) over every event that has an intersection
         with the timespan between `start` and `stop`
 
@@ -66,7 +67,7 @@ class Timeline(object):
             or event.begin <= start and event.end >= stop): # or event is a superset of [start,stop]
                 yield event
 
-    def start_after(self, instant):
+    def start_after(self, instant: Arrow) -> Iterator[Event]:
         """Iterates (in chronological order) on every event from the :class:`ics.icalendar.Calendar` in chronological order.
         The first event of the iteration has a starting date greater (later) than `instant`
 
@@ -77,7 +78,7 @@ class Timeline(object):
             if event.begin > instant:
                 yield event
 
-    def at(self, instant):
+    def at(self, instant: Arrow) -> Iterator[Event]:
         """Iterates (in chronological order) over all events that are occuring during `instant`.
 
         Args:
@@ -88,7 +89,7 @@ class Timeline(object):
             if event.begin <= instant <= event.end:
                 yield event
 
-    def on(self, day, strict=False):
+    def on(self, day: Arrow, strict: bool = False) -> Iterator[Event]:
         """Iterates (in chronological order) over all events that occurs on `day`
 
         Args:
@@ -102,7 +103,7 @@ class Timeline(object):
         else:
             return self.overlapping(day_start, day_stop)
 
-    def today(self, strict=False):
+    def today(self, day: Arrow, strict: bool = False) -> Iterator[Event]:
         """Iterates (in chronological order) over all events that occurs today
 
         Args:
@@ -111,7 +112,7 @@ class Timeline(object):
         """
         return self.on(arrow.now(), strict=strict)
 
-    def now(self):
+    def now(self) -> Iterator[Event]:
         """Iterates (in chronological order) over all events that occurs now
         """
         return self.at(arrow.now())

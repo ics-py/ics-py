@@ -1,0 +1,31 @@
+@@grammar::contentline
+@@whitespace :: //
+
+start = contentline $ ;
+
+ALPHA = ?"[a-zA-Z]" ;
+DIGIT = ? "[0-9]" ;
+CRLF = "\r\n" ;
+WSP = " ";
+
+DQUOTE = '"' ;
+
+QSAFE_CHAR    = WSP | ?"\x21" | ?"[\x23-\x7E]" | ?"[\u0080-\uffff]";
+SAFE_CHAR     = WSP | ?"\x21" | ?"[\x23-\x2B]" | ?"[\x2D-\x39]" | ?"[\x3C-\x7E]" | ?"[\u0080-\uffff]" ;
+VALUE_CHAR    = WSP | ?"[\x21-\x7E]" | ?"[\u0080-\uffff]";
+
+
+name          = iana_token | x_name ;
+iana_token    = {(ALPHA | DIGIT | "-")}+ ;
+x_name        = "X-" [vendorid "-"] {(ALPHA | DIGIT | "-")}+ ;
+vendorid      = (ALPHA | DIGIT) (ALPHA | DIGIT) {(ALPHA | DIGIT)}+ ;
+
+contentline   = name:name {(";" params+:param )}* ":" value:value CRLF ;
+
+param         = name:param_name "=" values+:param_value {("," values+:param_value)}* ;
+param_name    = iana_token | x_name ;
+param_value   = quoted_string | paramtext ;
+
+paramtext     = {SAFE_CHAR}* ;
+value         = {VALUE_CHAR}* ;
+quoted_string = DQUOTE @:{QSAFE_CHAR}* DQUOTE ;

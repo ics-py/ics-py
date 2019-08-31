@@ -34,6 +34,10 @@ htmlcov
 .pytest_cache
 /.pytest_cache/
 
+# IDE settings
+/.idea/
+.mypy_cache/
+
 # pffff
 .idea
 pip-selfcheck.json

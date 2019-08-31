@@ -1,27 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
-
-from six import StringIO, string_types, text_type, integer_types
+from __future__ import absolute_import, unicode_literals
 
 import warnings
 from collections import namedtuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar
 
+from .parse import Container, ContentLine
 from .utils import get_lines
-
 
 Extractor = namedtuple(
     'Extractor',
     ['function', 'type', 'required', 'multiple', 'default']
 )
 
+# FIXME Any should be Self + Union[List[ContentLine], ContentLine]
+ExtractorT = TypeVar('ExtractorT', bound=Callable[[Any, Any], None])
+OutputT = TypeVar('OutputT', bound=Callable[[Any, Container], None]) # FIXME Any should be Self
+
 
 class Component(object):
     _TYPE = "ABSTRACT"
+    _EXTRACTORS: List[Extractor]
+    _OUTPUTS: List[Callable]
+
+    _classmethod_args: Tuple
+    _classmethod_kwargs: Dict
 
     @classmethod
-    def _from_container(cls, container, *args, **kwargs):
+    def _from_container(cls, container: Container, *args: Any, **kwargs: Any):
         if cls._TYPE == "ABSTRACT":
             raise NotImplementedError('Abstract class, cannot instantiate.')
 
@@ -32,7 +40,7 @@ class Component(object):
 
         return k
 
-    def _populate(self, container):
+    def _populate(self, container: Container) -> None:
         if container.name != self._TYPE:
             raise ValueError("container isn't an {}".format(self._TYPE))
 
@@ -63,10 +71,13 @@ class Component(object):
                 else:
                     extractor.function(self, None)  # Send None
 
-        self._unused = container  # Store unused lines
+        self.extra = container  # Store unused lines
 
     @classmethod
-    def _extracts(cls, line_type, required=False, multiple=False, default=False):
+    def _extracts(
+        cls, line_type: str, required: bool = False,
+        multiple: bool = False, default: Optional[List[ContentLine]] = None
+    ) -> Callable[[ExtractorT], ExtractorT]:
         def decorator(fn):
             extractor = Extractor(
                 function=fn,
@@ -79,13 +90,13 @@ class Component(object):
         return decorator
 
     @classmethod
-    def _outputs(cls, fn):
+    def _outputs(cls, fn: OutputT) -> OutputT:
         cls._OUTPUTS.append(fn)
         return fn
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns the component in an iCalendar format."""
-        container = self._unused.clone()
+        container = self.extra.clone()
         for output in self._OUTPUTS:
             output(self, container)
         return str(container)

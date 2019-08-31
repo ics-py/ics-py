@@ -1,7 +1,8 @@
-import arrow
 import unittest
-
 from datetime import datetime, timedelta
+
+import arrow
+
 from ics.alarm import AudioAlarm, DisplayAlarm
 from ics.icalendar import Calendar
 
@@ -125,7 +126,9 @@ class TestDisplayAlarm(unittest.TestCase):
 
     def test_alarm_without_repeat_extraction(self):
         c = Calendar(cal21)
-        a = next(iter(c.events)).alarms[0]
+        e = next(iter(c.events))
+        assert isinstance(e.alarms, list)
+        a = e.alarms[0]
         self.assertEqual(a.trigger, timedelta(hours=1))
         self.assertIsNone(a.repeat)
         self.assertIsNone(a.duration)

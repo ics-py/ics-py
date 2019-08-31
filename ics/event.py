@@ -1,27 +1,31 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import copy
 import re
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
+from typing import (Callable, Dict, Iterable, List, NamedTuple, Optional, Set,
+                    Tuple, Union)
 
+from arrow import Arrow
+
+from .alarm import Alarm, AlarmFactory
 from .alarm.utils import get_type_from_container
-from .component import Component
-from .utils import (
-    parse_duration,
-    timedelta_to_duration,
-    iso_to_arrow,
-    iso_precision,
-    get_arrow,
-    arrow_to_iso,
-    arrow_date_to_iso,
-    uid_gen,
-    unescape_string,
-    escape_string,
-)
-from .parse import ContentLine, Container
+from .attendee import Attendee
+from .component import Component, Extractor
+from .organizer import Organizer
+from .parse import Container, ContentLine
+from .types import ArrowLike
+from .utils import (arrow_date_to_iso, arrow_to_iso, escape_string, get_arrow,
+                    iso_precision, iso_to_arrow, parse_duration,
+                    timedelta_to_duration, uid_gen, unescape_string)
+
+
+class Geo(NamedTuple):
+    latitude: float
+    longitude: float
 
 
 class Event(Component):
@@ -31,71 +35,78 @@ class Event(Component):
     Can be full-day or between two instants.
     Can be defined by a beginning instant and
     a duration *or* end instant.
+
+    Unsupported event attributes can be found in `event.extra`,
+    a :class:`ics.parse.Container`. You may add some by appending a
+    :class:`ics.parse.ContentLine` to `.extra`
     """
 
     _TYPE = "VEVENT"
-    _EXTRACTORS = []
-    _OUTPUTS = []
+    _EXTRACTORS: List[Extractor] = []
+    _OUTPUTS: List[Callable] = []
 
     def __init__(self,
-                 name=None,
-                 begin=None,
-                 end=None,
-                 duration=None,
-                 uid=None,
-                 description=None,
-                 created=None,
-                 last_modified=None,
-                 location=None,
-                 url=None,
-                 transparent=False,
-                 alarms=None,
-                 attendees=None,
-                 categories=None,
-                 status=None,
-                 organizer=None,
-                 ):
-
+                 name: str = None,
+                 begin: ArrowLike = None,
+                 end: ArrowLike = None,
+                 duration: timedelta = None,
+                 uid: str = None,
+                 description: str = None,
+                 created: ArrowLike = None,
+                 last_modified: ArrowLike = None,
+                 location: str = None,
+                 url: str = None,
+                 transparent: bool = None,
+                 alarms: Iterable[Alarm] = None,
+                 attendees: Iterable[Attendee] = None,
+                 categories: Iterable[str] = None,
+                 status: str = None,
+                 organizer: Organizer = None,
+                 geo=None,
+                 classification: str = None,
+                 ) -> None:
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
-            name (string) : rfc5545 SUMMARY property
+            name: rfc5545 SUMMARY property
             begin (Arrow-compatible)
             end (Arrow-compatible)
-            duration (datetime.timedelta)
-            uid (string): must be unique
-            description (string)
+            duration
+            uid: must be unique
+            description
             created (Arrow-compatible)
             last_modified (Arrow-compatible)
-            location (string)
-            url (string)
-            transparent (Boolean)
-            alarms (:class:`ics.alarm.Alarm`)
-            attendees (:class:`ics.attendee.Attendee`)
-            categories (set of string)
-            status (string)
-            organizer (:class:`ics.organizer.Organizer`)
+            location
+            url
+            transparent
+            alarms
+            attendees
+            categories
+            status
+            organizer
+            classification
 
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
         """
 
-        self._duration = None
-        self._end_time = None
-        self._begin = None
+        self._duration: Optional[timedelta] = None
+        self._end_time: Optional[ArrowLike] = None
+        self._begin: Optional[ArrowLike] = None
         self._begin_precision = None
-        self.organizer = None
-        self.uid = uid_gen() if not uid else uid
-        self.description = description
-        self.created = get_arrow(created)
-        self.last_modified = get_arrow(last_modified)
-        self.location = location
-        self.url = url
-        self.transparent = transparent
-        self.alarms = set()
-        self.attendees = set()
-        self.categories = set()
-        self._unused = Container(name='VEVENT')
+        self.organizer: Optional[str] = None
+        self.uid: str = uid_gen() if not uid else uid
+        self.description: Optional[str] = description
+        self.created: Optional[ArrowLike] = get_arrow(created)
+        self.last_modified: Optional[ArrowLike] = get_arrow(last_modified)
+        self.location: Optional[str] = location
+        self.url: Optional[str] = url
+        self.transparent: Optional[bool] = transparent
+        self.alarms: List[Alarm] = list()
+        self.attendees: Set[Attendee] = set()
+        self.categories: Set[str] = set()
+        self.geo = geo
+        self.extra = Container(name='VEVENT')
 
         self.name = name
         self.begin = begin
@@ -110,8 +121,9 @@ class Event(Component):
             self.duration = duration
 
         if alarms is not None:
-            self.alarms.update(set(alarms))
+            self.alarms = list(alarms)
         self.status = status
+        self.classification = classification
 
         if categories is not None:
             self.categories.update(set(categories))
@@ -119,20 +131,20 @@ class Event(Component):
         if attendees is not None:
             self.attendees.update(set(attendees))
 
-    def has_end(self):
+    def has_end(self) -> bool:
         """
         Return:
             bool: self has an end
         """
         return bool(self._end_time or self._duration)
 
-    def add_attendee(self, attendee):
+    def add_attendee(self, attendee: Attendee):
         """ Add an attendee to the attendees set
         """
         self.attendees.add(attendee)
 
     @property
-    def begin(self):
+    def begin(self) -> Arrow:
         """Get or set the beginning of the event.
 
         |  Will return an :class:`Arrow` object.
@@ -143,7 +155,7 @@ class Event(Component):
         return self._begin
 
     @begin.setter
-    def begin(self, value):
+    def begin(self, value: ArrowLike):
         value = get_arrow(value)
         if value and self._end_time and value > self._end_time:
             raise ValueError('Begin must be before end')
@@ -151,7 +163,7 @@ class Event(Component):
         self._begin_precision = 'second'
 
     @property
-    def end(self):
+    def end(self) -> Arrow:
         """Get or set the end of the event.
 
         |  Will return an :class:`Arrow` object.
@@ -181,7 +193,7 @@ class Event(Component):
             return None
 
     @end.setter
-    def end(self, value):
+    def end(self, value: ArrowLike):
         value = get_arrow(value)
         if value and self._begin and value < self._begin:
             raise ValueError('End must be after begin')
@@ -191,7 +203,7 @@ class Event(Component):
             self._duration = None
 
     @property
-    def duration(self):
+    def duration(self) -> Optional[timedelta]:
         """Get or set the duration of the event.
 
         |  Will return a timedelta object.
@@ -210,7 +222,7 @@ class Event(Component):
             return None
 
     @duration.setter
-    def duration(self, value):
+    def duration(self, value: timedelta):
         if isinstance(value, dict):
             value = timedelta(**value)
         elif isinstance(value, timedelta):
@@ -224,6 +236,27 @@ class Event(Component):
         self._duration = value
 
     @property
+    def geo(self) -> Optional[Geo]:
+        """Get or set the geo position of the event.
+
+        |  Will return a namedtuple object.
+        |  May be set to any Geo, tuple or dict with latitude and longitude keys.
+        |  If set to a non null value, removes any already
+            existing geo.
+        """
+        return self._geo
+
+    @geo.setter
+    def geo(self, value: Union[Dict[str, float], Tuple[float, float], Geo, None]):
+        if isinstance(value, dict):
+            latitude, longitude = value['latitude'], value['longitude']
+            value = Geo(latitude, longitude)
+        elif value is not None:
+            latitude, longitude = value
+            value = Geo(latitude, longitude)
+        self._geo = value
+
+    @property
     def all_day(self):
         """
         Return:
@@ -232,7 +265,7 @@ class Event(Component):
         # the event may have an end, also given in 'day' precision
         return self._begin_precision == 'day'
 
-    def make_all_day(self):
+    def make_all_day(self) -> None:
         """Transforms self to an all-day event.
 
         The event will span all the days from the begin to the end day.
@@ -256,21 +289,35 @@ class Event(Component):
         self._begin_precision = 'day'
 
     @property
-    def status(self):
+    def status(self) -> Optional[str]:
         return self._status
 
     @status.setter
-    def status(self, value):
+    def status(self, value: Optional[str]):
         if isinstance(value, str):
             value = value.upper()
         statuses = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
         if value not in statuses:
-            raise ValueError('status must be one of %s' % statuses)
+            raise ValueError('status must be one of %s' % ", ".join([repr(x) for x in statuses]))
         self._status = value
 
-    def __repr__(self):
+    @property
+    def classification(self):
+        return self._classification
+
+    @classification.setter
+    def classification(self, value):
+        if value is not None:
+            if not isinstance(value, str):
+                raise ValueError('classification must be a str')
+            self._classification = value
+        else:
+            self._classification = None
+
+    def __repr__(self) -> str:
         name = "'{}' ".format(self.name) if self.name else ''
         if self.all_day:
+            assert self._begin
             if not self._end_time or self._begin == self._end_time:
                 return "<all-day Event {}{}>".format(name, self.begin.strftime('%Y-%m-%d'))
             else:
@@ -280,19 +327,19 @@ class Event(Component):
         else:
             return "<Event {}begin:{} end:{}>".format(name, self.begin, self.end)
 
-    def starts_within(self, other):
+    def starts_within(self, other) -> bool:
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         return self.begin >= other.begin and self.begin <= other.end
 
-    def ends_within(self, other):
+    def ends_within(self, other) -> bool:
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
         return self.end >= other.begin and self.end <= other.end
 
-    def intersects(self, other):
+    def intersects(self, other) -> bool:
         if not isinstance(other, Event):
             raise NotImplementedError(
                 'Cannot compare Event and {}'.format(type(other)))
@@ -303,7 +350,7 @@ class Event(Component):
 
     __xor__ = intersects
 
-    def includes(self, other):
+    def includes(self, other) -> bool:
         if isinstance(other, Event):
             return other.starts_within(self) and other.ends_within(self)
         if isinstance(other, datetime):
@@ -311,7 +358,7 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def is_included_in(self, other):
+    def is_included_in(self, other) -> bool:
         if isinstance(other, Event):
             return other.includes(self)
         raise NotImplementedError(
@@ -319,7 +366,7 @@ class Event(Component):
 
     __in__ = is_included_in
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         if isinstance(other, Event):
             if self.begin is None and other.begin is None:
                 if self.name is None and other.name is None:
@@ -347,7 +394,7 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         if isinstance(other, Event):
             if self.begin is None and other.begin is None:
                 if self.name is None and other.name is None:
@@ -372,24 +419,13 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         return not self.__le__(other)
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return not self.__lt__(other)
 
-    def __or__(self, other):
-        if isinstance(other, Event):
-            begin, end = None, None
-            if self.begin and other.begin:
-                begin = max(self.begin, other.begin)
-            if self.end and other.end:
-                end = min(self.end, other.end)
-            return (begin, end) if begin and end and begin < end else (None, None)
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
-
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Event):
             return (self.name == other.name
             and self.begin == other.begin
@@ -409,7 +445,7 @@ class Event(Component):
         raise NotImplementedError(
             'Cannot compare Event and {}'.format(type(other)))
 
-    def time_equals(self, other):
+    def time_equals(self, other) -> bool:
         return (self.begin == other.begin) and (self.end == other.end)
 
     def join(self, other, *args, **kwarg):
@@ -445,12 +481,12 @@ class Event(Component):
         Returns:
             Event: an exact copy of self"""
         clone = copy.copy(self)
-        clone._unused = clone._unused.clone()
+        clone.extra = clone.extra.clone()
         clone.alarms = copy.copy(self.alarms)
         clone.categories = copy.copy(self.categories)
         return clone
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """
         Returns:
             int: hash of self. Based on self.uid."""
@@ -525,6 +561,13 @@ def location(event, line):
     event.location = unescape_string(line.value) if line else None
 
 
+@Event._extracts('GEO')
+def geo(event, line):
+    if line:
+        latitude, _, longitude = unescape_string(line.value).partition(';')
+        event.geo = float(latitude), float(longitude)
+
+
 @Event._extracts('URL')
 def url(event, line):
     event.url = unescape_string(line.value) if line else None
@@ -532,8 +575,8 @@ def url(event, line):
 
 @Event._extracts('TRANSP')
 def transparent(event, line):
-    if line:
-        event.transparent = line.value == 'TRANSPARENT'
+    if line and line.value in ['TRANSPARENT', 'OPAQUE']:
+        event.transparent = (line.value == 'TRANSPARENT')
 
 
 # TODO : make uid required ?
@@ -553,6 +596,12 @@ def alarms(event, lines):
 def status(event, line):
     if line:
         event.status = line.value
+
+
+@Event._extracts('CLASS')
+def classification(event, line):
+    if line:
+        event.classification = line.value
 
 
 @Event._extracts('CATEGORIES')
@@ -642,6 +691,12 @@ def o_location(event, container):
 
 
 @Event._outputs
+def o_geo(event, container):
+    if event.geo:
+        container.append(ContentLine('GEO', value='%f;%f' % event.geo))
+
+
+@Event._outputs
 def o_url(event, container):
     if event.url:
         container.append(ContentLine('URL', value=escape_string(event.url)))
@@ -649,6 +704,8 @@ def o_url(event, container):
 
 @Event._outputs
 def o_transparent(event, container):
+    if event.transparent is None:
+        return
     if event.transparent:
         container.append(ContentLine('TRANSP', value=escape_string('TRANSPARENT')))
     else:
@@ -675,6 +732,12 @@ def o_alarm(event, container):
 def o_status(event, container):
     if event.status:
         container.append(ContentLine('STATUS', value=event.status))
+
+
+@Event._outputs
+def o_classification(event, container):
+    if event.classification:
+        container.append(ContentLine('CLASS', value=event.classification))
 
 
 @Event._outputs
