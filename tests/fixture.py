@@ -732,7 +732,7 @@ END:VCALENDAR
 """
 
 
-cal34 = u"""
+cal35 = u"""
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Apple Inc.//Mac OS X 10.9//EN
@@ -746,7 +746,7 @@ END:VEVENT
 END:VCALENDAR
 """
 
-cal35 = u"""
+cal36 = u"""
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Apple Inc.//Mac OS X 10.9//EN

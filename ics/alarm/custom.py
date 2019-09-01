@@ -27,3 +27,10 @@ class CustomAlarm(BaseAlarm):
     @property
     def action(self):
         return self._action
+
+
+@CustomAlarm._extracts("ACTION")
+def action(alarm, line, required=True):
+    print(line)
+    if line:
+        alarm._action = line.value

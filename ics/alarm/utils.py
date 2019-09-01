@@ -20,7 +20,7 @@ def get_type_from_action(action_type):
 
 
 def get_type_from_container(container):
-    action_type_lines = get_lines(container, "ACTION")
+    action_type_lines = get_lines(container, "ACTION", keep=True)
     if len(action_type_lines) > 1:
         raise ValueError("Too many ACTION parameters in VALARM")
 

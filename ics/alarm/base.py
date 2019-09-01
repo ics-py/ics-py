@@ -5,7 +5,7 @@ from __future__ import unicode_literals, absolute_import
 
 import copy
 from datetime import datetime, timedelta
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Union, Any
 from abc import ABCMeta, abstractmethod
 import warnings
 
@@ -16,6 +16,7 @@ from ics.utils import (
     iso_to_arrow,
     parse_duration,
     timedelta_to_duration,
+    get_lines
 )
 from ics.parse import ContentLine, Container
 
@@ -69,6 +70,12 @@ class BaseAlarm(Component, metaclass=ABCMeta):
             self.duration = duration
 
         self.extra = Container(name="VALARM")
+
+    @classmethod
+    def _from_container(cls, container: Container, *args: Any, **kwargs: Any):
+        ret = super()._from_container(container, *args, **kwargs)
+        get_lines(ret.extra, "ACTION", keep=False)  # Just drop the ACTION line
+        return ret
 
     @property
     def trigger(self) -> Optional[Union[timedelta, datetime]]:

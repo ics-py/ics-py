@@ -104,13 +104,14 @@ def iso_precision(string: str) -> str:
         return 'day'
 
 
-def get_lines(container: Container, name: str) -> List[ContentLine]:
+def get_lines(container: Container, name: str, keep: bool = False) -> List[ContentLine]:
     lines = []
     for i in reversed(range(len(container))):
         item = container[i]
         if item.name == name:
             lines.append(item)
-            del container[i]
+            if not keep:
+                del container[i]
     return lines
 
 

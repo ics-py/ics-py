@@ -10,7 +10,7 @@ from ics.alarm import AudioAlarm, DisplayAlarm
 from ics.icalendar import Calendar
 from ics.parse import ContentLine
 
-from .fixture import cal21, cal22, cal23, cal24, cal25, cal34, cal35
+from .fixture import cal21, cal22, cal23, cal24, cal25, cal35, cal36
 
 CRLF = "\r\n"
 
@@ -202,12 +202,13 @@ class TestAudioAlarm(unittest.TestCase):
 
 
 def test_none():
-    c = Calendar(cal34)
+    c = Calendar(cal35)
     a = next(iter(c.events)).alarms[0]
     assert isinstance(a, NoneAlarm)
 
 
 def test_custom():
-    c = Calendar(cal35)
+    c = Calendar(cal36)
     a = next(iter(c.events)).alarms[0]
     assert isinstance(a, CustomAlarm)
+    assert a.action == "YOLO"
