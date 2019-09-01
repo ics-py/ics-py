@@ -212,3 +212,9 @@ def test_custom():
     a = next(iter(c.events)).alarms[0]
     assert isinstance(a, CustomAlarm)
     assert a.action == "YOLO"
+
+
+def test_custom_back_forth():
+    c = Calendar(cal36)
+    c1 = Calendar(str(c))
+    assert c == c1
