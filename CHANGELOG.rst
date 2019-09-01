@@ -24,6 +24,7 @@ Minor changes:
  - `Calendar()` does not accept iterables to be parsed anymore (only a single
    string)
  - Add support for classification (#177, thanks @PascalBru !)
+ - Support arrow up to <0.15
 
 Bug fixes:
  - Events no longer have the TRANSP property by default (Fixes #190)
