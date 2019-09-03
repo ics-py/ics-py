@@ -1,29 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
-from typing import Iterable, Union, Set, Dict, List, Callable, Optional
+from __future__ import absolute_import, unicode_literals
 
-
-from six.moves import map
+import copy
+from datetime import datetime, timedelta
+from typing import Callable, Dict, Iterable, List, Optional, Set, Union
 
 import arrow
-import copy
-from datetime import timedelta, datetime
+from six.moves import map
 
-from .alarm import AlarmFactory, Alarm
+from .alarm.base import BaseAlarm
+from .alarm.utils import get_type_from_container
 from .component import Component, Extractor
-from .utils import (
-    parse_duration,
-    timedelta_to_duration,
-    iso_to_arrow,
-    get_arrow,
-    arrow_to_iso,
-    uid_gen,
-    unescape_string,
-    escape_string,
-)
-from .parse import ContentLine, Container
+from .parse import Container, ContentLine
+from .utils import (arrow_to_iso, escape_string, get_arrow, iso_to_arrow,
+                    parse_duration, timedelta_to_duration, uid_gen,
+                    unescape_string)
 
 
 class Todo(Component):
@@ -52,7 +45,7 @@ class Todo(Component):
                  url: str = None,
                  due=None,
                  duration: timedelta = None,
-                 alarms: Iterable[Alarm] = None,
+                 alarms: Iterable[BaseAlarm] = None,
                  status: str = None):
         """Instantiates a new :class:`ics.todo.Todo`.
 
@@ -94,7 +87,7 @@ class Todo(Component):
         self.priority = priority
         self.name = name
         self.url = url
-        self.alarms: List[Alarm] = list()
+        self.alarms: List[BaseAlarm] = list()
         self.extra = Container(name='VTODO')
 
         if duration and due:
@@ -441,11 +434,7 @@ def duration(todo: Todo, line: ContentLine):
 
 @Todo._extracts('VALARM', multiple=True)
 def alarms(todo: Todo, lines: List[ContentLine]):
-    def alarm_factory(x):
-        af = AlarmFactory.get_type_from_container(x)
-        return af._from_container(x)
-
-    todo.alarms = list(map(alarm_factory, lines))
+    todo.alarms = [get_type_from_container(x)._from_container(x) for x in lines]
 
 
 @Todo._extracts('STATUS')

@@ -1,11 +1,11 @@
 import unittest
 from collections.abc import Iterable
+
 import arrow
 
-from ics.parse import Container
-
-from ics.icalendar import Calendar
 from ics.event import Event
+from ics.icalendar import Calendar
+from ics.parse import Container
 from ics.todo import Todo
 
 from .fixture import cal1, cal2, cal10, cal12, cal14, cal34

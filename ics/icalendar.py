@@ -1,25 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
-from six import StringIO, text_type
-from typing import Iterable, Union, Set, Dict, List, Callable
+import copy
+from typing import Callable, Dict, Iterable, List, Optional, Set, Union
 
 from dateutil.tz import tzical
-import copy
+from six import StringIO, text_type
 
 from .component import Component, Extractor
-from .timeline import Timeline
 from .event import Event
+from .parse import Container, ContentLine, calendar_string_to_containers
+from .timeline import Timeline
 from .todo import Todo
-from .parse import (
-    ContentLine,
-    Container,
-    calendar_string_to_containers
-)
-from .utils import remove_x, remove_sequence
-from typing import Optional
+from .utils import remove_sequence, remove_x
 
 
 class Calendar(Component):

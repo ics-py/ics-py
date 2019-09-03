@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Any, Dict
+
 from .parse import ContentLine
-from typing import Dict, Any
 
 
 class Organizer(object):

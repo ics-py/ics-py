@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
-from setuptools import setup
-from setuptools.command.test import test as TestCommand
 import sys
 
-from ics.__meta__ import __version__, __title__, __license__, __author__
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
+
+from ics.__meta__ import __author__, __license__, __title__, __version__
 
 with open("requirements.txt") as f:
     install_requires = [line for line in f if line and line[0] not in "#-"]

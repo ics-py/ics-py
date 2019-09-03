@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
-from typing import List, Dict, Tuple, Any, Callable, Optional, TypeVar
+from __future__ import absolute_import, unicode_literals
+
 import warnings
 from collections import namedtuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar
 
-from .utils import get_lines
 from .parse import Container, ContentLine
-
+from .utils import get_lines
 
 Extractor = namedtuple(
     'Extractor',

@@ -1,9 +1,11 @@
-import unittest
-from ics.icalendar import Calendar
-from ics.component import Component
-from ics.parse import Container, ContentLine
-from .fixture import cal2
 import copy
+import unittest
+
+from ics.component import Component
+from ics.icalendar import Calendar
+from ics.parse import Container, ContentLine
+
+from .fixture import cal2
 
 fix1 = "BEGIN:BASETEST\r\nATTR:FOOBAR\r\nEND:BASETEST"
 

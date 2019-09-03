@@ -1,4 +1,5 @@
 from ics.icalendar import Calendar
+
 from .fixture import cal32
 
 

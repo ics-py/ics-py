@@ -1,33 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
-from typing import Iterable, Union, Set, Dict, List, Callable, Optional, Tuple
-from arrow import Arrow
-from .types import ArrowLike
 import copy
-from typing import NamedTuple
 import re
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
+from typing import (Callable, Dict, Iterable, List, NamedTuple, Optional, Set,
+                    Tuple, Union)
 
-from .alarm import AlarmFactory, Alarm
+from arrow import Arrow
+
+from .alarm.base import BaseAlarm
+from .alarm.utils import get_type_from_container
 from .attendee import Attendee
-from .organizer import Organizer
 from .component import Component, Extractor
-from .utils import (
-    parse_duration,
-    timedelta_to_duration,
-    iso_to_arrow,
-    iso_precision,
-    get_arrow,
-    arrow_to_iso,
-    arrow_date_to_iso,
-    uid_gen,
-    unescape_string,
-    escape_string,
-)
-from .parse import ContentLine, Container
+from .organizer import Organizer
+from .parse import Container, ContentLine
+from .types import ArrowLike
+from .utils import (arrow_date_to_iso, arrow_to_iso, escape_string, get_arrow,
+                    iso_precision, iso_to_arrow, parse_duration,
+                    timedelta_to_duration, uid_gen, unescape_string)
 
 
 class Geo(NamedTuple):
@@ -64,7 +57,7 @@ class Event(Component):
                  location: str = None,
                  url: str = None,
                  transparent: bool = None,
-                 alarms: Iterable[Alarm] = None,
+                 alarms: Iterable[BaseAlarm] = None,
                  attendees: Iterable[Attendee] = None,
                  categories: Iterable[str] = None,
                  status: str = None,
@@ -109,7 +102,7 @@ class Event(Component):
         self.location: Optional[str] = location
         self.url: Optional[str] = url
         self.transparent: Optional[bool] = transparent
-        self.alarms: List[Alarm] = list()
+        self.alarms: List[BaseAlarm] = list()
         self.attendees: Set[Attendee] = set()
         self.categories: Set[str] = set()
         self.geo = geo
@@ -596,11 +589,7 @@ def uid(event, line):
 
 @Event._extracts('VALARM', multiple=True)
 def alarms(event, lines):
-    def alarm_factory(x):
-        af = AlarmFactory.get_type_from_container(x)
-        if af is not None:
-            return af._from_container(x)
-    event.alarms = list(map(alarm_factory, lines))
+    event.alarms = [get_type_from_container(x)._from_container(x) for x in lines]
 
 
 @Event._extracts('STATUS')

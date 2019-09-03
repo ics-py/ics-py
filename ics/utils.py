@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
-from arrow.arrow import Arrow
-from datetime import timedelta
-
-from uuid import uuid4
-from dateutil.tz import gettz
-import arrow
 import re
-from typing import Dict, Optional, List, Union, Tuple
-from .parse import Container, ContentLine
+from datetime import timedelta
+from typing import Dict, List, Optional, Tuple, Union
+from uuid import uuid4
+
+import arrow
+from arrow.arrow import Arrow
+from dateutil.tz import gettz
 
 from . import parse
+from .parse import Container, ContentLine
 
 tzutc = arrow.utcnow().tzinfo
 
@@ -104,13 +104,14 @@ def iso_precision(string: str) -> str:
         return 'day'
 
 
-def get_lines(container: Container, name: str) -> List[ContentLine]:
+def get_lines(container: Container, name: str, keep: bool = False) -> List[ContentLine]:
     lines = []
     for i in reversed(range(len(container))):
         item = container[i]
         if item.name == name:
             lines.append(item)
-            del container[i]
+            if not keep:
+                del container[i]
     return lines
 
 
@@ -118,14 +119,16 @@ def parse_duration(line: str) -> timedelta:
     """
     Return a timedelta object from a string in the DURATION property format
     """
-    DAYS, SECS = {'D': 1, 'W': 7}, {'S': 1, 'M': 60, 'H': 3600}
+    DAYS = {'D': 1, 'W': 7}
+    SECS = {'S': 1, 'M': 60, 'H': 3600}
+
     sign, i = 1, 0
     if line[i] in '-+':
         if line[i] == '-':
             sign = -1
         i += 1
     if line[i] != 'P':
-        raise parse.ParseError()
+        raise parse.ParseError("Error while parsing %s" % line)
     i += 1
     days, secs = 0, 0
     while i < len(line):
@@ -137,7 +140,7 @@ def parse_duration(line: str) -> timedelta:
         while line[j].isdigit():
             j += 1
         if i == j:
-            raise parse.ParseError()
+            raise parse.ParseError("Error while parsing %s" % line)
         val = int(line[i:j])
         if line[j] in DAYS:
             days += val * DAYS[line[j]]
@@ -146,7 +149,7 @@ def parse_duration(line: str) -> timedelta:
             secs += val * SECS[line[j]]
             SECS.pop(line[j])
         else:
-            raise parse.ParseError()
+            raise parse.ParseError("Error while parsing %s" % line)
         i = j + 1
     return timedelta(sign * days, sign * secs)
 
@@ -156,24 +159,32 @@ def timedelta_to_duration(dt: timedelta) -> str:
     Return a string according to the DURATION property format
     from a timedelta object
     """
-    days, secs = dt.days, dt.seconds
+    ONE_DAY_IN_SECS = 3600 * 24
+    total = abs(int(dt.total_seconds()))
+    days = total // ONE_DAY_IN_SECS
+    seconds = total % ONE_DAY_IN_SECS
+
     res = 'P'
     if days // 7:
         res += str(days // 7) + 'W'
         days %= 7
     if days:
         res += str(days) + 'D'
-    if secs:
+    if seconds:
         res += 'T'
-        if secs // 3600:
-            res += str(secs // 3600) + 'H'
-            secs %= 3600
-        if secs // 60:
-            res += str(secs // 60) + 'M'
-            secs %= 60
-        if secs:
-            res += str(secs) + 'S'
-    return res
+        if seconds // 3600:
+            res += str(seconds // 3600) + 'H'
+            seconds %= 3600
+        if seconds // 60:
+            res += str(seconds // 60) + 'M'
+            seconds %= 60
+        if seconds:
+            res += str(seconds) + 'S'
+
+    if dt.total_seconds() >= 0:
+        return res
+    else:
+        return "-%s" % res
 
 
 def get_arrow(value: Union[None, Arrow, Tuple, Dict]) -> Arrow:

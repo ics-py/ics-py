@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
-from pathlib import Path
+from __future__ import absolute_import, unicode_literals
 
 import collections
+from pathlib import Path
+
 import tatsu
 
 CRLF = '\r\n'

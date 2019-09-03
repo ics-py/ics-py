@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
+
 import heapq
-
-from six import StringIO, string_types, text_type, integer_types
-
-from arrow.arrow import Arrow
-import arrow
-
-from .utils import get_arrow
-from .event import Event
 from typing import Iterator
+
+import arrow
+from arrow.arrow import Arrow
+from six import StringIO, integer_types, string_types, text_type
+
+from .event import Event
+from .utils import get_arrow
 
 
 class Timeline(object):

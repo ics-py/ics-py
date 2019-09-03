@@ -1,15 +1,14 @@
 import unittest
+from datetime import datetime, timedelta, timezone
+
 import arrow
-from datetime import datetime, timedelta
 
-from datetime import timezone
-
-from ics.parse import Container
-from ics.alarm import AlarmFactory
+from ics.alarm.display import DisplayAlarm
 from ics.icalendar import Calendar
-from .fixture import cal27, cal28, cal29, cal30, cal31
-
+from ics.parse import Container
 from ics.todo import Todo
+
+from .fixture import cal27, cal28, cal29, cal30, cal31
 
 utc = timezone.utc
 
@@ -40,7 +39,7 @@ class TestTodo(unittest.TestCase):
         dtstamp = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         completed = dtstamp + timedelta(days=1)
         created = dtstamp + timedelta(seconds=1)
-        alarms = [AlarmFactory().get_type_from_action('DISPLAY')]
+        alarms = [DisplayAlarm]
 
         t = Todo(
             uid='uid',
@@ -358,7 +357,7 @@ class TestTodo(unittest.TestCase):
                               "URL:https://www.example.com/cal.php/todo.ics",
                               "DURATION:PT10M",
                               "BEGIN:VALARM",
-                              "TRIGGER:-PT1H",
+                              "TRIGGER:PT1H",
                               "ACTION:DISPLAY",
                               "DESCRIPTION:Event reminder",
                               "END:VALARM",

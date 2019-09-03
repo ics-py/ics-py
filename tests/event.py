@@ -1,14 +1,19 @@
 import unittest
-import pytest
-from datetime import datetime, timedelta as td, datetime as dt
+from datetime import datetime as dt
+from datetime import timedelta as td
+
 import arrow
+import pytest
+
 from ics.attendee import Attendee
-from ics.organizer import Organizer
 from ics.event import Event
 from ics.icalendar import Calendar
+from ics.organizer import Organizer
 from ics.parse import Container
-from .fixture import cal12, cal13, cal15, cal16, cal17, cal18, cal19, cal19bis, cal20, cal32,\
-    cal33_1, cal33_2, cal33_3, cal33_4, cal33_5, cal34
+
+from .fixture import (cal12, cal13, cal15, cal16, cal17, cal18, cal19,
+                      cal19bis, cal20, cal32, cal33_1, cal33_2, cal33_3,
+                      cal33_4, cal33_5, cal34)
 
 CRLF = "\r\n"
 
@@ -235,17 +240,17 @@ class TestEvent(unittest.TestCase):
         self.assertFalse(Event(name="b") < Event(name="b"))
 
     def test_cmp_by_start_time(self):
-        ev1 = Event(begin=datetime(2018, 6, 29, 6))
-        ev2 = Event(begin=datetime(2018, 6, 29, 7))
+        ev1 = Event(begin=dt(2018, 6, 29, 6))
+        ev2 = Event(begin=dt(2018, 6, 29, 7))
         self.assertLess(ev1, ev2)
         self.assertGreaterEqual(ev2, ev1)
         self.assertLessEqual(ev1, ev2)
         self.assertGreater(ev2, ev1)
 
     def test_cmp_by_start_time_with_end_time(self):
-        ev1 = Event(begin=datetime(2018, 6, 29, 5), end=datetime(2018, 6, 29, 7))
-        ev2 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 8))
-        ev3 = Event(begin=datetime(2018, 6, 29, 6))
+        ev1 = Event(begin=dt(2018, 6, 29, 5), end=dt(2018, 6, 29, 7))
+        ev2 = Event(begin=dt(2018, 6, 29, 6), end=dt(2018, 6, 29, 8))
+        ev3 = Event(begin=dt(2018, 6, 29, 6))
         self.assertLess(ev1, ev2)
         self.assertGreaterEqual(ev2, ev1)
         self.assertLessEqual(ev1, ev2)
@@ -256,8 +261,8 @@ class TestEvent(unittest.TestCase):
         self.assertGreater(ev2, ev3)
 
     def test_cmp_by_end_time(self):
-        ev1 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 7))
-        ev2 = Event(begin=datetime(2018, 6, 29, 6), end=datetime(2018, 6, 29, 8))
+        ev1 = Event(begin=dt(2018, 6, 29, 6), end=dt(2018, 6, 29, 7))
+        ev2 = Event(begin=dt(2018, 6, 29, 6), end=dt(2018, 6, 29, 8))
         self.assertLess(ev1, ev2)
         self.assertGreaterEqual(ev2, ev1)
         self.assertLessEqual(ev1, ev2)
@@ -553,7 +558,7 @@ class TestEvent(unittest.TestCase):
         assert e.last_modified == arrow.get('2015-11-13 00:48:09')
 
     def equality(self):
-        ev1 = Event(begin=datetime(2018, 6, 29, 5), end=datetime(2018, 6, 29, 7), name="my name")
+        ev1 = Event(begin=dt(2018, 6, 29, 5), end=dt(2018, 6, 29, 7), name="my name")
         ev2 = ev1.clone()
 
         assert ev1 == ev2
