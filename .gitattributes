@@ -1,0 +1,3 @@
+# Specify filepatterns you want to assign special attributes.
+CHANGELOG.rst merge=union
+AUTHORS.rst merge=union
