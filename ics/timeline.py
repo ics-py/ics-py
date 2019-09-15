@@ -3,10 +3,8 @@ from typing import Iterator
 
 import arrow
 from arrow.arrow import Arrow
-from six import StringIO, integer_types, string_types, text_type
 
 from .event import Event
-from .utils import get_arrow
 
 
 class Timeline(object):

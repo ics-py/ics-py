@@ -1,6 +1,6 @@
 import copy
 from datetime import datetime, timedelta
-from typing import Callable, Dict, Iterable, List, Optional, Set, Union
+from typing import Callable, Iterable, List, Optional
 
 import arrow
 from six.moves import map
