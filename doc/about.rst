@@ -3,15 +3,10 @@ About
 
 .. include:: ../AUTHORS.rst
 
-.. _`apache2`:
-
 License
 -------
 
-``ics.py`` is under the Apache 2 software license.
-
-.. include:: ../LICENSE.rst
-
+``ics.py`` is under the :ref:`Apache 2 software license <apache2>`.
 
 Inspiration
 -----------
