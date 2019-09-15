@@ -29,14 +29,13 @@ class Calendar(Component):
         """Instantiates a new Calendar.
 
         Args:
-            imports (string or list of lines/strings): data to be imported into the Calendar(),
+            imports (string): data to be imported into the Calendar,
             events (set of Event): :class:`ics.event.Event`s to be added to the calendar
             todos (set of Todo): :class:`ics.event.Todo`s to be added to the calendar
             creator (string): uid of the creator program.
 
         If `imports` is specified, every other argument will be ignored.
         """
-        # TODO : implement a file-descriptor import and a filename import
 
         self._timezones: Dict = {} # FIXME mypy
         self.events: Set[Event] = set()
@@ -92,8 +91,7 @@ class Calendar(Component):
             >>> open('my.ics', 'w').writelines(c)
         """
         for line in str(self).split('\n'):
-            l = line + '\n'
-            yield l
+            yield line + '\n'
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Calendar):

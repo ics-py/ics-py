@@ -38,7 +38,6 @@ class TestCalendar(unittest.TestCase):
             self.assertEqual(str(d), str(e))
 
     def test_repr(self):
-        # TODO : more cases
         c = Calendar()
         self.assertEqual(c.__repr__(), '<Calendar with 0 event and 0 todo>')
 
@@ -59,7 +58,6 @@ class TestCalendar(unittest.TestCase):
             self.assertSequenceEqual(s.split('\n'), list(i_with_no_lr))
 
     def test_eq(self):
-        # TODO : better equality check
         c0, c1 = Calendar(), Calendar()
         e = Event()
 

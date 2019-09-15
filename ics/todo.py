@@ -346,7 +346,6 @@ def dtstamp(todo: Todo, line: ContentLine):
         todo.dtstamp = iso_to_arrow(line, tz_dict)
 
 
-# TODO : add option somewhere to ignore some errors
 @Todo._extracts('UID', required=True)
 def uid(todo: Todo, line: ContentLine):
     if line:

@@ -105,7 +105,7 @@ class Event(Component):
 
         self.name = name
         self.begin = begin
-        # TODO: DRY [1]
+
         if duration and end:
             raise ValueError(
                 'Event() may not specify an end and a duration \
@@ -617,7 +617,6 @@ def o_created(event, container):
         container.append(ContentLine('DTSTAMP', value=arrow_to_iso(event.created)))
 
 
-# TODO: Should the output be equal to `created` attribute?
 @Event._outputs
 def o_last_modified(event, container):
     if event.last_modified:
@@ -643,7 +642,6 @@ def o_all_day(event, container):
 
 @Event._outputs
 def o_duration(event, container):
-    # TODO : DURATION
     if event._duration and event.begin:
         representation = timedelta_to_duration(event._duration)
         container.append(ContentLine('DURATION', value=representation))
