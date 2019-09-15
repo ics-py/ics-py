@@ -10,7 +10,7 @@ License
 
 ``ics.py`` is under the Apache 2 software license.
 
-.. include:: ../LICENSE
+.. include:: ../LICENSE.rst
 
 
 Inspiration
