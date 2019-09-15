@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, unicode_literals
-
 import re
 from datetime import timedelta
 from typing import Dict, List, Optional, Tuple, Union
