@@ -1,21 +1,17 @@
-.. ics.py documentation master file, created by
-   sphinx-quickstart on Thu Dec 26 11:05:27 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Ics.py : iCalendar for Humans
 =============================
 
 Release |version|.
 
-Ics.py is a pythonic iCalendar (rfc5545) library.
+Ics.py is a pythonic iCalendar (`rfc5545 <https://tools.ietf.org/html/rfc5545>`_) library.
 Its goals are to read and write ics data in a developer-friendly way.
 
-It is written in Python3 only (3.6, 3.7 and 3.8 supported) and is
+It is written in Python 3 (3.6, 3.7 and 3.8 supported) and is
 :ref:`Apache2 Licensed <apache2>`.
 
-iCalendar is complicated, you don't like RFCs but you want/have to use
-the ics format and you love pythonic APIs? ics.py is for you!
+The iCalendar specification is complicated, you don't like RFCs but
+you want/have to use the ics format and you love pythonic APIs?
+ics.py is for you!
 
 Quickstart
 ==========
@@ -37,8 +33,8 @@ Guide
 .. toctree::
    :maxdepth: 2
 
-   api
    installation
+   api
    about
 
 * :ref:`genindex`
