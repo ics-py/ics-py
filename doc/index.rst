@@ -28,6 +28,7 @@ Install using `pip <http://www.pip-installer.org/>`_
 
 
 .. include:: examples.rst
+   :start-line: 1
 
 
 Guide
