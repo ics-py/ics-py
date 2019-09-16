@@ -16,9 +16,7 @@ ics.py is for you!
 Quickstart
 ==========
 
-Install using `pip <http://www.pip-installer.org/>`_
-(see the :ref:`installation page <installation>` for more details).
-::
+Install using `pip <http://www.pip-installer.org/>`_.::
 
     $ pip install ics
 
@@ -27,14 +25,19 @@ Install using `pip <http://www.pip-installer.org/>`_
    :start-line: 1
 
 
-Guide
-=====
+Next steps
+==========
+
+If you want to dig a bit deeper in ics.py, we would suggest you
+to read the guide.
 
 .. toctree::
    :maxdepth: 2
 
-   installation
+   introduction
    api
+   advanced
+   misc
    about
 
 * :ref:`genindex`
