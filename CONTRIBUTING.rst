@@ -32,16 +32,16 @@ If you are adding a feature
 >>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 We will ask you to provide:
- * A few tests showing your feature works as intended (they are also great
-   examples and will prevent regressions)
- * Docstrings on the public API
- * Type annotations where possible
+
+* A few tests showing your feature works as intended (they are also great examples and will prevent regressions)
+* Docstrings on the public API
+* Type annotations where possible
 
 Last thing
 >>>>>>>>>>
 
- * Please add yourself to ``AUTHORS.rst``
- * and state your changes in ``CHANGELOG.rst``.
+* Please add yourself to ``AUTHORS.rst``
+* and state your changes in ``CHANGELOG.rst``.
 
 .. note::
   Your PR will most likely be squashed in a single commit, authored
