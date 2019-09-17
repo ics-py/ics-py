@@ -1,11 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, unicode_literals
-
 import copy
 from datetime import datetime, timedelta
-from typing import Callable, Dict, Iterable, List, Optional, Set, Union
+from typing import Callable, Iterable, List, Optional
 
 import arrow
 from six.moves import map
@@ -351,7 +346,6 @@ def dtstamp(todo: Todo, line: ContentLine):
         todo.dtstamp = iso_to_arrow(line, tz_dict)
 
 
-# TODO : add option somewhere to ignore some errors
 @Todo._extracts('UID', required=True)
 def uid(todo: Todo, line: ContentLine):
     if line:
@@ -394,12 +388,12 @@ def location(todo: Todo, line: ContentLine):
 
 @Todo._extracts('PERCENT-COMPLETE')
 def percent(todo: Todo, line: ContentLine):
-    todo.percent = line.value if line else None
+    todo.percent = int(line.value) if line else None
 
 
 @Todo._extracts('PRIORITY')
 def priority(todo: Todo, line: ContentLine):
-    todo.priority = line.value if line else None
+    todo.priority = int(line.value) if line else None
 
 
 @Todo._extracts('SUMMARY')

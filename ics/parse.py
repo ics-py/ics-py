@@ -1,10 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, unicode_literals
-
 import collections
 from pathlib import Path
+from typing import Dict, List
 
 import tatsu
 
@@ -21,12 +17,21 @@ class ParseError(Exception):
 
 
 class ContentLine:
-    """ represents one property of calendar content
+    """
+    Represents one property line.
 
-    name:   the name of the property (uppercased for consistency and
-            easier comparison)
-    params: a dict of the parameters
-    value:  its value
+    For example:
+
+    ``FOO;BAR=1:YOLO`` is represented by
+
+    ``ContentLine('FOO', {'BAR': ['1']}, 'YOLO'))``
+
+    Args:
+
+        name:   The name of the property (uppercased for consistency and
+                easier comparison)
+        params: A map name:list of values
+        value:  The value of the property
     """
 
     def __eq__(self, other):
@@ -38,7 +43,7 @@ class ContentLine:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def __init__(self, name, params={}, value=''):
+    def __init__(self, name: str, params: Dict[str, List[str]] = {}, value: str = ''):
         self.name = name.upper()
         self.params = params
         self.value = value
@@ -66,6 +71,7 @@ class ContentLine:
 
     @classmethod
     def parse(cls, line):
+        """Parse a single iCalendar-formatted line into a ContentLine"""
         try:
             ast = GRAMMAR.parse(line + CRLF)
         except tatsu.exceptions.FailedToken:
@@ -81,18 +87,22 @@ class ContentLine:
         return cls(name, params, value)
 
     def clone(self):
+        """Makes a copy of itself"""
         # dict(self.params) -> Make a copy of the dict
         return self.__class__(self.name, dict(self.params), self.value)
 
 
 class Container(list):
-    """ represents one calendar object.
+    """Represents an iCalendar object.
     Contains a list of ContentLines or Containers.
 
-    name: the name of the object (VCALENDAR, VEVENT etc.)
+    Args:
+
+        name: the name of the object (VCALENDAR, VEVENT etc.)
+        items: Containers or ContentLines
     """
 
-    def __init__(self, name, *items):
+    def __init__(self, name: str, *items: List):
         super(Container, self).__init__(items)
         self.name = name
 
@@ -124,6 +134,7 @@ class Container(list):
         return cls(name, *items)
 
     def clone(self):
+        """Makes a copy of itself"""
         c = self.__class__(self.name)
         for elem in self:
             c.append(elem.clone())

@@ -1,7 +1,10 @@
 Ics.py : iCalendar for Humans
 =============================
 
-`Original repository <https://github.com/C4ptainCrunch/ics.py>`_ (GitHub) - `Bugtracker and issues <https://github.com/C4ptainCrunch/ics.py/issues>`_ (GitHub) - `PyPi package <https://pypi.python.org/pypi/ics/>`_ (ics) - `Documentation <http://icspy.readthedocs.org/>`_ (Read The Docs).
+`Original repository <https://github.com/C4ptainCrunch/ics.py>`_ (GitHub) -
+`Bugtracker and issues <https://github.com/C4ptainCrunch/ics.py/issues>`_ (GitHub) -
+`PyPi package <https://pypi.python.org/pypi/ics/>`_ (ics) -
+`Documentation <http://icspy.readthedocs.org/>`_ (Read The Docs).
 
 .. image:: https://travis-ci.org/C4ptainCrunch/ics.py.png?branch=master
    :target: https://travis-ci.org/C4ptainCrunch/ics.py
@@ -12,13 +15,19 @@ Ics.py : iCalendar for Humans
     :alt: Apache 2 License
 
 
-Ics.py is a pythonic and easy iCalendar library. Its goals are to read and write ics data in a developer friendly way.
+Ics.py is a pythonic and easy iCalendar library.
+Its goals are to read and write ics data in a developer friendly way.
 
-iCalendar is a widely-used and useful format but not user friendly. Ics.py is there to give you the ability of creating and reading this format without any knowledge of it.
+iCalendar is a widely-used and useful format but not user friendly.
+Ics.py is there to give you the ability of creating and reading this
+format without any knowledge of it.
 
-It should be able to parse every calendar that respects the `rfc5545 <http://tools.ietf.org/html/rfc5545>`_ and maybe some more… It also outputs rfc compliant calendars.
+It should be able to parse every calendar that respects the
+`rfc5545 <http://tools.ietf.org/html/rfc5545>`_ and maybe some more…
+It also outputs rfc compliant calendars.
 
-iCalendar (file extension `.ics`) is used by Google Calendar, Apple Calendar, Android and many more.
+iCalendar (file extension `.ics`) is used by Google Calendar,
+Apple Calendar, Android and many more.
 
 
 Ics.py is available for Python>=3.6 and is Apache2 Licensed.
@@ -48,12 +57,15 @@ Quickstart
         my_file.writelines(c)
     # and it's done !
 
-More examples are available in the `documentation <http://icspy.readthedocs.org/>`_.
+More examples are available in the
+`documentation <http://icspy.readthedocs.org/>`_.
 
 Documentation
 -------------
 
-All the `documentation <http://icspy.readthedocs.org/>`_ is hosted on `readthedocs.org <http://readthedocs.org/>`_ and is updated automatically at every commit.
+All the `documentation <http://icspy.readthedocs.org/>`_ is hosted on
+`readthedocs.org <http://readthedocs.org/>`_ and is updated automatically
+at every commit.
 
 * `Quickstart <http://icspy.readthedocs.org/>`_
 * `API <http://icspy.readthedocs.org/en/latest/api.html>`_
@@ -63,7 +75,8 @@ All the `documentation <http://icspy.readthedocs.org/>`_ is hosted on `readthedo
 Contribute
 ----------
 
-Contribution are welcome of course! For more information, see `contributing <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_.
+Contribution are welcome of course! For more information, see
+`contributing <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_.
 
 
 Testing & Docs

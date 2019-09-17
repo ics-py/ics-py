@@ -34,9 +34,6 @@ Other contributors, listed alphabetically, are:
 
 Many thanks for your contributions!
 
-Included code
---------------
-
 There are also a few modules or functions incorporated from other
 authors and projects:
 

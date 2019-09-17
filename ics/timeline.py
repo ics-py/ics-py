@@ -1,21 +1,13 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, unicode_literals
-
 import heapq
 from typing import Iterator
 
 import arrow
 from arrow.arrow import Arrow
-from six import StringIO, integer_types, string_types, text_type
 
 from .event import Event
-from .utils import get_arrow
 
 
 class Timeline(object):
-
     def __init__(self, calendar) -> None:
         """Instanciates a new Timeline.
         (You should not have to instanciate a new timeline by yourself)

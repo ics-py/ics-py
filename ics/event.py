@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, unicode_literals
-
 import copy
 import re
 from datetime import datetime, timedelta
@@ -110,7 +105,7 @@ class Event(Component):
 
         self.name = name
         self.begin = begin
-        # TODO: DRY [1]
+
         if duration and end:
             raise ValueError(
                 'Event() may not specify an end and a duration \
@@ -622,7 +617,6 @@ def o_created(event, container):
         container.append(ContentLine('DTSTAMP', value=arrow_to_iso(event.created)))
 
 
-# TODO: Should the output be equal to `created` attribute?
 @Event._outputs
 def o_last_modified(event, container):
     if event.last_modified:
@@ -639,16 +633,15 @@ def o_start(event, container):
 @Event._outputs
 def o_all_day(event, container):
     if event.begin and event.all_day:
-        container.append(ContentLine('DTSTART', params={'VALUE': ('DATE',)},
+        container.append(ContentLine('DTSTART', params={'VALUE': ['DATE']},
                                      value=arrow_date_to_iso(event.begin)))
         if event._end_time:
-            container.append(ContentLine('DTEND', params={'VALUE': ('DATE',)},
+            container.append(ContentLine('DTEND', params={'VALUE': ['DATE']},
                                          value=arrow_date_to_iso(event.end)))
 
 
 @Event._outputs
 def o_duration(event, container):
-    # TODO : DURATION
     if event._duration and event.begin:
         representation = timedelta_to_duration(event._duration)
         container.append(ContentLine('DURATION', value=representation))
