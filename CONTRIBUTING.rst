@@ -10,6 +10,19 @@ Please note that ics.py is maintained by volunteers (mostly one volunteer)
 on their free time. It might take some time for us to have a look at your
 work.
 
+
+How to submit an issue
+----------------------
+
+Please include the following in your bug reports:
+
+* the version of ics.py you are using; run ``pip freeze | grep ics``
+* the version of Python ``python -v``
+* the OS you are using
+
+Please also include a (preferably minimal) example of the code or
+the input that causes problem along with the stacktrace if there is one.
+
 How to submit a pull request
 ----------------------------
 

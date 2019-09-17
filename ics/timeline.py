@@ -8,7 +8,6 @@ from .event import Event
 
 
 class Timeline(object):
-
     def __init__(self, calendar) -> None:
         """Instanciates a new Timeline.
         (You should not have to instanciate a new timeline by yourself)

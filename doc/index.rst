@@ -16,7 +16,7 @@ ics.py is for you!
 Quickstart
 ==========
 
-Install using `pip <http://www.pip-installer.org/>`_.::
+Install using `pip <https://pip.pypa.io/en/stable/installing/>`_: ::
 
     $ pip install ics
 

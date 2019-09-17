@@ -13,7 +13,16 @@ from .utils import remove_sequence, remove_x
 
 
 class Calendar(Component):
-    """Represents an unique rfc5545 iCalendar."""
+    """
+    Represents an unique rfc5545 iCalendar.
+
+    Attributes:
+
+        events: a set of Event contained in the Calendar
+        todos: a set of Todo contained in the Calendar
+        timeline: a Timeline instance linked to this Calendar
+
+    """
 
     _TYPE = 'VCALENDAR'
     _EXTRACTORS: List[Extractor] = []
@@ -25,16 +34,16 @@ class Calendar(Component):
         events: Iterable[Event] = None,
         todos: Iterable[Todo] = None,
         creator: str = None
-    ) -> None:
+    ):
         """Instantiates a new Calendar.
 
         Args:
-            imports (string): data to be imported into the Calendar,
-            events (set of Event): :class:`ics.event.Event`s to be added to the calendar
-            todos (set of Todo): :class:`ics.event.Todo`s to be added to the calendar
+            imports (**str**): data to be imported into the Calendar,
+            events (**Set[Event]**): Events to be added to the calendar
+            todos (Set[Todo]): Todos to be added to the calendar
             creator (string): uid of the creator program.
 
-        If `imports` is specified, every other argument will be ignored.
+        If ``imports`` is specified, every other argument will be ignored.
         """
 
         self._timezones: Dict = {} # FIXME mypy
