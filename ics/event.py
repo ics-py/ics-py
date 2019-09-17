@@ -633,10 +633,10 @@ def o_start(event, container):
 @Event._outputs
 def o_all_day(event, container):
     if event.begin and event.all_day:
-        container.append(ContentLine('DTSTART', params={'VALUE': ('DATE',)},
+        container.append(ContentLine('DTSTART', params={'VALUE': ['DATE']},
                                      value=arrow_date_to_iso(event.begin)))
         if event._end_time:
-            container.append(ContentLine('DTEND', params={'VALUE': ('DATE',)},
+            container.append(ContentLine('DTEND', params={'VALUE': ['DATE']},
                                          value=arrow_date_to_iso(event.end)))
 
 

@@ -59,6 +59,7 @@ def iso_to_arrow(time_container: Optional[ContentLine], available_tz={}) -> Arro
     tz_list = time_container.params.get('TZID')
     # TODO : raise if len(tz_list) > 1 or if tz is not a valid tz
     # TODO : see if timezone is registered as a VTIMEZONE
+    tz: Optional[str]
     if tz_list and len(tz_list) > 0:
         tz = tz_list[0]
     else:

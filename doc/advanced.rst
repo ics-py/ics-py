@@ -5,8 +5,8 @@ Advanced usage
 This page will present some more advanced usage of ics.py
 as well as some parts of the low level API.
 
-Low level constructs
---------------------
+.. Low level constructs
+.. --------------------
 
 .. _`custom-property`:
 

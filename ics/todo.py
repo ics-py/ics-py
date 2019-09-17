@@ -388,12 +388,12 @@ def location(todo: Todo, line: ContentLine):
 
 @Todo._extracts('PERCENT-COMPLETE')
 def percent(todo: Todo, line: ContentLine):
-    todo.percent = line.value if line else None
+    todo.percent = int(line.value) if line else None
 
 
 @Todo._extracts('PRIORITY')
 def priority(todo: Todo, line: ContentLine):
-    todo.priority = line.value if line else None
+    todo.priority = int(line.value) if line else None
 
 
 @Todo._extracts('SUMMARY')
