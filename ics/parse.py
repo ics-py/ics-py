@@ -119,7 +119,7 @@ class Container(list):
             .format(self.name, len(self), "s" if len(self) > 1 else "")
 
     @classmethod
-    def parse(cls, name, tokenized_lines):  
+    def parse(cls, name, tokenized_lines):
         items = []
         for line in tokenized_lines:
             if line.name == 'BEGIN':
