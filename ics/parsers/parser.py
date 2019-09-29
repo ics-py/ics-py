@@ -1,4 +1,5 @@
-from typing import NamedTuple, Optional, List, Tuple, Dict, Callable
+from typing import Callable, Dict, List, NamedTuple, Optional, Tuple
+
 from ics.parse import ContentLine
 
 
@@ -11,20 +12,32 @@ class ParserOption(NamedTuple):
 class Parser:
     @classmethod
     def get_extractors(cls) -> Dict[str, Tuple[Callable, ParserOption]]:
-        methods = dir(cls)
+        methods = [
+            (method_name, getattr(cls, method_name))
+            for method_name in dir(cls)
+            if callable(getattr(cls, method_name))
+        ]
+        parsers = [
+            (method_name, method_callable)
+            for (method_name, method_callable) in methods
+            if method_name.startswith("parse_")
+        ]
         return {
-            m.__name__.split("_", 1)[1].upper(): (m, getattr(m, 'options', ParserOption()))
-            for m in methods
-            if m.__name__.startswith('parse_')
+            method_name.split("_", 1)[1].upper().replace("_", "-"): (
+                method_callable,
+                getattr(method_callable, "options", ParserOption()),
+            )
+            for (method_name, method_callable) in parsers
         }
 
 
 def option(
     required: bool = False,
     multiple: bool = False,
-    default: Optional[List[ContentLine]] = None
+    default: Optional[List[ContentLine]] = None,
 ) -> Callable:
     def decorator(fn):
         fn.options = ParserOption(required, multiple, default)
         return fn
+
     return decorator

@@ -32,7 +32,7 @@ class Component(object):
         if container.name != self.Meta.name:
             raise ValueError("container isn't an {}".format(self.Meta.name))
 
-        for line_name, (extractor, options) in self.Meta.parser.get_extractors():
+        for line_name, (extractor, options) in self.Meta.parser.get_extractors().items():
             lines = get_lines(container, line_name)
             if not lines and options.required:
                 if options.default:

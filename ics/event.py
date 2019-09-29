@@ -1,5 +1,4 @@
 import copy
-import re
 from datetime import datetime, timedelta
 from typing import (Callable, Dict, Iterable, List, NamedTuple, Optional, Set,
                     Tuple, Union)
@@ -7,15 +6,12 @@ from typing import (Callable, Dict, Iterable, List, NamedTuple, Optional, Set,
 from arrow import Arrow
 
 from .alarm.base import BaseAlarm
-from .alarm.utils import get_type_from_container
 from .attendee import Attendee
 from .component import Component, Extractor
 from .organizer import Organizer
-from .parse import Container, ContentLine
+from .parse import Container
 from .types import ArrowLike
-from .utils import (arrow_date_to_iso, arrow_to_iso, escape_string, get_arrow,
-                    iso_precision, iso_to_arrow, parse_duration,
-                    timedelta_to_duration, uid_gen, unescape_string)
+from .utils import (get_arrow, uid_gen)
 
 
 class Geo(NamedTuple):

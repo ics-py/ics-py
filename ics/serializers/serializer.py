@@ -4,5 +4,13 @@ from typing import Callable
 class Serializer:
     @classmethod
     def get_serializers(cls) -> Callable:
-        methods = dir(cls)
-        return [m for m in methods if m.__name__.startswith('serialize_') ]
+        methods = [
+            (method_name, getattr(cls, method_name))
+            for method_name in dir(cls)
+            if callable(getattr(cls, method_name))
+        ]
+        return [
+            method_callable
+            for (method_name, method_callable) in methods
+            if method_name.startswith("serialize_")
+        ]
