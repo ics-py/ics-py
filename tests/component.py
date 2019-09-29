@@ -142,7 +142,8 @@ class TestComponent(unittest.TestCase):
 
 
 class ComponentBaseTest(Component):
-    _TYPE = "TEST"
+    class Meta:
+        name = "TEST"
 
     def __init__(self):
         self.some_attr = "biiip"

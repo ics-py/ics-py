@@ -24,9 +24,11 @@ class Calendar(Component):
 
     """
 
-    _TYPE = 'VCALENDAR'
     _EXTRACTORS: List[Extractor] = []
     _OUTPUTS: List[Callable] = []
+
+    class Meta:
+        name = 'VCALENDAR'
 
     def __init__(
         self,

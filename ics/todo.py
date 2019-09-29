@@ -22,9 +22,11 @@ class Todo(Component):
     or only start/due time.
     """
 
-    _TYPE = "VTODO"
     _EXTRACTORS: List[Extractor] = []
     _OUTPUTS: List[Callable] = []
+
+    class Meta:
+        name = "VTODO"
 
     def __init__(self,
                  dtstamp=None,

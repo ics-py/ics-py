@@ -36,9 +36,11 @@ class Event(Component):
     :class:`ics.parse.ContentLine` to `.extra`
     """
 
-    _TYPE = "VEVENT"
     _EXTRACTORS: List[Extractor] = []
     _OUTPUTS: List[Callable] = []
+
+    class Meta:
+        name = "VEVENT"
 
     def __init__(self,
                  name: str = None,

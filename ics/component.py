@@ -16,16 +16,18 @@ OutputT = TypeVar('OutputT', bound=Callable[[Any, Container], None]) # FIXME Any
 
 
 class Component(object):
-    _TYPE = "ABSTRACT"
     _EXTRACTORS: List[Extractor]
     _OUTPUTS: List[Callable]
+
+    class Meta:
+        name = "ABSTRACT"
 
     _classmethod_args: Tuple
     _classmethod_kwargs: Dict
 
     @classmethod
     def _from_container(cls, container: Container, *args: Any, **kwargs: Any):
-        if cls._TYPE == "ABSTRACT":
+        if cls.Meta.name == "ABSTRACT":
             raise NotImplementedError('Abstract class, cannot instantiate.')
 
         k = cls()
@@ -36,8 +38,8 @@ class Component(object):
         return k
 
     def _populate(self, container: Container) -> None:
-        if container.name != self._TYPE:
-            raise ValueError("container isn't an {}".format(self._TYPE))
+        if container.name != self.Meta.name:
+            raise ValueError("container isn't an {}".format(self.Meta.name))
 
         for extractor in self._EXTRACTORS:
             lines = get_lines(container, extractor.type)

@@ -21,9 +21,11 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     A calendar event VALARM base class
     """
 
-    _TYPE = "VALARM"
     _EXTRACTORS: List[Extractor] = []
     _OUTPUTS: List[Callable] = []
+
+    class Meta:
+        name = "VALARM"
 
     def __init__(
         self,
