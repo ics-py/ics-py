@@ -79,7 +79,7 @@ class EventParser(Parser):
         if line:
             event.status = line.value
 
-    def parse_classification(event, line):
+    def parse_class(event, line):
         if line:
             event.classification = line.value
 

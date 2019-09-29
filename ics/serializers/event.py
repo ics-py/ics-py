@@ -106,7 +106,7 @@ class EventSerializer(Serializer):
         if event.status:
             container.append(ContentLine("STATUS", value=event.status))
 
-    def serialize_classification(event, container):
+    def serialize_class(event, container):
         if event.classification:
             container.append(ContentLine("CLASS", value=event.classification))
 

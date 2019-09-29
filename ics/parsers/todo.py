@@ -37,7 +37,7 @@ class TodoParser(Parser):
     def parse_description(todo: "Todo", line: ContentLine):
         todo.description = unescape_string(line.value) if line else None
 
-    def parse_start(todo: "Todo", line: ContentLine):
+    def parse_dtstart(todo: "Todo", line: ContentLine):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
