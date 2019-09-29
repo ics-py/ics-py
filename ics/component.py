@@ -1,8 +1,8 @@
 import warnings
 from collections import namedtuple
-from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar
+from typing import Any, Dict, Tuple
 
-from .parse import Container, ContentLine
+from .parse import Container
 from .utils import get_lines
 
 Extractor = namedtuple(
@@ -10,14 +10,8 @@ Extractor = namedtuple(
     ['function', 'type', 'required', 'multiple', 'default']
 )
 
-# FIXME Any should be Self + Union[List[ContentLine], ContentLine]
-ExtractorT = TypeVar('ExtractorT', bound=Callable[[Any, Any], None])
-OutputT = TypeVar('OutputT', bound=Callable[[Any, Container], None]) # FIXME Any should be Self
-
 
 class Component(object):
-    _EXTRACTORS: List[Extractor]
-    _OUTPUTS: List[Callable]
 
     class Meta:
         name = "ABSTRACT"
@@ -27,9 +21,6 @@ class Component(object):
 
     @classmethod
     def _from_container(cls, container: Container, *args: Any, **kwargs: Any):
-        if cls.Meta.name == "ABSTRACT":
-            raise NotImplementedError('Abstract class, cannot instantiate.')
-
         k = cls()
         k._classmethod_args = args
         k._classmethod_kwargs = kwargs
@@ -41,59 +32,38 @@ class Component(object):
         if container.name != self.Meta.name:
             raise ValueError("container isn't an {}".format(self.Meta.name))
 
-        for extractor in self._EXTRACTORS:
-            lines = get_lines(container, extractor.type)
-            if not lines and extractor.required:
-                if extractor.default:
-                    lines = extractor.default
-                    default_str = "\\n".join(map(str, extractor.default))
+        for line_name, (extractor, options) in self.Meta.parser.get_extractors():
+            lines = get_lines(container, line_name)
+            if not lines and options.required:
+                if options.default:
+                    lines = options.default
+                    default_str = "\\n".join(map(str, options.default))
                     message = ("The %s property was not found and is required by the RFC." +
-                        " A default value of \"%s\" has been used instead") % (extractor.type, default_str)
+                        " A default value of \"%s\" has been used instead") % (line_name, default_str)
                     warnings.warn(message)
                 else:
                     raise ValueError(
                         'A {} must have at least one {}'
-                        .format(container.name, extractor.type))
+                        .format(container.name, line_name))
 
-            if not extractor.multiple and len(lines) > 1:
+            if not options.multiple and len(lines) > 1:
                 raise ValueError(
                     'A {} must have at most one {}'
-                    .format(container.name, extractor.type))
+                    .format(container.name, line_name))
 
-            if extractor.multiple:
-                extractor.function(self, lines)  # Send a list or empty list
+            if options.multiple:
+                extractor(self, lines)  # Send a list or empty list
             else:
                 if len(lines) == 1:
-                    extractor.function(self, lines[0])  # Send the element
+                    extractor(self, lines[0])  # Send the element
                 else:
-                    extractor.function(self, None)  # Send None
+                    extractor(self, None)  # Send None
 
         self.extra = container  # Store unused lines
-
-    @classmethod
-    def _extracts(
-        cls, line_type: str, required: bool = False,
-        multiple: bool = False, default: Optional[List[ContentLine]] = None
-    ) -> Callable[[ExtractorT], ExtractorT]:
-        def decorator(fn):
-            extractor = Extractor(
-                function=fn,
-                type=line_type,
-                required=required,
-                multiple=multiple,
-                default=default)
-            cls._EXTRACTORS.append(extractor)
-            return fn
-        return decorator
-
-    @classmethod
-    def _outputs(cls, fn: OutputT) -> OutputT:
-        cls._OUTPUTS.append(fn)
-        return fn
 
     def __str__(self) -> str:
         """Returns the component in an iCalendar format."""
         container = self.extra.clone()
-        for output in self._OUTPUTS:
+        for output in self.Meta.serializer.get_serializers():
             output(self, container)
         return str(container)
