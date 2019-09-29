@@ -37,21 +37,3 @@ class AudioAlarm(BaseAlarm):
     def sound(self, sound):
         assert isinstance(sound, ContentLine)
         self._sound = sound
-
-
-# ------------------
-# ----- Inputs -----
-# ------------------
-@AudioAlarm._extracts("ATTACH")
-def attach(alarm, line):
-    if line:
-        alarm._sound = line
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-@AudioAlarm._outputs
-def o_attach(alarm, container):
-    if alarm._sound:
-        container.append(str(alarm._sound))

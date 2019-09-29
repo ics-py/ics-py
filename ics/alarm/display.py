@@ -31,21 +31,3 @@ class DisplayAlarm(BaseAlarm):
     @property
     def action(self):
         return "DISPLAY"
-
-
-# ------------------
-# ----- Inputs -----
-# ------------------
-@DisplayAlarm._extracts("DESCRIPTION", required=True)
-def description(alarm, line):
-    alarm.display_text = unescape_string(line.value) if line else None
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-@DisplayAlarm._outputs
-def o_description(alarm, container):
-    container.append(
-        ContentLine("DESCRIPTION", value=escape_string(alarm.display_text or ""))
-    )
