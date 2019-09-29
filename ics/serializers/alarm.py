@@ -1,8 +1,8 @@
 from datetime import timedelta
 
-from .parse import ContentLine
-from .serializers.serializer import Serializer
-from .utils import arrow_to_iso, escape_string, timedelta_to_duration
+from ics.parse import ContentLine
+from ics.serializers.serializer import Serializer
+from ics.utils import arrow_to_iso, escape_string, timedelta_to_duration
 
 
 class BaseAlarmSerializer(Serializer):
@@ -68,3 +68,7 @@ class EmailAlarmSerializer(BaseAlarmSerializer):
             container.append(
                 ContentLine("ATTENDEE", value=escape_string("mailto:%s" % email))
             )
+
+
+class NoneAlarmSerializer(BaseAlarmSerializer):
+    pass

@@ -2,12 +2,12 @@ from typing import TYPE_CHECKING
 
 import arrow
 
-from .parse import Container, ContentLine
-from .serializers.serializer import Serializer
-from .utils import arrow_to_iso, escape_string, timedelta_to_duration, uid_gen
+from ics.parse import Container, ContentLine
+from ics.serializers.serializer import Serializer
+from ics.utils import arrow_to_iso, escape_string, timedelta_to_duration, uid_gen
 
 if TYPE_CHECKING:
-    from .todo import Todo
+    from ics.todo import Todo
 
 
 class TodoSerializer(Serializer):

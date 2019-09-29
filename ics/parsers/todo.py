@@ -9,56 +9,56 @@ if TYPE_CHECKING:
     from .todo import Todo
 
 
-class CalendarParser(Parser):
+class TodoParser(Parser):
     @option(required=True)
-    def dtstamp(todo: "Todo", line: ContentLine):
+    def parse_dtstamp(todo: "Todo", line: ContentLine):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
             todo.dtstamp = iso_to_arrow(line, tz_dict)
 
     @option(required=True)
-    def uid(todo: "Todo", line: ContentLine):
+    def parse_uid(todo: "Todo", line: ContentLine):
         if line:
             todo.uid = line.value
 
-    def completed(todo: "Todo", line: ContentLine):
+    def parse_completed(todo: "Todo", line: ContentLine):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
             todo.completed = iso_to_arrow(line, tz_dict)
 
-    def created(todo: "Todo", line: ContentLine):
+    def parse_created(todo: "Todo", line: ContentLine):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
             todo.created = iso_to_arrow(line, tz_dict)
 
-    def description(todo: "Todo", line: ContentLine):
+    def parse_description(todo: "Todo", line: ContentLine):
         todo.description = unescape_string(line.value) if line else None
 
-    def start(todo: "Todo", line: ContentLine):
+    def parse_start(todo: "Todo", line: ContentLine):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
             todo.begin = iso_to_arrow(line, tz_dict)
 
-    def location(todo: "Todo", line: ContentLine):
+    def parse_location(todo: "Todo", line: ContentLine):
         todo.location = unescape_string(line.value) if line else None
 
-    def percent_complete(todo: "Todo", line: ContentLine):
+    def parse_percent_complete(todo: "Todo", line: ContentLine):
         todo.percent = int(line.value) if line else None
 
-    def priority(todo: "Todo", line: ContentLine):
+    def parse_priority(todo: "Todo", line: ContentLine):
         todo.priority = int(line.value) if line else None
 
-    def summary(todo: "Todo", line: ContentLine):
+    def parse_summary(todo: "Todo", line: ContentLine):
         todo.name = unescape_string(line.value) if line else None
 
-    def url(todo: "Todo", line: ContentLine):
+    def parse_url(todo: "Todo", line: ContentLine):
         todo.url = unescape_string(line.value) if line else None
 
-    def due(todo: "Todo", line: ContentLine):
+    def parse_due(todo: "Todo", line: ContentLine):
         if line:
             # TODO: DRY [1]
             if todo._duration:
@@ -67,7 +67,7 @@ class CalendarParser(Parser):
             tz_dict = todo._classmethod_kwargs["tz"]
             todo._due_time = iso_to_arrow(line, tz_dict)
 
-    def duration(todo: "Todo", line: ContentLine):
+    def parse_duration(todo: "Todo", line: ContentLine):
         if line:
             # TODO: DRY [1]
             if todo._due_time:  # pragma: no cover
@@ -75,9 +75,9 @@ class CalendarParser(Parser):
             todo._duration = parse_duration(line.value)
 
     @option(multiple=True)
-    def valarm(todo: "Todo", lines: List[ContentLine]):
+    def parse_valarm(todo: "Todo", lines: List[ContentLine]):
         todo.alarms = [get_type_from_container(x)._from_container(x) for x in lines]
 
-    def status(todo: "Todo", line: ContentLine):
+    def parse_status(todo: "Todo", line: ContentLine):
         if line:
             todo.status = line.value

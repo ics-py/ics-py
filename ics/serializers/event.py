@@ -1,6 +1,6 @@
-from .parse import ContentLine
-from .serializers.serializer import Serializer
-from .utils import (
+from ics.parse import ContentLine
+from ics.serializers.serializer import Serializer
+from ics.utils import (
     arrow_date_to_iso,
     arrow_to_iso,
     escape_string,

@@ -12,6 +12,8 @@ from .organizer import Organizer
 from .parse import Container
 from .types import ArrowLike
 from .utils import (get_arrow, uid_gen)
+from ics.parsers.event import EventParser
+from ics.serializers.event import EventSerializer
 
 
 class Geo(NamedTuple):
@@ -37,6 +39,8 @@ class Event(Component):
 
     class Meta:
         name = "VEVENT"
+        parser = EventParser
+        serializer = EventSerializer
 
     def __init__(self,
                  name: str = None,

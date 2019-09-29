@@ -5,15 +5,19 @@ from ics.parse import ContentLine
 from typing import Union
 from datetime import datetime, timedelta
 
+from ics.serializers.alarm import AudioAlarmSerializer
+from ics.parsers.alarm import AudioAlarmParser
+
 
 class AudioAlarm(BaseAlarm):
     """
     A calendar event VALARM with AUDIO option.
     """
 
-    # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
-    _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
-    _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
+    class Meta:
+        name = "VALARM"
+        parser = AudioAlarmParser
+        serializer = AudioAlarmSerializer
 
     def __init__(
         self,

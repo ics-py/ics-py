@@ -3,15 +3,19 @@ import copy
 from typing import Union
 from datetime import datetime, timedelta
 
+from ics.serializers.alarm import CustomAlarmSerializer
+from ics.parsers.alarm import CustomAlarmParser
+
 
 class CustomAlarm(BaseAlarm):
     """
     A calendar event VALARM with custom ACTION.
     """
 
-    # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
-    _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
-    _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
+    class Meta:
+        name = "VALARM"
+        parser = CustomAlarmParser
+        serializer = CustomAlarmSerializer
 
     def __init__(
         self,

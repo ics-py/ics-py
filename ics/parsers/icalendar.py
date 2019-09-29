@@ -62,7 +62,7 @@ class CalendarParser(Parser):
                 calendar._timezones[key] = timezones.get(key)
 
     @option(multiple=True)
-    def parse_event(calendar, lines):
+    def parse_vevent(calendar, lines):
         # tz=calendar._timezones gives access to the event factory to the
         # timezones list
         def event_factory(x):
@@ -71,7 +71,7 @@ class CalendarParser(Parser):
         calendar.events = set(map(event_factory, lines))
 
     @option(multiple=True)
-    def parse_todo(calendar, lines):
+    def parse_vtodo(calendar, lines):
         # tz=calendar._timezones gives access to the event factory to the
         # timezones list
         def todo_factory(x):

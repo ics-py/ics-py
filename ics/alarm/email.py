@@ -6,15 +6,19 @@ from ics.utils import escape_string, unescape_string
 from typing import Union, List
 from datetime import datetime, timedelta
 
+from ics.serializers.alarm import EmailAlarmSerializer
+from ics.parsers.alarm import EmailAlarmParser
+
 
 class EmailAlarm(BaseAlarm):
     """
     A calendar event VALARM with Email option.
     """
 
-    # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
-    _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
-    _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
+    class Meta:
+        name = "VALARM"
+        parser = EmailAlarmParser
+        serializer = EmailAlarmSerializer
 
     def __init__(
         self,

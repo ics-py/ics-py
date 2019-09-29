@@ -15,17 +15,20 @@ from ics.utils import (
 )
 from ics.parse import ContentLine, Container
 
+from ics.serializers.alarm import BaseAlarmSerializer
+from ics.parsers.alarm import BaseAlarmParser
+
+
 
 class BaseAlarm(Component, metaclass=ABCMeta):
     """
     A calendar event VALARM base class
     """
 
-    _EXTRACTORS: List[Extractor] = []
-    _OUTPUTS: List[Callable] = []
-
     class Meta:
         name = "VALARM"
+        parser = BaseAlarmParser
+        serializer = BaseAlarmSerializer
 
     def __init__(
         self,

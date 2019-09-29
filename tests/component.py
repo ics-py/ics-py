@@ -4,6 +4,8 @@ import unittest
 from ics.component import Component
 from ics.icalendar import Calendar
 from ics.parse import Container, ContentLine
+from ics.parsers.parser import Parser, option
+from ics.serializers.serializer import Serializer
 
 from .fixture import cal2
 
@@ -19,14 +21,15 @@ class TestComponent(unittest.TestCase):
         with self.assertRaises(ValueError):
             Calendar(cal2)
 
-    def test_abstract(self):
-        with self.assertRaises(NotImplementedError):
-            Component._from_container(Container(name='VCALENDAR'))
-
     def test_bad_type(self):
         container = Container(name='VINVALID')
         with self.assertRaises(ValueError):
             Calendar._from_container(container)
+
+    def test_base(self):
+        assert CT4.Meta.name == "TEST"
+        e = CT4.Meta.parser.get_extractors()
+        assert len(e) == 1
 
     def test_extractor(self):
         c = CT1()
@@ -151,57 +154,82 @@ class ComponentBaseTest(Component):
         self.extra = Container('BASETEST')
 
 
+# 1
+class CT1Parser(Parser):
+    def parse_attr(test, line):
+        if line:
+            test.some_attr = line.value
+
+
+class CT1Serializer(Serializer):
+    def serialize_some_attr(test, container):
+        if test.some_attr:
+            container.append(ContentLine('ATTR', value=test.some_attr.upper()))
+
+
 class CT1(ComponentBaseTest):
-    _OUTPUTS, _EXTRACTORS = [], []
+    class Meta:
+        name = "TEST"
+        parser = CT1Parser
+        serializer = CT1Serializer
 
 
-class CT2(ComponentBaseTest):
-    _OUTPUTS, _EXTRACTORS = [], []
-
-
-class CT3(ComponentBaseTest):
-    _OUTPUTS, _EXTRACTORS = [], []
-
-
-class CT4(ComponentBaseTest):
-    _OUTPUTS, _EXTRACTORS = [], []
-
-
-@CT1._extracts('ATTR')
-def attr1(test, line):
-    if line:
+# 2
+class CT2Parser(Parser):
+    @option(required=True)
+    def parse_attr(test, line):
         test.some_attr = line.value
 
 
-@CT2._extracts('ATTR', required=True)
-def attr2(test, line):
-    test.some_attr = line.value
+class CT2Serializer(Serializer):
+    def serialize_some_attr2(test, container):
+        if test.some_attr:
+            container.append(ContentLine('ATTR', value=test.some_attr.upper()))
+
+    def serialize_some_attr2bis(test, container):
+        if test.some_attr2:
+            container.append(ContentLine('ATTR2', value=test.some_attr2.upper()))
 
 
-@CT3._extracts('ATTR', multiple=True)
-def attr3(test, line_list):
-    if line_list:
+class CT2(ComponentBaseTest):
+    class Meta:
+        name = "TEST"
+        parser = CT2Parser
+        serializer = CT2Serializer
+
+
+# 3
+class CT3Parser(Parser):
+    @option(multiple=True)
+    def parse_attr(test, line_list):
+        if line_list:
+            test.some_attr = ", ".join(map(lambda x: x.value, line_list))
+
+
+class CT3Serializer(Serializer):
+    pass
+
+
+class CT3(ComponentBaseTest):
+    class Meta:
+        name = "TEST"
+        parser = CT3Parser
+        serializer = CT3Serializer
+
+
+# 4
+class CT4Parser(Parser):
+    @option(required=True, multiple=True)
+    def parse_attr(test, line_list):
         test.some_attr = ", ".join(map(lambda x: x.value, line_list))
 
 
-@CT4._extracts('ATTR', required=True, multiple=True)
-def attr4(test, line_list):
-    test.some_attr = ", ".join(map(lambda x: x.value, line_list))
+class CT4Serializer(Serializer):
+    pass
 
 
-@CT1._outputs
-def o_some_attr(test, container):
-    if test.some_attr:
-        container.append(ContentLine('ATTR', value=test.some_attr.upper()))
-
-
-@CT2._outputs
-def o_some_attr2(test, container):
-    if test.some_attr:
-        container.append(ContentLine('ATTR', value=test.some_attr.upper()))
-
-
-@CT2._outputs
-def o_some_attr2bis(test, container):
-    if test.some_attr2:
-        container.append(ContentLine('ATTR2', value=test.some_attr2.upper()))
+class CT4(ComponentBaseTest):
+    class Meta:
+        name = "TEST"
+        parser = CT4Parser
+        serializer = CT4Serializer
