@@ -1,12 +1,7 @@
 from ics.parse import ContentLine
 from ics.serializers.serializer import Serializer
-from ics.utils import (
-    arrow_date_to_iso,
-    arrow_to_iso,
-    escape_string,
-    timedelta_to_duration,
-    uid_gen,
-)
+from ics.utils import (arrow_date_to_iso, arrow_to_iso, escape_string,
+                       timedelta_to_duration, uid_gen)
 
 
 class EventSerializer(Serializer):

@@ -23,7 +23,9 @@ class Parser:
             if method_name.startswith("parse_")
         ]
         return {
-            method_name.split("_", 1)[1].upper().replace("_", "-"): (
+            method_name.split("_", 1)[1]
+            .upper()
+            .replace("_", "-"): (
                 method_callable,
                 getattr(method_callable, "options", ParserOption()),
             )

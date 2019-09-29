@@ -4,7 +4,8 @@ import arrow
 
 from ics.parse import Container, ContentLine
 from ics.serializers.serializer import Serializer
-from ics.utils import arrow_to_iso, escape_string, timedelta_to_duration, uid_gen
+from ics.utils import (arrow_to_iso, escape_string, timedelta_to_duration,
+                       uid_gen)
 
 if TYPE_CHECKING:
     from ics.todo import Todo
