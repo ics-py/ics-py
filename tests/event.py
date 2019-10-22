@@ -291,9 +291,9 @@ class TestEvent(unittest.TestCase):
 
         eq = CRLF.join(("BEGIN:VEVENT",
                 "DTSTAMP:20130101T000000Z",
-                "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
                 "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
                 "LOCATION:Here\\; too",
+                "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
                 "UID:empty-uid",
                 "END:VEVENT"))
         self.assertEqual(str(e), eq)

@@ -9,8 +9,8 @@ class Serializer:
             for method_name in dir(cls)
             if callable(getattr(cls, method_name))
         ]
-        return [
+        return sorted([
             method_callable
             for (method_name, method_callable) in methods
             if method_name.startswith("serialize_")
-        ]
+        ], key=lambda x: x.__name__)
