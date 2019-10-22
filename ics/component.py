@@ -4,6 +4,8 @@ from typing import Any, Dict, Tuple
 
 from .parse import Container
 from .utils import get_lines
+from .serializers.serializer import Serializer
+from .parsers.parser import Parser
 
 Extractor = namedtuple(
     'Extractor',
@@ -15,6 +17,8 @@ class Component(object):
 
     class Meta:
         name = "ABSTRACT"
+        parser = Parser
+        serializer = Serializer
 
     _classmethod_args: Tuple
     _classmethod_kwargs: Dict

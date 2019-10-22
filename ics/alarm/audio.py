@@ -1,5 +1,6 @@
+from typing import Optional
+
 from ics.alarm.base import BaseAlarm
-import copy
 
 from ics.parse import ContentLine
 from typing import Union
@@ -27,7 +28,7 @@ class AudioAlarm(BaseAlarm):
     ):
 
         super().__init__(trigger, repeat, duration)
-        self._sound = None
+        self._sound: Optional[ContentLine] = None
 
     @property
     def action(self):

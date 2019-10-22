@@ -91,6 +91,9 @@ class Event(Component):
         self._end_time: Optional[ArrowLike] = None
         self._begin: Optional[ArrowLike] = None
         self._begin_precision = None
+        self._status: Optional[str] = None
+        self._classification: Optional[str] = None
+
         self.organizer: Optional[str] = None
         self.uid: str = uid_gen() if not uid else uid
         self.description: Optional[str] = description
