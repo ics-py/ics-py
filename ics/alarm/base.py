@@ -15,15 +15,19 @@ from ics.utils import (
 )
 from ics.parse import ContentLine, Container
 
+from ics.serializers.alarm_serializer import BaseAlarmSerializer
+from ics.parsers.alarm_parser import BaseAlarmParser
+
 
 class BaseAlarm(Component, metaclass=ABCMeta):
     """
     A calendar event VALARM base class
     """
 
-    _TYPE = "VALARM"
-    _EXTRACTORS: List[Extractor] = []
-    _OUTPUTS: List[Callable] = []
+    class Meta:
+        name = "VALARM"
+        parser = BaseAlarmParser
+        serializer = BaseAlarmSerializer
 
     def __init__(
         self,
@@ -153,67 +157,3 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         clone = copy.copy(self)
         clone.extra = clone.extra.clone()
         return clone
-
-
-# ------------------
-# ----- Inputs -----
-# ------------------
-@BaseAlarm._extracts("TRIGGER", required=True)
-def trigger(alarm, line):
-    if line.params.get("VALUE", [""])[0] == "DATE-TIME":
-        alarm.trigger = iso_to_arrow(line)
-    elif line.params.get("VALUE", ["DURATION"])[0] == "DURATION":
-        alarm.trigger = parse_duration(line.value)
-    else:
-        warnings.warn("ics.py encountered a TRIGGER of unknown type '%s'. It has been ignored." % line.params["VALUE"][0])
-
-
-@BaseAlarm._extracts("DURATION")
-def duration(alarm, line):
-    if line:
-        alarm._duration = parse_duration(line.value)
-
-
-@BaseAlarm._extracts("REPEAT")
-def repeat(alarm, line):
-    if line:
-        alarm._repeat = int(line.value)
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-@BaseAlarm._outputs
-def o_trigger(alarm, container):
-    if not alarm.trigger:
-        raise ValueError("Alarm must have a trigger")
-
-    if type(alarm.trigger) is timedelta:
-        representation = timedelta_to_duration(alarm.trigger)
-        container.append(ContentLine("TRIGGER", value=representation))
-    else:
-        container.append(
-            ContentLine(
-                "TRIGGER",
-                params={"VALUE": ["DATE-TIME"]},
-                value=arrow_to_iso(alarm.trigger),
-            )
-        )
-
-
-@BaseAlarm._outputs
-def o_duration(alarm, container):
-    if alarm.duration:
-        representation = timedelta_to_duration(alarm.duration)
-        container.append(ContentLine("DURATION", value=representation))
-
-
-@BaseAlarm._outputs
-def o_repeat(alarm, container):
-    if alarm.repeat:
-        container.append(ContentLine("REPEAT", value=alarm.repeat))
-
-
-@BaseAlarm._outputs
-def o_action(alarm, container):
-    container.append(ContentLine("ACTION", value=alarm.action))

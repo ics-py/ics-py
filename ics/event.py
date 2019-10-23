@@ -1,5 +1,4 @@
 import copy
-import re
 from datetime import datetime, timedelta
 from typing import (Callable, Dict, Iterable, List, NamedTuple, Optional, Set,
                     Tuple, Union)
@@ -7,15 +6,14 @@ from typing import (Callable, Dict, Iterable, List, NamedTuple, Optional, Set,
 from arrow import Arrow
 
 from .alarm.base import BaseAlarm
-from .alarm.utils import get_type_from_container
 from .attendee import Attendee
 from .component import Component, Extractor
 from .organizer import Organizer
-from .parse import Container, ContentLine
+from .parse import Container
 from .types import ArrowLike
-from .utils import (arrow_date_to_iso, arrow_to_iso, escape_string, get_arrow,
-                    iso_precision, iso_to_arrow, parse_duration,
-                    timedelta_to_duration, uid_gen, unescape_string)
+from .utils import (get_arrow, uid_gen)
+from ics.parsers.event_parser import EventParser
+from ics.serializers.event_serializer import EventSerializer
 
 
 class Geo(NamedTuple):
@@ -36,9 +34,10 @@ class Event(Component):
     :class:`ics.parse.ContentLine` to `.extra`
     """
 
-    _TYPE = "VEVENT"
-    _EXTRACTORS: List[Extractor] = []
-    _OUTPUTS: List[Callable] = []
+    class Meta:
+        name = "VEVENT"
+        parser = EventParser
+        serializer = EventSerializer
 
     def __init__(self,
                  name: str = None,
@@ -89,6 +88,9 @@ class Event(Component):
         self._end_time: Optional[ArrowLike] = None
         self._begin: Optional[ArrowLike] = None
         self._begin_precision = None
+        self._status: Optional[str] = None
+        self._classification: Optional[str] = None
+
         self.organizer: Optional[str] = None
         self.uid: str = uid_gen() if not uid else uid
         self.description: Optional[str] = description
@@ -486,254 +488,3 @@ class Event(Component):
         Returns:
             int: hash of self. Based on self.uid."""
         return int(''.join(map(lambda x: '%.3d' % ord(x), self.uid)))
-
-
-# ------------------
-# ----- Inputs -----
-# ------------------
-@Event._extracts('DTSTAMP')
-def created(event, line):
-    if line:
-        # get the dict of vtimezones passed to the classmethod
-        tz_dict = event._classmethod_kwargs['tz']
-        event.created = iso_to_arrow(line, tz_dict)
-
-
-@Event._extracts('LAST-MODIFIED')
-def last_modified(event, line):
-    if line:
-        tz_dict = event._classmethod_kwargs['tz']
-        event.last_modified = iso_to_arrow(line, tz_dict)
-
-
-@Event._extracts('DTSTART')
-def start(event, line):
-    if line:
-        # get the dict of vtimezones passed to the classmethod
-        tz_dict = event._classmethod_kwargs['tz']
-        event.begin = iso_to_arrow(line, tz_dict)
-        event._begin_precision = iso_precision(line.value)
-
-
-@Event._extracts('DURATION')
-def duration(event, line):
-    if line:
-        #TODO: DRY [1]
-        if event._end_time: # pragma: no cover
-            raise ValueError("An event can't have both DTEND and DURATION")
-        event._duration = parse_duration(line.value)
-
-
-@Event._extracts('DTEND')
-def end(event, line):
-    if line:
-        #TODO: DRY [1]
-        if event._duration:
-            raise ValueError("An event can't have both DTEND and DURATION")
-        # get the dict of vtimezones passed to the classmethod
-        tz_dict = event._classmethod_kwargs['tz']
-        event._end_time = iso_to_arrow(line, tz_dict)
-        # one could also save the end_precision to check that if begin_precision is day, end_precision also is
-
-
-@Event._extracts('SUMMARY')
-def summary(event, line):
-    event.name = unescape_string(line.value) if line else None
-
-
-@Event._extracts('ORGANIZER')
-def organizer(event, line):
-    event.organizer = unescape_string(line.value) if line else None
-
-
-@Event._extracts('DESCRIPTION')
-def description(event, line):
-    event.description = unescape_string(line.value) if line else None
-
-
-@Event._extracts('LOCATION')
-def location(event, line):
-    event.location = unescape_string(line.value) if line else None
-
-
-@Event._extracts('GEO')
-def geo(event, line):
-    if line:
-        latitude, _, longitude = unescape_string(line.value).partition(';')
-        event.geo = float(latitude), float(longitude)
-
-
-@Event._extracts('URL')
-def url(event, line):
-    event.url = unescape_string(line.value) if line else None
-
-
-@Event._extracts('TRANSP')
-def transparent(event, line):
-    if line and line.value in ['TRANSPARENT', 'OPAQUE']:
-        event.transparent = (line.value == 'TRANSPARENT')
-
-
-# TODO : make uid required ?
-# TODO : add option somewhere to ignore some errors
-@Event._extracts('UID')
-def uid(event, line):
-    if line:
-        event.uid = line.value
-
-
-@Event._extracts('VALARM', multiple=True)
-def alarms(event, lines):
-    event.alarms = [get_type_from_container(x)._from_container(x) for x in lines]
-
-
-@Event._extracts('STATUS')
-def status(event, line):
-    if line:
-        event.status = line.value
-
-
-@Event._extracts('CLASS')
-def classification(event, line):
-    if line:
-        event.classification = line.value
-
-
-@Event._extracts('CATEGORIES')
-def categories(event, line):
-    event.categories = set()
-    if line:
-        # In the regular expression: Only match unquoted commas.
-        for cat in re.split("(?<!\\\\),", line.value):
-            event.categories.update({unescape_string(cat)})
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-@Event._outputs
-def o_created(event, container):
-    if event.created:
-        container.append(ContentLine('DTSTAMP', value=arrow_to_iso(event.created)))
-
-
-@Event._outputs
-def o_last_modified(event, container):
-    if event.last_modified:
-        instant = event.last_modified
-        container.append(ContentLine('LAST-MODIFIED', value=arrow_to_iso(instant)))
-
-
-@Event._outputs
-def o_start(event, container):
-    if event.begin and not event.all_day:
-        container.append(ContentLine('DTSTART', value=arrow_to_iso(event.begin)))
-
-
-@Event._outputs
-def o_all_day(event, container):
-    if event.begin and event.all_day:
-        container.append(ContentLine('DTSTART', params={'VALUE': ['DATE']},
-                                     value=arrow_date_to_iso(event.begin)))
-        if event._end_time:
-            container.append(ContentLine('DTEND', params={'VALUE': ['DATE']},
-                                         value=arrow_date_to_iso(event.end)))
-
-
-@Event._outputs
-def o_duration(event, container):
-    if event._duration and event.begin:
-        representation = timedelta_to_duration(event._duration)
-        container.append(ContentLine('DURATION', value=representation))
-
-
-@Event._outputs
-def o_end(event, container):
-    if event.begin and event._end_time and not event.all_day:
-        container.append(ContentLine('DTEND', value=arrow_to_iso(event.end)))
-
-
-@Event._outputs
-def o_summary(event, container):
-    if event.name:
-        container.append(ContentLine('SUMMARY', value=escape_string(event.name)))
-
-
-@Event._outputs
-def o_organizer(event, container):
-    if event.organizer:
-        container.append(str(event.organizer))
-
-
-@Event._outputs
-def o_attendee(event, container):
-    for attendee in event.attendees:
-        container.append(str(attendee))
-
-
-@Event._outputs
-def o_description(event, container):
-    if event.description:
-        container.append(ContentLine('DESCRIPTION', value=escape_string(event.description)))
-
-
-@Event._outputs
-def o_location(event, container):
-    if event.location:
-        container.append(ContentLine('LOCATION', value=escape_string(event.location)))
-
-
-@Event._outputs
-def o_geo(event, container):
-    if event.geo:
-        container.append(ContentLine('GEO', value='%f;%f' % event.geo))
-
-
-@Event._outputs
-def o_url(event, container):
-    if event.url:
-        container.append(ContentLine('URL', value=escape_string(event.url)))
-
-
-@Event._outputs
-def o_transparent(event, container):
-    if event.transparent is None:
-        return
-    if event.transparent:
-        container.append(ContentLine('TRANSP', value=escape_string('TRANSPARENT')))
-    else:
-        container.append(ContentLine('TRANSP', value=escape_string('OPAQUE')))
-
-
-@Event._outputs
-def o_uid(event, container):
-    if event.uid:
-        uid = event.uid
-    else:
-        uid = uid_gen()
-
-    container.append(ContentLine('UID', value=uid))
-
-
-@Event._outputs
-def o_alarm(event, container):
-    for alarm in event.alarms:
-        container.append(str(alarm))
-
-
-@Event._outputs
-def o_status(event, container):
-    if event.status:
-        container.append(ContentLine('STATUS', value=event.status))
-
-
-@Event._outputs
-def o_classification(event, container):
-    if event.classification:
-        container.append(ContentLine('CLASS', value=event.classification))
-
-
-@Event._outputs
-def o_categories(event, container):
-    if event.categories:
-        container.append(ContentLine('CATEGORIES', value=','.join([escape_string(s) for s in event.categories])))

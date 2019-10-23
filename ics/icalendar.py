@@ -1,15 +1,15 @@
 import copy
 from typing import Callable, Dict, Iterable, List, Optional, Set, Union
 
-from dateutil.tz import tzical
-from six import StringIO, text_type
+from six import text_type
 
 from .component import Component, Extractor
 from .event import Event
-from .parse import Container, ContentLine, calendar_string_to_containers
+from .parse import Container, calendar_string_to_containers
 from .timeline import Timeline
 from .todo import Todo
-from .utils import remove_sequence, remove_x
+from ics.parsers.icalendar_parser import CalendarParser
+from ics.serializers.icalendar_serializer import CalendarSerializer
 
 
 class Calendar(Component):
@@ -24,9 +24,10 @@ class Calendar(Component):
 
     """
 
-    _TYPE = 'VCALENDAR'
-    _EXTRACTORS: List[Extractor] = []
-    _OUTPUTS: List[Callable] = []
+    class Meta:
+        name = 'VCALENDAR'
+        parser = CalendarParser
+        serializer = CalendarSerializer
 
     def __init__(
         self,
@@ -142,123 +143,3 @@ class Calendar(Component):
         clone.todos = copy.copy(self.todos)
         clone._timezones = copy.copy(self._timezones)
         return clone
-
-
-# ------------------
-# ----- Inputs -----
-# ------------------
-
-@Calendar._extracts('PRODID', required=True)
-def prodid(calendar, prodid):
-    calendar._creator = prodid.value
-
-
-__version_default__ = [ContentLine(name='VERSION', value='2.0')]
-
-
-@Calendar._extracts('VERSION', required=True, default=__version_default__)
-def version(calendar, line):
-    version = line
-    # TODO : should take care of minver/maxver
-    if ';' in version.value:
-        _, calendar.version = version.value.split(';')
-    else:
-        calendar.version = version.value
-
-
-@Calendar._extracts('CALSCALE')
-def scale(calendar, line):
-    calscale = line
-    if calscale:
-        calendar.scale = calscale.value.lower()
-        calendar.scale_params = calscale.params
-    else:
-        calendar.scale = 'georgian'
-        calendar.scale_params = {}
-
-
-@Calendar._extracts('METHOD')
-def method(calendar, line):
-    method = line
-    if method:
-        calendar.method = method.value
-        calendar.method_params = method.params
-    else:
-        calendar.method = None
-        calendar.method_params = {}
-
-
-@Calendar._extracts('VTIMEZONE', multiple=True)
-def timezone(calendar, vtimezones):
-    """Receives a list of VTIMEZONE blocks.
-
-    Parses them and adds them to calendar._timezones.
-    """
-    for vtimezone in vtimezones:
-        remove_x(vtimezone)  # Remove non standard lines from the block
-        remove_sequence(vtimezone)  # Remove SEQUENCE lines because tzical does not understand them
-        fake_file = StringIO()
-        fake_file.write(str(vtimezone))  # Represent the block as a string
-        fake_file.seek(0)
-        timezones = tzical(fake_file)  # tzical does not like strings
-        # timezones is a tzical object and could contain multiple timezones
-        for key in timezones.keys():
-            calendar._timezones[key] = timezones.get(key)
-
-
-@Calendar._extracts('VEVENT', multiple=True)
-def events(calendar, lines):
-    # tz=calendar._timezones gives access to the event factory to the
-    # timezones list
-    def event_factory(x):
-        return Event._from_container(x, tz=calendar._timezones)
-    calendar.events = set(map(event_factory, lines))
-
-
-@Calendar._extracts('VTODO', multiple=True)
-def todos(calendar, lines):
-    # tz=calendar._timezones gives access to the event factory to the
-    # timezones list
-    def todo_factory(x):
-        return Todo._from_container(x, tz=calendar._timezones)
-    calendar.todos = set(map(todo_factory, lines))
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-
-@Calendar._outputs
-def o_prodid(calendar, container):
-    creator = calendar.creator if calendar.creator else \
-        'ics.py - http://git.io/lLljaA'
-    container.append(ContentLine('PRODID', value=creator))
-
-
-@Calendar._outputs
-def o_version(calendar, container):
-    container.append(ContentLine('VERSION', value='2.0'))
-
-
-@Calendar._outputs
-def o_scale(calendar, container):
-    if calendar.scale:
-        container.append(ContentLine('CALSCALE', value=calendar.scale.upper()))
-
-
-@Calendar._outputs
-def o_method(calendar, container):
-    if calendar.method:
-        container.append(ContentLine('METHOD', value=calendar.method.upper()))
-
-
-@Calendar._outputs
-def o_events(calendar, container):
-    for event in calendar.events:
-        container.append(str(event))
-
-
-@Calendar._outputs
-def o_todos(calendar, container):
-    for todo in calendar.todos:
-        container.append(str(todo))

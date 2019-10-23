@@ -59,7 +59,7 @@ class TestAlarm(unittest.TestCase):
         a = FakeAlarm(trigger=timedelta(minutes=15))
 
         desired_output = CRLF.join(
-            ["BEGIN:VALARM", "TRIGGER:PT15M", "ACTION:FAKE", "END:VALARM"]
+            ["BEGIN:VALARM", "ACTION:FAKE", "TRIGGER:PT15M", "END:VALARM"]
         )
 
         self.assertEqual(desired_output, str(a))
@@ -71,8 +71,8 @@ class TestAlarm(unittest.TestCase):
         desired_output = CRLF.join(
             [
                 "BEGIN:VALARM",
-                "TRIGGER;VALUE=DATE-TIME:20160101T000000Z",
                 "ACTION:FAKE",
+                "TRIGGER;VALUE=DATE-TIME:20160101T000000Z",
                 "END:VALARM",
             ]
         )
@@ -87,10 +87,10 @@ class TestAlarm(unittest.TestCase):
         desired_output = CRLF.join(
             [
                 "BEGIN:VALARM",
-                "TRIGGER:PT15M",
+                "ACTION:FAKE",
                 "DURATION:PT10M",
                 "REPEAT:2",
-                "ACTION:FAKE",
+                "TRIGGER:PT15M",
                 "END:VALARM",
             ]
         )
@@ -110,9 +110,9 @@ class TestDisplayAlarm(unittest.TestCase):
         desired_output = CRLF.join(
             [
                 "BEGIN:VALARM",
-                "TRIGGER:PT15M",
                 "ACTION:DISPLAY",
                 "DESCRIPTION:Test description",
+                "TRIGGER:PT15M",
                 "END:VALARM",
             ]
         )
@@ -166,9 +166,9 @@ class TestAudioAlarm(unittest.TestCase):
         desired_output = CRLF.join(
             [
                 "BEGIN:VALARM",
-                "TRIGGER:PT15M",
                 "ACTION:AUDIO",
                 "ATTACH;FMTTYPE=audio/basic:{0}".format(attach),
+                "TRIGGER:PT15M",
                 "END:VALARM",
             ]
         )

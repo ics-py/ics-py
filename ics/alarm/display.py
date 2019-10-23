@@ -7,14 +7,19 @@ from typing import Union
 from datetime import datetime, timedelta
 
 
+from ics.serializers.alarm_serializer import DisplayAlarmSerializer
+from ics.parsers.alarm_parser import DisplayAlarmParser
+
+
 class DisplayAlarm(BaseAlarm):
     """
     A calendar event VALARM with DISPLAY option.
     """
 
-    # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
-    _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
-    _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
+    class Meta:
+        name = "VALARM"
+        parser = DisplayAlarmParser
+        serializer = DisplayAlarmSerializer
 
     def __init__(
         self,
@@ -31,21 +36,3 @@ class DisplayAlarm(BaseAlarm):
     @property
     def action(self):
         return "DISPLAY"
-
-
-# ------------------
-# ----- Inputs -----
-# ------------------
-@DisplayAlarm._extracts("DESCRIPTION", required=True)
-def description(alarm, line):
-    alarm.display_text = unescape_string(line.value) if line else None
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-@DisplayAlarm._outputs
-def o_description(alarm, container):
-    container.append(
-        ContentLine("DESCRIPTION", value=escape_string(alarm.display_text or ""))
-    )

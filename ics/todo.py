@@ -1,17 +1,17 @@
 import copy
 from datetime import datetime, timedelta
-from typing import Callable, Iterable, List, Optional
+from typing import Iterable, List, Optional
 
 import arrow
 from six.moves import map
 
 from .alarm.base import BaseAlarm
-from .alarm.utils import get_type_from_container
-from .component import Component, Extractor
-from .parse import Container, ContentLine
-from .utils import (arrow_to_iso, escape_string, get_arrow, iso_to_arrow,
-                    parse_duration, timedelta_to_duration, uid_gen,
-                    unescape_string)
+from .component import Component
+from .parse import Container
+from .utils import get_arrow, uid_gen
+
+from ics.parsers.todo_parser import TodoParser
+from ics.serializers.todo_serializer import TodoSerializer
 
 
 class Todo(Component):
@@ -22,9 +22,10 @@ class Todo(Component):
     or only start/due time.
     """
 
-    _TYPE = "VTODO"
-    _EXTRACTORS: List[Extractor] = []
-    _OUTPUTS: List[Callable] = []
+    class Meta:
+        name = "VTODO"
+        parser = TodoParser
+        serializer = TodoSerializer
 
     def __init__(self,
                  dtstamp=None,
@@ -333,219 +334,3 @@ class Todo(Component):
         Returns:
             int: hash of self. Based on self.uid."""
         return int(''.join(map(lambda x: '%.3d' % ord(x), self.uid)))
-
-
-# ------------------
-# ----- Inputs -----
-# ------------------
-@Todo._extracts('DTSTAMP', required=True)
-def dtstamp(todo: Todo, line: ContentLine):
-    if line:
-        # get the dict of vtimezones passed to the classmethod
-        tz_dict = todo._classmethod_kwargs['tz']
-        todo.dtstamp = iso_to_arrow(line, tz_dict)
-
-
-@Todo._extracts('UID', required=True)
-def uid(todo: Todo, line: ContentLine):
-    if line:
-        todo.uid = line.value
-
-
-@Todo._extracts('COMPLETED')
-def completed(todo: Todo, line: ContentLine):
-    if line:
-        # get the dict of vtimezones passed to the classmethod
-        tz_dict = todo._classmethod_kwargs['tz']
-        todo.completed = iso_to_arrow(line, tz_dict)
-
-
-@Todo._extracts('CREATED')
-def created(todo: Todo, line: ContentLine):
-    if line:
-        # get the dict of vtimezones passed to the classmethod
-        tz_dict = todo._classmethod_kwargs['tz']
-        todo.created = iso_to_arrow(line, tz_dict)
-
-
-@Todo._extracts('DESCRIPTION')
-def description(todo: Todo, line: ContentLine):
-    todo.description = unescape_string(line.value) if line else None
-
-
-@Todo._extracts('DTSTART')
-def start(todo: Todo, line: ContentLine):
-    if line:
-        # get the dict of vtimezones passed to the classmethod
-        tz_dict = todo._classmethod_kwargs['tz']
-        todo.begin = iso_to_arrow(line, tz_dict)
-
-
-@Todo._extracts('LOCATION')
-def location(todo: Todo, line: ContentLine):
-    todo.location = unescape_string(line.value) if line else None
-
-
-@Todo._extracts('PERCENT-COMPLETE')
-def percent(todo: Todo, line: ContentLine):
-    todo.percent = int(line.value) if line else None
-
-
-@Todo._extracts('PRIORITY')
-def priority(todo: Todo, line: ContentLine):
-    todo.priority = int(line.value) if line else None
-
-
-@Todo._extracts('SUMMARY')
-def summary(todo: Todo, line: ContentLine):
-    todo.name = unescape_string(line.value) if line else None
-
-
-@Todo._extracts('URL')
-def url(todo: Todo, line: ContentLine):
-    todo.url = unescape_string(line.value) if line else None
-
-
-@Todo._extracts('DUE')
-def due(todo: Todo, line: ContentLine):
-    if line:
-        #TODO: DRY [1]
-        if todo._duration:
-            raise ValueError("A todo can't have both DUE and DURATION")
-        # get the dict of vtimezones passed to the classmethod
-        tz_dict = todo._classmethod_kwargs['tz']
-        todo._due_time = iso_to_arrow(line, tz_dict)
-
-
-@Todo._extracts('DURATION')
-def duration(todo: Todo, line: ContentLine):
-    if line:
-        #TODO: DRY [1]
-        if todo._due_time:  # pragma: no cover
-            raise ValueError("An todo can't have both DUE and DURATION")
-        todo._duration = parse_duration(line.value)
-
-
-@Todo._extracts('VALARM', multiple=True)
-def alarms(todo: Todo, lines: List[ContentLine]):
-    todo.alarms = [get_type_from_container(x)._from_container(x) for x in lines]
-
-
-@Todo._extracts('STATUS')
-def status(todo: Todo, line: ContentLine):
-    if line:
-        todo.status = line.value
-
-
-# -------------------
-# ----- Outputs -----
-# -------------------
-@Todo._outputs
-def o_dtstamp(todo: Todo, container: Container):
-    if todo.dtstamp:
-        instant = todo.dtstamp
-    else:
-        instant = arrow.now()
-
-    container.append(ContentLine('DTSTAMP',
-                                 value=arrow_to_iso(instant)))
-
-
-@Todo._outputs
-def o_uid(todo: Todo, container: Container):
-    if todo.uid:
-        uid = todo.uid
-    else:
-        uid = uid_gen()
-
-    container.append(ContentLine('UID', value=uid))
-
-
-@Todo._outputs
-def o_completed(todo: Todo, container: Container):
-    if todo.completed:
-        container.append(ContentLine('COMPLETED',
-                                     value=arrow_to_iso(todo.completed)))
-
-
-@Todo._outputs
-def o_created(todo: Todo, container: Container):
-    if todo.created:
-        container.append(ContentLine('CREATED',
-                                     value=arrow_to_iso(todo.created)))
-
-
-@Todo._outputs
-def o_description(todo: Todo, container: Container):
-    if todo.description:
-        container.append(ContentLine('DESCRIPTION',
-                                     value=escape_string(todo.description)))
-
-
-@Todo._outputs
-def o_start(todo: Todo, container: Container):
-    if todo.begin:
-        container.append(ContentLine('DTSTART',
-                                     value=arrow_to_iso(todo.begin)))
-
-
-@Todo._outputs
-def o_location(todo: Todo, container: Container):
-    if todo.location:
-        container.append(ContentLine('LOCATION',
-                                     value=escape_string(todo.location)))
-
-
-@Todo._outputs
-def o_percent(todo: Todo, container: Container):
-    if todo.percent is not None:
-        container.append(ContentLine('PERCENT-COMPLETE',
-                                     value=str(todo.percent)))
-
-
-@Todo._outputs
-def o_priority(todo: Todo, container: Container):
-    if todo.priority is not None:
-        container.append(ContentLine('PRIORITY',
-                                     value=str(todo.priority)))
-
-
-@Todo._outputs
-def o_summary(todo: Todo, container: Container):
-    if todo.name:
-        container.append(ContentLine('SUMMARY',
-                                     value=escape_string(todo.name)))
-
-
-@Todo._outputs
-def o_url(todo: Todo, container: Container):
-    if todo.url:
-        container.append(ContentLine('URL',
-                                     value=escape_string(todo.url)))
-
-
-@Todo._outputs
-def o_due(todo: Todo, container: Container):
-    if todo._due_time:
-        container.append(ContentLine('DUE',
-                                     value=arrow_to_iso(todo._due_time)))
-
-
-@Todo._outputs
-def o_duration(todo: Todo, container: Container):
-    if todo._duration:
-        representation = timedelta_to_duration(todo._duration)
-        container.append(ContentLine('DURATION',
-                                     value=representation))
-
-
-@Todo._outputs
-def o_alarm(todo: Todo, container: Container):
-    for alarm in todo.alarms:
-        container.append(str(alarm))
-
-
-@Todo._outputs
-def o_status(todo: Todo, container: Container):
-    if todo.status:
-        container.append(ContentLine('STATUS', value=todo.status))

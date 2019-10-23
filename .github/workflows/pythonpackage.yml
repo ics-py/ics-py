@@ -26,5 +26,4 @@ jobs:
         mypy ics
     - name: Run pytest
       run: |
-        mypy ics
         python setup.py test

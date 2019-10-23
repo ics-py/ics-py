@@ -1,5 +1,7 @@
 from ics.alarm.base import BaseAlarm
-import copy
+
+from ics.serializers.alarm_serializer import NoneAlarmSerializer
+from ics.parsers.alarm_parser import NoneAlarmParser
 
 
 class NoneAlarm(BaseAlarm):
@@ -7,9 +9,10 @@ class NoneAlarm(BaseAlarm):
     A calendar event VALARM with NONE option.
     """
 
-    # This ensures we copy the existing extractors and outputs from the base class, rather than referencing the array.
-    _EXTRACTORS = copy.copy(BaseAlarm._EXTRACTORS)
-    _OUTPUTS = copy.copy(BaseAlarm._OUTPUTS)
+    class Meta:
+        name = "VALARM"
+        parser = NoneAlarmParser
+        serializer = NoneAlarmSerializer
 
     @property
     def action(self):
