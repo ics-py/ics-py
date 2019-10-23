@@ -8,8 +8,8 @@ from .event import Event
 from .parse import Container, calendar_string_to_containers
 from .timeline import Timeline
 from .todo import Todo
-from ics.parsers.icalendar import CalendarParser
-from ics.serializers.icalendar import CalendarSerializer
+from ics.parsers.icalendar_parser import CalendarParser
+from ics.serializers.icalendar_serializer import CalendarSerializer
 
 
 class Calendar(Component):

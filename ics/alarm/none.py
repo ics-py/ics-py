@@ -1,7 +1,7 @@
 from ics.alarm.base import BaseAlarm
 
-from ics.serializers.alarm import NoneAlarmSerializer
-from ics.parsers.alarm import NoneAlarmParser
+from ics.serializers.alarm_serializer import NoneAlarmSerializer
+from ics.parsers.alarm_parser import NoneAlarmParser
 
 
 class NoneAlarm(BaseAlarm):

@@ -7,8 +7,8 @@ from typing import Union
 from datetime import datetime, timedelta
 
 
-from ics.serializers.alarm import DisplayAlarmSerializer
-from ics.parsers.alarm import DisplayAlarmParser
+from ics.serializers.alarm_serializer import DisplayAlarmSerializer
+from ics.parsers.alarm_parser import DisplayAlarmParser
 
 
 class DisplayAlarm(BaseAlarm):
@@ -20,7 +20,6 @@ class DisplayAlarm(BaseAlarm):
         name = "VALARM"
         parser = DisplayAlarmParser
         serializer = DisplayAlarmSerializer
-
 
     def __init__(
         self,

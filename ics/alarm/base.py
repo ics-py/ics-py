@@ -15,9 +15,8 @@ from ics.utils import (
 )
 from ics.parse import ContentLine, Container
 
-from ics.serializers.alarm import BaseAlarmSerializer
-from ics.parsers.alarm import BaseAlarmParser
-
+from ics.serializers.alarm_serializer import BaseAlarmSerializer
+from ics.parsers.alarm_parser import BaseAlarmParser
 
 
 class BaseAlarm(Component, metaclass=ABCMeta):

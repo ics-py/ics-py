@@ -6,8 +6,8 @@ from ics.parse import ContentLine
 from typing import Union
 from datetime import datetime, timedelta
 
-from ics.serializers.alarm import AudioAlarmSerializer
-from ics.parsers.alarm import AudioAlarmParser
+from ics.serializers.alarm_serializer import AudioAlarmSerializer
+from ics.parsers.alarm_parser import AudioAlarmParser
 
 
 class AudioAlarm(BaseAlarm):

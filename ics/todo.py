@@ -13,9 +13,8 @@ from .utils import (arrow_to_iso, escape_string, get_arrow, iso_to_arrow,
                     parse_duration, timedelta_to_duration, uid_gen,
                     unescape_string)
 
-from ics.parsers.todo import TodoParser
-from ics.serializers.todo import TodoSerializer
-
+from ics.parsers.todo_parser import TodoParser
+from ics.serializers.todo_serializer import TodoSerializer
 
 
 class Todo(Component):

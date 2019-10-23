@@ -3,8 +3,8 @@ import copy
 from typing import Union
 from datetime import datetime, timedelta
 
-from ics.serializers.alarm import CustomAlarmSerializer
-from ics.parsers.alarm import CustomAlarmParser
+from ics.serializers.alarm_serializer import CustomAlarmSerializer
+from ics.parsers.alarm_parser import CustomAlarmParser
 
 
 class CustomAlarm(BaseAlarm):

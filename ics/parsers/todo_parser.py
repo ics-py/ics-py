@@ -6,7 +6,7 @@ from ics.parsers.parser import Parser, option
 from ics.utils import iso_to_arrow, parse_duration, unescape_string
 
 if TYPE_CHECKING:
-    from .todo import Todo
+    from .todo_parser import Todo
 
 
 class TodoParser(Parser):

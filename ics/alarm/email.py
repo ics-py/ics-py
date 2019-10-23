@@ -6,8 +6,8 @@ from ics.utils import escape_string, unescape_string
 from typing import Union, List
 from datetime import datetime, timedelta
 
-from ics.serializers.alarm import EmailAlarmSerializer
-from ics.parsers.alarm import EmailAlarmParser
+from ics.serializers.alarm_serializer import EmailAlarmSerializer
+from ics.parsers.alarm_parser import EmailAlarmParser
 
 
 class EmailAlarm(BaseAlarm):
