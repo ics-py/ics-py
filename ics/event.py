@@ -148,16 +148,20 @@ class Event(Component):
         |  May be set to anything that :func:`Arrow.get` understands.
         |  If an end is defined (not a duration), .begin must not
             be set to a superior value.
+        |  For all-day events, the time is truncated to midnight when set.
         """
         return self._begin
 
     @begin.setter
     def begin(self, value: ArrowLike):
         value = get_arrow(value)
+        precision = 'day' if self.all_day else 'second'
+        if value is not None:
+            value = value.floor(precision)
         if value and self._end_time and value > self._end_time:
             raise ValueError('Begin must be before end')
         self._begin = value
-        self._begin_precision = 'second'
+        self._begin_precision = precision
 
     @property
     def end(self) -> Arrow:
@@ -170,11 +174,15 @@ class Event(Component):
         |  Setting to None will have unexpected behavior if
             begin is not None.
         |  Must not be set to an inferior value than self.begin.
+        |  When setting end time for for all-day events, if the end time
+            is midnight, that day is not included.  Otherwise, the end is
+            rounded up to midnight the next day, including the full day.
+            Note that rounding is different from :func:`make_all_day`.
         """
 
         if self._duration:  # if end is duration defined
             # return the beginning + duration
-            return self.begin + self._duration
+            return None if self._begin is None else self.begin + self._duration
         elif self._end_time:  # if end is time defined
             if self.all_day:
                 return self._end_time
@@ -192,12 +200,25 @@ class Event(Component):
     @end.setter
     def end(self, value: ArrowLike):
         value = get_arrow(value)
+        precision = 'day' if self.all_day else 'second'
+        if value is not None:
+            floored_value = value.floor(precision)
+            if precision == 'day' and value != floored_value:
+                value = floored_value + timedelta(days=1)
+            else:
+                value = floored_value
         if value and self._begin and value < self._begin:
             raise ValueError('End must be after begin')
 
         self._end_time = value
         if value:
             self._duration = None
+            self._begin_precision = precision
+
+    def _timedelta_ceiling(self, value, precision):
+        if precision != 'day' or (value.seconds == 0 and value.microseconds == 0):
+            return value
+        return timedelta(days=value.days + 1)
 
     @property
     def duration(self) -> Optional[timedelta]:
@@ -208,6 +229,7 @@ class Event(Component):
         |  May be set with a dict ({"days":2, "hours":6}).
         |  If set to a non null value, removes any already
             existing end time.
+        |  Duration of an all-day event is rounded up to a full day.
         """
         if self._duration:
             return self._duration
@@ -228,6 +250,9 @@ class Event(Component):
             value = timedelta(value)
 
         if value:
+            if value < timedelta(0):
+                raise ValueError('Duration must be positive')
+            value = self._timedelta_ceiling(value, self._begin_precision)
             self._end_time = None
 
         self._duration = value
@@ -262,27 +287,51 @@ class Event(Component):
         # the event may have an end, also given in 'day' precision
         return self._begin_precision == 'day'
 
-    def make_all_day(self) -> None:
-        """Transforms self to an all-day event.
+    def make_all_day(self, become_all_day=True):
+        """Transforms self to an all-day event or a time-based event.
 
-        The event will span all the days from the begin to the end day.
+        |  If become_all_day is False, the event is set to a time-based
+            event.  Any rounding performed when the event was made all-day
+            is *not* undone.
+        |  Otherwise:
+        |  The event will span all the days from the begin to *and including*
+            the end day.  For example, assume begin = 2018-01-01 10:37,
+            end = 2018-01-02 14:44.  After make_all_day, begin = 2018-01-01
+            [00:00], end = 2018-01-03 [00:00], and duration = 2 days.
+        |  If duration is used instead of the end time, it is rounded up to an
+            even day.  2 days remains 2 days, but 2 days and one second becomes 3 days.
+        |  If neither duration not end are set, a duration of one day is implied.
+        |  If self is already all-day, it is unchanged.
         """
+        if not become_all_day:
+            self._begin_precision = 'second'
+            return
+
         if self.all_day:
             # Do nothing if we already are a all day event
             return
 
         begin_day = self.begin.floor('day')
-        end_day = self.end.floor('day')
-
         self._begin = begin_day
 
-        # for a one day event, we don't need a _end_time
-        if begin_day == end_day:
-            self._end_time = None
-        else:
-            self._end_time = end_day + timedelta(days=1)
+        if self._end_time is not None:
+            end_day = self.end.floor('day')
 
-        self._duration = None
+            # for a one day event, we don't need a _end_time
+            if begin_day == end_day:
+                self._end_time = None
+            else:
+                self._end_time = end_day + timedelta(days=1)
+            self._duration = None
+        elif self._duration is not None:
+            duration = self._timedelta_ceiling(self._duration, 'day')
+            # for a one day event, we don't need a duration
+            if duration == timedelta(days=1):
+                self._duration = None
+            else:
+                self._duration = duration
+            self._end_time = None
+
         self._begin_precision = 'day'
 
     @property
