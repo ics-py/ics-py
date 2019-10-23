@@ -659,3 +659,67 @@ class TestEvent(unittest.TestCase):
 
         ev2.name = "other name"
         assert ev1 != ev2
+
+
+class TestAllDay(unittest.TestCase):
+    def test_duration(self):
+        ev = Event(
+            begin=dt(2018, 6, 29, 10, 10, 10),
+            duration=td(minutes=10),
+        )
+        ev.make_all_day()
+        assert ev.begin == arrow.get(dt(2018, 6, 29))
+        assert ev.end == arrow.get(dt(2018, 6, 30))
+        assert ev.duration == td(hours=24)
+
+        # Does running it twice change something ?
+        ev.make_all_day()
+        assert ev.begin == arrow.get(dt(2018, 6, 29))
+        assert ev.end == arrow.get(dt(2018, 6, 30))
+        assert ev.duration == td(hours=24)
+
+        # Does inverting it twice change something ?
+        ev.make_all_day(False)
+        ev.make_all_day(True)
+        assert ev.begin == arrow.get(dt(2018, 6, 29))
+        assert ev.end == arrow.get(dt(2018, 6, 30))
+        assert ev.duration == td(hours=24)
+
+    def test_duration_round(self):
+        ev = Event(
+            begin=dt(2018, 6, 29, 10, 10, 10),
+            duration=td(hours=24),
+        )
+        ev.make_all_day()
+        assert ev.begin == arrow.get(dt(2018, 6, 29))
+        assert ev.end == arrow.get(dt(2018, 6, 30))
+        assert ev.duration == td(hours=24)
+
+    def test_n_coder(self):
+        hour = 2
+        duration = 3
+        tz = 4
+
+        start = arrow.Arrow(2019, 5, 29, tzinfo="%+03d:00" % tz).shift(hours=hour)
+        precision_hour = Event(begin=start, duration=td(hours=duration))
+        precision_day = precision_hour.clone()
+        precision_day.make_all_day()
+
+        self.assertTrue(precision_day.includes(precision_hour))
+        self.assertLessEqual(precision_day.begin, precision_hour.begin)
+        self.assertGreaterEqual(precision_day.end, precision_hour.end)
+        self.assertGreaterEqual(precision_day.duration, precision_hour.duration)
+        # to ensure minimality
+        self.assertLess(precision_hour.begin - precision_day.begin, td(hours=24))
+        self.assertLess(precision_day.end - precision_hour.end, td(hours=24))
+        self.assertLess(precision_day.duration - precision_hour.duration, td(hours=24 * 2))
+
+        precision_hour2 = Event(begin=start, end=start.shift(hours=duration))
+        precision_hour2.uid = precision_hour.uid # same uid for comapaison purposes
+        self.assertEqual(precision_hour.begin, precision_hour2.begin)
+        self.assertEqual(precision_hour.end, precision_hour2.end)
+        self.assertEqual(precision_hour.duration, precision_hour2.duration)
+
+        precision_day2 = precision_hour2.clone()
+        precision_day2.make_all_day()
+        self.assertEqual(str(precision_day), str(precision_day2))
