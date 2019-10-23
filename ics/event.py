@@ -34,9 +34,6 @@ class Event(Component):
     :class:`ics.parse.ContentLine` to `.extra`
     """
 
-    _EXTRACTORS: List[Extractor] = []
-    _OUTPUTS: List[Callable] = []
-
     class Meta:
         name = "VEVENT"
         parser = EventParser

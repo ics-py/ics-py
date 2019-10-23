@@ -36,7 +36,7 @@ class Component(object):
         if container.name != self.Meta.name:
             raise ValueError("container isn't an {}".format(self.Meta.name))
 
-        for line_name, (extractor, options) in self.Meta.parser.get_extractors().items():
+        for line_name, (parser, options) in self.Meta.parser.get_parsers().items():
             lines = get_lines(container, line_name)
             if not lines and options.required:
                 if options.default:
@@ -56,12 +56,12 @@ class Component(object):
                     .format(container.name, line_name))
 
             if options.multiple:
-                extractor(self, lines)  # Send a list or empty list
+                parser(self, lines)  # Send a list or empty list
             else:
                 if len(lines) == 1:
-                    extractor(self, lines[0])  # Send the element
+                    parser(self, lines[0])  # Send the element
                 else:
-                    extractor(self, None)  # Send None
+                    parser(self, None)  # Send None
 
         self.extra = container  # Store unused lines
 

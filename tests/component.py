@@ -28,16 +28,16 @@ class TestComponent(unittest.TestCase):
 
     def test_base(self):
         assert CT4.Meta.name == "TEST"
-        e = CT4.Meta.parser.get_extractors()
+        e = CT4.Meta.parser.get_parsers()
         assert len(e) == 1
 
-    def test_extractor(self):
+    def test_parser(self):
         c = CT1()
         c.some_attr = "foobar"
         expected = fix1
         self.assertEqual(str(c), expected)
 
-    def test_2extractors(self):
+    def test_2parsers(self):
         c = CT2()
         c.some_attr = "foo"
         c.some_attr2 = "bar"

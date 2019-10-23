@@ -24,9 +24,6 @@ class Calendar(Component):
 
     """
 
-    _EXTRACTORS: List[Extractor] = []
-    _OUTPUTS: List[Callable] = []
-
     class Meta:
         name = 'VCALENDAR'
         parser = CalendarParser

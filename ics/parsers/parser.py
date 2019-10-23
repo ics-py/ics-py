@@ -11,7 +11,7 @@ class ParserOption(NamedTuple):
 
 class Parser:
     @classmethod
-    def get_extractors(cls) -> Dict[str, Tuple[Callable, ParserOption]]:
+    def get_parsers(cls) -> Dict[str, Tuple[Callable, ParserOption]]:
         methods = [
             (method_name, getattr(cls, method_name))
             for method_name in dir(cls)

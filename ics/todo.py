@@ -1,17 +1,14 @@
 import copy
 from datetime import datetime, timedelta
-from typing import Callable, Iterable, List, Optional
+from typing import Iterable, List, Optional
 
 import arrow
 from six.moves import map
 
 from .alarm.base import BaseAlarm
-from .alarm.utils import get_type_from_container
-from .component import Component, Extractor
-from .parse import Container, ContentLine
-from .utils import (arrow_to_iso, escape_string, get_arrow, iso_to_arrow,
-                    parse_duration, timedelta_to_duration, uid_gen,
-                    unescape_string)
+from .component import Component
+from .parse import Container
+from .utils import get_arrow, uid_gen
 
 from ics.parsers.todo_parser import TodoParser
 from ics.serializers.todo_serializer import TodoSerializer
@@ -24,9 +21,6 @@ class Todo(Component):
     Can have a start time and duration, or start and due time,
     or only start/due time.
     """
-
-    _EXTRACTORS: List[Extractor] = []
-    _OUTPUTS: List[Callable] = []
 
     class Meta:
         name = "VTODO"
