@@ -197,11 +197,6 @@ class Event(Component):
         else:
             return None
 
-    def _timedelta_ceiling(self, value, precision):
-        if precision != 'day' or (value.seconds == 0 and value.microseconds == 0):
-            return value
-        return timedelta(days=value.days + 1)
-
     @end.setter
     def end(self, value: ArrowLike):
         value = get_arrow(value)
@@ -219,6 +214,11 @@ class Event(Component):
         if value:
             self._duration = None
             self._begin_precision = precision
+
+    def _timedelta_ceiling(self, value, precision):
+        if precision != 'day' or (value.seconds == 0 and value.microseconds == 0):
+            return value
+        return timedelta(days=value.days + 1)
 
     @property
     def duration(self) -> Optional[timedelta]:
