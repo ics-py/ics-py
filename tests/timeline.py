@@ -1,10 +1,11 @@
 import unittest
-import arrow
 from datetime import datetime
 
+import arrow
+
 from ics.event import Event
-from ics.timeline import Timeline
 from ics.icalendar import Calendar
+from ics.timeline import Timeline
 
 
 class TestTimeline(unittest.TestCase):

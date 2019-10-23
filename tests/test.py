@@ -1,8 +1,9 @@
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
+
 import os
 import unittest
 
-from ics.parse import string_to_container
+from ics.grammar.parse import string_to_container
 
 
 class TestFunctional(unittest.TestCase):

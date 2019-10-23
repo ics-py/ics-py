@@ -1,5 +1,5 @@
-API
-===
+API description
+===============
 
 Calendar
 --------
@@ -15,24 +15,30 @@ Event
     :members:
     :special-members:
 
-Alarm
------
+Alarms
+------
 
-.. autoclass:: ics.alarm.Alarm
+.. autoclass:: ics.alarm.base.BaseAlarm
     :members:
     :special-members:
 
-DisplayAlarm
------
+.. autoclass:: ics.alarm.AudioAlarm
+    :members:
+    :special-members:
 
 .. autoclass:: ics.alarm.DisplayAlarm
     :members:
     :special-members:
 
-AudioAlarm
------
+.. autoclass:: ics.alarm.EmailAlarm
+    :members:
+    :special-members:
 
-.. autoclass:: ics.alarm.AudioAlarm
+.. autoclass:: ics.alarm.none.NoneAlarm
+    :members:
+    :special-members:
+
+.. autoclass:: ics.alarm.custom.CustomAlarm
     :members:
     :special-members:
 

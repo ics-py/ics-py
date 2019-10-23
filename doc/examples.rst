@@ -1,14 +1,14 @@
+:orphan:
+
 Import a calendar from a file
 -----------------------------
 
 .. code-block:: python
 
     from ics import Calendar
-    from urllib.request import urlopen
-    url = "https://urlab.be/events/urlab.ics"
-    c = Calendar(urlopen(url).read().decode())
+    import requests
 
-    import requests    # Alternative: use requests
+    url = "https://urlab.be/events/urlab.ics"
     c = Calendar(requests.get(url).text)
 
     c
@@ -42,12 +42,9 @@ Export a Calendar to a file
 .. code-block:: python
 
     with open('my.ics', 'w') as f:
-        f.writelines(c)
+        f.write(c)
     # And it's done !
 
-iCalendar-formatted data is also available in a string
-
-.. code-block:: python
-
+    # iCalendar-formatted data is also available in a string
     str(c)
     # 'BEGIN:VCALENDAR\nPRODID:...

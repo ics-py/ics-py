@@ -1,5 +1,6 @@
 import unittest
-from ics.parse import ParseError, ContentLine
+
+from ics.grammar.parse import ContentLine, ParseError
 from ics.utils import iso_to_arrow
 
 
@@ -7,7 +8,6 @@ class TestContentLine(unittest.TestCase):
 
     dataset = {
         'HAHA:': ContentLine('haha'),
-        ':hoho': ContentLine('', {}, 'hoho'),
         'HAHA:hoho': ContentLine('haha', {}, 'hoho'),
         'HAHA:hoho:hihi': ContentLine('haha', {}, 'hoho:hihi'),
         'HAHA;hoho=1:hoho': ContentLine('haha', {'hoho': ['1']}, 'hoho'),
@@ -44,6 +44,18 @@ class TestContentLine(unittest.TestCase):
             {'hoho': ['p1', 'p2'], 'hihi': ['p3', 'p4', 'p5']},
             'blabla:blublu'
         ),
+        r'ATTENDEE;X-A="I&rsquo\;ll be in NYC":mailto:a@a.com':
+        ContentLine(
+            'ATTENDEE',
+            {'X-A': [r"I&rsquo\;ll be in NYC"]},
+            'mailto:a@a.com',
+        ),
+        'DTEND;TZID="UTC":20190107T000000':
+        ContentLine(
+            "DTEND",
+            {'TZID': ['UTC']},
+            "20190107T000000"
+        )
     }
 
     def test_errors(self):

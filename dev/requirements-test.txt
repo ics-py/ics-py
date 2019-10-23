@@ -3,3 +3,4 @@ pytest-cov
 pytest-flakes
 pytest-pep8
 pytest-sugar
+mypy

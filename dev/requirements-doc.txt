@@ -1,3 +1,4 @@
 sphinx
 sphinxcontrib-napoleon
+sphinx-autodoc-typehints
 -r ../requirements.txt

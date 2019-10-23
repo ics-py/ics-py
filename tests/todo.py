@@ -1,15 +1,14 @@
 import unittest
+from datetime import datetime, timedelta, timezone
+
 import arrow
-from datetime import datetime, timedelta
 
-from datetime import timezone
-
-from ics.parse import Container
-from ics.alarm import AlarmFactory
+from ics.alarm.display import DisplayAlarm
 from ics.icalendar import Calendar
-from .fixture import cal27, cal28, cal29, cal30, cal31
-
+from ics.grammar.parse import Container
 from ics.todo import Todo
+
+from .fixture import cal27, cal28, cal29, cal30, cal31
 
 utc = timezone.utc
 
@@ -17,6 +16,7 @@ CRLF = "\r\n"
 
 
 class TestTodo(unittest.TestCase):
+    maxDiff = None
 
     def test_init(self):
         t = Todo()
@@ -32,7 +32,7 @@ class TestTodo(unittest.TestCase):
         self.assertIsNone(t.name)
         self.assertIsNone(t.url)
         self.assertIsNone(t.status)
-        self.assertEqual(t._unused, Container(name='VTODO'))
+        self.assertEqual(t.extra, Container(name='VTODO'))
 
     def test_init_non_exclusive_arguments(self):
         # attributes percent, priority, begin, due, and duration
@@ -40,9 +40,7 @@ class TestTodo(unittest.TestCase):
         dtstamp = datetime(2018, 2, 18, 12, 19, tzinfo=utc)
         completed = dtstamp + timedelta(days=1)
         created = dtstamp + timedelta(seconds=1)
-        alarm = [AlarmFactory().get_type_from_action('DISPLAY')]
-        alarms = set()
-        alarms.update(alarm)
+        alarms = [DisplayAlarm]
 
         t = Todo(
             uid='uid',
@@ -53,7 +51,7 @@ class TestTodo(unittest.TestCase):
             location='location',
             name='name',
             url='url',
-            alarms=alarm)
+            alarms=alarms)
 
         self.assertEqual(t.uid, 'uid')
         self.assertEqual(t.dtstamp, arrow.get(dtstamp))
@@ -63,7 +61,7 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t.location, 'location')
         self.assertEqual(t.name, 'name')
         self.assertEqual(t.url, 'url')
-        self.assertSetEqual(t.alarms, alarms)
+        self.assertEqual(t.alarms, alarms)
 
     def test_percent(self):
         t1 = Todo(percent=0)
@@ -347,23 +345,23 @@ class TestTodo(unittest.TestCase):
 
         test_str = CRLF.join(("BEGIN:VTODO",
                               "SEQUENCE:0",
-                              "DTSTAMP:20180218T154700Z",
-                              "UID:Uid",
+                              "BEGIN:VALARM",
+                              "ACTION:DISPLAY",
+                              "DESCRIPTION:Event reminder",
+                              "TRIGGER:PT1H",
+                              "END:VALARM",
                               "COMPLETED:20180418T150000Z",
                               "CREATED:20180218T154800Z",
                               "DESCRIPTION:Lorem ipsum dolor sit amet.",
-                              "DTSTART:20180218T164800Z",
+                              "DTSTAMP:20180218T154700Z",
+                              "DURATION:PT10M",
                               "LOCATION:Earth",
                               "PERCENT-COMPLETE:0",
                               "PRIORITY:0",
+                              "DTSTART:20180218T164800Z",
                               "SUMMARY:Name",
+                              "UID:Uid",
                               "URL:https://www.example.com/cal.php/todo.ics",
-                              "DURATION:PT10M",
-                              "BEGIN:VALARM",
-                              "TRIGGER:-PT1H",
-                              "ACTION:DISPLAY",
-                              "DESCRIPTION:Event reminder",
-                              "END:VALARM",
                               "END:VTODO"))
         self.assertEqual(str(t), test_str)
 
@@ -374,8 +372,8 @@ class TestTodo(unittest.TestCase):
 
         test_str = CRLF.join(("BEGIN:VTODO",
                               "DTSTAMP:20180219T210000Z",
-                              "UID:Uid",
                               "DUE:20180220T010000Z",
+                              "UID:Uid",
                               "END:VTODO"))
         self.assertEqual(str(t), test_str)
 
@@ -395,10 +393,10 @@ class TestTodo(unittest.TestCase):
         t.description = "Every\nwhere ! Yes, yes !"
 
         test_str = CRLF.join(("BEGIN:VTODO",
-                              "DTSTAMP:20180219T210000Z",
-                              "UID:Uid",
                               "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
+                              "DTSTAMP:20180219T210000Z",
                               "LOCATION:Here\\; too",
                               "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
+                              "UID:Uid",
                               "END:VTODO"))
         self.assertEqual(str(t), test_str)

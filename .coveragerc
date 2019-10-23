@@ -1,2 +1,2 @@
 [run]
-omit = ics/tools.py
+omit = ics/tools.py, ics/__init__.py, ics/__meta__.py, ics/alarm/__init__.py, ics/types.py

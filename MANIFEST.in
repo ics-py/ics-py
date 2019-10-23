@@ -1,10 +1,11 @@
-include README.rst
-include CHANGELOG.rst
-include LICENSE
-include AUTHORS.rst
-include CONTRIBUTING.rst
+include *.rst
+recursive-include ics *.py
+recursive-include ics *.ebnf
+
+recursive-include logo *.png
+
+include mypy.ini
 include meta.py
-include tests/fixtures/README
 
 recursive-include tests *.py
 recursive-include tests *.ics

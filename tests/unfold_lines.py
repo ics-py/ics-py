@@ -1,19 +1,10 @@
 import unittest
-from ics.parse import unfold_lines
-from .fixture import (
-    cal1,
-    cal2,
-    cal3,
-    cal6,
-    cal7,
-    cal8,
-    cal9,
-    cal26,
-    unfolded_cal1,
-    unfolded_cal2,
-    unfolded_cal6,
-    unfolded_cal26,
-)
+
+from ics.grammar.parse import unfold_lines
+
+from .fixture import (cal1, cal2, cal3, cal6, cal7, cal8, cal9, cal26,
+                      unfolded_cal1, unfolded_cal2, unfolded_cal6,
+                      unfolded_cal26)
 
 
 class TestUnfoldLines(unittest.TestCase):

@@ -1,11 +1,15 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals, absolute_import
-
 import collections
+from pathlib import Path
+from typing import Dict, List
+
+import tatsu
 
 CRLF = '\r\n'
+
+grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
+
+with open(grammar_path) as fd:
+    GRAMMAR = tatsu.compile(fd.read())
 
 
 class ParseError(Exception):
@@ -13,12 +17,21 @@ class ParseError(Exception):
 
 
 class ContentLine:
-    """ represents one property of calendar content
+    """
+    Represents one property line.
 
-    name:   the name of the property (uppercased for consistency and
-            easier comparison)
-    params: a dict of the parameters
-    value:  its value
+    For example:
+
+    ``FOO;BAR=1:YOLO`` is represented by
+
+    ``ContentLine('FOO', {'BAR': ['1']}, 'YOLO'))``
+
+    Args:
+
+        name:   The name of the property (uppercased for consistency and
+                easier comparison)
+        params: A map name:list of values
+        value:  The value of the property
     """
 
     def __eq__(self, other):
@@ -30,7 +43,7 @@ class ContentLine:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def __init__(self, name, params={}, value=''):
+    def __init__(self, name: str, params: Dict[str, List[str]] = {}, value: str = ''):
         self.name = name.upper()
         self.params = params
         self.value = value
@@ -58,39 +71,38 @@ class ContentLine:
 
     @classmethod
     def parse(cls, line):
-        if ':' not in line:
-            raise ParseError("No ':' in line '{}'".format(line))
+        """Parse a single iCalendar-formatted line into a ContentLine"""
+        try:
+            ast = GRAMMAR.parse(line + CRLF)
+        except tatsu.exceptions.FailedToken:
+            raise ParseError()
 
-        # Separate key and value
-        splitted = line.split(':', 1)
-        key, value = splitted[0], splitted[1].strip()
-
-        # Separate name and params
-        splitted = key.split(';')
-        name, params_strings = splitted[0], splitted[1:]
-
-        # Separate key and values for params
+        name = ''.join(ast['name'])
+        value = ''.join(ast['value'])
         params = {}
-        for paramstr in params_strings:
-            if '=' not in paramstr:
-                raise ParseError("No '=' in line '{}'".format(paramstr))
-            pname, pvals = paramstr.split('=', 1)
-            params[pname] = pvals.split(',')
+        for param_ast in ast.get('params', []):
+            param_name = ''.join(param_ast["name"])
+            param_values = [''.join(x) for x in param_ast["values_"]]
+            params[param_name] = param_values
         return cls(name, params, value)
 
     def clone(self):
+        """Makes a copy of itself"""
         # dict(self.params) -> Make a copy of the dict
         return self.__class__(self.name, dict(self.params), self.value)
 
 
 class Container(list):
-    """ represents one calendar object.
+    """Represents an iCalendar object.
     Contains a list of ContentLines or Containers.
 
-    name: the name of the object (VCALENDAR, VEVENT etc.)
+    Args:
+
+        name: the name of the object (VCALENDAR, VEVENT etc.)
+        items: Containers or ContentLines
     """
 
-    def __init__(self, name, *items):
+    def __init__(self, name: str, *items: List):
         super(Container, self).__init__(items)
         self.name = name
 
@@ -122,6 +134,7 @@ class Container(list):
         return cls(name, *items)
 
     def clone(self):
+        """Makes a copy of itself"""
         c = self.__class__(self.name)
         for elem in self:
             c.append(elem.clone())
@@ -129,7 +142,7 @@ class Container(list):
 
 
 def unfold_lines(physical_lines):
-    if not isinstance(physical_lines, collections.Iterable):
+    if not isinstance(physical_lines, collections.abc.Iterable):
         raise ParseError('Parameter `physical_lines` must be an iterable')
     current_line = ''
     for line in physical_lines:
@@ -170,20 +183,18 @@ def string_to_container(txt):
     return lines_to_container(txt.splitlines())
 
 
-if __name__ == "__main__":
-    from tests.fixture import cal1
+def interpret_ast(ast):
+    name = ''.join(ast['name'])
+    value = ''.join(ast['value'])
+    params = {}
+    for param_ast in ast.get('params', []):
+        param_name = ''.join(param_ast["name"])
+        param_values = [''.join(x) for x in param_ast["values_"]]
+        params[param_name] = param_values
+    return ContentLine(name, params, value)
 
-    def print_tree(elem, lvl=0):
-        if isinstance(elem, list) or isinstance(elem, Container):
-            if isinstance(elem, Container):
-                print("{}{}".format('   ' * lvl, elem.name))
-            for sub_elem in elem:
-                print_tree(sub_elem, lvl + 1)
-        elif isinstance(elem, ContentLine):
-            print("{}{}{}".format('   ' * lvl,
-                  elem.name, elem.params, elem.value))
-        else:
-            print('Wuuut?')
 
-    cal = string_to_container(cal1)
-    print_tree(cal)
+def calendar_string_to_containers(string):
+    if not isinstance(string, str):
+        raise TypeError("Expecting a string")
+    return string_to_container(string)
