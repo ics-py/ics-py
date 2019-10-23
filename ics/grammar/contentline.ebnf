@@ -3,22 +3,29 @@
 
 start = contentline $ ;
 
-ALPHA = ?"[a-zA-Z]" ;
-DIGIT = ? "[0-9]" ;
+ALPHADIGIT = ? "[a-zA-Z0-9]";
+ALPHADIGIT_3_OR_MORE = ? "[a-zA-Z0-9]{3,}";
+ALPHADIGIT_MINUS = ? "[a-zA-Z0-9\-]";
+ALPHADIGIT_MINUS_PLUS = ? "[a-zA-Z0-9\-]+";
 CRLF = "\r\n" ;
 WSP = " ";
 
 DQUOTE = '"' ;
 
-QSAFE_CHAR    = WSP | ?"\x21" | ?"[\x23-\x7E]" | ?"[\u0080-\uffff]";
-SAFE_CHAR     = WSP | ?"\x21" | ?"[\x23-\x2B]" | ?"[\x2D-\x39]" | ?"[\x3C-\x7E]" | ?"[\u0080-\uffff]" ;
-VALUE_CHAR    = WSP | ?"[\x21-\x7E]" | ?"[\u0080-\uffff]";
+QSAFE_CHAR    = ?"[ \x21\x23-\x7E\u0080-\uffff]";
+QSAFE_CHAR_STAR    = ?"[ \x21\x23-\x7E\u0080-\uffff]*";
+
+SAFE_CHAR     = ?"[ \x21\x23-\x2B\x2D-\x39\x3C-\x7E\u0080-\uffff]" ;
+SAFE_CHAR_STAR     = ?"[ \x21\x23-\x2B\x2D-\x39\x3C-\x7E\u0080-\uffff]*" ;
+
+VALUE_CHAR    = ?"[ \x21-\x7E\u0080-\uffff]";
+VALUE_CHAR_STAR    = ?"[ \x21-\x7E\u0080-\uffff]*";
 
 
 name          = iana_token | x_name ;
-iana_token    = {(ALPHA | DIGIT | "-")}+ ;
-x_name        = "X-" [vendorid "-"] {(ALPHA | DIGIT | "-")}+ ;
-vendorid      = (ALPHA | DIGIT) (ALPHA | DIGIT) {(ALPHA | DIGIT)}+ ;
+iana_token    = ALPHADIGIT_MINUS_PLUS ;
+x_name        = "X-" [vendorid "-"] ALPHADIGIT_MINUS_PLUS ;
+vendorid      = ALPHADIGIT_3_OR_MORE ;
 
 contentline   = name:name {(";" params+:param )}* ":" value:value CRLF ;
 
@@ -26,6 +33,6 @@ param         = name:param_name "=" values+:param_value {("," values+:param_valu
 param_name    = iana_token | x_name ;
 param_value   = quoted_string | paramtext ;
 
-paramtext     = {SAFE_CHAR}* ;
-value         = {VALUE_CHAR}* ;
-quoted_string = DQUOTE @:{QSAFE_CHAR}* DQUOTE ;
+paramtext     = SAFE_CHAR_STAR ;
+value         = VALUE_CHAR_STAR ;
+quoted_string = DQUOTE @:QSAFE_CHAR_STAR DQUOTE ;
