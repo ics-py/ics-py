@@ -4,6 +4,14 @@ Ics.py changelog
 
 
 **************
+0.7 (in dev)
+**************
+
+Major changes:
+
+Minor changes:
+
+**************
 0.6
 **************
 
