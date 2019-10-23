@@ -1,6 +1,6 @@
 import unittest
 
-from ics.parse import ContentLine, ParseError
+from ics.grammar.parse import ContentLine, ParseError
 from ics.utils import iso_to_arrow
 
 

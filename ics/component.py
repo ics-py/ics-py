@@ -2,7 +2,7 @@ import warnings
 from collections import namedtuple
 from typing import Any, Dict, Tuple
 
-from .parse import Container
+from ics.grammar.parse import Container
 from .utils import get_lines
 from .serializers.serializer import Serializer
 from .parsers.parser import Parser

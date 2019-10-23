@@ -3,7 +3,7 @@ import unittest
 
 from ics.component import Component
 from ics.icalendar import Calendar
-from ics.parse import Container, ContentLine
+from ics.grammar.parse import Container, ContentLine
 from ics.parsers.parser import Parser, option
 from ics.serializers.serializer import Serializer
 

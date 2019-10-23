@@ -9,11 +9,11 @@ from ics.attendee import Attendee
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.organizer import Organizer
-from ics.parse import Container
+from ics.grammar.parse import Container
 
 from .fixture import (cal12, cal13, cal15, cal16, cal17, cal18, cal19,
                       cal19bis, cal20, cal32, cal33_1, cal33_2, cal33_3,
-                      cal33_4, cal33_5, cal34)
+                      cal33_4, cal33_5)
 
 CRLF = "\r\n"
 

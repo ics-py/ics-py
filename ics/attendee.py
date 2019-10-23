@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from .parse import ContentLine
+from ics.grammar.parse import ContentLine
 
 
 class Attendee(object):

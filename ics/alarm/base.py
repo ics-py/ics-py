@@ -1,19 +1,14 @@
 import copy
 from datetime import datetime, timedelta
-from typing import Callable, List, Optional, Union, Any
+from typing import Optional, Union, Any
 from abc import ABCMeta, abstractmethod
-import warnings
 
-from ics.component import Component, Extractor
+from ics.component import Component
 from ics.utils import (
-    arrow_to_iso,
     get_arrow,
-    iso_to_arrow,
-    parse_duration,
-    timedelta_to_duration,
     get_lines
 )
-from ics.parse import ContentLine, Container
+from ics.grammar.parse import Container
 
 from ics.serializers.alarm_serializer import BaseAlarmSerializer
 from ics.parsers.alarm_parser import BaseAlarmParser

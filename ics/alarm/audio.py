@@ -2,7 +2,7 @@ from typing import Optional
 
 from ics.alarm.base import BaseAlarm
 
-from ics.parse import ContentLine
+from ics.grammar.parse import ContentLine
 from typing import Union
 from datetime import datetime, timedelta
 

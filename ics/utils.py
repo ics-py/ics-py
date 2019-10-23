@@ -7,8 +7,8 @@ import arrow
 from arrow.arrow import Arrow
 from dateutil.tz import gettz
 
-from . import parse
-from .parse import Container, ContentLine
+from ics.grammar import parse
+from ics.grammar.parse import Container, ContentLine
 
 tzutc = arrow.utcnow().tzinfo
 

@@ -1,4 +1,4 @@
-from ics.parse import ContentLine
+from ics.grammar.parse import ContentLine
 from ics.serializers.serializer import Serializer
 
 

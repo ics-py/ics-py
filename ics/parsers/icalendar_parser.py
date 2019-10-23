@@ -2,7 +2,7 @@ from dateutil.tz import tzical
 from six import StringIO
 
 from ics.event import Event
-from ics.parse import ContentLine
+from ics.grammar.parse import ContentLine
 from ics.parsers.parser import Parser, option
 from ics.todo import Todo
 from ics.utils import remove_sequence, remove_x
