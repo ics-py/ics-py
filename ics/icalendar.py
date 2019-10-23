@@ -1,11 +1,11 @@
 import copy
-from typing import Callable, Dict, Iterable, List, Optional, Set, Union
+from typing import Dict, Iterable, Optional, Set, Union
 
 from six import text_type
 
-from .component import Component, Extractor
+from .component import Component
 from .event import Event
-from .parse import Container, calendar_string_to_containers
+from ics.grammar.parse import Container, calendar_string_to_containers
 from .timeline import Timeline
 from .todo import Todo
 from ics.parsers.icalendar_parser import CalendarParser

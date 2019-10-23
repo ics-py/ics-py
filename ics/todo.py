@@ -7,7 +7,7 @@ from six.moves import map
 
 from .alarm.base import BaseAlarm
 from .component import Component
-from .parse import Container
+from ics.grammar.parse import Container
 from .utils import get_arrow, uid_gen
 
 from ics.parsers.todo_parser import TodoParser

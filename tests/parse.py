@@ -1,9 +1,8 @@
 import unittest
 
-from ics.event import Event
 from ics.icalendar import Calendar
-from ics.parse import (Container, ContentLine, ParseError, lines_to_container,
-                       string_to_container)
+from ics.grammar.parse import (Container, ContentLine, ParseError, lines_to_container,
+                               string_to_container)
 
 from .fixture import cal1, cal5, cal11
 

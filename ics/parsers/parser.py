@@ -1,6 +1,6 @@
 from typing import Callable, Dict, List, NamedTuple, Optional, Tuple
 
-from ics.parse import ContentLine
+from ics.grammar.parse import ContentLine
 
 
 class ParserOption(NamedTuple):

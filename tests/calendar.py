@@ -5,10 +5,10 @@ import arrow
 
 from ics.event import Event
 from ics.icalendar import Calendar
-from ics.parse import Container
+from ics.grammar.parse import Container
 from ics.todo import Todo
 
-from .fixture import cal1, cal2, cal10, cal12, cal14, cal34
+from .fixture import cal1, cal10, cal12, cal14, cal34
 
 
 class TestCalendar(unittest.TestCase):

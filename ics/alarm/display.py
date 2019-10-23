@@ -1,8 +1,4 @@
-import copy
-
 from ics.alarm.base import BaseAlarm
-from ics.parse import ContentLine
-from ics.utils import escape_string, unescape_string
 from typing import Union
 from datetime import datetime, timedelta
 

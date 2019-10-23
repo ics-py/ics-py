@@ -8,7 +8,7 @@ from ics.alarm.none import NoneAlarm
 from ics.alarm.custom import CustomAlarm
 from ics.alarm import AudioAlarm, DisplayAlarm
 from ics.icalendar import Calendar
-from ics.parse import ContentLine
+from ics.grammar.parse import ContentLine
 
 from .fixture import cal21, cal22, cal23, cal24, cal25, cal35, cal36
 

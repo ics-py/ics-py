@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List
 
 from ics.alarm.utils import get_type_from_container
-from ics.parse import ContentLine
+from ics.grammar.parse import ContentLine
 from ics.parsers.parser import Parser, option
 from ics.utils import iso_to_arrow, parse_duration, unescape_string
 

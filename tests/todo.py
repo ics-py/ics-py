@@ -5,7 +5,7 @@ import arrow
 
 from ics.alarm.display import DisplayAlarm
 from ics.icalendar import Calendar
-from ics.parse import Container
+from ics.grammar.parse import Container
 from ics.todo import Todo
 
 from .fixture import cal27, cal28, cal29, cal30, cal31

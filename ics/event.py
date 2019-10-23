@@ -1,15 +1,15 @@
 import copy
 from datetime import datetime, timedelta
-from typing import (Callable, Dict, Iterable, List, NamedTuple, Optional, Set,
+from typing import (Dict, Iterable, List, NamedTuple, Optional, Set,
                     Tuple, Union)
 
 from arrow import Arrow
 
 from .alarm.base import BaseAlarm
 from .attendee import Attendee
-from .component import Component, Extractor
+from .component import Component
 from .organizer import Organizer
-from .parse import Container
+from ics.grammar.parse import Container
 from .types import ArrowLike
 from .utils import (get_arrow, uid_gen)
 from ics.parsers.event_parser import EventParser
