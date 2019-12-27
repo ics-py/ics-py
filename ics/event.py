@@ -91,7 +91,7 @@ class Event(Component):
         self._status: Optional[str] = None
         self._classification: Optional[str] = None
 
-        self.organizer: Optional[str] = None
+        self.organizer: Optional[Organizer] = organizer
         self.uid: str = uid_gen() if not uid else uid
         self.description: Optional[str] = description
         self.created: Optional[ArrowLike] = get_arrow(created)
