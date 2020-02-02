@@ -5,15 +5,16 @@ from typing import (Dict, Iterable, List, NamedTuple, Optional, Set,
 
 from arrow import Arrow
 
+from ics.grammar.parse import Container
+from ics.parsers.event_parser import EventParser
+from ics.serializers.event_serializer import EventSerializer
 from .alarm.base import BaseAlarm
 from .attendee import Attendee
 from .component import Component
 from .organizer import Organizer
-from ics.grammar.parse import Container
+from .timespan import Timespan
 from .types import ArrowLike
 from .utils import (get_arrow, uid_gen)
-from ics.parsers.event_parser import EventParser
-from ics.serializers.event_serializer import EventSerializer
 
 
 class Geo(NamedTuple):
@@ -21,8 +22,18 @@ class Geo(NamedTuple):
     longitude: float
 
 
-class Event(Component):
+EventOrTimespan = Union["Event", Timespan]
+EventOrTimespanOrInstant = Union["Event", Timespan, datetime]
 
+
+def get_timespan_if_event(value):
+    if isinstance(value, Event):
+        return value._timespan
+    else:
+        return value
+
+
+class Event(Component):
     """A calendar event.
 
     Can be full-day or between two instants.
@@ -84,10 +95,7 @@ class Event(Component):
             ValueError: if `end` and `duration` are specified at the same time
         """
 
-        self._duration: Optional[timedelta] = None
-        self._end_time: Optional[ArrowLike] = None
-        self._begin: Optional[ArrowLike] = None
-        self._begin_precision = None
+        self._timespan: Timespan = Timespan(begin, end, duration)
         self._status: Optional[str] = None
         self._classification: Optional[str] = None
 
@@ -106,16 +114,6 @@ class Event(Component):
         self.extra = Container(name='VEVENT')
 
         self.name = name
-        self.begin = begin
-
-        if duration and end:
-            raise ValueError(
-                'Event() may not specify an end and a duration \
-                at the same time')
-        elif end:  # End was specified
-            self.end = end
-        elif duration:  # Duration was specified
-            self.duration = duration
 
         if alarms is not None:
             self.alarms = list(alarms)
@@ -128,20 +126,21 @@ class Event(Component):
         if attendees is not None:
             self.attendees.update(set(attendees))
 
-    def has_end(self) -> bool:
+    def clone(self):
         """
-        Return:
-            bool: self has an end
-        """
-        return bool(self._end_time or self._duration)
+        Returns:
+            Event: an exact copy of self"""
+        clone = copy.copy(self)
+        clone.extra = clone.extra.clone()
+        clone.alarms = copy.copy(self.alarms)
+        clone.categories = copy.copy(self.categories)
+        # don't need to copy timespan as it is immutable
+        return clone
 
-    def add_attendee(self, attendee: Attendee):
-        """ Add an attendee to the attendees set
-        """
-        self.attendees.add(attendee)
+    ####################################################################################################################
 
     @property
-    def begin(self) -> Arrow:
+    def begin(self) -> datetime:
         """Get or set the beginning of the event.
 
         |  Will return an :class:`Arrow` object.
@@ -150,21 +149,16 @@ class Event(Component):
             be set to a superior value.
         |  For all-day events, the time is truncated to midnight when set.
         """
-        return self._begin
+        return self._timespan.get_begin()
 
     @begin.setter
     def begin(self, value: ArrowLike):
-        value = get_arrow(value)
-        precision = 'day' if self.all_day else 'second'
-        if value is not None:
-            value = value.floor(precision)
-        if value and self._end_time and value > self._end_time:
-            raise ValueError('Begin must be before end')
-        self._begin = value
-        self._begin_precision = precision
+        if isinstance(value, Arrow):
+            value = value.datetime
+        self._timespan = self._timespan.replace(begin_time=value)
 
     @property
-    def end(self) -> Arrow:
+    def end(self) -> datetime:
         """Get or set the end of the event.
 
         |  Will return an :class:`Arrow` object.
@@ -179,46 +173,13 @@ class Event(Component):
             rounded up to midnight the next day, including the full day.
             Note that rounding is different from :func:`make_all_day`.
         """
-
-        if self._duration:  # if end is duration defined
-            # return the beginning + duration
-            return None if self._begin is None else self.begin + self._duration
-        elif self._end_time:  # if end is time defined
-            if self.all_day:
-                return self._end_time
-            else:
-                return self._end_time
-        elif self._begin:  # if end is not defined
-            if self.all_day:
-                return self._begin + timedelta(days=1)
-            else:
-                # instant event
-                return self._begin
-        else:
-            return None
+        return self._timespan.get_effective_end()
 
     @end.setter
     def end(self, value: ArrowLike):
-        value = get_arrow(value)
-        precision = 'day' if self.all_day else 'second'
-        if value is not None:
-            floored_value = value.floor(precision)
-            if precision == 'day' and value != floored_value:
-                value = floored_value + timedelta(days=1)
-            else:
-                value = floored_value
-        if value and self._begin and value < self._begin:
-            raise ValueError('End must be after begin')
-
-        self._end_time = value
-        if value:
-            self._duration = None
-            self._begin_precision = precision
-
-    def _timedelta_ceiling(self, value, precision):
-        if precision != 'day' or (value.seconds == 0 and value.microseconds == 0):
-            return value
-        return timedelta(days=value.days + 1)
+        if isinstance(value, Arrow):
+            value = value.datetime
+        self._timespan = self._timespan.replace(end_time=value)
 
     @property
     def duration(self) -> Optional[timedelta]:
@@ -231,69 +192,30 @@ class Event(Component):
             existing end time.
         |  Duration of an all-day event is rounded up to a full day.
         """
-        if self._duration:
-            return self._duration
-        elif self.end:
-            # because of the clever getter for end, this also takes care of all_day events
-            return self.end - self.begin
-        else:
-            # event has neither start, nor end, nor duration
-            return None
+        return self._timespan.get_effective_duration()
 
     @duration.setter
     def duration(self, value: timedelta):
-        if isinstance(value, dict):
-            value = timedelta(**value)
-        elif isinstance(value, timedelta):
-            value = value
-        elif value is not None:
-            value = timedelta(value)
+        self._timespan = self._timespan.replace(duration=value)
 
-        if value:
-            if value < timedelta(0):
-                raise ValueError('Duration must be positive')
-            value = self._timedelta_ceiling(value, self._begin_precision)
-            self._end_time = None
-
-        self._duration = value
+    def convert_end(self, representation):
+        self._timespan = self._timespan.convert_end(representation)
 
     @property
-    def geo(self) -> Optional[Geo]:
-        """Get or set the geo position of the event.
+    def end_representation(self):
+        return self._timespan.get_end_representation()
 
-        |  Will return a namedtuple object.
-        |  May be set to any Geo, tuple or dict with latitude and longitude keys.
-        |  If set to a non null value, removes any already
-            existing geo.
-        """
-        return self._geo
-
-    @geo.setter
-    def geo(self, value: Union[Dict[str, float], Tuple[float, float], Geo, None]):
-        if isinstance(value, dict):
-            latitude, longitude = value['latitude'], value['longitude']
-            value = Geo(latitude, longitude)
-        elif value is not None:
-            latitude, longitude = value
-            value = Geo(latitude, longitude)
-        self._geo = value
+    @property
+    def has_end(self) -> bool:
+        return self._timespan.has_end()
 
     @property
     def all_day(self):
-        """
-        Return:
-            bool: self is an all-day event
-        """
-        # the event may have an end, also given in 'day' precision
-        return self._begin_precision == 'day'
+        return self._timespan.is_all_day()
 
-    def make_all_day(self, become_all_day=True):
+    def make_all_day(self):
         """Transforms self to an all-day event or a time-based event.
 
-        |  If become_all_day is False, the event is set to a time-based
-            event.  Any rounding performed when the event was made all-day
-            is *not* undone.
-        |  Otherwise:
         |  The event will span all the days from the begin to *and including*
             the end day.  For example, assume begin = 2018-01-01 10:37,
             end = 2018-01-02 14:44.  After make_all_day, begin = 2018-01-01
@@ -303,36 +225,22 @@ class Event(Component):
         |  If neither duration not end are set, a duration of one day is implied.
         |  If self is already all-day, it is unchanged.
         """
-        if not become_all_day:
-            self._begin_precision = 'second'
-            return
+        self._timespan = self._timespan.make_all_day()
 
-        if self.all_day:
-            # Do nothing if we already are a all day event
-            return
+    def unset_all_day(self):
+        self._timespan = self._timespan.replace(precision="seconds")
 
-        begin_day = self.begin.floor('day')
-        self._begin = begin_day
+    @property
+    def floating(self):
+        return self._timespan.is_floating()
 
-        if self._end_time is not None:
-            end_day = self.end.floor('day')
+    def replace_timezone(self, tzinfo):
+        self._timespan = self._timespan.replace_timezone(tzinfo)
 
-            # for a one day event, we don't need a _end_time
-            if begin_day == end_day:
-                self._end_time = None
-            else:
-                self._end_time = end_day + timedelta(days=1)
-            self._duration = None
-        elif self._duration is not None:
-            duration = self._timedelta_ceiling(self._duration, 'day')
-            # for a one day event, we don't need a duration
-            if duration == timedelta(days=1):
-                self._duration = None
-            else:
-                self._duration = duration
-            self._end_time = None
+    def convert_timezone(self, tzinfo):
+        self._timespan = self._timespan.convert_timezone(tzinfo)
 
-        self._begin_precision = 'day'
+    ####################################################################################################################
 
     @property
     def status(self) -> Optional[str]:
@@ -360,180 +268,82 @@ class Event(Component):
         else:
             self._classification = None
 
+    @property
+    def geo(self) -> Optional[Geo]:
+        """Get or set the geo position of the event.
+
+        |  Will return a namedtuple object.
+        |  May be set to any Geo, tuple or dict with latitude and longitude keys.
+        |  If set to a non null value, removes any already
+            existing geo.
+        """
+        return self._geo
+
+    @geo.setter
+    def geo(self, value: Union[Dict[str, float], Tuple[float, float], Geo, None]):
+        if isinstance(value, dict):
+            latitude, longitude = value['latitude'], value['longitude']
+            value = Geo(latitude, longitude)
+        elif value is not None:
+            latitude, longitude = value
+            value = Geo(latitude, longitude)
+        self._geo = value
+
+    def add_attendee(self, attendee: Attendee):
+        """ Add an attendee to the attendees set
+        """
+        self.attendees.add(attendee)
+
+    ####################################################################################################################
+
     def __repr__(self) -> str:
-        name = "'{}' ".format(self.name) if self.name else ''
-        if self.all_day:
-            assert self._begin
-            if not self._end_time or self._begin == self._end_time:
-                return "<all-day Event {}{}>".format(name, self.begin.strftime('%Y-%m-%d'))
-            else:
-                return "<all-day Event {}begin:{} end:{}>".format(name, self._begin.strftime('%Y-%m-%d'), self._end_time.strftime('%Y-%m-%d'))
-        elif self.begin is None:
-            return "<Event '{}'>".format(self.name) if self.name else "<Event>"
-        else:
-            return "<Event {}begin:{} end:{}>".format(name, self.begin, self.end)
-
-    def starts_within(self, other) -> bool:
-        if not isinstance(other, Event):
-            raise NotImplementedError(
-                'Cannot compare Event and {}'.format(type(other)))
-        return self.begin >= other.begin and self.begin <= other.end
-
-    def ends_within(self, other) -> bool:
-        if not isinstance(other, Event):
-            raise NotImplementedError(
-                'Cannot compare Event and {}'.format(type(other)))
-        return self.end >= other.begin and self.end <= other.end
-
-    def intersects(self, other) -> bool:
-        if not isinstance(other, Event):
-            raise NotImplementedError(
-                'Cannot compare Event and {}'.format(type(other)))
-        return (self.starts_within(other)
-                or self.ends_within(other)
-                or other.starts_within(self)
-                or other.ends_within(self))
-
-    __xor__ = intersects
-
-    def includes(self, other) -> bool:
-        if isinstance(other, Event):
-            return other.starts_within(self) and other.ends_within(self)
-        if isinstance(other, datetime):
-            return self.begin <= other and self.end >= other
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
-
-    def is_included_in(self, other) -> bool:
-        if isinstance(other, Event):
-            return other.includes(self)
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
-
-    __in__ = is_included_in
-
-    def __lt__(self, other) -> bool:
-        if isinstance(other, Event):
-            if self.begin is None and other.begin is None:
-                if self.name is None and other.name is None:
-                    return False
-                elif self.name is None:
-                    return True
-                elif other.name is None:
-                    return False
-                else:
-                    return self.name < other.name
-            # if we arrive here, at least one of self.begin
-            # and other.begin is not None
-            # so if they are equal, they are both Arrow
-            elif self.begin == other.begin:
-                if self.end is None:
-                    return True
-                elif other.end is None:
-                    return False
-                else:
-                    return self.end < other.end
-            else:
-                return self.begin < other.begin
-        if isinstance(other, datetime):
-            return self.begin < other
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
-
-    def __le__(self, other) -> bool:
-        if isinstance(other, Event):
-            if self.begin is None and other.begin is None:
-                if self.name is None and other.name is None:
-                    return True
-                elif self.name is None:
-                    return True
-                elif other.name is None:
-                    return False
-                else:
-                    return self.name <= other.name
-            elif self.begin == other.begin:
-                if self.end is None:
-                    return True
-                elif other.end is None:
-                    return False
-                else:
-                    return self.end <= other.end
-            else:
-                return self.begin <= other.begin
-        if isinstance(other, datetime):
-            return self.begin <= other
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
-
-    def __gt__(self, other) -> bool:
-        return not self.__le__(other)
-
-    def __ge__(self, other) -> bool:
-        return not self.__lt__(other)
-
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, Event):
-            return (self.name == other.name
-            and self.begin == other.begin
-            and self.end == other.end
-            and self.duration == other.duration
-            and self.description == other.description
-            and self.created == other.created
-            and self.last_modified == other.last_modified
-            and self.location == other.location
-            and self.url == other.url
-            and self.transparent == other.transparent
-            and self.alarms == other.alarms
-            and self.attendees == other.attendees
-            and self.categories == other.categories
-            and self.status == other.status
-            and self.organizer == other.organizer)
-        raise NotImplementedError(
-            'Cannot compare Event and {}'.format(type(other)))
-
-    def time_equals(self, other) -> bool:
-        return (self.begin == other.begin) and (self.end == other.end)
-
-    def join(self, other, *args, **kwarg):
-        """Create a new event which covers the time range of two intersecting events
-
-        All extra parameters are passed to the Event constructor.
-
-        Args:
-            other: the other event
-
-        Returns:
-            a new Event instance
-        """
-        event = Event(*args, **kwarg)
-        if self.intersects(other):
-            if self.starts_within(other):
-                event.begin = other.begin
-            else:
-                event.begin = self.begin
-
-            if self.ends_within(other):
-                event.end = other.end
-            else:
-                event.end = self.end
-
-            return event
-        raise ValueError('Cannot join {} with {}: they don\'t intersect.'.format(self, other))
-
-    __and__ = join
-
-    def clone(self):
-        """
-        Returns:
-            Event: an exact copy of self"""
-        clone = copy.copy(self)
-        clone.extra = clone.extra.clone()
-        clone.alarms = copy.copy(self.alarms)
-        clone.categories = copy.copy(self.categories)
-        return clone
+        name = [self.__class__.__name__, "'%s'" % (self.name or "",)]
+        prefix, _, suffix = self._timespan.get_str_segments()
+        return "<%s>" % (" ".join(prefix + name + suffix))
 
     def __hash__(self) -> int:
         """
         Returns:
             int: hash of self. Based on self.uid."""
-        return int(''.join(map(lambda x: '%.3d' % ord(x), self.uid)))
+        return hash(self.uid)
+
+    ####################################################################################################################
+
+    def starts_within(self, second: EventOrTimespan) -> bool:
+        return self._timespan.starts_within(get_timespan_if_event(second))
+
+    def ends_within(self, second: EventOrTimespan) -> bool:
+        return self._timespan.ends_within(get_timespan_if_event(second))
+
+    def intersects(self, second: EventOrTimespan) -> bool:
+        return self._timespan.intersects(get_timespan_if_event(second))
+
+    def includes(self, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.includes(get_timespan_if_event(second))
+
+    def is_included_in(self, second: EventOrTimespan) -> bool:
+        return self._timespan.is_included_in(get_timespan_if_event(second))
+
+    def compare(self, extract_dt, op, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.compare(extract_dt, op, get_timespan_if_event(second))
+
+    def __lt__(self, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.__lt__(get_timespan_if_event(second))
+
+    def __le__(self, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.__le__(get_timespan_if_event(second))
+
+    def __gt__(self, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.__gt__(get_timespan_if_event(second))
+
+    def __ge__(self, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.__ge__(get_timespan_if_event(second))
+
+    def __eq__(self, o: object) -> bool:
+        return self.__class__ == o.__class__ and self.__dict__ == o.__dict__
+
+    def same_timespan(self, second: EventOrTimespan) -> bool:
+        return self._timespan.same_timespan(get_timespan_if_event(second))
+
+    def union_timespan(self, second: EventOrTimespanOrInstant):
+        self._timespan = self._timespan.union(get_timespan_if_event(second))
