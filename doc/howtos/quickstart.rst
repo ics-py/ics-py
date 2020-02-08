@@ -1,4 +1,7 @@
-:orphan:
+Quickstart
+==========
+
+
 
 Import a calendar from a file
 -----------------------------
