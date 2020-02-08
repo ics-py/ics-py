@@ -93,6 +93,9 @@ pygments_style = 'sphinx'
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
 
+rst_prolog = """
+.. |minpyver| replace:: 3.6
+"""
 
 # -- Options for HTML output ----------------------------------------------
 
