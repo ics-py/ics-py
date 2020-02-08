@@ -1,114 +1,111 @@
-import re
-from datetime import timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Dict, List, Optional, Tuple, Union
 from uuid import uuid4
 
-import arrow
-from arrow.arrow import Arrow
-from dateutil.tz import gettz
+from dateutil.tz import UTC as tzutc, gettz
 
 from ics.grammar import parse
 from ics.grammar.parse import Container, ContentLine
+from ics.types import DatetimeLike
 
-tzutc = arrow.utcnow().tzinfo
-
-
-def remove_x(container: Container) -> None:
-    for i in reversed(range(len(container))):
-        item = container[i]
-        if item.name.startswith('X-'):
-            del container[i]
-
-
-def remove_sequence(container: Container) -> None:
-    for i in reversed(range(len(container))):
-        item = container[i]
-        if item.name == 'SEQUENCE':
-            del container[i]
-
-
-DATE_FORMATS: Dict[int, str] = dict((len(k), k) for k in (
-    'YYYYMM',
-    'YYYYMMDD',
-    'YYYYMMDDTHH',
-    'YYYYMMDDTHHmm',
-    'YYYYMMDDTHHmmss'))
+midnight = time()
+DATE_FORMATS = {
+    6: "%Y%m",
+    8: "%Y%m%d",
+    11: "%Y%m%dT%H",
+    13: "%Y%m%dT%H%M",
+    15: "%Y%m%dT%H%M%S"
+}
+TIMEDELTA_CACHE = {
+    0: timedelta(),
+    "day": timedelta(days=1),
+    "second": timedelta(seconds=1)
+}
 
 
-def arrow_get(string: str) -> Arrow:
-    '''this function exists because ICS uses ISO 8601 without dashes or
-    colons, i.e. not ISO 8601 at all.'''
-
-    # replace slashes with dashes
-    if '/' in string:
-        string = string.replace('/', '-')
-
-    # if string contains dashes, assume it to be proper ISO 8601
-    if '-' in string:
-        return arrow.get(string)
-
-    string = string.rstrip('Z')
-    return arrow.get(string, DATE_FORMATS[len(string)])
-
-
-def iso_to_arrow(time_container: Optional[ContentLine], available_tz={}) -> Arrow:
+def parse_datetime(time_container: Optional[ContentLine], available_tz=None) -> datetime:
     if time_container is None:
         return None
 
-    # TODO : raise if not iso date
     tz_list = time_container.params.get('TZID')
-    # TODO : raise if len(tz_list) > 1 or if tz is not a valid tz
-    # TODO : see if timezone is registered as a VTIMEZONE
-    tz: Optional[str]
-    if tz_list and len(tz_list) > 0:
-        tz = tz_list[0]
-    else:
-        tz = None
-    if ('T' not in time_container.value) and \
-            'DATE' in time_container.params.get('VALUE', []):
-        val = time_container.value + 'T0000'
-    else:
-        val = time_container.value
+    param_tz: Optional[str] = tz_list[0] if tz_list else None
+    # if ('T' not in time_container.value) and 'DATE' in time_container.params.get('VALUE', []):
+    val = time_container.value
+    fixed_utc = (val[-1].upper() == 'Z')
 
-    if tz and not (val[-1].upper() == 'Z'):
-        naive = arrow_get(val).naive
-        selected_tz = gettz(tz)
-        if not selected_tz:
-            selected_tz = available_tz.get(tz, 'UTC')
-        return arrow.get(naive, selected_tz)
-    else:
-        return arrow_get(val)
+    val = val.translate({"/": "", "-": "", "Z": "", "z": ""})
+    dt = datetime.strptime(val, DATE_FORMATS[len(val)])
 
-    # TODO : support floating (ie not bound to any time zone) times (cf
-    # http://www.kanzaki.com/docs/ical/dateTime.html)
+    if fixed_utc:
+        if param_tz:
+            raise ValueError("can't specify UTC via appended 'Z' and TZID param '%s'" % param_tz)
+        return dt.replace(tzinfo=tzutc)
+    elif param_tz:
+        selected_tz = None
+        if available_tz:
+            selected_tz = available_tz.get(param_tz, None)
+        if selected_tz is None:
+            selected_tz = gettz(param_tz)  # be lenient with missing vtimezone definitions
+        return dt.replace(tzinfo=selected_tz)
+    else:
+        return dt
+
+
+def parse_date(time_container: Optional[ContentLine], available_tz=None) -> date:
+    dt = parse_datetime(time_container, available_tz)
+    if dt:
+        return ensure_datetime(dt.date())
+    else:
+        return None
+
+
+def ensure_datetime(value: Union[None, Tuple, Dict, datetime, date]) -> datetime:
+    if value is None:
+        return None
+    elif isinstance(value, datetime):
+        return value
+    elif isinstance(value, date):
+        return datetime.combine(value, midnight, tzinfo=None)
+    elif isinstance(value, tuple):
+        return datetime(*value)
+    elif isinstance(value, dict):
+        return datetime(**value)
+    else:
+        raise ValueError("can't construct datetime from %s" % repr(value))
+
+
+def serialize_datetime(instant: datetime, is_utc=False) -> str:
+    if is_utc:
+        return instant.strftime('%Y%m%dT%H%M%SZ')
+    else:
+        return instant.strftime('%Y%m%dT%H%M%S')
+
+
+def serialize_datetime_to_contentline(name: str, instant: datetime, used_timezones=None) -> ContentLine:
+    # ToDo keep track of used_timezones
+    if instant.tzinfo == tzutc:
+        return ContentLine(name, value=serialize_datetime(instant, True))
+    elif instant.tzinfo is not None:
+        tzname = instant.tzinfo.tzname(instant)
+        if used_timezones:
+            used_timezones[tzname] = instant.tzinfo
+        return ContentLine(name, params={'TZID': [tzname]}, value=serialize_datetime(instant, False))
+    else:
+        return ContentLine(name, value=serialize_datetime(instant, False))
+
+
+def serialize_date(instant: Union[datetime, date]) -> str:
+    if isinstance(instant, datetime):
+        instant = instant.date()
+    return instant.strftime('%Y%m%d')
 
 
 def iso_precision(string: str) -> str:
     has_time = 'T' in string
-
     if has_time:
-        date_string, time_string = string.split('T', 1)
-        time_parts = re.split('[+-]', time_string, 1)
-        has_seconds = time_parts[0].count(':') > 1
-        has_seconds = not has_seconds and len(time_parts[0]) == 6
-
-        if has_seconds:
-            return 'second'
-        else:
-            return 'minute'
+        return 'second'
     else:
         return 'day'
-
-
-def get_lines(container: Container, name: str, keep: bool = False) -> List[ContentLine]:
-    lines = []
-    for i in reversed(range(len(container))):
-        item = container[i]
-        if item.name == name:
-            lines.append(item)
-            if not keep:
-                del container[i]
-    return lines
 
 
 def parse_duration(line: str) -> timedelta:
@@ -150,7 +147,7 @@ def parse_duration(line: str) -> timedelta:
     return timedelta(sign * days, sign * secs)
 
 
-def timedelta_to_duration(dt: timedelta) -> str:
+def serialize_duration(dt: timedelta) -> str:
     """
     Return a string according to the DURATION property format
     from a timedelta object
@@ -160,10 +157,7 @@ def timedelta_to_duration(dt: timedelta) -> str:
     days = total // ONE_DAY_IN_SECS
     seconds = total % ONE_DAY_IN_SECS
 
-    res = 'P'
-    if days // 7:
-        res += str(days // 7) + 'W'
-        days %= 7
+    res = ''
     if days:
         res += str(days) + 'D'
     if seconds:
@@ -177,36 +171,73 @@ def timedelta_to_duration(dt: timedelta) -> str:
         if seconds:
             res += str(seconds) + 'S'
 
+    if not res:
+        res = '0S'
     if dt.total_seconds() >= 0:
-        return res
+        return 'P' + res
     else:
-        return "-%s" % res
+        return '-P%s' % res
 
 
-def get_arrow(value: Union[None, Arrow, Tuple, Dict]) -> Arrow:
-    if value is None:
-        return None
-    elif isinstance(value, Arrow):
+###############################################################################
+# Rounding Utils
+
+
+def floor_datetime_to_midnight(value: DatetimeLike):
+    if isinstance(value, date):
         return value
-    elif isinstance(value, tuple):
-        return arrow.get(*value)
-    elif isinstance(value, dict):
-        return arrow.get(**value)
+    return datetime.combine(ensure_datetime(value).date(), midnight, tzinfo=value.tzinfo)
+
+
+def ceil_datetime_to_midnight(value: DatetimeLike):
+    if isinstance(value, date):
+        return value
+    floored = floor_datetime_to_midnight(value)
+    if floored != value:
+        return floored + TIMEDELTA_CACHE["day"]
     else:
-        return arrow.get(value)
+        return floored
 
 
-def arrow_to_iso(instant: Arrow) -> str:
-    # set to utc, make iso, remove timezone
-    instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDDTHHmmss')
-    return instant + 'Z'
+def floor_timedelta_to_days(value):
+    return value - (value % TIMEDELTA_CACHE["day"])
 
 
-def arrow_date_to_iso(instant: Arrow) -> str:
-    # date-only for all day events
-    # set to utc, make iso, remove timezone
-    instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDD')
-    return instant  # no TZ for all days
+def ceil_timedelta_to_days(value):
+    mod = value % TIMEDELTA_CACHE["day"]
+    if mod == TIMEDELTA_CACHE[0]:
+        return value
+    else:
+        return value + TIMEDELTA_CACHE["day"] - mod
+
+
+###############################################################################
+# String Utils
+
+
+def get_lines(container: Container, name: str, keep: bool = False) -> List[ContentLine]:
+    lines = []
+    for i in reversed(range(len(container))):
+        item = container[i]
+        if item.name == name:
+            lines.append(item)
+            if not keep:
+                del container[i]
+    return lines
+
+
+def remove_x(container: Container) -> None:
+    for i in reversed(range(len(container))):
+        item = container[i]
+        if item.name.startswith('X-'):
+            del container[i]
+
+
+def remove_sequence(container: Container) -> None:
+    for i in reversed(range(len(container))):
+        item = container[i]
+        if item.name == 'SEQUENCE':
+            del container[i]
 
 
 def uid_gen() -> str:
@@ -215,21 +246,20 @@ def uid_gen() -> str:
 
 
 def escape_string(string: str) -> str:
-    string = string.replace("\\", "\\\\")
-    string = string.replace(";", "\\;")
-    string = string.replace(",", "\\,")
-    string = string.replace("\n", "\\n")
-    string = string.replace("\r", "\\r")
-    return string
+    return string.translate(
+        {"\\": "\\\\",
+         ";": "\\;",
+         ",": "\\,",
+         "\n": "\\n",
+         "\r": "\\r"})
 
 
 def unescape_string(string: str) -> str:
-    string = string.replace("\\;", ";")
-    string = string.replace("\\,", ",")
-    string = string.replace("\\n", "\n")
-    string = string.replace("\\N", "\n")
-    string = string.replace("\\r", "\r")
-    string = string.replace("\\R", "\r")
-    string = string.replace("\\\\", "\\")
-
-    return string
+    return string.translate(
+        {"\\;": ";",
+         "\\,": ",",
+         "\\n": "\n",
+         "\\N": "\n",
+         "\\r": "\r",
+         "\\R": "\r",
+         "\\\\": "\\"})

@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Union
 
-from arrow import Arrow
-
-ArrowLike = Union[datetime, Arrow]
+DatetimeLike = Union[datetime, date]
+OptionalDatetimeLike = Union[datetime, date, None]
+TimespanOrBegin = Union[datetime, date, "Timespan"]

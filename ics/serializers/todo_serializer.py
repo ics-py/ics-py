@@ -1,10 +1,9 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
-
-import arrow
 
 from ics.grammar.parse import Container, ContentLine
 from ics.serializers.serializer import Serializer
-from ics.utils import (arrow_to_iso, escape_string, timedelta_to_duration,
+from ics.utils import (serialize_datetime_to_contentline, escape_string, serialize_duration,
                        uid_gen)
 
 if TYPE_CHECKING:
@@ -16,9 +15,9 @@ class TodoSerializer(Serializer):
         if todo.dtstamp:
             instant = todo.dtstamp
         else:
-            instant = arrow.now()
+            instant = datetime.utcnow()
 
-        container.append(ContentLine("DTSTAMP", value=arrow_to_iso(instant)))
+        container.append(serialize_datetime_to_contentline("DTSTAMP", instant))
 
     def serialize_uid(todo: "Todo", container: Container):
         if todo.uid:
@@ -31,12 +30,12 @@ class TodoSerializer(Serializer):
     def serialize_completed(todo: "Todo", container: Container):
         if todo.completed:
             container.append(
-                ContentLine("COMPLETED", value=arrow_to_iso(todo.completed))
+                serialize_datetime_to_contentline("COMPLETED", todo.completed)
             )
 
     def serialize_created(todo: "Todo", container: Container):
         if todo.created:
-            container.append(ContentLine("CREATED", value=arrow_to_iso(todo.created)))
+            container.append(serialize_datetime_to_contentline("CREATED", todo.created))
 
     def serialize_description(todo: "Todo", container: Container):
         if todo.description:
@@ -46,7 +45,7 @@ class TodoSerializer(Serializer):
 
     def serialize_start(todo: "Todo", container: Container):
         if todo.begin:
-            container.append(ContentLine("DTSTART", value=arrow_to_iso(todo.begin)))
+            container.append(serialize_datetime_to_contentline("DTSTART", todo.begin))
 
     def serialize_location(todo: "Todo", container: Container):
         if todo.location:
@@ -72,11 +71,11 @@ class TodoSerializer(Serializer):
 
     def serialize_due(todo: "Todo", container: Container):
         if todo._due_time:
-            container.append(ContentLine("DUE", value=arrow_to_iso(todo._due_time)))
+            container.append(serialize_datetime_to_contentline("DUE", todo._due_time))
 
     def serialize_duration(todo: "Todo", container: Container):
         if todo._duration:
-            representation = timedelta_to_duration(todo._duration)
+            representation = serialize_duration(todo._duration)
             container.append(ContentLine("DURATION", value=representation))
 
     def serialize_alarm(todo: "Todo", container: Container):

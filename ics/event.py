@@ -3,8 +3,6 @@ from datetime import datetime, timedelta
 from typing import (Dict, Iterable, List, NamedTuple, Optional, Set,
                     Tuple, Union)
 
-from arrow import Arrow
-
 from ics.grammar.parse import Container
 from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
@@ -13,8 +11,8 @@ from .attendee import Attendee
 from .component import Component
 from .organizer import Organizer
 from .timespan import Timespan
-from .types import ArrowLike
-from .utils import (get_arrow, uid_gen)
+from .types import DatetimeLike
+from .utils import (ensure_datetime, uid_gen)
 
 
 class Geo(NamedTuple):
@@ -52,13 +50,13 @@ class Event(Component):
 
     def __init__(self,
                  name: str = None,
-                 begin: ArrowLike = None,
-                 end: ArrowLike = None,
+                 begin: DatetimeLike = None,
+                 end: DatetimeLike = None,
                  duration: timedelta = None,
                  uid: str = None,
                  description: str = None,
-                 created: ArrowLike = None,
-                 last_modified: ArrowLike = None,
+                 created: DatetimeLike = None,
+                 last_modified: DatetimeLike = None,
                  location: str = None,
                  url: str = None,
                  transparent: bool = None,
@@ -74,13 +72,13 @@ class Event(Component):
 
         Args:
             name: rfc5545 SUMMARY property
-            begin (Arrow-compatible)
-            end (Arrow-compatible)
+            begin (datetime)
+            end (datetime)
             duration
             uid: must be unique
             description
-            created (Arrow-compatible)
-            last_modified (Arrow-compatible)
+            created (datetime)
+            last_modified (datetime)
             location
             url
             transparent
@@ -102,8 +100,8 @@ class Event(Component):
         self.organizer: Optional[str] = None
         self.uid: str = uid_gen() if not uid else uid
         self.description: Optional[str] = description
-        self.created: Optional[ArrowLike] = get_arrow(created)
-        self.last_modified: Optional[ArrowLike] = get_arrow(last_modified)
+        self.created: Optional[DatetimeLike] = ensure_datetime(created)
+        self.last_modified: Optional[DatetimeLike] = ensure_datetime(last_modified)
         self.location: Optional[str] = location
         self.url: Optional[str] = url
         self.transparent: Optional[bool] = transparent
@@ -143,8 +141,8 @@ class Event(Component):
     def begin(self) -> datetime:
         """Get or set the beginning of the event.
 
-        |  Will return an :class:`Arrow` object.
-        |  May be set to anything that :func:`Arrow.get` understands.
+        |  Will return a :class:`datetime` object.
+        |  May be set to anything that :func:`datetime.__init__` understands.
         |  If an end is defined (not a duration), .begin must not
             be set to a superior value.
         |  For all-day events, the time is truncated to midnight when set.
@@ -152,17 +150,15 @@ class Event(Component):
         return self._timespan.get_begin()
 
     @begin.setter
-    def begin(self, value: ArrowLike):
-        if isinstance(value, Arrow):
-            value = value.datetime
-        self._timespan = self._timespan.replace(begin_time=value)
+    def begin(self, value: DatetimeLike):
+        self._timespan = self._timespan.replace(begin_time=ensure_datetime(value))
 
     @property
     def end(self) -> datetime:
         """Get or set the end of the event.
 
-        |  Will return an :class:`Arrow` object.
-        |  May be set to anything that :func:`Arrow.get` understands.
+        |  Will return a :class:`datetime` object.
+        |  May be set to anything that :func:`datetime.__init__` understands.
         |  If set to a non null value, removes any already
             existing duration.
         |  Setting to None will have unexpected behavior if
@@ -176,10 +172,8 @@ class Event(Component):
         return self._timespan.get_effective_end()
 
     @end.setter
-    def end(self, value: ArrowLike):
-        if isinstance(value, Arrow):
-            value = value.datetime
-        self._timespan = self._timespan.replace(end_time=value)
+    def end(self, value: DatetimeLike):
+        self._timespan = self._timespan.replace(end_time=ensure_datetime(value))
 
     @property
     def duration(self) -> Optional[timedelta]:
@@ -239,6 +233,10 @@ class Event(Component):
 
     def convert_timezone(self, tzinfo):
         self._timespan = self._timespan.convert_timezone(tzinfo)
+
+    @property
+    def timespan(self) -> Timespan:
+        return self._timespan
 
     ####################################################################################################################
 
@@ -308,6 +306,8 @@ class Event(Component):
         return hash(self.uid)
 
     ####################################################################################################################
+
+    # TODO allow use with same parameters as Timeline.normalize_timespan
 
     def starts_within(self, second: EventOrTimespan) -> bool:
         return self._timespan.starts_within(get_timespan_if_event(second))

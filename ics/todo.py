@@ -2,13 +2,12 @@ import copy
 from datetime import datetime, timedelta
 from typing import Iterable, List, Optional
 
-import arrow
 from six.moves import map
 
 from .alarm.base import BaseAlarm
 from .component import Component
 from ics.grammar.parse import Container
-from .utils import get_arrow, uid_gen
+from .utils import ensure_datetime, uid_gen
 
 from ics.parsers.todo_parser import TodoParser
 from ics.serializers.todo_serializer import TodoSerializer
@@ -47,17 +46,17 @@ class Todo(Component):
 
         Args:
             uid (string): must be unique
-            dtstamp (Arrow-compatible)
-            completed (Arrow-compatible)
-            created (Arrow-compatible)
+            dtstamp (datetime)
+            completed (datetime)
+            created (datetime)
             description (string)
-            begin (Arrow-compatible)
+            begin (datetime)
             location (string)
             percent (int): 0-100
             priority (int): 0-9
             name (string) : rfc5545 SUMMARY property
             url (string)
-            due (Arrow-compatible)
+            due (datetime)
             duration (datetime.timedelta)
             alarms (:class:`ics.alarm.Alarm`)
             status (string)
@@ -73,9 +72,9 @@ class Todo(Component):
         self._duration = None
 
         self.uid = uid_gen() if not uid else uid
-        self.dtstamp = arrow.now() if not dtstamp else get_arrow(dtstamp)
-        self.completed = get_arrow(completed)
-        self.created = get_arrow(created)
+        self.dtstamp = datetime.utcnow() if not dtstamp else ensure_datetime(dtstamp)
+        self.completed = ensure_datetime(completed)
+        self.created = ensure_datetime(created)
         self.description = description
         self.begin = begin
         self.location = location
@@ -131,8 +130,8 @@ class Todo(Component):
     def begin(self):
         """Get or set the beginning of the todo.
 
-        |  Will return an :class:`Arrow` object.
-        |  May be set to anything that :func:`Arrow.get` understands.
+        |  Will return a :class:`datetime` object.
+        |  May be set to anything that :func:`datetime.__init__` understands.
         |  If a due time is defined (not a duration), .begin must not
             be set to a superior value.
         """
@@ -140,7 +139,7 @@ class Todo(Component):
 
     @begin.setter
     def begin(self, value):
-        value = get_arrow(value)
+        value = ensure_datetime(value)
         if value and self._due_time and value > self._due_time:
             raise ValueError('Begin must be before due time')
         self._begin = value
@@ -149,8 +148,8 @@ class Todo(Component):
     def due(self):
         """Get or set the end of the todo.
 
-        |  Will return an :class:`Arrow` object.
-        |  May be set to anything that :func:`Arrow.get` understands.
+        |  Will return a :class:`datetime` object.
+        |  May be set to anything that :func:`datetime.__init__` understands.
         |  If set to a non null value, removes any already
             existing duration.
         |  Setting to None will have unexpected behavior if
@@ -169,7 +168,7 @@ class Todo(Component):
 
     @due.setter
     def due(self, value):
-        value = get_arrow(value)
+        value = ensure_datetime(value)
         if value and self._begin and value < self._begin:
             raise ValueError('Due must be after begin')
 
