@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from ics.grammar.parse import ContentLine
 from ics.serializers.serializer import Serializer
-from ics.utils import arrow_to_iso, escape_string, timedelta_to_duration
+from ics.utils import serialize_datetime_to_contentline, escape_string, serialize_duration
 
 
 class BaseAlarmSerializer(Serializer):
@@ -11,20 +11,16 @@ class BaseAlarmSerializer(Serializer):
             raise ValueError("Alarm must have a trigger")
 
         if isinstance(alarm.trigger, timedelta):
-            representation = timedelta_to_duration(alarm.trigger)
+            representation = serialize_duration(alarm.trigger)
             container.append(ContentLine("TRIGGER", value=representation))
         else:
-            container.append(
-                ContentLine(
-                    "TRIGGER",
-                    params={"VALUE": ["DATE-TIME"]},
-                    value=arrow_to_iso(alarm.trigger),
-                )
-            )
+            cl = serialize_datetime_to_contentline("TRIGGER", alarm.trigger)
+            cl.params["VALUE"] = ["DATE-TIME"]
+            container.append(cl)
 
     def serialize_duration(alarm, container):
         if alarm.duration:
-            representation = timedelta_to_duration(alarm.duration)
+            representation = serialize_duration(alarm.duration)
             container.append(ContentLine("DURATION", value=representation))
 
     def serialize_repeat(alarm, container):

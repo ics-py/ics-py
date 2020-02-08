@@ -54,7 +54,7 @@ class Calendar(Component):
         self.scale = None
         self.method = None
 
-        self.timeline = Timeline(self)
+        self.timeline = Timeline(self, None)
 
         if imports is not None:
             if isinstance(imports, Container):

@@ -1,110 +1,133 @@
 import heapq
-from typing import Iterator
-
-import arrow
-from arrow.arrow import Arrow
+from datetime import date, datetime, timedelta
+from typing import Iterator, Tuple
 
 from .event import Event
+from .timespan import Normalization, Timespan, normalize
+from .types import DatetimeLike, OptionalDatetimeLike, TimespanOrBegin
+from .utils import ceil_datetime_to_midnight, ensure_datetime
 
 
 class Timeline(object):
-    def __init__(self, calendar) -> None:
-        """Instanciates a new Timeline.
-        (You should not have to instanciate a new timeline by yourself)
+    """
+    `Timeline`s allow iterating all event from a `Calendar` in chronological order, optionally also filtering events
+    according to their timestamps.
+    See the documentation of :func:`ics.timespan.normalize` for details on normalization methods to make datetimes
+    with and without timezone comparable.
+    """
 
-        Args:
-            calendar : :class:`ics.icalendar.Calendar`
-        """
+    def __init__(self, calendar: "Calendar", normalization: Normalization):
         self._calendar = calendar
+        self._normalization = normalization
 
-    def __iter__(self) -> Iterator[Event]:
-        """Iterates on every event from the :class:`ics.icalendar.Calendar` in chronological order
+    def normalize_datetime(self, instant: DatetimeLike) -> datetime:
+        """
+        Create a normalized datetime instance for the given instance.
+        """
+        return normalize(instant, self._normalization)
 
-        Note :
-            - chronological order is defined by the comparaison operators in :class:`ics.event.Event`
+    def normalize_timespan(self, start: TimespanOrBegin, stop: OptionalDatetimeLike = None) -> Timespan:
+        """
+        Create a normalized timespan between `start` and `stop`.
+        Alternatively, this method can be called directly with a single timespan as parameter.
+        """
+        if isinstance(start, Timespan):
+            if stop is not None:
+                raise ValueError("can't specify a Timespan and an additional stop time")
+            timespan = start
+        else:
+            timespan = Timespan(ensure_datetime(start), ensure_datetime(stop))
+        return timespan.normalize(self._normalization)
+
+    def iterator(self) -> Iterator[Tuple[Timespan, Event]]:
+        """
+        Iterates on every event from the :class:`ics.icalendar.Calendar` in chronological order
+
+        Note:
+            - chronological order is defined by the comparison operators in :class:`ics.timespan.Timespan`
             - Events with no `begin` will not appear here. (To list all events in a `Calendar` use `Calendar.events`)
         """
         # Using a heap is faster than sorting if the number of events (n) is
         # much bigger than the number of events we extract from the iterator (k).
         # Complexity: O(n + k log n).
-        heap = [x for x in self._calendar.events if x.begin is not None]
+        heap = ((e.timespan.normalize(self._normalization), e) for e in self._calendar.events)
+        heap = [t for t in heap if t[0]]
         heapq.heapify(heap)
         while heap:
             yield heapq.heappop(heap)
 
-    def included(self, start: Arrow, stop: Arrow) -> Iterator[Event]:
-        """Iterates (in chronological order) over every event that is included
-        in the timespan between `start` and `stop`
-
-        Args:
-            start : (Arrow object)
-            stop : (Arrow object)
+    def __iter__(self) -> Iterator[Event]:
         """
-        for event in self:
-            if (start <= event.begin <= stop # if start is between the bonds
-            and start <= event.end <= stop): # and stop is between the bonds
+        Iterates on every event from the :class:`ics.icalendar.Calendar` in chronological order
+
+        Note:
+            - chronological order is defined by the comparison operators in :class:`ics.timespan.Timespan`
+            - Events with no `begin` will not appear here. (To list all events in a `Calendar` use `Calendar.events`)
+        """
+        for _, e in self.iterator():
+            yield e
+
+    def included(self, start: TimespanOrBegin, stop: OptionalDatetimeLike = None) -> Iterator[Event]:
+        """
+        Iterates (in chronological order) over every event that is included in the timespan between `start` and `stop`.
+        Alternatively, this method can be called directly with a single timespan as parameter.
+        """
+        query = self.normalize_timespan(start, stop)
+        for timespan, event in self.iterator():
+            if timespan.is_included_in(query):
                 yield event
 
-    def overlapping(self, start: Arrow, stop: Arrow) -> Iterator[Event]:
-        """Iterates (in chronological order) over every event that has an intersection
-        with the timespan between `start` and `stop`
-
-        Args:
-            start : (Arrow object)
-            stop : (Arrow object)
+    def overlapping(self, start: TimespanOrBegin, stop: OptionalDatetimeLike = None) -> Iterator[Event]:
         """
-        for event in self:
-            if ((start <= event.begin <= stop # if start is between the bonds
-            or start <= event.end <= stop) # or stop is between the bonds
-            or event.begin <= start and event.end >= stop): # or event is a superset of [start,stop]
+        Iterates (in chronological order) over every event that has an intersection with the timespan between `start` and `stop`.
+        Alternatively, this method can be called directly with a single timespan as parameter.
+        """
+        query = self.normalize_timespan(start, stop)
+        for timespan, event in self.iterator():
+            if timespan.intersects(query):
                 yield event
 
-    def start_after(self, instant: Arrow) -> Iterator[Event]:
-        """Iterates (in chronological order) on every event from the :class:`ics.icalendar.Calendar` in chronological order.
-        The first event of the iteration has a starting date greater (later) than `instant`
-
-        Args:
-            instant : (Arrow object) starting point of the iteration
+    def start_after(self, instant: DatetimeLike) -> Iterator[Event]:
         """
-        for event in self:
-            if event.begin > instant:
+        Iterates (in chronological order) on every event from the :class:`ics.icalendar.Calendar` in chronological order.
+        The first event of the iteration has a starting date greater (later) than `instant`.
+        """
+        instant = self.normalize_datetime(instant)
+        for timespan, event in self.iterator():
+            if timespan.get_begin() > instant:
                 yield event
 
-    def at(self, instant: Arrow) -> Iterator[Event]:
-        """Iterates (in chronological order) over all events that are occuring during `instant`.
-
-        Args:
-            instant (Arrow object)
+    def at(self, instant: DatetimeLike) -> Iterator[Event]:
         """
-
-        for event in self:
-            if event.begin <= instant <= event.end:
+        Iterates (in chronological order) over all events that are occuring during `instant`.
+        """
+        instant = self.normalize_datetime(instant)
+        for timespan, event in self.iterator():
+            if timespan.includes(instant):
                 yield event
 
-    def on(self, day: Arrow, strict: bool = False) -> Iterator[Event]:
-        """Iterates (in chronological order) over all events that occurs on `day`
-
-        Args:
-            day (Arrow object)
-            strict (bool): if True events will be returned only if they are\
-            strictly *included* in `day`.
+    def on(self, instant: DatetimeLike, strict: bool = False) -> Iterator[Event]:
         """
-        day_start, day_stop = day.floor('day').span('day')
+        Iterates (in chronological order) over all events that occurs on `day`.
+
+        :param strict: if True events will be returned only if they are strictly *included* in `day`
+        """
+        query = self.normalize_timespan(instant, ceil_datetime_to_midnight(instant) - timedelta.min)
         if strict:
-            return self.included(day_start, day_stop)
+            return self.included(query)
         else:
-            return self.overlapping(day_start, day_stop)
+            return self.overlapping(query)
 
-    def today(self, day: Arrow, strict: bool = False) -> Iterator[Event]:
-        """Iterates (in chronological order) over all events that occurs today
-
-        Args:
-            strict (bool): if True events will be returned only if they are\
-            strictly *included* in `day`.
+    def today(self, strict: bool = False) -> Iterator[Event]:
         """
-        return self.on(arrow.now(), strict=strict)
+        Iterates (in chronological order) over all events that occurs today.
+
+        :param strict: if True events will be returned only if they are strictly *included* in `day`
+        """
+        return self.on(date.today(), strict=strict)
 
     def now(self) -> Iterator[Event]:
-        """Iterates (in chronological order) over all events that occurs now
         """
-        return self.at(arrow.now())
+        Iterates (in chronological order) over all events that occur right now.
+        """
+        return self.at(datetime.utcnow())

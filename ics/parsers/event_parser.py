@@ -2,7 +2,7 @@ import re
 
 from ics.alarm.utils import get_type_from_container
 from ics.parsers.parser import Parser, option
-from ics.utils import (iso_precision, iso_to_arrow, parse_duration,
+from ics.utils import (iso_precision, parse_datetime, parse_duration,
                        unescape_string)
 
 
@@ -11,18 +11,18 @@ class EventParser(Parser):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = event._classmethod_kwargs["tz"]
-            event.created = iso_to_arrow(line, tz_dict)
+            event.created = parse_datetime(line, tz_dict)
 
     def parse_last_modified(event, line):
         if line:
             tz_dict = event._classmethod_kwargs["tz"]
-            event.last_modified = iso_to_arrow(line, tz_dict)
+            event.last_modified = parse_datetime(line, tz_dict)
 
     def parse_dtstart(event, line):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = event._classmethod_kwargs["tz"]
-            event.begin = iso_to_arrow(line, tz_dict)
+            event.begin = parse_datetime(line, tz_dict)
             event._begin_precision = iso_precision(line.value)
 
     def parse_duration(event, line):
@@ -39,7 +39,7 @@ class EventParser(Parser):
                 raise ValueError("An event can't have both DTEND and DURATION")
             # get the dict of vtimezones passed to the classmethod
             tz_dict = event._classmethod_kwargs["tz"]
-            event._end_time = iso_to_arrow(line, tz_dict)
+            event._end_time = parse_datetime(line, tz_dict)
             # one could also save the end_precision to check that if begin_precision is day, end_precision also is
 
     def parse_summary(event, line):

@@ -1,36 +1,53 @@
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta, tzinfo
+from enum import Enum
 from typing import NamedTuple, Optional, Tuple, Union
 
-MIDNIGHT = time()
-TIMEDELTA_CACHE = {
-    0: timedelta(),
-    "day": timedelta(days=1),
-    "second": timedelta(seconds=1)
-}
+from ics.types import TimespanOrBegin
+from ics.utils import TIMEDELTA_CACHE, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight
 
 
-def floor_datetime_to_midnight(value: datetime):
-    return datetime.combine(value.date(), MIDNIGHT, tzinfo=value.tzinfo)
+class NormalizeIgnore(Enum):
+    ONLY_FLOATING = 1
+    ONLY_WITH_TZ = 2
 
 
-def ceil_datetime_to_midnight(value: datetime):
-    floored = floor_datetime_to_midnight(value)
-    if floored != value:
-        return floored + TIMEDELTA_CACHE["day"]
+Normalization = Union[tzinfo, None, NormalizeIgnore]
+
+
+def normalize(value: TimespanOrBegin, normalization: Normalization) -> Union[None, "Timespan", datetime]:
+    """
+    Normalize datetime or timespan instances to make naive/floating ones (without timezone, i.e. tzinfo == None)
+    comparable to aware ones with a fixed timezone.
+    The options from NormalizeIgnore will lead to the ignored type being converted to None.
+    If None is selected as normalization, the timezone information will be stripped from aware datetimes.
+    If the normalization is set to any tzinfo instance, naive datetimes will be interpreted in that timezone.
+    """
+    if not isinstance(value, Timespan):
+        value = ensure_datetime(value)
+        floating = (value.tzinfo is None)
+        replace_timezone = lambda value, tzinfo: value.replace(tzinfo=tzinfo)
     else:
-        return floored
+        floating = value.is_floating()
+        replace_timezone = Timespan.replace_timezone
 
-
-def floor_timedelta_to_days(value):
-    return value - (value % TIMEDELTA_CACHE["day"])
-
-
-def ceil_timedelta_to_days(value):
-    mod = value % TIMEDELTA_CACHE["day"]
-    if mod == TIMEDELTA_CACHE[0]:
-        return value
+    if floating:
+        if normalization is NormalizeIgnore.ONLY_FLOATING:
+            return value
+        elif normalization is NormalizeIgnore.ONLY_WITH_TZ:
+            return None
+        elif normalization is None:
+            return value
+        else:
+            return replace_timezone(value, normalization)
     else:
-        return value + TIMEDELTA_CACHE["day"] - mod
+        if normalization is NormalizeIgnore.ONLY_FLOATING:
+            return None
+        elif normalization is NormalizeIgnore.ONLY_WITH_TZ:
+            return value
+        elif normalization is None:
+            return replace_timezone(value, normalization)
+        else:
+            return value
 
 
 class _Timespan(NamedTuple):
@@ -93,6 +110,9 @@ class Timespan(_Timespan):
             return self.replace(begin_time=begin, end_time=self.end_time.astimezone(tzinfo))
         else:
             return self.replace(begin_time=begin)
+
+    def normalize(self, normalization: Normalization) -> Optional["Timespan"]:
+        return normalize(self, normalization)
 
     def validate(self):
         def validate_timeprecision(value, name):
@@ -169,6 +189,9 @@ class Timespan(_Timespan):
     def __str__(self) -> str:
         prefix, name, suffix = self.get_str_segments()
         return "<%s>" % (" ".join(prefix + name + suffix))
+
+    def __bool__(self):
+        return self.get_begin() is not None
 
     ####################################################################################################################
 
@@ -251,11 +274,17 @@ class Timespan(_Timespan):
     ####################################################################################################################
 
     def __normalize_timespans(self, second: "Timespan") -> Tuple["Timespan", "Timespan"]:
-        if not isinstance(self, Timespan) or not isinstance(second, Timespan):
+        """
+        Normalize this timespan to allow comparision with the given second timespan.
+        If one of the timespans is naive/floating (without timezone, i.e. tzinfo == None) and the other one is aware
+        with a fixed timezone, the timezone information will be stripped from the aware instance.
+        This is similar to calling `normalize` with `normalization=None` if both are not already directly comparable.
+        """
+        if not isinstance(second, Timespan):
             raise NotImplementedError("cannot compare %s and %s as timespans" % (type(self), type(second)))
         first = self
         if first.is_floating() != second.is_floating():
-            # TODO check whether converting to floating is okay or whether we should convert to the given timezon
+            # TODO check whether converting to floating is okay or whether we should convert to the given timezone
             if not first.is_floating():
                 first = first.replace_timezone(None)
                 assert first.is_floating()
@@ -267,7 +296,13 @@ class Timespan(_Timespan):
         return first, second
 
     def __normalize_datetime(self, second: datetime) -> Tuple["Timespan", datetime]:
-        if not isinstance(self, Timespan) or not isinstance(second, datetime):
+        """
+        Normalize this timespan to allow comparision with the given second datetime.
+        If this instance is naive/floating (without timezone, i.e. tzinfo == None) and the datetime is aware
+        with a fixed timezone, the timezone information will be stripped from the aware datetime instance.
+        This is similar to calling `normalize` with `normalization=None` if both are not already directly comparable.
+        """
+        if not isinstance(second, datetime):
             raise NotImplementedError("cannot compare %s and %s as timespans/datetime" % (type(self), type(second)))
         if self.is_floating() and second.tzinfo is not None:
             second = second.replace(tzinfo=None)

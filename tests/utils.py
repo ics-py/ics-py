@@ -2,8 +2,8 @@ import unittest
 from datetime import timedelta
 
 from ics.grammar.parse import ParseError, string_to_container
-from ics.utils import (iso_to_arrow, parse_duration, remove_x,
-                       timedelta_to_duration)
+from ics.utils import (parse_datetime, parse_duration, remove_x,
+                       serialize_duration)
 from tests.fixture import cal1, cal2
 
 
@@ -56,7 +56,7 @@ class TestTimedeltaToDuration(unittest.TestCase):
     def run_on_dataset(self, dataset):
         for test in dataset:
             expected = dataset[test]
-            self.assertEqual(timedelta_to_duration(timedelta(*test)), expected)
+            self.assertEqual(serialize_duration(timedelta(*test)), expected)
 
     def test_simple(self):
         self.run_on_dataset(self.dataset_simple)
@@ -83,4 +83,4 @@ class TestRemoveX(unittest.TestCase):
 class TestIso_to_arrow(unittest.TestCase):
 
     def test_none(self):
-        self.assertIs(None, iso_to_arrow(None))
+        self.assertIs(None, parse_datetime(None))

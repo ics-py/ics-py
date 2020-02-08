@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, List
 from ics.alarm.utils import get_type_from_container
 from ics.grammar.parse import ContentLine
 from ics.parsers.parser import Parser, option
-from ics.utils import iso_to_arrow, parse_duration, unescape_string
+from ics.utils import parse_datetime, parse_duration, unescape_string
 
 if TYPE_CHECKING:
     from .todo_parser import Todo
@@ -15,7 +15,7 @@ class TodoParser(Parser):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
-            todo.dtstamp = iso_to_arrow(line, tz_dict)
+            todo.dtstamp = parse_datetime(line, tz_dict)
 
     @option(required=True)
     def parse_uid(todo: "Todo", line: ContentLine):
@@ -26,13 +26,13 @@ class TodoParser(Parser):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
-            todo.completed = iso_to_arrow(line, tz_dict)
+            todo.completed = parse_datetime(line, tz_dict)
 
     def parse_created(todo: "Todo", line: ContentLine):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
-            todo.created = iso_to_arrow(line, tz_dict)
+            todo.created = parse_datetime(line, tz_dict)
 
     def parse_description(todo: "Todo", line: ContentLine):
         todo.description = unescape_string(line.value) if line else None
@@ -41,7 +41,7 @@ class TodoParser(Parser):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
-            todo.begin = iso_to_arrow(line, tz_dict)
+            todo.begin = parse_datetime(line, tz_dict)
 
     def parse_location(todo: "Todo", line: ContentLine):
         todo.location = unescape_string(line.value) if line else None
@@ -65,7 +65,7 @@ class TodoParser(Parser):
                 raise ValueError("A todo can't have both DUE and DURATION")
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
-            todo._due_time = iso_to_arrow(line, tz_dict)
+            todo._due_time = parse_datetime(line, tz_dict)
 
     def parse_duration(todo: "Todo", line: ContentLine):
         if line:

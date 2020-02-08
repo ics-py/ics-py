@@ -1,14 +1,14 @@
 import warnings
 
 from ics.parsers.parser import Parser, option
-from ics.utils import iso_to_arrow, parse_duration, unescape_string
+from ics.utils import parse_datetime, parse_duration, unescape_string
 
 
 class BaseAlarmParser(Parser):
     @option(required=True)
     def parse_trigger(alarm, line):
         if line.params.get("VALUE", [""])[0] == "DATE-TIME":
-            alarm.trigger = iso_to_arrow(line)
+            alarm.trigger = parse_datetime(line)
         elif line.params.get("VALUE", ["DURATION"])[0] == "DURATION":
             alarm.trigger = parse_duration(line.value)
         else:

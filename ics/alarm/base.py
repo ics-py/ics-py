@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 
 from ics.component import Component
 from ics.utils import (
-    get_arrow,
+    ensure_datetime,
     get_lines
 )
 from ics.grammar.parse import Container
@@ -82,7 +82,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     @trigger.setter
     def trigger(self, value: Optional[Union[timedelta, datetime]]) -> None:
         if isinstance(value, datetime):
-            value = get_arrow(value)
+            value = ensure_datetime(value)
 
         self._trigger = value
 

@@ -4,7 +4,8 @@ from datetime import timedelta as td
 
 import arrow
 
-from ics.timespan import Timespan, floor_datetime_to_midnight
+from ics.timespan import Timespan
+from ics.utils import floor_datetime_to_midnight
 
 
 class TestTimespan(unittest.TestCase):

@@ -1,22 +1,22 @@
 from ics.grammar.parse import ContentLine
 from ics.serializers.serializer import Serializer
-from ics.utils import (arrow_date_to_iso, arrow_to_iso, escape_string,
-                       timedelta_to_duration, uid_gen)
+from ics.utils import (serialize_date, serialize_datetime_to_contentline, escape_string,
+                       serialize_duration, uid_gen)
 
 
 class EventSerializer(Serializer):
     def serialize_created(event, container):
         if event.created:
-            container.append(ContentLine("DTSTAMP", value=arrow_to_iso(event.created)))
+            container.append(serialize_datetime_to_contentline("DTSTAMP", event.created))
 
     def serialize_last_modified(event, container):
         if event.last_modified:
             instant = event.last_modified
-            container.append(ContentLine("LAST-MODIFIED", value=arrow_to_iso(instant)))
+            container.append(serialize_datetime_to_contentline("LAST-MODIFIED", instant))
 
     def serialize_start(event, container):
         if event.begin and not event.all_day:
-            container.append(ContentLine("DTSTART", value=arrow_to_iso(event.begin)))
+            container.append(serialize_datetime_to_contentline("DTSTART", event.begin))
 
     def serialize_all_day(event, container):
         if event.begin and event.all_day:
@@ -24,7 +24,7 @@ class EventSerializer(Serializer):
                 ContentLine(
                     "DTSTART",
                     params={"VALUE": ["DATE"]},
-                    value=arrow_date_to_iso(event.begin),
+                    value=serialize_date(event.begin),
                 )
             )
             if event._end_time:
@@ -32,18 +32,18 @@ class EventSerializer(Serializer):
                     ContentLine(
                         "DTEND",
                         params={"VALUE": ["DATE"]},
-                        value=arrow_date_to_iso(event.end),
+                        value=serialize_date(event.end),
                     )
                 )
 
     def serialize_duration(event, container):
         if event._duration and event.begin:
-            representation = timedelta_to_duration(event._duration)
+            representation = serialize_duration(event._duration)
             container.append(ContentLine("DURATION", value=representation))
 
     def serialize_end(event, container):
         if event.begin and event._end_time and not event.all_day:
-            container.append(ContentLine("DTEND", value=arrow_to_iso(event.end)))
+            container.append(serialize_datetime_to_contentline("DTEND", event.end))
 
     def serialize_summary(event, container):
         if event.name:
