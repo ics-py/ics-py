@@ -12,5 +12,21 @@ Make sure you have Python available. Type::
 
     $ python --version
 
-You should get an output like ``3.6.10``. This library needs Python v|minpyver|
+You should get an output like ``3.6.10``. This library needs Python |minpyver|
 at a minimum.
+
+
+Installing with pip
+-------------------
+
+
+Installing under Linux
+----------------------
+
+
+Installing under MacOS
+----------------------
+
+
+Installing under Windows
+------------------------
