@@ -35,6 +35,8 @@ find it here.
 .. toctree::
    :maxdepth: 1
 
+   tutorials/create-ics-with-cal-prog
+
 Examples for tutorials:
 
 * Create your first calendar
