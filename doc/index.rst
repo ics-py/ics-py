@@ -36,6 +36,7 @@ find it here.
    :maxdepth: 1
 
    tutorials/create-ics-with-cal-prog
+   tutorials/contributing
 
 Examples for tutorials:
 
@@ -52,7 +53,6 @@ Want to learn some details? Find here the relevant information.
    :maxdepth: 2
 
    explanation/icalender-format
-   explanation/contributing
    explanation/limitations
    explanation/howto
    explanation/about
