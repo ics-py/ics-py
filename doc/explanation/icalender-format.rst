@@ -1,5 +1,6 @@
 .. _`introduction`:
 
-About the iCalendar format
+About the iCalendar Format
 ==========================
-TBD
+
+.. Contains a very brief information about the ICS format
