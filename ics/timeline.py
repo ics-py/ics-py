@@ -95,7 +95,7 @@ class Timeline(object):
         else:
             return self.overlapping(day_start, day_stop)
 
-    def today(self, day: Arrow, strict: bool = False) -> Iterator[Event]:
+    def today(self, strict: bool = False) -> Iterator[Event]:
         """Iterates (in chronological order) over all events that occurs today
 
         Args:
