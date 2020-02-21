@@ -1,1 +1,8 @@
 encoding.ics, multiple.ics, small.ics, timezoned.ics, case_meetup.ics, groupscheduled.ics, recurrence.ics and time.ics are Copyright (c) 2012-2013, Plone Foundation under the BSD License and modified to suit ics.py needs. Source : https://pypi.python.org/pypi/icalendar
+utf-8-emoji.ics contains data with the following Copyright:
+	Markus Kuhn [ˈmaʳkʊs kuːn] <http://www.cl.cam.ac.uk/~mgk25/> — 2002-07-25 CC BY
+and
+	© 2019 Unicode®, Inc.
+	Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+	For terms of use, see http://www.unicode.org/terms_of_use.html
+
