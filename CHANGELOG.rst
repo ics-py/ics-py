@@ -8,11 +8,8 @@ Ics.py changelog
 **************
 
 Major changes:
- - `make_all_day()` changes:
-  - If an event has a duration instead of an end time, make_all_day now rounds
-    the duration up to the next 24-hour interval. If it's already an even day,
-    the duration is unchanged.  
 
+Minor changes:
 
 **************
 0.6
