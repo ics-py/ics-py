@@ -51,3 +51,7 @@ class TestEvent(unittest.TestCase):
             event: Event = next(iter(Calendar(f.read()).events))
         with open(os.path.join(os.path.dirname(__file__), "fixtures/Romeo-and-Juliet.txt")) as f:
             self.assertEqual(event.description, f.read())
+
+    def test_fixtures_spaces(self):
+        with open(os.path.join(os.path.dirname(__file__), "fixtures/spaces.ics")) as f:
+            Calendar(f.read())
