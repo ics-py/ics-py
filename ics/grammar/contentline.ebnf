@@ -7,7 +7,6 @@ ALPHADIGIT = ? "[a-zA-Z0-9]";
 ALPHADIGIT_3_OR_MORE = ? "[a-zA-Z0-9]{3,}";
 ALPHADIGIT_MINUS = ? "[a-zA-Z0-9\-]";
 ALPHADIGIT_MINUS_PLUS = ? "[a-zA-Z0-9\-]+";
-CRLF = "\r\n" ;
 WSP = " ";
 
 DQUOTE = '"' ;
@@ -27,7 +26,7 @@ iana_token    = ALPHADIGIT_MINUS_PLUS ;
 x_name        = "X-" [vendorid "-"] ALPHADIGIT_MINUS_PLUS ;
 vendorid      = ALPHADIGIT_3_OR_MORE ;
 
-contentline   = name:name {(";" params+:param )}* ":" value:value CRLF ;
+contentline   = name:name {(";" params+:param )}* ":" value:value ;
 
 param         = name:param_name "=" values+:param_value {("," values+:param_value)}* ;
 param_name    = iana_token | x_name ;
