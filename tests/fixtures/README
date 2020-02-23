@@ -1,4 +1,5 @@
 encoding.ics, multiple.ics, small.ics, timezoned.ics, case_meetup.ics, groupscheduled.ics, recurrence.ics and time.ics are Copyright (c) 2012-2013, Plone Foundation under the BSD License and modified to suit ics.py needs. Source : https://pypi.python.org/pypi/icalendar
+
 utf-8-emoji.ics contains data with the following Copyright:
 	Markus Kuhn [ˈmaʳkʊs kuːn] <http://www.cl.cam.ac.uk/~mgk25/> — 2002-07-25 CC BY
 and
@@ -6,3 +7,29 @@ and
 	Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 	For terms of use, see http://www.unicode.org/terms_of_use.html
 
+Romeo-and-Juliet.txt and Romeo-and-Juliet.ics contains data exported from Wikisource on 02/23/20:
+	This e-book comes from the online library Wikisource[1]. This multilingual digital library, built by volunteers, is committed to developing a free accessible collection of publications of every kind: novels, poems, magazines, letters...
+	We distribute our books for free, starting from works not copyrighted or published under a free license. You are free to use our e-books for any purpose (including commercial exploitation), under the terms of the Creative Commons Attribution-ShareAlike 3.0 Unported[2] license or, at your choice, those of the GNU FDL[3].
+	Wikisource is constantly looking for new members. During the realization of this book, it's possible that we made some errors. You can report them at this page[4].
+
+	The following users contributed to this book:
+	Angelprincess72
+	Djr13
+	ThomasBot
+	BirgitteSB
+	Mpaa
+	Beleg Tâl
+	Einstein95
+	Kathleen.wright5
+	EncycloPetey
+	Dariyman
+
+	* * *
+	
+	↑ http://wikisource.org
+
+	↑ http://www.creativecommons.org/licenses/by-sa/3.0
+
+	↑ http://www.gnu.org/copyleft/fdl.html
+
+	↑ http://wikisource.org/wiki/Wikisource:Scriptorium
