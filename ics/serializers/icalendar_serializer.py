@@ -3,6 +3,9 @@ from ics.serializers.serializer import Serializer
 
 
 class CalendarSerializer(Serializer):
+    def serialize_0version(calendar, container):  # 0version will be sorted first
+        container.append(ContentLine("VERSION", value="2.0"))
+
     def serialize_prodid(calendar, container):
         if calendar.creator:
             creator = calendar.creator
@@ -10,9 +13,6 @@ class CalendarSerializer(Serializer):
             creator = "ics.py - http://git.io/lLljaA"
 
         container.append(ContentLine("PRODID", value=creator))
-
-    def serialize_version(calendar, container):
-        container.append(ContentLine("VERSION", value="2.0"))
 
     def serialize_calscale(calendar, container):
         if calendar.scale:

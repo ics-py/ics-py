@@ -158,6 +158,9 @@ class TestCalendar(unittest.TestCase):
 
         c = Calendar(cal10)
         self.assertEqual(c.version, u'2.0')
+        lines = str(c).splitlines()
+        self.assertEqual(lines[:2], cal10.strip().splitlines()[:2])
+        self.assertEqual("VERSION:2.0", lines[1])
 
         c = Calendar(cal14)
         self.assertEqual(c.version, u'42')
