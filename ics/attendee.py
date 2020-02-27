@@ -22,7 +22,7 @@ class Person(object):
     @classmethod
     def parse(cls, line: ContentLine) -> "Person":
         email = unescape_string(line.value)
-        if email.startswith("mailto:"):
+        if email.lower().startswith("mailto:"):
             email = email[len("mailto:"):]
         val = cls(email)
         val.populate(line)
