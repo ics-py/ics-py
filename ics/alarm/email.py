@@ -1,3 +1,4 @@
+from ics.attendee import Attendee
 from ics.alarm.base import BaseAlarm
 from typing import Union, List
 from datetime import datetime, timedelta
@@ -23,7 +24,7 @@ class EmailAlarm(BaseAlarm):
         duration: timedelta = None,
         subject: str = None,
         body: str = None,
-        recipients: List[str] = None,
+        recipients: List[Attendee] = None,
     ):
 
         super().__init__(trigger, repeat, duration)

@@ -5,10 +5,9 @@ from datetime import timedelta as td
 import arrow
 import pytest
 
-from ics.attendee import Attendee
+from ics.attendee import Attendee, Organizer
 from ics.event import Event
 from ics.icalendar import Calendar
-from ics.organizer import Organizer
 from ics.grammar.parse import Container
 
 from .fixture import (cal12, cal13, cal15, cal16, cal17, cal18, cal19,
@@ -185,24 +184,24 @@ class TestEvent(unittest.TestCase):
     def test_attendee(self):
         a = Attendee(email='email@email.com')
         line = str(a)
-        self.assertIn("ATTENDEE;CN='email@email.com", line)
+        self.assertIn("ATTENDEE;CN=email@email.com:mailto:email@email.com", line)
 
         a2 = Attendee(email='email@email.com', common_name='Email')
         line = str(a2)
-        self.assertIn("ATTENDEE;CN='Email':mailto:email@email.com", line)
+        self.assertIn("ATTENDEE;CN=Email:mailto:email@email.com", line)
 
     def test_add_attendees(self):
         e = Event()
         a = Attendee(email='email@email.com')
         e.add_attendee(a)
         lines = str(e).splitlines()
-        self.assertIn("ATTENDEE;CN='email@email.com':mailto:email@email.com", lines)
+        self.assertIn("ATTENDEE;CN=email@email.com:mailto:email@email.com", lines)
 
     def test_organizer(self):
         e = Event()
         e.organizer = Organizer(email='email@email.com', common_name='Mister Email')
         lines = str(e).splitlines()
-        self.assertIn("ORGANIZER;CN='Mister Email':mailto:email@email.com", lines)
+        self.assertIn("ORGANIZER;CN=Mister Email:mailto:email@email.com", lines)
 
     def test_always_uid(self):
         e = Event()

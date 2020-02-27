@@ -64,10 +64,8 @@ class EmailAlarmSerializer(BaseAlarmSerializer):
         )
 
     def serialize_recipients(alarm, container):
-        for email in alarm.recipients:
-            container.append(
-                ContentLine("ATTENDEE", value=escape_string("mailto:%s" % email))
-            )
+        for attendee in alarm.recipients:
+            container.append(attendee.serialize())
 
 
 class NoneAlarmSerializer(BaseAlarmSerializer):

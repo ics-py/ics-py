@@ -1,5 +1,6 @@
 import re
 
+from ics import Organizer, Attendee
 from ics.alarm.utils import get_type_from_container
 from ics.parsers.parser import Parser, option
 from ics.utils import (iso_precision, iso_to_arrow, parse_duration,
@@ -46,7 +47,12 @@ class EventParser(Parser):
         event.name = unescape_string(line.value) if line else None
 
     def parse_organizer(event, line):
-        event.organizer = unescape_string(line.value) if line else None
+        event.organizer = Organizer.parse(line) if line else None
+
+    @option(multiple=True)
+    def parse_attendee(event, lines):
+        for line in lines:
+            event.attendee.append(Attendee.parse(line))
 
     def parse_description(event, line):
         event.description = unescape_string(line.value) if line else None

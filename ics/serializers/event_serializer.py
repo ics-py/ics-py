@@ -51,11 +51,11 @@ class EventSerializer(Serializer):
 
     def serialize_organizer(event, container):
         if event.organizer:
-            container.append(str(event.organizer))
+            container.append(event.organizer.serialize())
 
     def serialize_attendee(event, container):
         for attendee in event.attendees:
-            container.append(str(attendee))
+            container.append(attendee.serialize())
 
     def serialize_description(event, container):
         if event.description:
