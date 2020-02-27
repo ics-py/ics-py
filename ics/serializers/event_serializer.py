@@ -1,3 +1,4 @@
+from ics.attendee import Attendee, Organizer
 from ics.grammar.parse import ContentLine
 from ics.serializers.serializer import Serializer
 from ics.utils import (arrow_date_to_iso, arrow_to_iso, escape_string,
@@ -51,10 +52,15 @@ class EventSerializer(Serializer):
 
     def serialize_organizer(event, container):
         if event.organizer:
-            container.append(event.organizer.serialize())
+            organizer = event.organizer
+            if isinstance(organizer, str):
+                organizer = Organizer(organizer)
+            container.append(organizer.serialize())
 
     def serialize_attendee(event, container):
         for attendee in event.attendees:
+            if isinstance(attendee, str):
+                attendee = Attendee(attendee)
             container.append(attendee.serialize())
 
     def serialize_description(event, container):
