@@ -60,5 +60,6 @@ class EmailAlarmParser(BaseAlarmParser):
         for line in lines:
             alarm.recipients.append(Attendee.parse(line))
 
+
 class NoneAlarmParser(BaseAlarmParser):
     pass
