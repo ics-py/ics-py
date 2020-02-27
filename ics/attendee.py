@@ -1,4 +1,5 @@
 import warnings
+from typing import Dict, List
 
 from ics.grammar.parse import ContentLine
 from ics.parsers.attendee_parser import AttendeeParser, PersonParser
@@ -17,7 +18,7 @@ class Person(object):
         self.common_name = common_name or email
         self.dir = dir
         self.sent_by = sent_by
-        self.extra = {}
+        self.extra: Dict[str, List[str]] = {}
 
     @classmethod
     def parse(cls, line: ContentLine) -> "Person":
@@ -34,7 +35,7 @@ class Person(object):
 
         params = dict(line.params)
         for param_name, (parser, options) in self.Meta.parser.get_parsers().items():
-            values = params.pop(param_name, None)
+            values = params.pop(param_name, [])
             if not values and options.required:
                 if options.default:
                     values = options.default
