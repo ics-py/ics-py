@@ -1,6 +1,7 @@
 import re
-from typing import TYPE_CHECKING, List
+from typing import List, TYPE_CHECKING
 
+from ics import Attendee, Organizer
 from ics.alarm.utils import get_type_from_container
 from ics.grammar.parse import ContentLine
 from ics.parsers.parser import Parser, option
@@ -50,7 +51,12 @@ class EventParser(Parser):
         event.name = unescape_string(line.value) if line else None
 
     def parse_organizer(event: "Event", line: ContentLine):
-        event.organizer = unescape_string(line.value) if line else None
+        event.organizer = Organizer.parse(line) if line else None
+
+    @option(multiple=True)
+    def parse_attendee(event, lines):
+        for line in lines:
+            event.attendee.append(Attendee.parse(line))
 
     def parse_description(event: "Event", line: ContentLine):
         event.description = unescape_string(line.value) if line else None

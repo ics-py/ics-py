@@ -1,13 +1,13 @@
 import warnings
-from typing import TYPE_CHECKING, List
+from typing import List, TYPE_CHECKING
 
+from ics import Attendee
 from ics.grammar.parse import ContentLine
 from ics.parsers.parser import Parser, option
 from ics.utils import parse_datetime, parse_duration, unescape_string
 
 if TYPE_CHECKING:
-    from ics.alarm import *
-    from ics.alarm.base import BaseAlarm
+    pass
 
 
 class BaseAlarmParser(Parser):
@@ -61,9 +61,9 @@ class EmailAlarmParser(BaseAlarmParser):
         alarm.subject = unescape_string(line.value) if line else None
 
     @option(required=True, multiple=True)
-    def parse_attendee(alarm: "EmailAlarm", line: List[ContentLine]):
-        email = unescape_string(line.value)
-        alarm.recipients.append(email)
+    def parse_attendee(alarm: "EmailAlarm", lines: List[ContentLine]):
+        for line in lines:
+            alarm.recipients.append(Attendee.parse(line))
 
 
 class NoneAlarmParser(BaseAlarmParser):

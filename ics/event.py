@@ -3,10 +3,9 @@ from datetime import datetime, timedelta
 from typing import Dict, Iterable, List, NamedTuple, Optional, Set, Tuple, Union
 
 from ics.alarm.base import BaseAlarm
-from ics.attendee import Attendee
+from ics.attendee import Attendee, Organizer
 from ics.component import Component
 from ics.grammar.parse import Container
-from ics.organizer import Organizer
 from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
 from ics.timespan import Timespan
@@ -96,7 +95,7 @@ class Event(Component):
         self._status: Optional[str] = None
         self._classification: Optional[str] = None
 
-        self.organizer: Optional[str] = None
+        self.organizer: Optional[Organizer] = organizer
         self.uid: str = uid_gen() if not uid else uid
         self.description: Optional[str] = description
         self.created: Optional[DatetimeLike] = ensure_datetime(created)
@@ -144,7 +143,6 @@ class Event(Component):
         |  May be set to anything that :func:`datetime.__init__` understands.
         |  If an end is defined (not a duration), .begin must not
             be set to a superior value.
-        |  For all-day events, the time is truncated to midnight when set.
         """
         return self._timespan.get_begin()
 
@@ -163,10 +161,6 @@ class Event(Component):
         |  Setting to None will have unexpected behavior if
             begin is not None.
         |  Must not be set to an inferior value than self.begin.
-        |  When setting end time for for all-day events, if the end time
-            is midnight, that day is not included.  Otherwise, the end is
-            rounded up to midnight the next day, including the full day.
-            Note that rounding is different from :func:`make_all_day`.
         """
         return self._timespan.get_effective_end()
 
@@ -183,7 +177,6 @@ class Event(Component):
         |  May be set with a dict ({"days":2, "hours":6}).
         |  If set to a non null value, removes any already
             existing end time.
-        |  Duration of an all-day event is rounded up to a full day.
         """
         return self._timespan.get_effective_duration()
 
