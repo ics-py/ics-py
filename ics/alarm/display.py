@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta
-from typing import Union
+import attr
 
 from ics.alarm.base import BaseAlarm
 from ics.parsers.alarm_parser import DisplayAlarmParser
 from ics.serializers.alarm_serializer import DisplayAlarmSerializer
 
 
+@attr.s
 class DisplayAlarm(BaseAlarm):
     """
     A calendar event VALARM with DISPLAY option.
@@ -16,16 +16,7 @@ class DisplayAlarm(BaseAlarm):
         parser = DisplayAlarmParser
         serializer = DisplayAlarmSerializer
 
-    def __init__(
-            self,
-            trigger: Union[timedelta, datetime] = None,
-            repeat: int = None,
-            duration: timedelta = None,
-            display_text: str = None,
-    ):
-        super().__init__(trigger, repeat, duration)
-
-        self.display_text = display_text
+    display_text: str = attr.ib(default=None)
 
     @property
     def action(self):

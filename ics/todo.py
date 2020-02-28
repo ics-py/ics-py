@@ -1,16 +1,27 @@
-import copy
 from datetime import datetime, timedelta
-from typing import Iterable, List, Optional
+from typing import Optional
 
-from ics.alarm.base import BaseAlarm
-from ics.component import Component
-from ics.grammar.parse import Container
+import attr
+
+from ics.component import CalendarEntryAttrs
 from ics.parsers.todo_parser import TodoParser
 from ics.serializers.todo_serializer import TodoSerializer
-from ics.utils import ensure_datetime, uid_gen
+from ics.timespan import Timespan
+from ics.types import DatetimeLike, EventOrTimespanOrInstant, get_timespan_if_event
+from ics.utils import ensure_datetime
+
+MAX_PERCENT = 100
+MAX_PRIORITY = 9
 
 
-class Todo(Component):
+@attr.s
+class TodoAttrs(CalendarEntryAttrs):
+    percent: Optional[int] = attr.ib(default=None, validator=attr.validators.in_(range(0, MAX_PERCENT + 1)))
+    priority: Optional[int] = attr.ib(default=None, validator=attr.validators.in_(range(0, MAX_PRIORITY + 1)))
+    completed: Optional[DatetimeLike] = attr.ib(factory=datetime.now, converter=ensure_datetime)
+
+
+class Todo(TodoAttrs):
     """A todo list entry.
 
     Can have a start time and duration, or start and due time,
@@ -22,108 +33,19 @@ class Todo(Component):
         parser = TodoParser
         serializer = TodoSerializer
 
-    def __init__(self,
-                 dtstamp=None,
-                 uid: str = None,
-                 completed=None,
-                 created=None,
-                 description: str = None,
-                 begin=None,
-                 location: str = None,
-                 percent: int = None,
-                 priority: int = None,
-                 name: str = None,
-                 url: str = None,
-                 due=None,
-                 duration: timedelta = None,
-                 alarms: Iterable[BaseAlarm] = None,
-                 status: str = None):
-        """Instantiates a new :class:`ics.todo.Todo`.
+    def __init__(
+            self,
+            begin: DatetimeLike = None,
+            due: DatetimeLike = None,
+            duration: timedelta = None,
+            *args, **kwargs
+    ):
+        super(Todo, self).__init__(Timespan(begin, due, duration), *args, **kwargs)
 
-        Args:
-            uid (string): must be unique
-            dtstamp (datetime)
-            completed (datetime)
-            created (datetime)
-            description (string)
-            begin (datetime)
-            location (string)
-            percent (int): 0-100
-            priority (int): 0-9
-            name (string) : rfc5545 SUMMARY property
-            url (string)
-            due (datetime)
-            duration (datetime.timedelta)
-            alarms (:class:`ics.alarm.Alarm`)
-            status (string)
-
-        Raises:
-            ValueError: if `duration` and `due` are specified at the same time
-        """
-
-        self._percent: Optional[int] = None
-        self._priority: Optional[int] = None
-        self._begin = None
-        self._due_time = None
-        self._duration = None
-
-        self.uid = uid_gen() if not uid else uid
-        self.dtstamp = datetime.utcnow() if not dtstamp else ensure_datetime(dtstamp)
-        self.completed = ensure_datetime(completed)
-        self.created = ensure_datetime(created)
-        self.description = description
-        self.begin = begin
-        self.location = location
-        self.percent = percent
-        self.priority = priority
-        self.name = name
-        self.url = url
-        self.alarms: List[BaseAlarm] = list()
-        self.extra = Container(name='VTODO')
-
-        if duration and due:
-            raise ValueError(
-                'Todo() may not specify a duration and due date\
-                at the same time')
-        elif duration:
-            if not begin:
-                raise ValueError(
-                    'Todo() must specify a begin if a duration\
-                    is specified')
-            self.duration = duration
-        elif due:
-            self.due = due
-
-        if alarms is not None:
-            self.alarms = list(alarms)
-        self.status = status
+    ####################################################################################################################
 
     @property
-    def percent(self) -> Optional[int]:
-        return self._percent
-
-    @percent.setter
-    def percent(self, value: Optional[int]):
-        if value:
-            value = int(value)
-            if value < 0 or value > 100:
-                raise ValueError('percent must be [0, 100]')
-        self._percent = value
-
-    @property
-    def priority(self) -> Optional[int]:
-        return self._priority
-
-    @priority.setter
-    def priority(self, value: Optional[int]):
-        if value:
-            value = int(value)
-            if value < 0 or value > 9:
-                raise ValueError('priority must be [0, 9]')
-        self._priority = value
-
-    @property
-    def begin(self):
+    def begin(self) -> datetime:
         """Get or set the beginning of the todo.
 
         |  Will return a :class:`datetime` object.
@@ -131,18 +53,15 @@ class Todo(Component):
         |  If a due time is defined (not a duration), .begin must not
             be set to a superior value.
         """
-        return self._begin
+        return self._timespan.get_begin()
 
     @begin.setter
-    def begin(self, value):
-        value = ensure_datetime(value)
-        if value and self._due_time and value > self._due_time:
-            raise ValueError('Begin must be before due time')
-        self._begin = value
+    def begin(self, value: DatetimeLike):
+        self._timespan = self._timespan.replace(begin_time=ensure_datetime(value))
 
     @property
-    def due(self):
-        """Get or set the end of the todo.
+    def due(self) -> datetime:
+        """Get or set the due of the todo.
 
         |  Will return a :class:`datetime` object.
         |  May be set to anything that :func:`datetime.__init__` understands.
@@ -152,29 +71,14 @@ class Todo(Component):
             begin is not None.
         |  Must not be set to an inferior value than self.begin.
         """
-
-        if self._duration:
-            # if due is duration defined return the beginning + duration
-            return self.begin + self._duration
-        elif self._due_time:
-            # if due is time defined
-            return self._due_time
-        else:
-            return None
+        return self._timespan.get_effective_end()
 
     @due.setter
-    def due(self, value):
-        value = ensure_datetime(value)
-        if value and self._begin and value < self._begin:
-            raise ValueError('Due must be after begin')
-
-        self._due_time = value
-
-        if value:
-            self._duration = None
+    def due(self, value: DatetimeLike):
+        self._timespan = self._timespan.replace(end_time=ensure_datetime(value))
 
     @property
-    def duration(self):
+    def duration(self) -> Optional[timedelta]:
         """Get or set the duration of the todo.
 
         |  Will return a timedelta object.
@@ -183,149 +87,45 @@ class Todo(Component):
         |  If set to a non null value, removes any already
             existing end time.
         """
-        if self._duration:
-            return self._duration
-        elif self.due:
-            return self.due - self.begin
-        else:
-            # todo has neither due, nor start and duration
-            return None
+        return self._timespan.get_effective_duration()
 
     @duration.setter
-    def duration(self, value):
-        if isinstance(value, dict):
-            value = timedelta(**value)
-        elif isinstance(value, timedelta):
-            value = value
-        elif value is not None:
-            value = timedelta(value)
-
-        self._duration = value
-
-        if value:
-            self._due_time = None
+    def duration(self, value: timedelta):
+        self._timespan = self._timespan.replace(duration=value)
 
     @property
-    def status(self) -> Optional[str]:
-        return self._status
+    def has_due(self) -> bool:
+        return self._timespan.has_end()
 
-    @status.setter
-    def status(self, value: Optional[str]):
-        if isinstance(value, str):
-            value = value.upper()
-        statuses = (None, 'NEEDS-ACTION', 'COMPLETED', 'IN-PROCESS', 'CANCELLED')
-        if value not in statuses:
-            raise ValueError('status must be one of %s' % ", ".join([repr(x) for x in statuses]))
-        self._status = value
+    @property
+    def floating(self):
+        return self._timespan.is_floating()
+
+    def replace_timezone(self, tzinfo):
+        self._timespan = self._timespan.replace_timezone(tzinfo)
+
+    def convert_timezone(self, tzinfo):
+        self._timespan = self._timespan.convert_timezone(tzinfo)
+
+    @property
+    def timespan(self) -> Timespan:
+        return self._timespan
 
     def __repr__(self) -> str:
-        if self.name is None:
-            return "<Todo>"
-        if self.begin is None and self.due is None:
-            return "<Todo '{}'>".format(self.name)
-        if self.due is None:
-            return "<Todo '{}' begin:{}>".format(self.name, self.begin)
-        if self.begin is None:
-            return "<Todo '{}' due:{}>".format(self.name, self.due)
-        return "<Todo '{}' begin:{} due:{}>".format(self.name, self.begin, self.due)
+        name = [self.__class__.__name__, "'%s'" % (self.name or "",)]
+        prefix, _, suffix = self._timespan.get_str_segments()
+        return "<%s>" % (" ".join(prefix + name + suffix))
 
-    def __lt__(self, other) -> bool:
-        if isinstance(other, Todo):
-            if self.due is None and other.due is None:
-                if self.name is None and other.name is None:
-                    return False
-                elif self.name is None:
-                    return True
-                elif other.name is None:
-                    return False
-                else:
-                    return self.name < other.name
-            return self.due < other.due
-        if isinstance(other, datetime):
-            if self.due:
-                return self.due < other
-        raise NotImplementedError(
-            'Cannot compare Todo and {}'.format(type(other)))
+    ####################################################################################################################
 
-    def __le__(self, other) -> bool:
-        if isinstance(other, Todo):
-            if self.due is None and other.due is None:
-                if self.name is None and other.name is None:
-                    return True
-                elif self.name is None:
-                    return True
-                elif other.name is None:
-                    return False
-                else:
-                    return self.name <= other.name
-            return self.due <= other.due
-        if isinstance(other, datetime):
-            if self.due:
-                return self.due <= other
-        raise NotImplementedError(
-            'Cannot compare Todo and {}'.format(type(other)))
+    def __lt__(self, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.__lt__(get_timespan_if_event(second))
 
-    def __gt__(self, other) -> bool:
-        if isinstance(other, Todo):
-            if self.due is None and other.due is None:
-                if self.name is None and other.name is None:
-                    return False
-                elif self.name is None:
-                    return False
-                elif other.name is None:
-                    return True
-                else:
-                    return self.name > other.name
-            return self.due > other.due
-        if isinstance(other, datetime):
-            if self.due:
-                return self.due > other
-        raise NotImplementedError(
-            'Cannot compare Todo and {}'.format(type(other)))
+    def __le__(self, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.__le__(get_timespan_if_event(second))
 
-    def __ge__(self, other) -> bool:
-        if isinstance(other, Todo):
-            if self.due is None and other.due is None:
-                if self.name is None and other.name is None:
-                    return True
-                elif self.name is None:
-                    return True
-                elif other.name is None:
-                    return False
-                else:
-                    return self.name >= other.name
-            return self.due >= other.due
-        if isinstance(other, datetime):
-            if self.due:
-                return self.due >= other
-        raise NotImplementedError(
-            'Cannot compare Todo and {}'.format(type(other)))
+    def __gt__(self, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.__gt__(get_timespan_if_event(second))
 
-    def __eq__(self, other) -> bool:
-        """Two todos are considered equal if they have the same uid."""
-        if isinstance(other, Todo):
-            return self.uid == other.uid
-        raise NotImplementedError(
-            'Cannot compare Todo and {}'.format(type(other)))
-
-    def __ne__(self, other) -> bool:
-        """Two todos are considered not equal if they do not have the same uid."""
-        if isinstance(other, Todo):
-            return self.uid != other.uid
-        raise NotImplementedError(
-            'Cannot compare Todo and {}'.format(type(other)))
-
-    def clone(self):
-        """
-        Returns:
-            Todo: an exact copy of self"""
-        clone = copy.copy(self)
-        clone.extra = clone.extra.clone()
-        clone.alarms = copy.copy(self.alarms)
-        return clone
-
-    def __hash__(self):
-        """
-        Returns:
-            int: hash of self. Based on self.uid."""
-        return int(''.join(map(lambda x: '%.3d' % ord(x), self.uid)))
+    def __ge__(self, second: EventOrTimespanOrInstant) -> bool:
+        return self._timespan.__ge__(get_timespan_if_event(second))

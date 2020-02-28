@@ -1,36 +1,58 @@
-import copy
 from datetime import datetime, timedelta
-from typing import Dict, Iterable, List, NamedTuple, Optional, Set, Tuple, Union
+from typing import Dict, NamedTuple, Optional, Set, Tuple, Union
+
+import attr
 
 from ics.alarm.base import BaseAlarm
-from ics.attendee import Attendee
-from ics.component import Component
+from ics.attendee import Attendee, Organizer
+from ics.component import CalendarEntryAttrs
 from ics.grammar.parse import Container
-from ics.organizer import Organizer
 from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
 from ics.timespan import Timespan
-from ics.types import DatetimeLike
-from ics.utils import ensure_datetime, uid_gen
+from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, get_timespan_if_event
+from ics.utils import ensure_datetime
+
+STATUS_ATTRIB = dict(
+    default=None,
+    converter=lambda s: s.upper(),
+    validator=attr.validators.in_((None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')))
 
 
 class Geo(NamedTuple):
     latitude: float
     longitude: float
 
-
-EventOrTimespan = Union["Event", Timespan]
-EventOrTimespanOrInstant = Union["Event", Timespan, datetime]
-
-
-def get_timespan_if_event(value):
-    if isinstance(value, Event):
-        return value._timespan
-    else:
-        return value
+    @classmethod
+    def make(cls, value: Union[Dict[str, float], Tuple[float, float], None]):
+        if isinstance(value, dict):
+            return Geo(**value)
+        elif isinstance(value, tuple):
+            return Geo(*value)
+        else:
+            return None
 
 
-class Event(Component):
+@attr.s
+class EventsAttrs(CalendarEntryAttrs):
+    classification: Optional[str] = attr.ib(default=None)
+
+    transparent: Optional[bool] = attr.ib(default=None)
+    organizer: Optional[Organizer] = attr.ib(default=None, validator=attr.validators.instance_of(Organizer))
+    geo: Optional[Geo] = attr.ib(converter=Geo.make, default=None)
+
+    attendees: Set[Attendee] = attr.ib(factory=set, converter=set)
+    categories: Set[str] = attr.ib(factory=set, converter=set)
+
+    ATTENDEE_VALIDATOR = attr.validators.instance_of(Attendee)
+
+    def add_attendee(self, attendee: Attendee):
+        """ Add an attendee to the attendees set """
+        self.ATTENDEE_VALIDATOR(attendee)
+        self.attendees.add(attendee)
+
+
+class Event(EventsAttrs):
     """A calendar event.
 
     Can be full-day or between two instants.
@@ -47,26 +69,14 @@ class Event(Component):
         parser = EventParser
         serializer = EventSerializer
 
-    def __init__(self,
-                 name: str = None,
-                 begin: DatetimeLike = None,
-                 end: DatetimeLike = None,
-                 duration: timedelta = None,
-                 uid: str = None,
-                 description: str = None,
-                 created: DatetimeLike = None,
-                 last_modified: DatetimeLike = None,
-                 location: str = None,
-                 url: str = None,
-                 transparent: bool = None,
-                 alarms: Iterable[BaseAlarm] = None,
-                 attendees: Iterable[Attendee] = None,
-                 categories: Iterable[str] = None,
-                 status: str = None,
-                 organizer: Organizer = None,
-                 geo=None,
-                 classification: str = None,
-                 ) -> None:
+    def __init__(
+            self,
+            name: str = None,
+            begin: DatetimeLike = None,
+            end: DatetimeLike = None,
+            duration: timedelta = None,
+            *args, **kwargs
+    ):
         """Instantiates a new :class:`ics.event.Event`.
 
         Args:
@@ -91,48 +101,7 @@ class Event(Component):
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
         """
-
-        self._timespan: Timespan = Timespan(begin, end, duration)
-        self._status: Optional[str] = None
-        self._classification: Optional[str] = None
-
-        self.organizer: Optional[str] = None
-        self.uid: str = uid_gen() if not uid else uid
-        self.description: Optional[str] = description
-        self.created: Optional[DatetimeLike] = ensure_datetime(created)
-        self.last_modified: Optional[DatetimeLike] = ensure_datetime(last_modified)
-        self.location: Optional[str] = location
-        self.url: Optional[str] = url
-        self.transparent: Optional[bool] = transparent
-        self.alarms: List[BaseAlarm] = list()
-        self.attendees: Set[Attendee] = set()
-        self.categories: Set[str] = set()
-        self.geo = geo
-        self.extra = Container(name='VEVENT')
-
-        self.name = name
-
-        if alarms is not None:
-            self.alarms = list(alarms)
-        self.status = status
-        self.classification = classification
-
-        if categories:
-            self.categories.update(categories)
-
-        if attendees:
-            self.attendees.update(attendees)
-
-    def clone(self):
-        """
-        Returns:
-            Event: an exact copy of self"""
-        clone = copy.copy(self)
-        clone.extra = clone.extra.clone()
-        clone.alarms = copy.copy(self.alarms)
-        clone.categories = copy.copy(self.categories)
-        # don't need to copy timespan as it is immutable
-        return clone
+        super(Event, self).__init__(Timespan(begin, end, duration), name, *args, **kwargs)
 
     ####################################################################################################################
 
@@ -237,72 +206,10 @@ class Event(Component):
     def timespan(self) -> Timespan:
         return self._timespan
 
-    ####################################################################################################################
-
-    @property
-    def status(self) -> Optional[str]:
-        return self._status
-
-    @status.setter
-    def status(self, value: Optional[str]):
-        if isinstance(value, str):
-            value = value.upper()
-        statuses = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
-        if value not in statuses:
-            raise ValueError('status must be one of %s' % ", ".join([repr(x) for x in statuses]))
-        self._status = value
-
-    @property
-    def classification(self):
-        return self._classification
-
-    @classification.setter
-    def classification(self, value):
-        if value is not None:
-            if not isinstance(value, str):
-                raise ValueError('classification must be a str')
-            self._classification = value
-        else:
-            self._classification = None
-
-    @property
-    def geo(self) -> Optional[Geo]:
-        """Get or set the geo position of the event.
-
-        |  Will return a namedtuple object.
-        |  May be set to any Geo, tuple or dict with latitude and longitude keys.
-        |  If set to a non null value, removes any already
-            existing geo.
-        """
-        return self._geo
-
-    @geo.setter
-    def geo(self, value: Union[Dict[str, float], Tuple[float, float], Geo, None]):
-        if isinstance(value, dict):
-            latitude, longitude = value['latitude'], value['longitude']
-            value = Geo(latitude, longitude)
-        elif value is not None:
-            latitude, longitude = value
-            value = Geo(latitude, longitude)
-        self._geo = value
-
-    def add_attendee(self, attendee: Attendee):
-        """ Add an attendee to the attendees set
-        """
-        self.attendees.add(attendee)
-
-    ####################################################################################################################
-
     def __repr__(self) -> str:
         name = [self.__class__.__name__, "'%s'" % (self.name or "",)]
         prefix, _, suffix = self._timespan.get_str_segments()
         return "<%s>" % (" ".join(prefix + name + suffix))
-
-    def __hash__(self) -> int:
-        """
-        Returns:
-            int: hash of self. Based on self.uid."""
-        return hash(self.uid)
 
     ####################################################################################################################
 
@@ -337,9 +244,6 @@ class Event(Component):
 
     def __ge__(self, second: EventOrTimespanOrInstant) -> bool:
         return self._timespan.__ge__(get_timespan_if_event(second))
-
-    def __eq__(self, o: object) -> bool:
-        return self.__class__ == o.__class__ and self.__dict__ == o.__dict__
 
     def same_timespan(self, second: EventOrTimespan) -> bool:
         return self._timespan.same_timespan(get_timespan_if_event(second))

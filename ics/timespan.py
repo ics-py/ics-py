@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta, tzinfo
 from enum import Enum
-from typing import NamedTuple, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
+
+import attr
 
 from ics.types import TimespanOrBegin
 from ics.utils import TIMEDELTA_CACHE, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight
@@ -50,44 +52,20 @@ def normalize(value: TimespanOrBegin, normalization: Normalization) -> Union[Non
             return value
 
 
-class _Timespan(NamedTuple):
-    begin_time: datetime
-    end_time: datetime
-    duration: timedelta
-    precision: str
+@attr.s(slots=True, frozen=True, cmp=False)
+class Timespan(object):
+    begin_time: Optional[datetime] = attr.ib(validator=attr.validators.instance_of(datetime))
+    end_time: Optional[datetime] = attr.ib(validator=attr.validators.instance_of(datetime))
+    duration: Optional[timedelta] = attr.ib(validator=attr.validators.instance_of(datetime))
+    precision: str = attr.ib(default="second")
 
-
-class Timespan(_Timespan):
-    __slots__ = ()
-
-    def __new__(cls, begin_time: Optional[datetime] = None, end_time: Optional[datetime] = None,
-                duration: Optional[timedelta] = None, precision: str = "second"):
-        if begin_time is not None and not isinstance(begin_time, datetime):
-            raise ValueError("begin_time must be a datetime, not %s" % (type(begin_time),))
-        if end_time is not None and not isinstance(end_time, datetime):
-            raise ValueError("end_time must be a datetime, not %s" % (type(end_time),))
-        if duration is not None and not isinstance(duration, timedelta):
-            raise ValueError("duration must be a timedelta, not %s" % (type(duration),))
-        if precision not in ("day", "second"):
-            raise ValueError("illegal precision value '%s'" % (precision,))
-
-        self = super(Timespan, cls).__new__(cls, begin_time, end_time, duration, precision)
+    def __attrs_post_init__(self):
         self.validate()
-        return self
 
-    def replace(self, begin_time: Union[bool, Optional[datetime]] = False, end_time: Union[bool, Optional[datetime]] = False,
-                duration: Union[bool, Optional[timedelta]] = False, precision: Union[bool, str] = False) -> "Timespan":
-        if begin_time is False:
-            begin_time = self.begin_time
-        if end_time is False:
-            end_time = self.end_time
-        if duration is False:
-            duration = self.duration
-        if precision is False:
-            precision = self.precision
-        return type(self)(begin_time=begin_time, end_time=end_time, duration=duration, precision=precision)
+    def replace(self, **changes) -> "Timespan":
+        return attr.evolve(self, **changes)
 
-    def replace_timezone(self, tzinfo) -> "Timespan":
+    def replace_timezone(self: "Timespan", tzinfo: Any) -> "Timespan":
         if self.is_all_day():
             raise ValueError("can't replace timezone of all-day event")
         if self.get_begin() is None:

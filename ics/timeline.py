@@ -2,12 +2,15 @@ import heapq
 from datetime import date, datetime, timedelta
 from typing import Iterator, Tuple
 
+import attr
+
 from ics.event import Event
 from ics.timespan import Normalization, Timespan, normalize
 from ics.types import DatetimeLike, OptionalDatetimeLike, TimespanOrBegin
 from ics.utils import ceil_datetime_to_midnight, ensure_datetime
 
 
+@attr.s
 class Timeline(object):
     """
     `Timeline`s allow iterating all event from a `Calendar` in chronological order, optionally also filtering events
@@ -16,9 +19,8 @@ class Timeline(object):
     with and without timezone comparable.
     """
 
-    def __init__(self, calendar: "Calendar", normalization: Normalization):
-        self._calendar = calendar
-        self._normalization = normalization
+    _calendar: "Calendar" = attr.ib()
+    _normalization: Normalization = attr.ib()
 
     def normalize_datetime(self, instant: DatetimeLike) -> datetime:
         """

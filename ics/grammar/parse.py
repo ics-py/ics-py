@@ -1,8 +1,11 @@
 import collections
 from pathlib import Path
-from typing import Iterable, List, TYPE_CHECKING, Union
+from typing import Dict, Iterable, List, Union
 
+import attr
 import tatsu
+
+from ics.types import ContainerList
 
 grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
 
@@ -14,6 +17,7 @@ class ParseError(Exception):
     pass
 
 
+@attr.s(repr=False)
 class ContentLine:
     """
     Represents one property line.
@@ -32,19 +36,9 @@ class ContentLine:
         value:  The value of the property
     """
 
-    def __eq__(self, other):
-        ret = (self.name == other.name and
-               self.params == other.params and
-               self.value == other.value)
-        return ret
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __init__(self, name: str, params=None, value: str = ''):
-        self.name = name.upper()
-        self.params = {} if params is None else params
-        self.value = value
+    name: str = attr.ib(converter=lambda s: s.upper())
+    params: Dict[str, List[str]] = attr.ib(factory=dict)
+    value: str = attr.ib(default="")
 
     def __str__(self):
         params_str = ''
@@ -91,14 +85,7 @@ class ContentLine:
 
     def clone(self):
         """Makes a copy of itself"""
-        # dict(self.params) -> Make a copy of the dict
-        return self.__class__(self.name, dict(self.params), self.value)
-
-
-if TYPE_CHECKING:
-    ContainerList = List[Union[ContentLine, "Container"]]
-else:
-    ContainerList = list
+        return attr.evolve(self)
 
 
 class Container(ContainerList):
