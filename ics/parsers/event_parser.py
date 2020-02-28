@@ -1,8 +1,8 @@
 import re
 from typing import List, TYPE_CHECKING
 
-from ics import Attendee, Organizer
 from ics.alarm.utils import get_type_from_container
+from ics.attendee import Attendee, Organizer
 from ics.grammar.parse import ContentLine
 from ics.parsers.parser import Parser, option
 from ics.utils import iso_precision, parse_datetime, parse_duration, unescape_string

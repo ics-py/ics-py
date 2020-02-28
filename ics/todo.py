@@ -3,7 +3,7 @@ from typing import Optional
 
 import attr
 
-from ics.component import CalendarEntryAttrs
+from ics.event import CalendarEntryAttrs
 from ics.parsers.todo_parser import TodoParser
 from ics.serializers.todo_serializer import TodoSerializer
 from ics.timespan import Timespan

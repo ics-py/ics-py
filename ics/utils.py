@@ -287,3 +287,19 @@ def validate_truthy(inst, attr, value):
                 name=attr.name, value=value
             )
         )
+
+
+def check_is_instance(name, value, clazz):
+    if not isinstance(value, clazz):
+        raise TypeError(
+            "'{name}' must be {type!r} (got {value!r} that is a "
+            "{actual!r}).".format(
+                name=name,
+                type=clazz,
+                actual=value.__class__,
+                value=value,
+            ),
+            name,
+            clazz,
+            value,
+        )

@@ -2,11 +2,11 @@ from typing import List
 
 import attr
 
-from ics import Event
 from ics.alarm.base import BaseAlarm
 from ics.attendee import Attendee
 from ics.parsers.alarm_parser import EmailAlarmParser
 from ics.serializers.alarm_serializer import EmailAlarmSerializer
+from ics.utils import check_is_instance
 
 
 @attr.s
@@ -26,7 +26,7 @@ class EmailAlarm(BaseAlarm):
 
     def add_recipient(self, recipient: Attendee):
         """ Add an recipient to the recipients list """
-        Event.ATTENDEE_VALIDATOR(recipient)
+        check_is_instance("recipient", recipient, Attendee)
         self.recipients.append(recipient)
 
     @property
