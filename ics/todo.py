@@ -2,19 +2,15 @@ import copy
 from datetime import datetime, timedelta
 from typing import Iterable, List, Optional
 
-from six.moves import map
-
-from .alarm.base import BaseAlarm
-from .component import Component
+from ics.alarm.base import BaseAlarm
+from ics.component import Component
 from ics.grammar.parse import Container
-from .utils import ensure_datetime, uid_gen
-
 from ics.parsers.todo_parser import TodoParser
 from ics.serializers.todo_serializer import TodoSerializer
+from ics.utils import ensure_datetime, uid_gen
 
 
 class Todo(Component):
-
     """A todo list entry.
 
     Can have a start time and duration, or start and due time,

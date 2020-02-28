@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from ics.grammar.parse import ContentLine
 from ics.serializers.serializer import Serializer
-from ics.utils import serialize_datetime_to_contentline, escape_string, serialize_duration
+from ics.utils import escape_string, serialize_datetime_to_contentline, serialize_duration
 
 
 class BaseAlarmSerializer(Serializer):

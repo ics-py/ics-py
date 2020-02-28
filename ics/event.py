@@ -1,18 +1,17 @@
 import copy
 from datetime import datetime, timedelta
-from typing import (Dict, Iterable, List, NamedTuple, Optional, Set,
-                    Tuple, Union)
+from typing import Dict, Iterable, List, NamedTuple, Optional, Set, Tuple, Union
 
+from ics.alarm.base import BaseAlarm
+from ics.attendee import Attendee
+from ics.component import Component
 from ics.grammar.parse import Container
+from ics.organizer import Organizer
 from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
-from .alarm.base import BaseAlarm
-from .attendee import Attendee
-from .component import Component
-from .organizer import Organizer
-from .timespan import Timespan
-from .types import DatetimeLike
-from .utils import (ensure_datetime, uid_gen)
+from ics.timespan import Timespan
+from ics.types import DatetimeLike
+from ics.utils import ensure_datetime, uid_gen
 
 
 class Geo(NamedTuple):

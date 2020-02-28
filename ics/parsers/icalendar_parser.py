@@ -1,5 +1,7 @@
+from io import StringIO
+from typing import List, TYPE_CHECKING
+
 from dateutil.tz import tzical
-from six import StringIO
 
 from ics.event import Event
 from ics.grammar.parse import ContentLine
@@ -7,16 +9,19 @@ from ics.parsers.parser import Parser, option
 from ics.todo import Todo
 from ics.utils import remove_sequence, remove_x
 
+if TYPE_CHECKING:
+    from ics.event import Calendar
+
 
 class CalendarParser(Parser):
     @option(required=True)
-    def parse_prodid(calendar, prodid):
+    def parse_prodid(calendar: "Calendar", prodid: ContentLine):
         calendar._creator = prodid.value
 
     _version_default = [ContentLine(name="VERSION", value="2.0")]
 
     @option(required=True, default=_version_default)
-    def parse_version(calendar, line):
+    def parse_version(calendar: "Calendar", line: ContentLine):
         version = line
         # TODO : should take care of minver/maxver
         if ";" in version.value:
@@ -24,7 +29,7 @@ class CalendarParser(Parser):
         else:
             calendar.version = version.value
 
-    def parse_calscale(calendar, line):
+    def parse_calscale(calendar: "Calendar", line: ContentLine):
         calscale = line
         if calscale:
             calendar.scale = calscale.value.lower()
@@ -33,7 +38,7 @@ class CalendarParser(Parser):
             calendar.scale = "georgian"
             calendar.scale_params = {}
 
-    def parse_method(calendar, line):
+    def parse_method(calendar: "Calendar", line: ContentLine):
         method = line
         if method:
             calendar.method = method.value
@@ -43,7 +48,7 @@ class CalendarParser(Parser):
             calendar.method_params = {}
 
     @option(multiple=True)
-    def parse_vtimezone(calendar, vtimezones):
+    def parse_vtimezone(calendar: "Calendar", vtimezones: List[ContentLine]):
         """Receives a list of VTIMEZONE blocks.
 
         Parses them and adds them to calendar._timezones.
@@ -62,7 +67,7 @@ class CalendarParser(Parser):
                 calendar._timezones[key] = timezones.get(key)
 
     @option(multiple=True)
-    def parse_vevent(calendar, lines):
+    def parse_vevent(calendar: "Calendar", lines: List[ContentLine]):
         # tz=calendar._timezones gives access to the event factory to the
         # timezones list
         def event_factory(x):
@@ -71,7 +76,7 @@ class CalendarParser(Parser):
         calendar.events = set(map(event_factory, lines))
 
     @option(multiple=True)
-    def parse_vtodo(calendar, lines):
+    def parse_vtodo(calendar: "Calendar", lines: List[ContentLine]):
         # tz=calendar._timezones gives access to the event factory to the
         # timezones list
         def todo_factory(x):

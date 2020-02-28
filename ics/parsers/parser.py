@@ -23,9 +23,7 @@ class Parser:
             if method_name.startswith("parse_")
         ]
         return {
-            method_name.split("_", 1)[1]
-            .upper()
-            .replace("_", "-"): (
+            method_name.split("_", 1)[1].upper().replace("_", "-"): (
                 method_callable,
                 getattr(method_callable, "options", ParserOption()),
             )
@@ -34,9 +32,9 @@ class Parser:
 
 
 def option(
-    required: bool = False,
-    multiple: bool = False,
-    default: Optional[List[ContentLine]] = None,
+        required: bool = False,
+        multiple: bool = False,
+        default: Optional[List[ContentLine]] = None,
 ) -> Callable:
     def decorator(fn):
         fn.options = ParserOption(required, multiple, default)

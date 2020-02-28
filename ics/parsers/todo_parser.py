@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import List, TYPE_CHECKING
 
 from ics.alarm.utils import get_type_from_container
 from ics.grammar.parse import ContentLine
@@ -6,7 +6,7 @@ from ics.parsers.parser import Parser, option
 from ics.utils import parse_datetime, parse_duration, unescape_string
 
 if TYPE_CHECKING:
-    from .todo_parser import Todo
+    from ics.todo import Todo
 
 
 class TodoParser(Parser):

@@ -3,8 +3,7 @@ from typing import TYPE_CHECKING
 
 from ics.grammar.parse import Container, ContentLine
 from ics.serializers.serializer import Serializer
-from ics.utils import (serialize_datetime_to_contentline, escape_string, serialize_duration,
-                       uid_gen)
+from ics.utils import (escape_string, serialize_datetime_to_contentline, serialize_duration, uid_gen)
 
 if TYPE_CHECKING:
     from ics.todo import Todo

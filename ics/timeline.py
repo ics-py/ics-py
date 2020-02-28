@@ -2,10 +2,10 @@ import heapq
 from datetime import date, datetime, timedelta
 from typing import Iterator, Tuple
 
-from .event import Event
-from .timespan import Normalization, Timespan, normalize
-from .types import DatetimeLike, OptionalDatetimeLike, TimespanOrBegin
-from .utils import ceil_datetime_to_midnight, ensure_datetime
+from ics.event import Event
+from ics.timespan import Normalization, Timespan, normalize
+from ics.types import DatetimeLike, OptionalDatetimeLike, TimespanOrBegin
+from ics.utils import ceil_datetime_to_midnight, ensure_datetime
 
 
 class Timeline(object):

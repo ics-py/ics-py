@@ -23,7 +23,7 @@ TIMEDELTA_CACHE = {
 }
 
 
-def parse_datetime(time_container: Optional[ContentLine], available_tz=None) -> datetime:
+def parse_datetime(time_container: Optional[ContentLine], available_tz=None) -> Optional[datetime]:
     if time_container is None:
         return None
 
@@ -51,7 +51,7 @@ def parse_datetime(time_container: Optional[ContentLine], available_tz=None) -> 
         return dt
 
 
-def parse_date(time_container: Optional[ContentLine], available_tz=None) -> date:
+def parse_date(time_container: Optional[ContentLine], available_tz=None) -> Optional[datetime]:
     dt = parse_datetime(time_container, available_tz)
     if dt:
         return ensure_datetime(dt.date())
@@ -59,7 +59,7 @@ def parse_date(time_container: Optional[ContentLine], available_tz=None) -> date
         return None
 
 
-def ensure_datetime(value: Union[None, Tuple, Dict, datetime, date]) -> datetime:
+def ensure_datetime(value: Union[None, Tuple, Dict, datetime, date]) -> Optional[datetime]:
     if value is None:
         return None
     elif isinstance(value, datetime):
@@ -216,6 +216,7 @@ def ceil_timedelta_to_days(value):
 
 
 def get_lines(container: Container, name: str, keep: bool = False) -> List[ContentLine]:
+    # FIXME this can be done so much faster by using bucketing
     lines = []
     for i in reversed(range(len(container))):
         item = container[i]

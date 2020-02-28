@@ -1,20 +1,13 @@
 import warnings
-from collections import namedtuple
 from typing import Any, Dict, Tuple
 
 from ics.grammar.parse import Container
-from .utils import get_lines
-from .serializers.serializer import Serializer
-from .parsers.parser import Parser
-
-Extractor = namedtuple(
-    'Extractor',
-    ['function', 'type', 'required', 'multiple', 'default']
-)
+from ics.parsers.parser import Parser
+from ics.serializers.serializer import Serializer
+from ics.utils import get_lines
 
 
 class Component(object):
-
     class Meta:
         name = "ABSTRACT"
         parser = Parser
@@ -43,17 +36,13 @@ class Component(object):
                     lines = options.default
                     default_str = "\\n".join(map(str, options.default))
                     message = ("The %s property was not found and is required by the RFC." +
-                        " A default value of \"%s\" has been used instead") % (line_name, default_str)
+                               " A default value of \"%s\" has been used instead") % (line_name, default_str)
                     warnings.warn(message)
                 else:
-                    raise ValueError(
-                        'A {} must have at least one {}'
-                        .format(container.name, line_name))
+                    raise ValueError('A {} must have at least one {}'.format(container.name, line_name))
 
             if not options.multiple and len(lines) > 1:
-                raise ValueError(
-                    'A {} must have at most one {}'
-                    .format(container.name, line_name))
+                raise ValueError('A {} must have at most one {}'.format(container.name, line_name))
 
             if options.multiple:
                 parser(self, lines)  # Send a list or empty list
