@@ -4,8 +4,6 @@ from typing import Iterable, List, TYPE_CHECKING, Union
 
 import tatsu
 
-CRLF = '\r\n'
-
 grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
 
 with open(grammar_path) as fd:
@@ -71,8 +69,10 @@ class ContentLine:
     @classmethod
     def parse(cls, line):
         """Parse a single iCalendar-formatted line into a ContentLine"""
+        if "\n" in line or "\r" in line:
+            raise ValueError("ContentLine can only contain escaped newlines")
         try:
-            ast = GRAMMAR.parse(line + CRLF)
+            ast = GRAMMAR.parse(line)
         except tatsu.exceptions.FailedToken:
             raise ParseError()
         else:
@@ -121,7 +121,7 @@ class Container(ContainerList):
         for line in self:
             ret.append(str(line))
         ret.append('END:' + name)
-        return CRLF.join(ret)
+        return "\r\n".join(ret)
 
     def __repr__(self):
         return "<Container '{}' with {} element{}>" \
@@ -157,13 +157,12 @@ def unfold_lines(physical_lines):
         elif not current_line:
             current_line = line.strip('\r')
         elif line[0] in (' ', '\t'):
-            # TODO : remove more spaces if needed
             current_line += line[1:].strip('\r')
         else:
-            yield (current_line)
+            yield current_line
             current_line = line.strip('\r')
     if current_line:
-        yield (current_line)
+        yield current_line
 
 
 def tokenize_line(unfolded_lines):
