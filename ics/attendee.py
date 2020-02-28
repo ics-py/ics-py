@@ -1,5 +1,7 @@
 import warnings
-from typing import Dict, List
+from typing import Dict, List, Optional
+
+import attr
 
 from ics.grammar.parse import ContentLine
 from ics.parsers.attendee_parser import AttendeeParser, PersonParser
@@ -7,18 +9,22 @@ from ics.serializers.attendee_serializer import AttendeeSerializer, PersonSerial
 from ics.utils import escape_string, unescape_string
 
 
+@attr.s
 class Person(object):
+    email: str = attr.ib()
+    common_name: str = attr.ib(default=None)
+    dir: Optional[str] = attr.ib(default=None)
+    sent_by: Optional[str] = attr.ib(default=None)
+    extra: Dict[str, List[str]] = attr.ib(factory=dict)
+
+    def __attrs_post_init__(self):
+        if not self.common_name:
+            self.common_name = self.email
+
     class Meta:
         name = "ABSTRACT-PERSON"
         parser = PersonParser
         serializer = PersonSerializer
-
-    def __init__(self, email: str, common_name: str = None, dir: str = None, sent_by: str = None) -> None:
-        self.email = email
-        self.common_name = common_name or email
-        self.dir = dir
-        self.sent_by = sent_by
-        self.extra: Dict[str, List[str]] = {}
 
     @classmethod
     def parse(cls, line: ContentLine) -> "Person":
@@ -77,14 +83,12 @@ class Organizer(Person):
         serializer = PersonSerializer
 
 
+@attr.s
 class Attendee(Person):
-    def __init__(self, email: str, common_name: str = None, dir: str = None, sent_by: str = None,
-                 rsvp: bool = None, role: str = None, partstat: str = None, cutype: str = None) -> None:
-        super().__init__(email, common_name, dir, sent_by)
-        self.rsvp = rsvp
-        self.role = role
-        self.partstat = partstat
-        self.cutype = cutype
+    rsvp: Optional[bool] = attr.ib(default=None)
+    role: Optional[str] = attr.ib(default=None)
+    partstat: Optional[str] = attr.ib(default=None)
+    cutype: Optional[str] = attr.ib(default=None)
 
     class Meta:
         name = 'ATTENDEE'

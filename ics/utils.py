@@ -4,8 +4,8 @@ from uuid import uuid4
 
 from dateutil.tz import UTC as tzutc, gettz
 
-from ics.grammar.parse import Container, ContainerList, ContentLine, ParseError
-from ics.types import DatetimeLike
+from ics.grammar.parse import Container, ContentLine, ParseError
+from ics.types import ContainerList, DatetimeLike
 
 midnight = time()
 DATE_FORMATS = {
@@ -267,3 +267,23 @@ def unescape_string(string: str) -> str:
          ord("\\r"): "\r",
          ord("\\R"): "\r",
          ord("\\\\"): "\\"})
+
+
+###############################################################################
+
+def validate_not_none(inst, attr, value):
+    if value is None:
+        raise ValueError(
+            "'{name}' may not be None".format(
+                name=attr.name
+            )
+        )
+
+
+def validate_truthy(inst, attr, value):
+    if not bool(value):
+        raise ValueError(
+            "'{name}' must be truthy (got {value!r})".format(
+                name=attr.name, value=value
+            )
+        )
