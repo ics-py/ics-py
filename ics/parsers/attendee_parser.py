@@ -1,6 +1,9 @@
-from ics.grammar.parse import ContentLine
+from typing import TYPE_CHECKING
+
 from ics.parsers.parser import Parser, option
-from ics.utils import unescape_string
+
+if TYPE_CHECKING:
+    from ics.attendee import Person, Attendee
 
 
 class PersonParser(Parser):

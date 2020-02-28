@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from ics import Event
+from ics.event import Event
 from ics.icalendar import Calendar
 from .fixture import cal32
 

@@ -1,17 +1,12 @@
 import warnings
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Tuple
 
 import attr
 
-from ics.alarm.base import BaseAlarm
-from ics.event import STATUS_ATTRIB
 from ics.grammar.parse import Container
 from ics.parsers.parser import Parser
 from ics.serializers.serializer import Serializer
-from ics.timespan import Timespan
-from ics.types import DatetimeLike
-from ics.utils import ensure_datetime, get_lines, uid_gen
+from ics.utils import get_lines
 
 
 @attr.s
@@ -82,20 +77,3 @@ class Component(object):
         for output in self.Meta.serializer.get_serializers():
             output(self, container)
         return str(container)
-
-
-@attr.s
-class CalendarEntryAttrs(Component):
-    _timespan: Timespan = attr.ib(validator=attr.validators.instance_of(Timespan))
-    name: Optional[str] = attr.ib(default=None)
-    uid: str = attr.ib(factory=uid_gen)
-
-    description: Optional[str] = attr.ib(default=None)
-    location: Optional[str] = attr.ib(default=None)
-    url: Optional[str] = attr.ib(default=None)
-    status: Optional[str] = attr.ib(default=None, **STATUS_ATTRIB)
-
-    created: Optional[DatetimeLike] = attr.ib(factory=datetime.now, converter=ensure_datetime)
-    last_modified: Optional[DatetimeLike] = attr.ib(factory=datetime.now, converter=ensure_datetime)
-    # self.dtstamp = datetime.utcnow() if not dtstamp else ensure_datetime(dtstamp) # ToDo
-    alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)

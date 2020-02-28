@@ -1,18 +1,18 @@
 from datetime import datetime, timedelta
-from typing import Dict, NamedTuple, Optional, Set, Tuple, Union
+from typing import Dict, List, NamedTuple, Optional, Set, Tuple, Union
 
 import attr
 
+from ics.alarm.base import BaseAlarm
 from ics.attendee import Attendee, Organizer
-from ics.component import CalendarEntryAttrs
+from ics.component import Component
 from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
 from ics.timespan import Timespan
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, get_timespan_if_event
-from ics.utils import ensure_datetime
+from ics.utils import check_is_instance, ensure_datetime, uid_gen
 
 STATUS_ATTRIB = dict(
-    default=None,
     converter=lambda s: s.upper(),
     validator=attr.validators.in_((None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')))
 
@@ -32,6 +32,23 @@ class Geo(NamedTuple):
 
 
 @attr.s
+class CalendarEntryAttrs(Component):
+    _timespan: Timespan = attr.ib(validator=attr.validators.instance_of(Timespan))
+    name: Optional[str] = attr.ib(default=None)
+    uid: str = attr.ib(factory=uid_gen)
+
+    description: Optional[str] = attr.ib(default=None)
+    location: Optional[str] = attr.ib(default=None)
+    url: Optional[str] = attr.ib(default=None)
+    status: Optional[str] = attr.ib(default=None, **STATUS_ATTRIB)
+
+    created: Optional[DatetimeLike] = attr.ib(factory=datetime.now, converter=ensure_datetime)
+    last_modified: Optional[DatetimeLike] = attr.ib(factory=datetime.now, converter=ensure_datetime)
+    # self.dtstamp = datetime.utcnow() if not dtstamp else ensure_datetime(dtstamp) # ToDo
+    alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
+
+
+@attr.s
 class EventsAttrs(CalendarEntryAttrs):
     classification: Optional[str] = attr.ib(default=None)
 
@@ -42,11 +59,9 @@ class EventsAttrs(CalendarEntryAttrs):
     attendees: Set[Attendee] = attr.ib(factory=set, converter=set)
     categories: Set[str] = attr.ib(factory=set, converter=set)
 
-    ATTENDEE_VALIDATOR = attr.validators.instance_of(Attendee)
-
     def add_attendee(self, attendee: Attendee):
         """ Add an attendee to the attendees set """
-        self.ATTENDEE_VALIDATOR(attendee)
+        check_is_instance("attendee", attendee, Attendee)
         self.attendees.add(attendee)
 
 
