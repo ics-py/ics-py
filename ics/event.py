@@ -117,11 +117,11 @@ class Event(Component):
         self.status = status
         self.classification = classification
 
-        if categories is not None:
-            self.categories.update(set(categories))
+        if categories:
+            self.categories.update(categories)
 
-        if attendees is not None:
-            self.attendees.update(set(attendees))
+        if attendees:
+            self.attendees.update(attendees)
 
     def clone(self):
         """

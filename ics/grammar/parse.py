@@ -1,6 +1,6 @@
 import collections
 from pathlib import Path
-from typing import List
+from typing import Iterable, List, TYPE_CHECKING, Union
 
 import tatsu
 
@@ -43,15 +43,15 @@ class ContentLine:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def __init__(self, name: str, params: Dict[str, List[str]] = {}, value: str = ''):
+    def __init__(self, name: str, params=None, value: str = ''):
         self.name = name.upper()
-        self.params = params
+        self.params = {} if params is None else params
         self.value = value
 
     def __str__(self):
         params_str = ''
         for pname in self.params:
-            params_str += ';{}={}'.format(pname, ','.join(self.params[pname]))
+            params_str += ';{}={}'.format(pname, ','.join(self.params[pname]))  # TODO ensure escaping?
         return "{}{}:{}".format(self.name, params_str, self.value)
 
     def __repr__(self):
@@ -66,7 +66,7 @@ class ContentLine:
         return self.params[item]
 
     def __setitem__(self, item, *values):
-        self.params[item] = [val for val in values]
+        self.params[item] = list(values)
 
     @classmethod
     def parse(cls, line):
@@ -75,7 +75,11 @@ class ContentLine:
             ast = GRAMMAR.parse(line + CRLF)
         except tatsu.exceptions.FailedToken:
             raise ParseError()
+        else:
+            return cls.interpret_ast(ast)
 
+    @classmethod
+    def interpret_ast(cls, ast):
         name = ''.join(ast['name'])
         value = ''.join(ast['value'])
         params = {}
@@ -91,7 +95,13 @@ class ContentLine:
         return self.__class__(self.name, dict(self.params), self.value)
 
 
-class Container(list):
+if TYPE_CHECKING:
+    ContainerList = List[Union[ContentLine, "Container"]]
+else:
+    ContainerList = list
+
+
+class Container(ContainerList):
     """Represents an iCalendar object.
     Contains a list of ContentLines or Containers.
 
@@ -101,7 +111,7 @@ class Container(list):
         items: Containers or ContentLines
     """
 
-    def __init__(self, name: str, *items: List):
+    def __init__(self, name: str, *items: Iterable[Union[ContentLine, "Container"]]):
         super(Container, self).__init__(items)
         self.name = name
 
@@ -122,7 +132,7 @@ class Container(list):
         items = []
         for line in tokenized_lines:
             if line.name == 'BEGIN':
-                items.append(Container.parse(line.value, tokenized_lines))
+                items.append(cls.parse(line.value, tokenized_lines))
             elif line.name == 'END':
                 if line.value != name:
                     raise ParseError(
@@ -134,10 +144,7 @@ class Container(list):
 
     def clone(self):
         """Makes a copy of itself"""
-        c = self.__class__(self.name)
-        for elem in self:
-            c.append(elem.clone())
-        return c
+        return self.__class__(self.name, *self)
 
 
 def unfold_lines(physical_lines):
@@ -182,17 +189,6 @@ def lines_to_container(lines):
 
 def string_to_container(txt):
     return lines_to_container(txt.splitlines())
-
-
-def interpret_ast(ast):
-    name = ''.join(ast['name'])
-    value = ''.join(ast['value'])
-    params = {}
-    for param_ast in ast.get('params', []):
-        param_name = ''.join(param_ast["name"])
-        param_values = [''.join(x) for x in param_ast["values_"]]
-        params[param_name] = param_values
-    return ContentLine(name, params, value)
 
 
 def calendar_string_to_containers(string):
