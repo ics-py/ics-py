@@ -98,8 +98,7 @@ class Calendar(Component):
             >>> c = Calendar(); c.events.add(Event(name="My cool event"))
             >>> open('my.ics', 'w').writelines(c)
         """
-        for line in str(self).split('\n'):
-            yield line + '\n'
+        return iter(str(self).splitlines(keepends=True))
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Calendar):

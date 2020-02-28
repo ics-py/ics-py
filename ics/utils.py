@@ -1,11 +1,10 @@
 from datetime import date, datetime, time, timedelta
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 from uuid import uuid4
 
 from dateutil.tz import UTC as tzutc, gettz
 
-from ics.grammar import parse
-from ics.grammar.parse import Container, ContentLine
+from ics.grammar.parse import Container, ContainerList, ContentLine, ParseError
 from ics.types import DatetimeLike
 
 midnight = time()
@@ -33,7 +32,11 @@ def parse_datetime(time_container: Optional[ContentLine], available_tz=None) -> 
     val = time_container.value
     fixed_utc = (val[-1].upper() == 'Z')
 
-    val = val.translate({"/": "", "-": "", "Z": "", "z": ""})
+    val = val.translate({
+        ord("/"): "",
+        ord("-"): "",
+        ord("Z"): "",
+        ord("z"): ""})
     dt = datetime.strptime(val, DATE_FORMATS[len(val)])
 
     if fixed_utc:
@@ -121,7 +124,7 @@ def parse_duration(line: str) -> timedelta:
             sign = -1
         i += 1
     if line[i] != 'P':
-        raise parse.ParseError("Error while parsing %s" % line)
+        raise ParseError("Error while parsing %s" % line)
     i += 1
     days, secs = 0, 0
     while i < len(line):
@@ -133,7 +136,7 @@ def parse_duration(line: str) -> timedelta:
         while line[j].isdigit():
             j += 1
         if i == j:
-            raise parse.ParseError("Error while parsing %s" % line)
+            raise ParseError("Error while parsing %s" % line)
         val = int(line[i:j])
         if line[j] in DAYS:
             days += val * DAYS[line[j]]
@@ -142,7 +145,7 @@ def parse_duration(line: str) -> timedelta:
             secs += val * SECS[line[j]]
             SECS.pop(line[j])
         else:
-            raise parse.ParseError("Error while parsing %s" % line)
+            raise ParseError("Error while parsing %s" % line)
         i = j + 1
     return timedelta(sign * days, sign * secs)
 
@@ -215,7 +218,7 @@ def ceil_timedelta_to_days(value):
 # String Utils
 
 
-def get_lines(container: Container, name: str, keep: bool = False) -> List[ContentLine]:
+def get_lines(container: Container, name: str, keep: bool = False) -> ContainerList:
     # FIXME this can be done so much faster by using bucketing
     lines = []
     for i in reversed(range(len(container))):
@@ -248,19 +251,19 @@ def uid_gen() -> str:
 
 def escape_string(string: str) -> str:
     return string.translate(
-        {"\\": "\\\\",
-         ";": "\\;",
-         ",": "\\,",
-         "\n": "\\n",
-         "\r": "\\r"})
+        {ord("\\"): "\\\\",
+         ord(";"): "\\;",
+         ord(","): "\\,",
+         ord("\n"): "\\n",
+         ord("\r"): "\\r"})
 
 
 def unescape_string(string: str) -> str:
     return string.translate(
-        {"\\;": ";",
-         "\\,": ",",
-         "\\n": "\n",
-         "\\N": "\n",
-         "\\r": "\r",
-         "\\R": "\r",
-         "\\\\": "\\"})
+        {ord("\\;"): ";",
+         ord("\\,"): ",",
+         ord("\\n"): "\n",
+         ord("\\N"): "\n",
+         ord("\\r"): "\r",
+         ord("\\R"): "\r",
+         ord("\\\\"): "\\"})

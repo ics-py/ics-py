@@ -4,13 +4,13 @@ from typing import List, TYPE_CHECKING
 from dateutil.tz import tzical
 
 from ics.event import Event
-from ics.grammar.parse import ContentLine
 from ics.parsers.parser import Parser, option
 from ics.todo import Todo
 from ics.utils import remove_sequence, remove_x
 
 if TYPE_CHECKING:
-    from ics.event import Calendar
+    from ics.icalendar import Calendar
+    from ics.grammar.parse import ContentLine, Container
 
 
 class CalendarParser(Parser):
@@ -48,7 +48,7 @@ class CalendarParser(Parser):
             calendar.method_params = {}
 
     @option(multiple=True)
-    def parse_vtimezone(calendar: "Calendar", vtimezones: List[ContentLine]):
+    def parse_vtimezone(calendar: "Calendar", vtimezones: List[Container]):
         """Receives a list of VTIMEZONE blocks.
 
         Parses them and adds them to calendar._timezones.
