@@ -1,6 +1,6 @@
 import collections
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 import tatsu
 
@@ -53,13 +53,12 @@ class ContentLine:
         return "{}{}:{}".format(self.name, params_str, self.value)
 
     def __repr__(self):
-        return "<ContentLine '{}' with {} parameter{}. Value='{}'>" \
-            .format(
-                self.name,
-                len(self.params),
-                "s" if len(self.params) > 1 else "",
-                self.value,
-            )
+        return "<ContentLine '{}' with {} parameter{}. Value='{}'>".format(
+            self.name,
+            len(self.params),
+            "s" if len(self.params) > 1 else "",
+            self.value,
+        )
 
     def __getitem__(self, item):
         return self.params[item]
@@ -164,7 +163,9 @@ def tokenize_line(unfolded_lines):
         yield ContentLine.parse(line)
 
 
-def parse(tokenized_lines, block_name=None):
+def parse(tokenized_lines):
+    # tokenized_lines must be an iterator, so that Container.parse can consume/steal lines
+    tokenized_lines = iter(tokenized_lines)
     res = []
     for line in tokenized_lines:
         if line.name == 'BEGIN':

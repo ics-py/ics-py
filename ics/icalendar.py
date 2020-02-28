@@ -1,15 +1,13 @@
 import copy
 from typing import Dict, Iterable, Optional, Set, Union
 
-from six import text_type
-
-from .component import Component
-from .event import Event
+from ics.component import Component
+from ics.event import Event
 from ics.grammar.parse import Container, calendar_string_to_containers
-from .timeline import Timeline
-from .todo import Todo
 from ics.parsers.icalendar_parser import CalendarParser
 from ics.serializers.icalendar_serializer import CalendarSerializer
+from ics.timeline import Timeline
+from ics.todo import Todo
 
 
 class Calendar(Component):
@@ -30,11 +28,11 @@ class Calendar(Component):
         serializer = CalendarSerializer
 
     def __init__(
-        self,
-        imports: Union[str, Container] = None,
-        events: Iterable[Event] = None,
-        todos: Iterable[Todo] = None,
-        creator: str = None
+            self,
+            imports: Union[str, Container] = None,
+            events: Iterable[Event] = None,
+            todos: Iterable[Todo] = None,
+            creator: str = None
     ):
         """Instantiates a new Calendar.
 
@@ -47,7 +45,7 @@ class Calendar(Component):
         If ``imports`` is specified, every other argument will be ignored.
         """
 
-        self._timezones: Dict = {} # FIXME mypy
+        self._timezones: Dict = {}  # FIXME mypy
         self.events: Set[Event] = set()
         self.todos: Set[Todo] = set()
         self.extra = Container(name='VCALENDAR')
@@ -128,7 +126,7 @@ class Calendar(Component):
 
     @creator.setter
     def creator(self, value: Optional[str]) -> None:
-        if not isinstance(value, text_type):
+        if not isinstance(value, str):
             raise ValueError('Event.creator must be unicode data not {}'.format(type(value)))
         self._creator = value
 

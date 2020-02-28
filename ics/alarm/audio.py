@@ -1,13 +1,10 @@
-from typing import Optional
+from datetime import datetime, timedelta
+from typing import Optional, Union
 
 from ics.alarm.base import BaseAlarm
-
 from ics.grammar.parse import ContentLine
-from typing import Union
-from datetime import datetime, timedelta
-
-from ics.serializers.alarm_serializer import AudioAlarmSerializer
 from ics.parsers.alarm_parser import AudioAlarmParser
+from ics.serializers.alarm_serializer import AudioAlarmSerializer
 
 
 class AudioAlarm(BaseAlarm):
@@ -21,12 +18,11 @@ class AudioAlarm(BaseAlarm):
         serializer = AudioAlarmSerializer
 
     def __init__(
-        self,
-        trigger: Union[timedelta, datetime] = None,
-        repeat: int = None,
-        duration: timedelta = None,
+            self,
+            trigger: Union[timedelta, datetime] = None,
+            repeat: int = None,
+            duration: timedelta = None,
     ):
-
         super().__init__(trigger, repeat, duration)
         self._sound: Optional[ContentLine] = None
 

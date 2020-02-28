@@ -1,17 +1,13 @@
 import copy
-from datetime import datetime, timedelta
-from typing import Optional, Union, Any
 from abc import ABCMeta, abstractmethod
+from datetime import datetime, timedelta
+from typing import Any, Optional, Union
 
 from ics.component import Component
-from ics.utils import (
-    ensure_datetime,
-    get_lines
-)
 from ics.grammar.parse import Container
-
-from ics.serializers.alarm_serializer import BaseAlarmSerializer
 from ics.parsers.alarm_parser import BaseAlarmParser
+from ics.serializers.alarm_serializer import BaseAlarmSerializer
+from ics.utils import ensure_datetime, get_lines
 
 
 class BaseAlarm(Component, metaclass=ABCMeta):
@@ -25,10 +21,10 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         serializer = BaseAlarmSerializer
 
     def __init__(
-        self,
-        trigger: Union[timedelta, datetime] = None,
-        repeat: int = None,
-        duration: timedelta = None,
+            self,
+            trigger: Union[timedelta, datetime] = None,
+            repeat: int = None,
+            duration: timedelta = None,
     ) -> None:
         """
         Instantiates a new :class:`ics.alarm.BaseAlarm`.
@@ -139,10 +135,10 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         """Two alarms are considered equal if they have the same type and base values."""
 
         return (
-            type(self) is type(other)
-            and self.trigger == other.trigger
-            and self.repeat == other.repeat
-            and self.duration == other.duration
+                type(self) is type(other)
+                and self.trigger == other.trigger
+                and self.repeat == other.repeat
+                and self.duration == other.duration
         )
 
     def clone(self):

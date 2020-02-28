@@ -1,9 +1,9 @@
-from typing import Callable
+from typing import Callable, List
 
 
 class Serializer:
     @classmethod
-    def get_serializers(cls) -> Callable:
+    def get_serializers(cls) -> List[Callable]:
         methods = [
             (method_name, getattr(cls, method_name))
             for method_name in dir(cls)
