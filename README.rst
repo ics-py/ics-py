@@ -6,9 +6,6 @@ Ics.py : iCalendar for Humans
 `PyPi package <https://pypi.python.org/pypi/ics/>`_ (ics) -
 `Documentation <http://icspy.readthedocs.org/>`_ (Read The Docs).
 
-.. image:: https://travis-ci.org/C4ptainCrunch/ics.py.png?branch=master
-   :target: https://travis-ci.org/C4ptainCrunch/ics.py
-
 
 .. image:: https://img.shields.io/github/license/c4ptaincrunch/ics.py.svg
     :target: https://pypi.python.org/pypi/ics/
