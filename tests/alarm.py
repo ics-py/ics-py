@@ -8,6 +8,7 @@ from ics.alarm.none import NoneAlarm
 from ics.alarm.custom import CustomAlarm
 from ics.alarm import AudioAlarm, DisplayAlarm
 from ics.icalendar import Calendar
+from ics.alarm.email import EmailAlarm
 from ics.grammar.parse import ContentLine
 
 from .fixture import cal21, cal22, cal23, cal24, cal25, cal35, cal36
@@ -218,3 +219,9 @@ def test_custom_back_forth():
     c = Calendar(cal36)
     c1 = Calendar(str(c))
     assert c == c1
+
+
+class TestEmailAlarm(unittest.TestCase):
+    def test_alarm(self):
+        a = EmailAlarm(trigger=timedelta(minutes=15))
+        self.assertEqual("EMAIL", a.action)
