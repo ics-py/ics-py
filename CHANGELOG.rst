@@ -2,9 +2,24 @@
 Ics.py changelog
 ============
 
+**************
+0.8 (in dev) - Grace Hopper
+**************
+
+This is a major release in the life of ics.py as it fixes a lot of long standing
+(design) issues with timespans, removes Arrow and introduces `attrs`.
+Thank you @N-Coder for the huge work you put in this!
+
+In progress:
+ - Remove Arrow
+ - Fix all-day issues
+ - Add attrs
+ - Fix timezone issues
+ - Fix SEQUENCE bug
+ - Introduce Timespan
 
 **************
-0.7
+0.7 - Katherine Johnson
 **************
 
 Special thanks to @N-Coder for making 0.7 happen!
