@@ -4,12 +4,25 @@ Ics.py changelog
 
 
 **************
-0.7 (in dev)
+0.7
 **************
 
-Major changes:
+Special thanks to @N-Coder for making 0.7 happen!
+
+Breaking changes:
+ - Remove useless `day` argument from `Timeline.today()`
+ - Attendee and Organizer attributes are now classes and can not be set to `str`.
 
 Minor changes:
+ - Add support for Python 3.8
+ - Ensure `VERSION` is the first line of a `VCALENDAR` and `PRODID` is second.
+
+Bug fixes:
+ - Fix regression in the support of emojis (and other unicode chars) while
+   parsing. (Thanks @Azhrei)
+ - Fix a bug preventing an EmailAlarm to be instantiated
+ - Fix multiple bugs in Organizer and Attendees properties.
+   (See #207, #209, #217, #218)
 
 **************
 0.6
