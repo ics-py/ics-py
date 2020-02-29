@@ -4,10 +4,9 @@ from collections.abc import Iterable
 import arrow
 
 from ics.event import Event
-from ics.icalendar import Calendar
 from ics.grammar.parse import Container
+from ics.icalendar import Calendar
 from ics.todo import Todo
-
 from .fixture import cal1, cal10, cal12, cal14, cal34
 
 
@@ -159,8 +158,9 @@ class TestCalendar(unittest.TestCase):
         c = Calendar(cal10)
         self.assertEqual(c.version, u'2.0')
         lines = str(c).splitlines()
-        self.assertEqual(lines[:2], cal10.strip().splitlines()[:2])
+        self.assertEqual(lines[:3], cal10.strip().splitlines()[:3])
         self.assertEqual("VERSION:2.0", lines[1])
+        self.assertIn("PRODID", lines[2])
 
         c = Calendar(cal14)
         self.assertEqual(c.version, u'42')

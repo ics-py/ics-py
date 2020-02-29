@@ -6,7 +6,7 @@ class CalendarSerializer(Serializer):
     def serialize_0version(calendar, container):  # 0version will be sorted first
         container.append(ContentLine("VERSION", value="2.0"))
 
-    def serialize_1prodid(calendar, container): # 1prodid will be sorted second
+    def serialize_1prodid(calendar, container):  # 1prodid will be sorted second
         if calendar.creator:
             creator = calendar.creator
         else:
