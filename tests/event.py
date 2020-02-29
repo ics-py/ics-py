@@ -586,5 +586,5 @@ class TestEvent(unittest.TestCase):
             os.path.join(os.path.dirname(__file__), "fixtures/groupscheduled.ics")
         ) as f:
             c = Calendar(f.read())
-            e = c.events.timeline[0]
+            e = list(c.events)[0]
             assert len(e.attendees) == 1

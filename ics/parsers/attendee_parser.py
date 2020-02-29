@@ -1,10 +1,8 @@
-from ics.grammar.parse import ContentLine
-from ics.parsers.parser import Parser, option
+from ics.parsers.parser import Parser
 from ics.utils import unescape_string
 
 
 class PersonParser(Parser):
-    @option(required=True)
     def parse_cn(person: "Person", value):
         if value:
             person.common_name = unescape_string(value)
