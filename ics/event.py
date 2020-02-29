@@ -6,9 +6,8 @@ from typing import (Dict, Iterable, List, NamedTuple, Optional, Set,
 from arrow import Arrow
 
 from .alarm.base import BaseAlarm
-from .attendee import Attendee
+from .attendee import Attendee, Organizer
 from .component import Component
-from .organizer import Organizer
 from ics.grammar.parse import Container
 from .types import ArrowLike
 from .utils import (get_arrow, uid_gen)

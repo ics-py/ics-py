@@ -1,5 +1,6 @@
 import warnings
 
+from ics.attendee import Attendee
 from ics.parsers.parser import Parser, option
 from ics.utils import iso_to_arrow, parse_duration, unescape_string
 
@@ -55,9 +56,9 @@ class EmailAlarmParser(BaseAlarmParser):
         alarm.subject = unescape_string(line.value) if line else None
 
     @option(required=True, multiple=True)
-    def parse_attendee(alarm, line):
-        email = unescape_string(line.value)
-        alarm.recipients.append(email)
+    def parse_attendee(alarm, lines):
+        for line in lines:
+            alarm.recipients.append(Attendee.parse(line))
 
 
 class NoneAlarmParser(BaseAlarmParser):
