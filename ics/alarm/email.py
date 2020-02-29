@@ -31,3 +31,7 @@ class EmailAlarm(BaseAlarm):
         self.subject = subject
         self.body = body
         self.recipients = recipients if recipients else []
+
+    @property
+    def action(self):
+        return "EMAIL"
