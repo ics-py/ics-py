@@ -1,11 +1,12 @@
 import collections
 from pathlib import Path
-from typing import Dict, Iterable, List, Union
+from typing import Dict, List
 
 import attr
 import tatsu
+from tatsu.exceptions import FailedToken
 
-from ics.types import ContainerList
+from ics.types import ContainerItem
 
 grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
 
@@ -27,16 +28,9 @@ class ContentLine:
     ``FOO;BAR=1:YOLO`` is represented by
 
     ``ContentLine('FOO', {'BAR': ['1']}, 'YOLO'))``
-
-    Args:
-
-        name:   The name of the property (uppercased for consistency and
-                easier comparison)
-        params: A map name:list of values
-        value:  The value of the property
     """
 
-    name: str = attr.ib(converter=lambda s: s.upper())
+    name: str = attr.ib(converter=str.upper)  # type: ignore
     params: Dict[str, List[str]] = attr.ib(factory=dict)
     value: str = attr.ib(default="")
 
@@ -67,7 +61,7 @@ class ContentLine:
             raise ValueError("ContentLine can only contain escaped newlines")
         try:
             ast = GRAMMAR.parse(line)
-        except tatsu.exceptions.FailedToken:
+        except FailedToken:
             raise ParseError()
         else:
             return cls.interpret_ast(ast)
@@ -88,7 +82,7 @@ class ContentLine:
         return attr.evolve(self)
 
 
-class Container(ContainerList):
+class Container(List[ContainerItem]):
     """Represents an iCalendar object.
     Contains a list of ContentLines or Containers.
 
@@ -98,7 +92,7 @@ class Container(ContainerList):
         items: Containers or ContentLines
     """
 
-    def __init__(self, name: str, *items: Iterable[Union[ContentLine, "Container"]]):
+    def __init__(self, name: str, *items: ContainerItem):
         super(Container, self).__init__(items)
         self.name = name
 

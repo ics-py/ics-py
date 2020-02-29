@@ -1,10 +1,9 @@
-from datetime import datetime, timedelta, tzinfo
+from datetime import date, datetime, timedelta, tzinfo as TZInfo
 from enum import Enum
-from typing import Any, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union, cast, overload
 
 import attr
 
-from ics.types import TimespanOrBegin
 from ics.utils import TIMEDELTA_CACHE, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight
 
 
@@ -13,10 +12,22 @@ class NormalizeIgnore(Enum):
     ONLY_WITH_TZ = 2
 
 
-Normalization = Union[tzinfo, None, NormalizeIgnore]
+Normalization = Union[TZInfo, None, NormalizeIgnore]
 
 
-def normalize(value: TimespanOrBegin, normalization: Normalization) -> Union[None, "Timespan", datetime]:
+@overload
+def normalize(value: "Timespan", normalization: Normalization) -> "Timespan": ...
+
+
+@overload
+def normalize(value: Union[Tuple, Dict, datetime, date], normalization: Normalization) -> datetime: ...
+
+
+@overload
+def normalize(value: None, normalization: Normalization) -> None: ...
+
+
+def normalize(value, normalization):
     """
     Normalize datetime or timespan instances to make naive/floating ones (without timezone, i.e. tzinfo == None)
     comparable to aware ones with a fixed timezone.
@@ -54,42 +65,58 @@ def normalize(value: TimespanOrBegin, normalization: Normalization) -> Union[Non
 
 @attr.s(slots=True, frozen=True, cmp=False)
 class Timespan(object):
-    begin_time: Optional[datetime] = attr.ib(validator=attr.validators.instance_of(datetime))
-    end_time: Optional[datetime] = attr.ib(validator=attr.validators.instance_of(datetime))
-    duration: Optional[timedelta] = attr.ib(validator=attr.validators.instance_of(datetime))
+    begin_time: Optional[datetime] = attr.ib(validator=attr.validators.instance_of(datetime), default=None)
+    end_time: Optional[datetime] = attr.ib(validator=attr.validators.instance_of(datetime), default=None)
+    duration: Optional[timedelta] = attr.ib(validator=attr.validators.instance_of(timedelta), default=None)
     precision: str = attr.ib(default="second")
 
     def __attrs_post_init__(self):
         self.validate()
 
-    def replace(self, **changes) -> "Timespan":
-        return attr.evolve(self, **changes)
+    def replace(
+            self,
+            begin_time: Optional[datetime] = False,  # type: ignore
+            end_time: Optional[datetime] = False,  # type: ignore
+            duration: Optional[timedelta] = False,  # type: ignore
+            precision: str = False  # type: ignore
+    ) -> "Timespan":
+        if begin_time is False:
+            begin_time = self.begin_time
+        if end_time is False:
+            end_time = self.end_time
+        if duration is False:
+            duration = self.duration
+        if precision is False:
+            precision = self.precision
+        return type(self)(begin_time=begin_time, end_time=end_time, duration=duration, precision=precision)
 
-    def replace_timezone(self: "Timespan", tzinfo: Any) -> "Timespan":
+    def replace_timezone(self: "Timespan", tzinfo: Optional[TZInfo]) -> "Timespan":
         if self.is_all_day():
             raise ValueError("can't replace timezone of all-day event")
-        if self.get_begin() is None:
+        begin = self.get_begin()
+        if begin is None:
             return self
-        begin = self.get_begin().replace(tzinfo=tzinfo)
+        begin = begin.replace(tzinfo=tzinfo)
         if self.end_time:
             return self.replace(begin_time=begin, end_time=self.end_time.replace(tzinfo=tzinfo))
         else:
             return self.replace(begin_time=begin)
 
-    def convert_timezone(self, tzinfo) -> "Timespan":
+    def convert_timezone(self, tzinfo: Optional[TZInfo]) -> "Timespan":
         if self.is_all_day():
             raise ValueError("can't convert timezone of all-day event")
         if self.is_floating():
             raise ValueError("can't convert timezone of timezone-naive floating event, use replace_timezone")
-        if self.get_begin() is None:
+        begin = self.get_begin()
+        if begin is None:
             return self
-        begin = self.get_begin().astimezone(tzinfo)
+        begin = begin.astimezone(tzinfo)
         if self.end_time:
             return self.replace(begin_time=begin, end_time=self.end_time.astimezone(tzinfo))
         else:
             return self.replace(begin_time=begin)
 
-    def normalize(self, normalization: Normalization) -> Optional["Timespan"]:
+    def normalize(self, normalization: Normalization) -> "Timespan":
         return normalize(self, normalization)
 
     def validate(self):
@@ -143,20 +170,21 @@ class Timespan(object):
             prefix = []
 
         suffix = []
-        if self.get_begin():
+        if self.begin_time:
             suffix.append("begin:")
             if self.is_all_day():
-                suffix.append(self.get_begin().strftime('%Y-%m-%d'))
+                suffix.append(self.begin_time.strftime('%Y-%m-%d'))
             else:
-                suffix.append(str(self.get_begin()))
+                suffix.append(str(self.begin_time))
         if self.has_end():
             if self.get_end_representation() == "end":
                 suffix.append("fixed")
             suffix.append("end:")
+            end = cast(datetime, self.get_effective_end())
             if self.is_all_day():
-                suffix.append(self.get_effective_end().strftime('%Y-%m-%d'))
+                suffix.append(end.strftime('%Y-%m-%d'))
             else:
-                suffix.append(str(self.get_effective_end()))
+                suffix.append(str(end))
             if self.get_end_representation() == "duration":
                 suffix.append("fixed")
             suffix.append("duration:")
@@ -176,24 +204,26 @@ class Timespan(object):
     def make_all_day(self) -> "Timespan":
         if self.is_all_day():
             return self  # Do nothing if we already are a all day event
-        if self.get_begin() is None:
+        if self.begin_time is None:
             return self.replace(None, None, None, "day")
 
-        begin = floor_datetime_to_midnight(self.get_begin()).replace(tzinfo=None)
+        begin = floor_datetime_to_midnight(self.begin_time).replace(tzinfo=None)
 
         old_end = self.get_effective_end()
         end = None
         if self.get_end_representation() is not None:
+            old_end = cast(datetime, old_end)
             end = ceil_datetime_to_midnight(old_end).replace(tzinfo=None)
             if end == begin:  # we also add another day if the duration would be 0 otherwise
                 end = end + TIMEDELTA_CACHE["day"]
 
         if self.get_end_representation() == "duration":
+            assert end is not None
             return self.replace(begin, None, end - begin, "day")
         else:
             return self.replace(begin, end, None, "day")
 
-    def convert_end(self, representation) -> "Timespan":
+    def convert_end(self, representation: Optional[str]) -> "Timespan":
         current = self.get_end_representation()
         if current == representation:
             return self
@@ -236,7 +266,7 @@ class Timespan(object):
         return self.precision == "day"
 
     def is_floating(self) -> bool:
-        return self.begin_time.tzinfo is None
+        return self.begin_time is None or self.begin_time.tzinfo is None
 
     def get_end_representation(self) -> Optional[str]:
         if self.duration is not None:
@@ -288,13 +318,34 @@ class Timespan(object):
 
     def starts_within(self, second: "Timespan") -> bool:
         first, second = self.__normalize_timespans(second)
+
+        if first.begin_time is None:
+            raise ValueError("first event %s has no begin time" % first)
+
+        if second.begin_time is None:
+            raise ValueError("second event %s has no begin time" % second)
+        second_end = second.get_effective_end()
+        if second_end is None:
+            raise ValueError("second event %s has no end time" % second)
+
         # the event doesn't include its end instant / day
-        return second.get_begin() <= first.get_begin() < second.get_effective_end()
+        return second.begin_time <= first.begin_time < second_end
 
     def ends_within(self, second: "Timespan") -> bool:
         first, second = self.__normalize_timespans(second)
+
+        first_end = first.get_effective_end()
+        if first_end is None:
+            raise ValueError("first event %s has no end time" % first)
+
+        if second.begin_time is None:
+            raise ValueError("second event %s has no begin time" % second)
+        second_end = second.get_effective_end()
+        if second_end is None:
+            raise ValueError("second event %s has no end time" % second)
+
         # the event doesn't include its end instant / day
-        return second.get_begin() <= first.get_effective_end() < second.get_effective_end()
+        return second.begin_time <= first_end < second_end
 
     def intersects(self, second: "Timespan") -> bool:
         first, second = self.__normalize_timespans(second)
@@ -304,8 +355,15 @@ class Timespan(object):
     def includes(self, second: Union["Timespan", datetime]) -> bool:
         if isinstance(second, datetime):
             first, second = self.__normalize_datetime(second)
+
+            if first.begin_time is None:
+                raise ValueError("first event %s has no begin time" % first)
+            first_end = first.get_effective_end()
+            if first_end is None:
+                raise ValueError("first event %s has no end time" % first)
+
             # the event doesn't include its end instant / day
-            return first.get_begin() <= second < first.get_effective_end()
+            return first.begin_time <= second < first_end
 
         first, second = self.__normalize_timespans(second)
         return second.starts_within(first) and second.ends_within(first)
@@ -320,6 +378,11 @@ class Timespan(object):
         else:
             first, second = self.__normalize_timespans(second)
             return op(extract_dt(first), extract_dt(second))
+
+    # TODO properly define how Timespans can be ordered / compared with regard to
+    # - different timezones and floating
+    # - missing (None) values
+    # - all-day and instant-to-instant events
 
     def __lt__(self, second: Union["Timespan", datetime]) -> bool:
         if isinstance(second, datetime):

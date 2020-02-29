@@ -8,7 +8,6 @@ from ics.utils import parse_datetime, parse_duration, unescape_string
 
 if TYPE_CHECKING:
     from ics.alarm import *
-    from ics.alarm.base import BaseAlarm
 
 
 class BaseAlarmParser(Parser):

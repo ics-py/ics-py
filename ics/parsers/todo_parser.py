@@ -37,12 +37,6 @@ class TodoParser(Parser):
     def parse_description(todo: "Todo", line: ContentLine):
         todo.description = unescape_string(line.value) if line else None
 
-    def parse_dtstart(todo: "Todo", line: ContentLine):
-        if line:
-            # get the dict of vtimezones passed to the classmethod
-            tz_dict = todo._classmethod_kwargs["tz"]
-            todo.begin = parse_datetime(line, tz_dict)
-
     def parse_location(todo: "Todo", line: ContentLine):
         todo.location = unescape_string(line.value) if line else None
 
@@ -58,21 +52,26 @@ class TodoParser(Parser):
     def parse_url(todo: "Todo", line: ContentLine):
         todo.url = unescape_string(line.value) if line else None
 
-    def parse_due(todo: "Todo", line: ContentLine):
+    def parse_dtstart(todo: "Todo", line: ContentLine):
         if line:
-            # TODO: DRY [1]
-            if todo._duration:
-                raise ValueError("A todo can't have both DUE and DURATION")
             # get the dict of vtimezones passed to the classmethod
             tz_dict = todo._classmethod_kwargs["tz"]
-            todo._due_time = parse_datetime(line, tz_dict)
+            todo._timespan = todo._timespan.replace(
+                begin_time=parse_datetime(line, tz_dict)
+            )
 
     def parse_duration(todo: "Todo", line: ContentLine):
         if line:
-            # TODO: DRY [1]
-            if todo._due_time:  # pragma: no cover
-                raise ValueError("An todo can't have both DUE and DURATION")
-            todo._duration = parse_duration(line.value)
+            todo._timespan = todo._timespan.replace(
+                duration=parse_duration(line.value)
+            )
+
+    def parse_due(todo: "Todo", line: ContentLine):
+        if line:
+            tz_dict = todo._classmethod_kwargs["tz"]
+            todo._timespan = todo._timespan.replace(
+                end_time=parse_datetime(line, tz_dict)
+            )
 
     @option(multiple=True)
     def parse_valarm(todo: "Todo", lines: List[ContentLine]):

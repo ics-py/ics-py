@@ -1,11 +1,11 @@
 from datetime import date, datetime, time, timedelta
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union, overload
 from uuid import uuid4
 
 from dateutil.tz import UTC as tzutc, gettz
 
 from ics.grammar.parse import Container, ContentLine, ParseError
-from ics.types import ContainerList, DatetimeLike
+from ics.types import ContainerList, DatetimeLike, OptionalTZDict
 
 midnight = time()
 DATE_FORMATS = {
@@ -22,7 +22,15 @@ TIMEDELTA_CACHE = {
 }
 
 
-def parse_datetime(time_container: Optional[ContentLine], available_tz=None) -> Optional[datetime]:
+@overload
+def parse_datetime(time_container: None, available_tz: OptionalTZDict = None) -> None: ...
+
+
+@overload
+def parse_datetime(time_container: ContentLine, available_tz: OptionalTZDict = None) -> datetime: ...
+
+
+def parse_datetime(time_container, available_tz=None):
     if time_container is None:
         return None
 
@@ -54,7 +62,15 @@ def parse_datetime(time_container: Optional[ContentLine], available_tz=None) -> 
         return dt
 
 
-def parse_date(time_container: Optional[ContentLine], available_tz=None) -> Optional[datetime]:
+@overload
+def parse_date(time_container: None, available_tz: OptionalTZDict = None) -> None: ...
+
+
+@overload
+def parse_date(time_container: ContentLine, available_tz: OptionalTZDict = None) -> datetime: ...
+
+
+def parse_date(time_container, available_tz=None):
     dt = parse_datetime(time_container, available_tz)
     if dt:
         return ensure_datetime(dt.date())
@@ -62,7 +78,15 @@ def parse_date(time_container: Optional[ContentLine], available_tz=None) -> Opti
         return None
 
 
-def ensure_datetime(value: Union[None, Tuple, Dict, datetime, date]) -> Optional[datetime]:
+@overload
+def ensure_datetime(value: None) -> None: ...
+
+
+@overload
+def ensure_datetime(value: Union[Tuple, Dict, datetime, date]) -> datetime: ...
+
+
+def ensure_datetime(value):
     if value is None:
         return None
     elif isinstance(value, datetime):
@@ -77,19 +101,21 @@ def ensure_datetime(value: Union[None, Tuple, Dict, datetime, date]) -> Optional
         raise ValueError("can't construct datetime from %s" % repr(value))
 
 
-def serialize_datetime(instant: datetime, is_utc=False) -> str:
+def serialize_datetime(instant: datetime, is_utc: bool = False) -> str:
     if is_utc:
         return instant.strftime('%Y%m%dT%H%M%SZ')
     else:
         return instant.strftime('%Y%m%dT%H%M%S')
 
 
-def serialize_datetime_to_contentline(name: str, instant: datetime, used_timezones=None) -> ContentLine:
+def serialize_datetime_to_contentline(name: str, instant: datetime, used_timezones: OptionalTZDict = None) -> ContentLine:
     # ToDo keep track of used_timezones
     if instant.tzinfo == tzutc:
         return ContentLine(name, value=serialize_datetime(instant, True))
     elif instant.tzinfo is not None:
         tzname = instant.tzinfo.tzname(instant)
+        if tzname is None:
+            raise ValueError("timezone of instant '%s' is not None but has no name" % instant)
         if used_timezones:
             used_timezones[tzname] = instant.tzinfo
         return ContentLine(name, params={'TZID': [tzname]}, value=serialize_datetime(instant, False))
@@ -97,7 +123,7 @@ def serialize_datetime_to_contentline(name: str, instant: datetime, used_timezon
         return ContentLine(name, value=serialize_datetime(instant, False))
 
 
-def serialize_date(instant: Union[datetime, date]) -> str:
+def serialize_date(instant: DatetimeLike) -> str:
     if isinstance(instant, datetime):
         instant = instant.date()
     return instant.strftime('%Y%m%d')
@@ -185,14 +211,41 @@ def serialize_duration(dt: timedelta) -> str:
 ###############################################################################
 # Rounding Utils
 
+@overload
+def floor_datetime_to_midnight(value: datetime) -> datetime: ...
 
-def floor_datetime_to_midnight(value: DatetimeLike):
+
+@overload
+def floor_datetime_to_midnight(value: date) -> date: ...
+
+
+@overload
+def floor_datetime_to_midnight(value: None) -> None: ...
+
+
+def floor_datetime_to_midnight(value):
+    if value is None:
+        return None
     if isinstance(value, date):
         return value
     return datetime.combine(ensure_datetime(value).date(), midnight, tzinfo=value.tzinfo)
 
 
-def ceil_datetime_to_midnight(value: DatetimeLike):
+@overload
+def ceil_datetime_to_midnight(value: datetime) -> datetime: ...
+
+
+@overload
+def ceil_datetime_to_midnight(value: date) -> date: ...
+
+
+@overload
+def ceil_datetime_to_midnight(value: None) -> None: ...
+
+
+def ceil_datetime_to_midnight(value):
+    if value is None:
+        return None
     if isinstance(value, date):
         return value
     floored = floor_datetime_to_midnight(value)
@@ -202,11 +255,11 @@ def ceil_datetime_to_midnight(value: DatetimeLike):
         return floored
 
 
-def floor_timedelta_to_days(value):
+def floor_timedelta_to_days(value: timedelta) -> timedelta:
     return value - (value % TIMEDELTA_CACHE["day"])
 
 
-def ceil_timedelta_to_days(value):
+def ceil_timedelta_to_days(value: timedelta) -> timedelta:
     mod = value % TIMEDELTA_CACHE["day"]
     if mod == TIMEDELTA_CACHE[0]:
         return value

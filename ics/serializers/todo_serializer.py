@@ -34,17 +34,15 @@ class TodoSerializer(Serializer):
 
     def serialize_created(todo: "Todo", container: Container):
         if todo.created:
-            container.append(serialize_datetime_to_contentline("CREATED", todo.created))
+            container.append(
+                serialize_datetime_to_contentline("CREATED", todo.created)
+            )
 
     def serialize_description(todo: "Todo", container: Container):
         if todo.description:
             container.append(
                 ContentLine("DESCRIPTION", value=escape_string(todo.description))
             )
-
-    def serialize_start(todo: "Todo", container: Container):
-        if todo.begin:
-            container.append(serialize_datetime_to_contentline("DTSTART", todo.begin))
 
     def serialize_location(todo: "Todo", container: Container):
         if todo.location:
@@ -68,18 +66,25 @@ class TodoSerializer(Serializer):
         if todo.url:
             container.append(ContentLine("URL", value=escape_string(todo.url)))
 
+    def serialize_start(todo: "Todo", container: Container):
+        if todo.begin:
+            container.append(serialize_datetime_to_contentline("DTSTART", todo.begin))
+
     def serialize_due(todo: "Todo", container: Container):
-        if todo._due_time:
-            container.append(serialize_datetime_to_contentline("DUE", todo._due_time))
+        if todo.due_representation == "end":
+            due = todo.due
+            assert due is not None
+            container.append(serialize_datetime_to_contentline("DUE", due))
 
     def serialize_duration(todo: "Todo", container: Container):
-        if todo._duration:
-            representation = serialize_duration(todo._duration)
-            container.append(ContentLine("DURATION", value=representation))
+        if todo.due_representation == "duration":
+            duration = todo.duration
+            assert duration is not None
+            container.append(ContentLine("DURATION", value=serialize_duration(duration)))
 
     def serialize_alarm(todo: "Todo", container: Container):
         for alarm in todo.alarms:
-            container.append(str(alarm))
+            container.append(alarm.serialize())
 
     def serialize_status(todo: "Todo", container: Container):
         if todo.status:

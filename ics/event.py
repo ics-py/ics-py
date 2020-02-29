@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Dict, List, NamedTuple, Optional, Set, Tuple, Union
+from typing import Dict, List, NamedTuple, Optional, Set, Tuple, Union, overload
 
 import attr
 
@@ -9,26 +9,34 @@ from ics.component import Component
 from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
 from ics.timespan import Timespan
-from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, get_timespan_if_event
+from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, get_timespan_if_calendar_entry
 from ics.utils import check_is_instance, ensure_datetime, uid_gen
 
-STATUS_ATTRIB = dict(
-    converter=lambda s: s.upper(),
-    validator=attr.validators.in_((None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')))
+STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
 
 class Geo(NamedTuple):
     latitude: float
     longitude: float
 
-    @classmethod
-    def make(cls, value: Union[Dict[str, float], Tuple[float, float], None]):
-        if isinstance(value, dict):
-            return Geo(**value)
-        elif isinstance(value, tuple):
-            return Geo(*value)
-        else:
-            return None
+
+@overload
+def make_geo(value: None) -> None:
+    ...
+
+
+@overload
+def make_geo(value: Union[Dict[str, float], Tuple[float, float]]) -> "Geo":
+    ...
+
+
+def make_geo(value):
+    if isinstance(value, dict):
+        return Geo(**value)
+    elif isinstance(value, tuple):
+        return Geo(*value)
+    else:
+        return None
 
 
 @attr.s
@@ -40,10 +48,10 @@ class CalendarEntryAttrs(Component):
     description: Optional[str] = attr.ib(default=None)
     location: Optional[str] = attr.ib(default=None)
     url: Optional[str] = attr.ib(default=None)
-    status: Optional[str] = attr.ib(default=None, **STATUS_ATTRIB)
+    status: Optional[str] = attr.ib(default=None, converter=str.upper, validator=attr.validators.in_(STATUS_VALUES))  # type: ignore
 
-    created: Optional[DatetimeLike] = attr.ib(factory=datetime.now, converter=ensure_datetime)
-    last_modified: Optional[DatetimeLike] = attr.ib(factory=datetime.now, converter=ensure_datetime)
+    created: Optional[datetime] = attr.ib(factory=datetime.now, converter=ensure_datetime)  # type: ignore
+    last_modified: Optional[datetime] = attr.ib(factory=datetime.now, converter=ensure_datetime)  # type: ignore
     # self.dtstamp = datetime.utcnow() if not dtstamp else ensure_datetime(dtstamp) # ToDo
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
 
@@ -54,7 +62,7 @@ class EventsAttrs(CalendarEntryAttrs):
 
     transparent: Optional[bool] = attr.ib(default=None)
     organizer: Optional[Organizer] = attr.ib(default=None, validator=attr.validators.instance_of(Organizer))
-    geo: Optional[Geo] = attr.ib(converter=Geo.make, default=None)
+    geo: Optional[Geo] = attr.ib(converter=make_geo, default=None)  # type: ignore
 
     attendees: Set[Attendee] = attr.ib(factory=set, converter=set)
     categories: Set[str] = attr.ib(factory=set, converter=set)
@@ -114,12 +122,14 @@ class Event(EventsAttrs):
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
         """
-        super(Event, self).__init__(Timespan(begin, end, duration), name, *args, **kwargs)
+        super(Event, self).__init__(
+            Timespan(ensure_datetime(begin), ensure_datetime(end), duration),
+            name, *args, **kwargs)
 
     ####################################################################################################################
 
     @property
-    def begin(self) -> datetime:
+    def begin(self) -> Optional[datetime]:
         """Get or set the beginning of the event.
 
         |  Will return a :class:`datetime` object.
@@ -135,7 +145,7 @@ class Event(EventsAttrs):
         self._timespan = self._timespan.replace(begin_time=ensure_datetime(value))
 
     @property
-    def end(self) -> datetime:
+    def end(self) -> Optional[datetime]:
         """Get or set the end of the event.
 
         |  Will return a :class:`datetime` object.
@@ -229,37 +239,37 @@ class Event(EventsAttrs):
     # TODO allow use with same parameters as Timeline.normalize_timespan
 
     def starts_within(self, second: EventOrTimespan) -> bool:
-        return self._timespan.starts_within(get_timespan_if_event(second))
+        return self._timespan.starts_within(get_timespan_if_calendar_entry(second))
 
     def ends_within(self, second: EventOrTimespan) -> bool:
-        return self._timespan.ends_within(get_timespan_if_event(second))
+        return self._timespan.ends_within(get_timespan_if_calendar_entry(second))
 
     def intersects(self, second: EventOrTimespan) -> bool:
-        return self._timespan.intersects(get_timespan_if_event(second))
+        return self._timespan.intersects(get_timespan_if_calendar_entry(second))
 
     def includes(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.includes(get_timespan_if_event(second))
+        return self._timespan.includes(get_timespan_if_calendar_entry(second))
 
     def is_included_in(self, second: EventOrTimespan) -> bool:
-        return self._timespan.is_included_in(get_timespan_if_event(second))
+        return self._timespan.is_included_in(get_timespan_if_calendar_entry(second))
 
     def compare(self, extract_dt, op, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.compare(extract_dt, op, get_timespan_if_event(second))
+        return self._timespan.compare(extract_dt, op, get_timespan_if_calendar_entry(second))
 
     def __lt__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__lt__(get_timespan_if_event(second))
+        return self._timespan.__lt__(get_timespan_if_calendar_entry(second))
 
     def __le__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__le__(get_timespan_if_event(second))
+        return self._timespan.__le__(get_timespan_if_calendar_entry(second))
 
     def __gt__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__gt__(get_timespan_if_event(second))
+        return self._timespan.__gt__(get_timespan_if_calendar_entry(second))
 
     def __ge__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__ge__(get_timespan_if_event(second))
+        return self._timespan.__ge__(get_timespan_if_calendar_entry(second))
 
     def same_timespan(self, second: EventOrTimespan) -> bool:
-        return self._timespan.same_timespan(get_timespan_if_event(second))
+        return self._timespan.same_timespan(get_timespan_if_calendar_entry(second))
 
     def union_timespan(self, second: EventOrTimespanOrInstant):
-        self._timespan = self._timespan.union(get_timespan_if_event(second))
+        self._timespan = self._timespan.union(get_timespan_if_calendar_entry(second))

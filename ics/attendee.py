@@ -1,5 +1,5 @@
 import warnings
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Type, TypeVar
 
 import attr
 
@@ -7,6 +7,8 @@ from ics.grammar.parse import ContentLine
 from ics.parsers.attendee_parser import AttendeeParser, PersonParser
 from ics.serializers.attendee_serializer import AttendeeSerializer, PersonSerializer
 from ics.utils import escape_string, unescape_string
+
+PersonType = TypeVar('PersonType', bound='Person')
 
 
 @attr.s
@@ -27,7 +29,7 @@ class Person(object):
         serializer = PersonSerializer
 
     @classmethod
-    def parse(cls, line: ContentLine) -> "Person":
+    def parse(cls: Type[PersonType], line: ContentLine) -> PersonType:
         email = unescape_string(line.value)
         if email.lower().startswith("mailto:"):
             email = email[len("mailto:"):]

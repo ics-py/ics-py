@@ -7,7 +7,7 @@ from ics.event import CalendarEntryAttrs
 from ics.parsers.todo_parser import TodoParser
 from ics.serializers.todo_serializer import TodoSerializer
 from ics.timespan import Timespan
-from ics.types import DatetimeLike, EventOrTimespanOrInstant, get_timespan_if_event
+from ics.types import DatetimeLike, TodoOrTimespanOrInstant, get_timespan_if_calendar_entry
 from ics.utils import ensure_datetime
 
 MAX_PERCENT = 100
@@ -18,7 +18,7 @@ MAX_PRIORITY = 9
 class TodoAttrs(CalendarEntryAttrs):
     percent: Optional[int] = attr.ib(default=None, validator=attr.validators.in_(range(0, MAX_PERCENT + 1)))
     priority: Optional[int] = attr.ib(default=None, validator=attr.validators.in_(range(0, MAX_PRIORITY + 1)))
-    completed: Optional[DatetimeLike] = attr.ib(factory=datetime.now, converter=ensure_datetime)
+    completed: Optional[datetime] = attr.ib(factory=datetime.now, converter=ensure_datetime)  # type: ignore
 
 
 class Todo(TodoAttrs):
@@ -40,12 +40,14 @@ class Todo(TodoAttrs):
             duration: timedelta = None,
             *args, **kwargs
     ):
-        super(Todo, self).__init__(Timespan(begin, due, duration), *args, **kwargs)
+        super(Todo, self).__init__(
+            Timespan(ensure_datetime(begin), ensure_datetime(due), duration),
+            *args, **kwargs)
 
     ####################################################################################################################
 
     @property
-    def begin(self) -> datetime:
+    def begin(self) -> Optional[datetime]:
         """Get or set the beginning of the todo.
 
         |  Will return a :class:`datetime` object.
@@ -60,7 +62,7 @@ class Todo(TodoAttrs):
         self._timespan = self._timespan.replace(begin_time=ensure_datetime(value))
 
     @property
-    def due(self) -> datetime:
+    def due(self) -> Optional[datetime]:
         """Get or set the due of the todo.
 
         |  Will return a :class:`datetime` object.
@@ -93,6 +95,13 @@ class Todo(TodoAttrs):
     def duration(self, value: timedelta):
         self._timespan = self._timespan.replace(duration=value)
 
+    def convert_due(self, representation):
+        self._timespan = self._timespan.convert_end(representation)
+
+    @property
+    def due_representation(self):
+        return self._timespan.get_end_representation()
+
     @property
     def has_due(self) -> bool:
         return self._timespan.has_end()
@@ -118,14 +127,14 @@ class Todo(TodoAttrs):
 
     ####################################################################################################################
 
-    def __lt__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__lt__(get_timespan_if_event(second))
+    def __lt__(self, second: TodoOrTimespanOrInstant) -> bool:
+        return self._timespan.__lt__(get_timespan_if_calendar_entry(second))
 
-    def __le__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__le__(get_timespan_if_event(second))
+    def __le__(self, second: TodoOrTimespanOrInstant) -> bool:
+        return self._timespan.__le__(get_timespan_if_calendar_entry(second))
 
-    def __gt__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__gt__(get_timespan_if_event(second))
+    def __gt__(self, second: TodoOrTimespanOrInstant) -> bool:
+        return self._timespan.__gt__(get_timespan_if_calendar_entry(second))
 
-    def __ge__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__ge__(get_timespan_if_event(second))
+    def __ge__(self, second: TodoOrTimespanOrInstant) -> bool:
+        return self._timespan.__ge__(get_timespan_if_calendar_entry(second))
