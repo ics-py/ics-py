@@ -1,3 +1,4 @@
+import os
 import unittest
 from datetime import datetime as dt
 from datetime import timedelta as td
@@ -579,3 +580,11 @@ class TestEvent(unittest.TestCase):
 
         ev2.name = "other name"
         assert ev1 != ev2
+
+    def test_attendee_parse(self):
+        with open(
+            os.path.join(os.path.dirname(__file__), "fixtures/groupscheduled.ics")
+        ) as f:
+            c = Calendar(f.read())
+            e = c.events.timeline[0]
+            assert len(e.attendees) == 1
