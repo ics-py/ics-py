@@ -16,33 +16,32 @@ if TYPE_CHECKING:
 class CalendarParser(Parser):
     @option(required=True)
     def parse_prodid(calendar: "Calendar", prodid: "ContentLine"):
-        calendar._creator = prodid.value
+        calendar.prodid = prodid.value
+        calendar.prodid_params = prodid.params
 
     _version_default = [ContentLine(name="VERSION", value="2.0")]
 
     @option(required=True, default=_version_default)
     def parse_version(calendar: "Calendar", line: "ContentLine"):
-        version = line
-        # TODO : should take care of minver/maxver
-        if ";" in version.value:
-            _, calendar.version = version.value.split(";")
+        if line:
+            calendar.version = line.value.lower()
+            calendar.version_params = line.params
         else:
-            calendar.version = version.value
+            calendar.version = "2.0"
+            calendar.version_params = {}
 
     def parse_calscale(calendar: "Calendar", line: "ContentLine"):
-        calscale = line
-        if calscale:
-            calendar.scale = calscale.value.lower()
-            calendar.scale_params = calscale.params
+        if line:
+            calendar.scale = line.value.lower()
+            calendar.scale_params = line.params
         else:
             calendar.scale = "georgian"
             calendar.scale_params = {}
 
     def parse_method(calendar: "Calendar", line: "ContentLine"):
-        method = line
-        if method:
-            calendar.method = method.value
-            calendar.method_params = method.params
+        if line:
+            calendar.method = line.value
+            calendar.method_params = line.params
         else:
             calendar.method = None
             calendar.method_params = {}

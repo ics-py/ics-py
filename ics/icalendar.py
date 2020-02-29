@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, Optional, Set, Union
+from typing import Dict, Iterable, List, Optional, Set, Union
 
 import attr
 
@@ -13,12 +13,19 @@ from ics.todo import Todo
 
 @attr.s
 class CalendarAttrs(Component):
+    version: Optional[str] = attr.ib(default=None)
+    version_params: Dict[str, List[str]] = attr.ib(factory=dict)
+
     _timezones: Dict = attr.ib(factory=dict, init=False, repr=False, cmp=False, hash=False)
     events: Set[Event] = attr.ib(factory=set, converter=set)
     todos: Set[Todo] = attr.ib(factory=set, converter=set)
+
     prodid: Optional[str] = attr.ib(default=None)
+    prodid_params: Dict[str, List[str]] = attr.ib(factory=dict)
     scale: Optional[str] = attr.ib(default=None)
+    scale_params: Dict[str, List[str]] = attr.ib(factory=dict)
     method: Optional[str] = attr.ib(default=None)
+    method_params: Dict[str, List[str]] = attr.ib(factory=dict)
 
 
 class Calendar(CalendarAttrs):
@@ -41,8 +48,8 @@ class Calendar(CalendarAttrs):
     def __init__(
             self,
             imports: Union[str, Container] = None,
-            events: Iterable[Event] = None,
-            todos: Iterable[Todo] = None,
+            events: Optional[Iterable[Event]] = None,
+            todos: Optional[Iterable[Todo]] = None,
             creator: str = None,
             **kwargs
     ):
@@ -56,7 +63,11 @@ class Calendar(CalendarAttrs):
 
         If ``imports`` is specified, every other argument will be ignored.
         """
-        super(Calendar, self).__init__(events=events, todo=todos, prodid=creator, **kwargs)
+        if events is None:
+            events = tuple()
+        if todos is None:
+            todos = tuple()
+        super(Calendar, self).__init__(events=events, todos=todos, prodid=creator, **kwargs)  # type: ignore
         self.timeline = Timeline(self, None)
 
         if imports is not None:

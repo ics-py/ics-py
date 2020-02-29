@@ -1,3 +1,4 @@
+from ics.grammar.parse import ContentLine
 from ics.utils import get_lines
 
 
@@ -25,4 +26,5 @@ def get_type_from_container(container):
         raise ValueError("Too many ACTION parameters in VALARM")
 
     action_type = action_type_lines[0]
+    assert isinstance(action_type, ContentLine)
     return get_type_from_action(action_type.value)

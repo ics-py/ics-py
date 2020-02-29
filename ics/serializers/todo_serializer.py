@@ -42,10 +42,6 @@ class TodoSerializer(Serializer):
                 ContentLine("DESCRIPTION", value=escape_string(todo.description))
             )
 
-    def serialize_start(todo: "Todo", container: Container):
-        if todo.begin:
-            container.append(serialize_datetime_to_contentline("DTSTART", todo.begin))
-
     def serialize_location(todo: "Todo", container: Container):
         if todo.location:
             container.append(
@@ -68,14 +64,17 @@ class TodoSerializer(Serializer):
         if todo.url:
             container.append(ContentLine("URL", value=escape_string(todo.url)))
 
+    def serialize_start(todo: "Todo", container: Container):
+        if todo.begin:
+            container.append(serialize_datetime_to_contentline("DTSTART", todo.begin))
+
     def serialize_due(todo: "Todo", container: Container):
-        if todo._due_time:
-            container.append(serialize_datetime_to_contentline("DUE", todo._due_time))
+        if todo.due_representation == "end":
+            container.append(serialize_datetime_to_contentline("DUE", todo.due))
 
     def serialize_duration(todo: "Todo", container: Container):
-        if todo._duration:
-            representation = serialize_duration(todo._duration)
-            container.append(ContentLine("DURATION", value=representation))
+        if todo.due_representation == "duration":
+            container.append(ContentLine("DURATION", value=serialize_duration(todo.duration)))
 
     def serialize_alarm(todo: "Todo", container: Container):
         for alarm in todo.alarms:

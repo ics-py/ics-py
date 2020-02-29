@@ -1,6 +1,11 @@
+from typing import TYPE_CHECKING
+
 from ics.grammar.parse import ContentLine
 from ics.serializers.serializer import Serializer
 from ics.utils import escape_string
+
+if TYPE_CHECKING:
+    from ics.attendee import Person, Attendee
 
 
 class PersonSerializer(Serializer):
@@ -20,7 +25,7 @@ class PersonSerializer(Serializer):
 class AttendeeSerializer(PersonSerializer):
     def serialize_rsvp(attendee: "Attendee", line: ContentLine):
         if attendee.rsvp is not None:
-            line.params["RSVP"] = [attendee.rsvp]
+            line.params["RSVP"] = [str(attendee.rsvp).upper()]
 
     def serialize_role(attendee: "Attendee", line: ContentLine):
         if attendee.role:

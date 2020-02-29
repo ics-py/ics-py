@@ -1,10 +1,10 @@
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
-from typing import Any, Union
+from typing import Any, Type, Union
 
 import attr
 
-from ics.component import Component
+from ics.component import Component, ComponentType
 from ics.grammar.parse import Container
 from ics.parsers.alarm_parser import BaseAlarmParser
 from ics.serializers.alarm_serializer import BaseAlarmSerializer
@@ -15,7 +15,7 @@ def call_validate_on_inst(inst, attr, value):
     inst.validate(attr, value)
 
 
-@attr.s
+@attr.s(repr=False)
 class BaseAlarm(Component, metaclass=ABCMeta):
     """
     A calendar event VALARM base class
@@ -27,7 +27,9 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         serializer = BaseAlarmSerializer
 
     trigger: Union[timedelta, datetime] = attr.ib(
-        default=None, validator=attr.validators.instance_of((timedelta, datetime)))
+        default=None,
+        validator=attr.validators.instance_of((timedelta, datetime))  # type: ignore
+    )
     repeat: int = attr.ib(default=None, validator=call_validate_on_inst)
     duration: timedelta = attr.ib(default=None, validator=call_validate_on_inst)
 
@@ -44,7 +46,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
             raise ValueError("Alarm duration timespan must be positive.")
 
     @classmethod
-    def _from_container(cls, container: Container, *args: Any, **kwargs: Any):
+    def _from_container(cls: Type[ComponentType], container: Container, *args: Any, **kwargs: Any) -> ComponentType:
         ret = super()._from_container(container, *args, **kwargs)
         get_lines(ret.extra, "ACTION", keep=False)  # Just drop the ACTION line
         return ret

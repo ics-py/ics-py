@@ -27,25 +27,23 @@ class EventParser(Parser):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = event._classmethod_kwargs["tz"]
-            event.begin = parse_datetime(line, tz_dict)
-            event._begin_precision = iso_precision(line.value)
+            event._timespan = event._timespan.replace(
+                begin_time=parse_datetime(line, tz_dict),
+                precision=iso_precision(line.value)
+            )
 
     def parse_duration(event: "Event", line: ContentLine):
         if line:
-            # TODO: DRY [1]
-            if event._end_time:  # pragma: no cover
-                raise ValueError("An event can't have both DTEND and DURATION")
-            event._duration = parse_duration(line.value)
+            event._timespan = event._timespan.replace(
+                duration=parse_duration(line.value)
+            )
 
     def parse_dtend(event: "Event", line: ContentLine):
         if line:
-            # TODO: DRY [1]
-            if event._duration:
-                raise ValueError("An event can't have both DTEND and DURATION")
-            # get the dict of vtimezones passed to the classmethod
             tz_dict = event._classmethod_kwargs["tz"]
-            event._end_time = parse_datetime(line, tz_dict)
-            # one could also save the end_precision to check that if begin_precision is day, end_precision also is
+            event._timespan = event._timespan.replace(
+                end_time=parse_datetime(line, tz_dict)
+            )
 
     def parse_summary(event: "Event", line: ContentLine):
         event.name = unescape_string(line.value) if line else None
@@ -54,9 +52,9 @@ class EventParser(Parser):
         event.organizer = Organizer.parse(line) if line else None
 
     @option(multiple=True)
-    def parse_attendee(event, lines):
+    def parse_attendee(event: "Event", lines: List[ContentLine]):
         for line in lines:
-            event.attendee.append(Attendee.parse(line))
+            event.attendees.add(Attendee.parse(line))
 
     def parse_description(event: "Event", line: ContentLine):
         event.description = unescape_string(line.value) if line else None

@@ -1,6 +1,6 @@
 import heapq
 from datetime import date, datetime, timedelta
-from typing import Iterator, Tuple
+from typing import Iterable, Iterator, TYPE_CHECKING, Tuple
 
 import attr
 
@@ -8,6 +8,9 @@ from ics.event import Event
 from ics.timespan import Normalization, Timespan, normalize
 from ics.types import DatetimeLike, OptionalDatetimeLike, TimespanOrBegin
 from ics.utils import ceil_datetime_to_midnight, ensure_datetime
+
+if TYPE_CHECKING:
+    from ics.icalendar import Calendar
 
 
 @attr.s
@@ -52,7 +55,9 @@ class Timeline(object):
         # Using a heap is faster than sorting if the number of events (n) is
         # much bigger than the number of events we extract from the iterator (k).
         # Complexity: O(n + k log n).
-        heap = ((e.timespan.normalize(self._normalization), e) for e in self._calendar.events)
+        heap: Iterable[Tuple[Timespan, Event]] = (
+            (e.timespan.normalize(self._normalization), e)
+            for e in self._calendar.events)
         heap = [t for t in heap if t[0]]
         heapq.heapify(heap)
         while heap:
@@ -96,7 +101,7 @@ class Timeline(object):
         """
         instant = self.normalize_datetime(instant)
         for timespan, event in self.iterator():
-            if timespan.get_begin() > instant:
+            if timespan.begin_time is not None and timespan.begin_time > instant:
                 yield event
 
     def at(self, instant: DatetimeLike) -> Iterator[Event]:

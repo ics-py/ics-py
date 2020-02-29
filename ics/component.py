@@ -1,5 +1,5 @@
 import warnings
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, Type, TypeVar
 
 import attr
 
@@ -7,6 +7,8 @@ from ics.grammar.parse import Container
 from ics.parsers.parser import Parser
 from ics.serializers.serializer import Serializer
 from ics.utils import get_lines
+
+ComponentType = TypeVar('ComponentType', bound='Component')
 
 
 @attr.s
@@ -28,12 +30,11 @@ class Component(object):
             raise TypeError("%s may not overwrite %s" % (cls, Component.__str__))
 
     @classmethod
-    def _from_container(cls, container: Container, *args: Any, **kwargs: Any):
+    def _from_container(cls: Type[ComponentType], container: Container, *args: Any, **kwargs: Any) -> ComponentType:
         k = cls()
         k._classmethod_args = args
         k._classmethod_kwargs = kwargs
         k._populate(container)
-
         return k
 
     def _populate(self, container: Container) -> None:
@@ -71,9 +72,12 @@ class Component(object):
             Event: an exact copy of self"""
         return attr.evolve(self)
 
-    def __str__(self) -> str:
-        """Returns the component in an iCalendar format."""
+    def serialize(self) -> Container:
         container = self.extra.clone()
         for output in self.Meta.serializer.get_serializers():
             output(self, container)
-        return str(container)
+        return container
+
+    def __str__(self) -> str:
+        """Returns the component in an iCalendar format."""
+        return str(self.serialize())
