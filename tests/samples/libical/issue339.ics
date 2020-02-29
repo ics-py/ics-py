@@ -1,0 +1,48 @@
+BEGIN:VCARD
+VERSION:2.1
+N:de Tester 04-04;Test;;;(outlook)
+FN:Test de Tester 04-04 (outlook)
+ORG:Test BV
+TITLE:Tester
+TEL;WORK;VOICE:(010) 123-4567
+TEL;HOME;VOICE:(010) 123-4568
+TEL;CELL;VOICE:(010) 123-4560
+ADR;WORK:;;Workstreet 99;Worktown;;1111AA;Netherlands
+LABEL;WORK;ENCODING=QUOTED-PRINTABLE:Workstreet 99=0D=0A=
+1111AA  Worktown=0D=0A=
+Netherlands
+ADR;HOME;PREF:;;Homestreet 99;Hometown;;1111ZZZ;Netherlands
+LABEL;HOME;PREF;ENCODING=QUOTED-PRINTABLE:Homestreet 99=0D=0A=
+1111ZZZ  Hometown=0D=0A=
+Netherlands
+X-MS-OL-DEFAULT-POSTAL-ADDRESS:1
+URL;HOME:https://www.personalhomepage.com
+URL;WORK:https://www.businesshomepage.com
+EMAIL;PREF;INTERNET:tester@test.com
+EMAIL;INTERNET:tester2@test.com
+EMAIL;INTERNET:tester3@test.com
+X-MS-CARDPICTURE;TYPE=JPEG;ENCODING=BASE64:
+ /9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAcFBQYFBAcGBQYIBwcIChELCgkJChUPEAwRGBUa
+ GRgVGBcbHichGx0lHRcYIi4iJSgpKywrGiAvMy8qMicqKyr/2wBDAQcICAoJChQLCxQqHBgc
+ KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKir/wAAR
+ CACUACcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAA
+ AgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkK
+ FhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWG
+ h4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl
+ 5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREA
+ AgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYk
+ NOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOE
+ hYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk
+ 5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD393C4B6mgHqSeKhc7nOPoKRj2HQUAPef+
+ 5z7mlj5GT19agAyasD5U59M0AQyfPNj0opIhliaKAHDjJ9BSUp+7SUAEYy1SzHEZ9+KbCOaS
+ Y8gUANU7Yie+aKJOFVaKAFbrxSUdqB1oAnjHy5qA/NN+NWD8kf0FV4uWJ9qAElOXxRTWbJJ9
+ 6KAH9qdGPmFN7VLEP5YoAJmwgHrUa/LGT60sxy+PQUEEqFXk96AIKKmEar9880UAA5OKlQ4X
+ jknmkDIei8/SlclUOOKAG+WN2X5J7CmvIRwo28UkfLEnrimuQXNADVG5vmNFJjJwKKALEY+Y
+ fnSzHoPxpY1+U/lTHZdx4yenPQUAEYIXPvUeFXqcn0FSOf3fPHAHFRUABc9F+X6UUyigC8eE
+ 57VXA3MPc1PKcRn3qFOpPoKACQ9PxNR06T72PTim0AMooooAszH5gPSkj+7z3NI5yx+tOPCf
+ QfzoAhJyc0UHrRQAyiiigCyH3EAilYrjnuaYnUn0FI/UD0FABsU9P0NIY/f8xTT1oDEdCRQA
+ bG7c/Q0Ubz3AP4UUASp91vwprffb60UUAMPWiiigBlFFFAH/2Q==
+
+X-MS-OL-DESIGN;CHARSET=utf-8:<card xmlns="http://schemas.microsoft.com/office/outlook/12/electronicbusinesscards" ver="1.0" layout="left" bgcolor="ffffff"><img xmlns="" align="fit" area="16" use="cardpicture"/><fld xmlns="" prop="name" align="left" dir="ltr" style="b" color="000000" size="10"/><fld xmlns="" prop="org" align="left" dir="ltr" color="000000" size="8"/><fld xmlns="" prop="title" align="left" dir="ltr" color="000000" size="8"/><fld xmlns="" prop="telwork" align="left" dir="ltr" color="d48d2a" size="8"><label align="right" color="626262">Work</label></fld><fld xmlns="" prop="telcell" align="left" dir="ltr" color="d48d2a" size="8"><label align="right" color="626262">Mobile</label></fld><fld xmlns="" prop="telhome" align="left" dir="ltr" color="d48d2a" size="8"><label align="right" color="626262">Home</label></fld><fld xmlns="" prop="email" align="left" dir="ltr" color="d48d2a" size="8"/><fld xmlns="" prop="email2" align="left" dir="ltr" color="d48d2a" size="8"/><fld xmlns="" prop="email3" align="left" dir="ltr" color="d48d2a" size="8"/><fld xmlns="" prop="addrhome" align="left" dir="ltr" color="000000" size="8"/><fld xmlns="" prop="addrwork" align="left" dir="ltr" color="000000" size="8"/><fld xmlns="" prop="webwork" align="left" dir="ltr" color="000000" size="8"/><fld xmlns="" prop="webhome" align="left" dir="ltr" color="000000" size="9"/><fld xmlns="" prop="blank" size="8"/><fld xmlns="" prop="blank" size="8"/><fld xmlns="" prop="blank" size="8"/></card>
+REV:20180404T114012Z
+END:VCARD

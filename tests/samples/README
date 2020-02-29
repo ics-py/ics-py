@@ -1,0 +1,5 @@
+This directory contains samples of ics files gathered around the internet and
+runs them through our parser to try to detect bugs. Theses files are under
+different licences and by multiple authors. Each subdirectory contains their
+respective sources. Some might have been slightly modified by us to comply with
+our stricter parser.
