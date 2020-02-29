@@ -190,6 +190,18 @@ class TestEvent(unittest.TestCase):
         line = str(a2)
         self.assertIn("ATTENDEE;CN=Email:mailto:email@email.com", line)
 
+        a3 = Attendee(
+            email="email@email.com",
+            common_name="Email",
+            partstat="ACCEPTED",
+            role="CHAIR",
+        )
+        line = str(a3)
+        self.assertIn(
+            "ATTENDEE;CN=Email;PARTSTAT=ACCEPTED;ROLE=CHAIR:mailto:email@email.com",
+            line,
+        )
+
     def test_add_attendees(self):
         e = Event()
         a = Attendee(email='email@email.com')
