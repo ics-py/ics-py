@@ -10,13 +10,11 @@ Other contributors, listed alphabetically, are:
 * `@aureooms <https://github.com/aureooms>`_
 * `@Azhrei <https://github.com/Azhrei>`_
 * `@ConnyOnny <https://github.com/ConnyOnny>`_
-* `@ConnyOnny <https://github.com/ConnyOnny>`_
 * `@danieltellez <https://github.com/danieltellez>`_
 * `@davidjb <https://github.com/davidjb>`_
 * `@etnarek <https://github.com/etnarek>`_
 * `@gbovyn <https://github.com/gbovyn>`_
 * `@GMLudo <https://github.com/GMLudo>`_
-* `@guyzmo <https://github.com/guyzmo>`_
 * `@guyzmo <https://github.com/guyzmo>`_
 * `@jammon <https://github.com/jammon>`_
 * `@jessejoe <https://github.com/jessejoe>`_
@@ -27,12 +25,10 @@ Other contributors, listed alphabetically, are:
 * `@PascalBru <https://github.com/pascalbru>`_
 * `@perette <https://github.com/perette>`_
 * `@Philiptpp <https://github.com/Philiptpp>`_
-* `@Philiptpp <https://github.com/Philiptpp>`_
 * `@prashnts <https://github.com/prashnts>`_
 * `@rkeilty <https://github.com/rkeilty>`_
 * `@seants <https://github.com/seants>`_
 * `@tgamauf <https://github.com/tgamauf>`_
-* `@Timic3 <https://github.com/Timic3>`_
 * `@Timic3 <https://github.com/Timic3>`_
 * `@Trii <https://github.com/Trii>`_
 * `@zagnut007 <https://github.com/zagnut007>`_
