@@ -52,7 +52,7 @@ class EventParser(Parser):
     @option(multiple=True)
     def parse_attendee(event, lines):
         for line in lines:
-            event.attendee.append(Attendee.parse(line))
+            event.attendees.add(Attendee.parse(line))
 
     def parse_description(event, line):
         event.description = unescape_string(line.value) if line else None
