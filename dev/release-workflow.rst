@@ -12,8 +12,10 @@ Release HOWTO
 * Check PyPI release page for obvious errors
 * `git commit`
 * `git tag -a v{version} -m 'Version {version}'`
+* Start the new changlog
 * Set version to "{version+1}-dev"
 * `git commit`
 * `git push --tags && git push`
+* Update the release on GitHub with the changelog
 * Build documentation for the tag v{version} on rtfd.org
 * Set the default rtfd version to {version}
