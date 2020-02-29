@@ -1,12 +1,14 @@
 Authors
 -------
 
-Ics.py is written and maintained by Nikita Marchant <nikita.marchant@gmail.com>.
+Ics.py is written and maintained by `Nikita Marchant <https://github.com/C4ptainCrunch>`_
+with the excellent help of `Niko Fink <https://github.com/N-Coder>`_.
 
 
 Other contributors, listed alphabetically, are:
 
 * `@aureooms <https://github.com/aureooms>`_
+* `@Azhrei <https://github.com/Azhrei>`_
 * `@ConnyOnny <https://github.com/ConnyOnny>`_
 * `@ConnyOnny <https://github.com/ConnyOnny>`_
 * `@danieltellez <https://github.com/danieltellez>`_
@@ -21,12 +23,16 @@ Other contributors, listed alphabetically, are:
 * `@johnnoone <https://github.com/johnnoone>`_
 * `@kayluhb <https://github.com/kayluhb>`_
 * `@mrmadcow <https://github.com/mrmadcow>`_
+* `@Ousret <https://github.com/Ousret>`_
 * `@PascalBru <https://github.com/pascalbru>`_
 * `@perette <https://github.com/perette>`_
 * `@Philiptpp <https://github.com/Philiptpp>`_
+* `@Philiptpp <https://github.com/Philiptpp>`_
 * `@prashnts <https://github.com/prashnts>`_
 * `@rkeilty <https://github.com/rkeilty>`_
+* `@seants <https://github.com/seants>`_
 * `@tgamauf <https://github.com/tgamauf>`_
+* `@Timic3 <https://github.com/Timic3>`_
 * `@Timic3 <https://github.com/Timic3>`_
 * `@Trii <https://github.com/Trii>`_
 * `@zagnut007 <https://github.com/zagnut007>`_
@@ -41,4 +47,5 @@ authors and projects:
   which is written by Chris Smith and under Apache license
 
 
-A big part of the code was written at `UrLab <http://urlab.be>`_, an awesome hackerspace in `ULB <http://ulb.ac.be>`_ in Brussels, Belgium.
+A big part of the code was written at `UrLab <http://urlab.be>`_, an awesome
+hackerspace in `ULB <http://ulb.ac.be>`_ in Brussels, Belgium.
