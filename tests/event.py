@@ -583,7 +583,9 @@ class TestEvent(unittest.TestCase):
 
     def test_attendee_parse(self):
         with open(
-            os.path.join(os.path.dirname(__file__), "fixtures/groupscheduled.ics")
+            os.path.join(
+                os.path.dirname(__file__), "samples/icalendar_py/groupscheduled.ics"
+            )
         ) as f:
             c = Calendar(f.read())
             e = list(c.events)[0]
