@@ -1,4 +1,5 @@
 BEGIN:VCALENDAR
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
 X-LIC-NOTE: Overlap with Slot 1\, 1200 to 1300\, should be delegated
 METHOD
  :REQUEST
@@ -35,6 +36,7 @@ END:VEVENT
 END:VCALENDAR
 
 BEGIN:VCALENDAR
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
 X-LIC-NOTE: Overlap with Slot 2\, 1300 to 1400\, should be counterproposed
 METHOD
  :REQUEST
@@ -71,6 +73,7 @@ END:VEVENT
 END:VCALENDAR
 
 BEGIN:VCALENDAR
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
 X-LIC-NOTE: Overlap with Slot 3\, 1400 to 1500\, should be declined
 METHOD
  :REQUEST

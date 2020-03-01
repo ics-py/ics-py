@@ -1,4 +1,5 @@
 BEGIN:VCALENDAR
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
 DURATION:P15DT5H0M20S
 DURATION:P7W
 URL;CN=John Smith:http://example.com/urivalue.html
