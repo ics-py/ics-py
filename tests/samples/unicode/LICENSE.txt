@@ -1,0 +1,5 @@
+utf-8-emoji.ics contains data with the following Copyright: Markus Kuhn [ˈmaʳkʊs
+kuːn] <http://www.cl.cam.ac.uk/~mgk25/> — 2002-07-25 CC BY and © 2019 Unicode®,
+Inc. Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in
+the U.S. and other countries. For terms of use, see
+http://www.unicode.org/terms_of_use.html 
