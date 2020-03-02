@@ -1,10 +1,14 @@
+import functools
 from datetime import date, datetime, timedelta, tzinfo as TZInfo
 from enum import Enum
-from typing import Dict, Optional, Tuple, Union, cast, overload
+from typing import Any, Dict, Optional, Tuple, Union, cast, overload
 
 import attr
+from attr.validators import instance_of, optional as v_optional
 
-from ics.utils import TIMEDELTA_CACHE, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight
+from ics.utils import TIMEDELTA_CACHE, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight, timedelta_nearly_zero
+
+CMP_DATETIME_NONE_DEFAULT = datetime.min
 
 
 class NormalizeIgnore(Enum):
@@ -64,10 +68,11 @@ def normalize(value, normalization):
 
 
 @attr.s(slots=True, frozen=True, cmp=False)
+@functools.total_ordering
 class Timespan(object):
-    begin_time: Optional[datetime] = attr.ib(validator=attr.validators.instance_of(datetime), default=None)
-    end_time: Optional[datetime] = attr.ib(validator=attr.validators.instance_of(datetime), default=None)
-    duration: Optional[timedelta] = attr.ib(validator=attr.validators.instance_of(timedelta), default=None)
+    begin_time: Optional[datetime] = attr.ib(validator=v_optional(instance_of(datetime)), default=None)
+    end_time: Optional[datetime] = attr.ib(validator=v_optional(instance_of(datetime)), default=None)
+    duration: Optional[timedelta] = attr.ib(validator=v_optional(instance_of(timedelta)), default=None)
     precision: str = attr.ib(default="second")
 
     def __attrs_post_init__(self):
@@ -142,7 +147,7 @@ class Timespan(object):
                     raise ValueError("end time may not have a timezone as the begin time doesn't either")
                 if self.begin_time.tzinfo is not None and self.end_time.tzinfo is None:
                     raise ValueError("end time must have a timezone as the begin time also does")
-                if self.precision is not None and self.get_effective_duration() % TIMEDELTA_CACHE[self.precision] != TIMEDELTA_CACHE[0]:
+                if not timedelta_nearly_zero(self.get_effective_duration() % TIMEDELTA_CACHE[self.precision]):
                     raise ValueError("effective duration value %s has higher precision than set precision %s" %
                                      (self.get_effective_duration(), self.precision))
 
@@ -151,7 +156,7 @@ class Timespan(object):
                     raise ValueError("event duration must be positive")
                 if self.precision == "day" and self.duration < TIMEDELTA_CACHE["day"]:
                     raise ValueError("all-day event duration must be at least one day")
-                if self.precision is not None and self.duration % TIMEDELTA_CACHE[self.precision] != TIMEDELTA_CACHE[0]:
+                if not timedelta_nearly_zero(self.duration % TIMEDELTA_CACHE[self.precision]):
                     raise ValueError("duration value %s has higher precision than set precision %s" %
                                      (self.duration, self.precision))
 
@@ -281,6 +286,18 @@ class Timespan(object):
 
     ####################################################################################################################
 
+    @overload
+    def timespan_tuple(self, default: None = None) -> Union[Tuple[None, None], Tuple[datetime, datetime]]:
+        ...
+
+    @overload
+    def timespan_tuple(self, default: datetime) -> Tuple[datetime, datetime]:
+        ...
+
+    def timespan_tuple(self, default=None):
+        # Tuple[datetime, None] is not possible as duration defaults to 0s or 1d as soon as begin time is not None
+        return self.get_begin() or default, self.get_effective_end() or default
+
     def __normalize_timespans(self, second: "Timespan") -> Tuple["Timespan", "Timespan"]:
         """
         Normalize this timespan to allow comparision with the given second timespan.
@@ -291,8 +308,14 @@ class Timespan(object):
         if not isinstance(second, Timespan):
             raise NotImplementedError("cannot compare %s and %s as timespans" % (type(self), type(second)))
         first = self
+        if not first or not second:
+            # also includes timespan.begin is None
+            return first, second
+        assert first.get_begin() is not None \
+               and first.get_effective_end() is not None \
+               and second.get_begin() is not None \
+               and second.get_effective_end() is not None
         if first.is_floating() != second.is_floating():
-            # TODO check whether converting to floating is okay or whether we should convert to the given timezone
             if not first.is_floating():
                 first = first.replace_timezone(None)
                 assert first.is_floating()
@@ -312,7 +335,7 @@ class Timespan(object):
         """
         if not isinstance(second, datetime):
             raise NotImplementedError("cannot compare %s and %s as timespans/datetime" % (type(self), type(second)))
-        if self.is_floating() and second.tzinfo is not None:
+        if self and self.is_floating() and second.tzinfo is not None:
             second = second.replace(tzinfo=None)
         return self, second
 
@@ -368,81 +391,37 @@ class Timespan(object):
         first, second = self.__normalize_timespans(second)
         return second.starts_within(first) and second.ends_within(first)
 
+    __contains__ = includes
+
     def is_included_in(self, second: "Timespan") -> bool:
         return second.includes(self)
 
-    def compare(self, extract_dt, op, second: Union["Timespan", datetime]) -> bool:
+    def __lt__(self, second: Any) -> bool:
         if isinstance(second, datetime):
             first, second = self.__normalize_datetime(second)
-            return op(extract_dt(first), second)
-        else:
-            first, second = self.__normalize_timespans(second)
-            return op(extract_dt(first), extract_dt(second))
-
-    # TODO properly define how Timespans can be ordered / compared with regard to
-    # - different timezones and floating
-    # - missing (None) values
-    # - all-day and instant-to-instant events
-
-    def __lt__(self, second: Union["Timespan", datetime]) -> bool:
-        if isinstance(second, datetime):
-            first, second = self.__normalize_datetime(second)
-            # the event doesn't include its end instant / day, so we are less even if they are the same
-            return first.get_effective_end() <= second
+            return first.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT) \
+                   < (second, CMP_DATETIME_NONE_DEFAULT)
         elif isinstance(second, Timespan):
             first, second = self.__normalize_timespans(second)
-            return first.get_begin() < second.get_begin() or (
-                    first.get_begin() == second.get_begin() and
-                    first.get_effective_end() < second.get_effective_end()
-            )
+            return first.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT) \
+                   < second.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT)
         else:
             return NotImplemented
 
-    def __le__(self, second: Union["Timespan", datetime]) -> bool:
+    def __eq__(self, second: Any) -> bool:
         if isinstance(second, datetime):
             first, second = self.__normalize_datetime(second)
-            return first.get_effective_end() <= second or first.includes(second)
+            return (first.get_begin() or CMP_DATETIME_NONE_DEFAULT) \
+                   == (second or CMP_DATETIME_NONE_DEFAULT)
         elif isinstance(second, Timespan):
             first, second = self.__normalize_timespans(second)
-            return first.get_begin() < second.get_begin() or (
-                    first.get_begin() == second.get_begin() and
-                    first.get_effective_end() <= second.get_effective_end()
-            )
+            return first.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT) \
+                   == second.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT)
         else:
             return NotImplemented
 
-    def __gt__(self, second: Union["Timespan", datetime]) -> bool:
-        if isinstance(second, datetime):
-            first, second = self.__normalize_datetime(second)
-            return first.get_begin() > second
-        elif isinstance(second, Timespan):
-            first, second = self.__normalize_timespans(second)
-            return first.get_begin() > second.get_begin() or (
-                    first.get_begin() == second.get_begin() and
-                    first.get_effective_end() > second.get_effective_end()
-            )
-        else:
-            return NotImplemented
-
-    def __ge__(self, second: Union["Timespan", datetime]) -> bool:
-        if isinstance(second, datetime):
-            first, second = self.__normalize_datetime(second)
-            return first.get_begin() >= second or first.includes(second)
-        elif isinstance(second, Timespan):
-            first, second = self.__normalize_timespans(second)
-            return first.get_begin() > second.get_begin() or (
-                    first.get_begin() == second.get_begin() and
-                    first.get_effective_end() >= second.get_effective_end()
-            )
-        else:
-            return NotImplemented
-
-    def __eq__(self, o: object) -> bool:
-        return super(Timespan, self).__eq__(o)
-
-    def same_timespan(self, second: "Timespan") -> bool:
-        first, second = self.__normalize_timespans(second)
-        return first.get_begin() == second.get_begin() and first.get_effective_end() == second.get_effective_end()
+    def is_identical(self, second: "Timespan") -> bool:
+        return isinstance(second, Timespan) and attr.astuple(self) == attr.astuple(second)
 
     def union(self, second: Union["Timespan", datetime]) -> "Timespan":
         """

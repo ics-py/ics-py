@@ -20,6 +20,11 @@ TIMEDELTA_CACHE = {
     "day": timedelta(days=1),
     "second": timedelta(seconds=1)
 }
+MAX_TIMEDELTA_NEARLY_ZERO = timedelta(seconds=1) / 2
+
+
+def timedelta_nearly_zero(td: timedelta) -> bool:
+    return -MAX_TIMEDELTA_NEARLY_ZERO <= td <= MAX_TIMEDELTA_NEARLY_ZERO
 
 
 @overload

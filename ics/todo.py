@@ -1,23 +1,43 @@
+# mypy: ignore_errors
+# this is because mypy doesn't like the converter of CalendarEntryAttrs.{created,last_modified,dtstamp} and due to some
+# bug confuses the files
+
+import functools
+import warnings
 from datetime import datetime, timedelta
 from typing import Optional
 
 import attr
+from attr.validators import in_, optional as v_optional
 
 from ics.event import CalendarEntryAttrs
 from ics.parsers.todo_parser import TodoParser
 from ics.serializers.todo_serializer import TodoSerializer
 from ics.timespan import Timespan
-from ics.types import DatetimeLike, TodoOrTimespanOrInstant, get_timespan_if_calendar_entry
+from ics.types import DatetimeLike
 from ics.utils import ensure_datetime
 
 MAX_PERCENT = 100
 MAX_PRIORITY = 9
 
 
-@attr.s
+def deprecated_due(fun):
+    @functools.wraps(fun)
+    def wrapper(*args, **kwargs):
+        msg = "Call to deprecated function {}. Use `due` instead of `end` for class Todo."
+        warnings.warn(
+            msg.format(fun.__name__),
+            category=DeprecationWarning
+        )
+        return fun(*args, **kwargs)
+
+    return wrapper
+
+
+@attr.s(repr=False)
 class TodoAttrs(CalendarEntryAttrs):
-    percent: Optional[int] = attr.ib(default=None, validator=attr.validators.in_(range(0, MAX_PERCENT + 1)))
-    priority: Optional[int] = attr.ib(default=None, validator=attr.validators.in_(range(0, MAX_PRIORITY + 1)))
+    percent: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PERCENT + 1))))
+    priority: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PRIORITY + 1))))
     completed: Optional[datetime] = attr.ib(factory=datetime.now, converter=ensure_datetime)  # type: ignore
 
 
@@ -46,95 +66,18 @@ class Todo(TodoAttrs):
 
     ####################################################################################################################
 
-    @property
-    def begin(self) -> Optional[datetime]:
-        """Get or set the beginning of the todo.
-
-        |  Will return a :class:`datetime` object.
-        |  May be set to anything that :func:`datetime.__init__` understands.
-        |  If a due time is defined (not a duration), .begin must not
-            be set to a superior value.
-        """
-        return self._timespan.get_begin()
-
-    @begin.setter
-    def begin(self, value: DatetimeLike):
-        self._timespan = self._timespan.replace(begin_time=ensure_datetime(value))
-
-    @property
-    def due(self) -> Optional[datetime]:
-        """Get or set the due of the todo.
-
-        |  Will return a :class:`datetime` object.
-        |  May be set to anything that :func:`datetime.__init__` understands.
-        |  If set to a non null value, removes any already
-            existing duration.
-        |  Setting to None will have unexpected behavior if
-            begin is not None.
-        |  Must not be set to an inferior value than self.begin.
-        """
-        return self._timespan.get_effective_end()
-
-    @due.setter
-    def due(self, value: DatetimeLike):
-        self._timespan = self._timespan.replace(end_time=ensure_datetime(value))
-
-    @property
-    def duration(self) -> Optional[timedelta]:
-        """Get or set the duration of the todo.
-
-        |  Will return a timedelta object.
-        |  May be set to anything that timedelta() understands.
-        |  May be set with a dict ({"days":2, "hours":6}).
-        |  If set to a non null value, removes any already
-            existing end time.
-        """
-        return self._timespan.get_effective_duration()
-
-    @duration.setter
-    def duration(self, value: timedelta):
-        self._timespan = self._timespan.replace(duration=value)
-
     def convert_due(self, representation):
-        self._timespan = self._timespan.convert_end(representation)
+        if representation == "due":
+            representation = "end"
+        super(Todo, self).convert_end(representation)
 
-    @property
-    def due_representation(self):
-        return self._timespan.get_end_representation()
+    due = property(TodoAttrs.end.fget, TodoAttrs.end.fset)  # type: ignore
+    due_representation = property(TodoAttrs.end_representation.fget)  # type: ignore
+    has_due = property(TodoAttrs.has_end.fget)  # type: ignore
+    due_within = TodoAttrs.ends_within
 
-    @property
-    def has_due(self) -> bool:
-        return self._timespan.has_end()
-
-    @property
-    def floating(self):
-        return self._timespan.is_floating()
-
-    def replace_timezone(self, tzinfo):
-        self._timespan = self._timespan.replace_timezone(tzinfo)
-
-    def convert_timezone(self, tzinfo):
-        self._timespan = self._timespan.convert_timezone(tzinfo)
-
-    @property
-    def timespan(self) -> Timespan:
-        return self._timespan
-
-    def __repr__(self) -> str:
-        name = [self.__class__.__name__, "'%s'" % (self.name or "",)]
-        prefix, _, suffix = self._timespan.get_str_segments()
-        return "<%s>" % (" ".join(prefix + name + suffix))
-
-    ####################################################################################################################
-
-    def __lt__(self, second: TodoOrTimespanOrInstant) -> bool:
-        return self._timespan.__lt__(get_timespan_if_calendar_entry(second))
-
-    def __le__(self, second: TodoOrTimespanOrInstant) -> bool:
-        return self._timespan.__le__(get_timespan_if_calendar_entry(second))
-
-    def __gt__(self, second: TodoOrTimespanOrInstant) -> bool:
-        return self._timespan.__gt__(get_timespan_if_calendar_entry(second))
-
-    def __ge__(self, second: TodoOrTimespanOrInstant) -> bool:
-        return self._timespan.__ge__(get_timespan_if_calendar_entry(second))
+    end = property(deprecated_due(TodoAttrs.end.fget), deprecated_due(TodoAttrs.end.fset))  # type: ignore
+    convert_end = deprecated_due(TodoAttrs.convert_end)
+    end_representation = property(deprecated_due(TodoAttrs.end_representation.fget))  # type: ignore
+    has_end = property(deprecated_due(TodoAttrs.has_end.fget))  # type: ignore
+    ends_within = deprecated_due(TodoAttrs.ends_within)

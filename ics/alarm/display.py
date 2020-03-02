@@ -5,7 +5,7 @@ from ics.parsers.alarm_parser import DisplayAlarmParser
 from ics.serializers.alarm_serializer import DisplayAlarmSerializer
 
 
-@attr.s
+@attr.s(repr=False)
 class DisplayAlarm(BaseAlarm):
     """
     A calendar event VALARM with DISPLAY option.

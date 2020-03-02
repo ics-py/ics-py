@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import Any, Type, Union
 
 import attr
+from attr.validators import instance_of
 
 from ics.component import Component, ComponentType
 from ics.grammar.parse import Container
@@ -28,7 +29,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
 
     trigger: Union[timedelta, datetime] = attr.ib(
         default=None,
-        validator=attr.validators.instance_of((timedelta, datetime))  # type: ignore
+        validator=instance_of((timedelta, datetime))  # type: ignore
     )
     repeat: int = attr.ib(default=None, validator=call_validate_on_inst)
     duration: timedelta = attr.ib(default=None, validator=call_validate_on_inst)

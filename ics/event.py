@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 from typing import Dict, List, NamedTuple, Optional, Set, Tuple, Union, overload
 
 import attr
+from attr.converters import optional as c_optional
+from attr.validators import in_, instance_of, optional as v_optional
 
 from ics.alarm.base import BaseAlarm
 from ics.attendee import Attendee, Organizer
@@ -10,7 +12,7 @@ from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
 from ics.timespan import Timespan
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, get_timespan_if_calendar_entry
-from ics.utils import check_is_instance, ensure_datetime, uid_gen
+from ics.utils import check_is_instance, ensure_datetime, uid_gen, validate_not_none
 
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
@@ -39,92 +41,22 @@ def make_geo(value):
         return None
 
 
-@attr.s
+@attr.s(repr=False)
 class CalendarEntryAttrs(Component):
-    _timespan: Timespan = attr.ib(validator=attr.validators.instance_of(Timespan))
+    # _timespan must be the first cmp=True attribute to allow ordering by (begin, end) time
+    _timespan: Timespan = attr.ib(validator=instance_of(Timespan))
     name: Optional[str] = attr.ib(default=None)
     uid: str = attr.ib(factory=uid_gen)
 
     description: Optional[str] = attr.ib(default=None)
     location: Optional[str] = attr.ib(default=None)
     url: Optional[str] = attr.ib(default=None)
-    status: Optional[str] = attr.ib(default=None, converter=str.upper, validator=attr.validators.in_(STATUS_VALUES))  # type: ignore
+    status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=v_optional(in_(STATUS_VALUES)))  # type: ignore
 
     created: Optional[datetime] = attr.ib(factory=datetime.now, converter=ensure_datetime)  # type: ignore
     last_modified: Optional[datetime] = attr.ib(factory=datetime.now, converter=ensure_datetime)  # type: ignore
     # self.dtstamp = datetime.utcnow() if not dtstamp else ensure_datetime(dtstamp) # ToDo
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
-
-
-@attr.s
-class EventsAttrs(CalendarEntryAttrs):
-    classification: Optional[str] = attr.ib(default=None)
-
-    transparent: Optional[bool] = attr.ib(default=None)
-    organizer: Optional[Organizer] = attr.ib(default=None, validator=attr.validators.instance_of(Organizer))
-    geo: Optional[Geo] = attr.ib(converter=make_geo, default=None)  # type: ignore
-
-    attendees: Set[Attendee] = attr.ib(factory=set, converter=set)
-    categories: Set[str] = attr.ib(factory=set, converter=set)
-
-    def add_attendee(self, attendee: Attendee):
-        """ Add an attendee to the attendees set """
-        check_is_instance("attendee", attendee, Attendee)
-        self.attendees.add(attendee)
-
-
-class Event(EventsAttrs):
-    """A calendar event.
-
-    Can be full-day or between two instants.
-    Can be defined by a beginning instant and
-    a duration *or* end instant.
-
-    Unsupported event attributes can be found in `event.extra`,
-    a :class:`ics.parse.Container`. You may add some by appending a
-    :class:`ics.parse.ContentLine` to `.extra`
-    """
-
-    class Meta:
-        name = "VEVENT"
-        parser = EventParser
-        serializer = EventSerializer
-
-    def __init__(
-            self,
-            name: str = None,
-            begin: DatetimeLike = None,
-            end: DatetimeLike = None,
-            duration: timedelta = None,
-            *args, **kwargs
-    ):
-        """Instantiates a new :class:`ics.event.Event`.
-
-        Args:
-            name: rfc5545 SUMMARY property
-            begin (datetime)
-            end (datetime)
-            duration
-            uid: must be unique
-            description
-            created (datetime)
-            last_modified (datetime)
-            location
-            url
-            transparent
-            alarms
-            attendees
-            categories
-            status
-            organizer
-            classification
-
-        Raises:
-            ValueError: if `end` and `duration` are specified at the same time
-        """
-        super(Event, self).__init__(
-            Timespan(ensure_datetime(begin), ensure_datetime(end), duration),
-            name, *args, **kwargs)
 
     ####################################################################################################################
 
@@ -236,8 +168,6 @@ class Event(EventsAttrs):
 
     ####################################################################################################################
 
-    # TODO allow use with same parameters as Timeline.normalize_timespan
-
     def starts_within(self, second: EventOrTimespan) -> bool:
         return self._timespan.starts_within(get_timespan_if_calendar_entry(second))
 
@@ -253,23 +183,79 @@ class Event(EventsAttrs):
     def is_included_in(self, second: EventOrTimespan) -> bool:
         return self._timespan.is_included_in(get_timespan_if_calendar_entry(second))
 
-    def compare(self, extract_dt, op, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.compare(extract_dt, op, get_timespan_if_calendar_entry(second))
-
-    def __lt__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__lt__(get_timespan_if_calendar_entry(second))
-
-    def __le__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__le__(get_timespan_if_calendar_entry(second))
-
-    def __gt__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__gt__(get_timespan_if_calendar_entry(second))
-
-    def __ge__(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.__ge__(get_timespan_if_calendar_entry(second))
-
-    def same_timespan(self, second: EventOrTimespan) -> bool:
-        return self._timespan.same_timespan(get_timespan_if_calendar_entry(second))
+    def is_identical_timespan(self, second: EventOrTimespan) -> bool:
+        return self._timespan.is_identical(get_timespan_if_calendar_entry(second))
 
     def union_timespan(self, second: EventOrTimespanOrInstant):
         self._timespan = self._timespan.union(get_timespan_if_calendar_entry(second))
+
+
+@attr.s(repr=False)
+class EventAttrs(CalendarEntryAttrs):
+    classification: Optional[str] = attr.ib(default=None)
+
+    transparent: Optional[bool] = attr.ib(default=None)
+    organizer: Optional[Organizer] = attr.ib(default=None, validator=v_optional(instance_of(Organizer)))
+    geo: Optional[Geo] = attr.ib(default=None, converter=make_geo)  # type: ignore
+
+    attendees: Set[Attendee] = attr.ib(factory=set, converter=set)
+    categories: Set[str] = attr.ib(factory=set, converter=set)
+
+    def add_attendee(self, attendee: Attendee):
+        """ Add an attendee to the attendees set """
+        check_is_instance("attendee", attendee, Attendee)
+        self.attendees.add(attendee)
+
+
+class Event(EventAttrs):
+    """A calendar event.
+
+    Can be full-day or between two instants.
+    Can be defined by a beginning instant and
+    a duration *or* end instant.
+
+    Unsupported event attributes can be found in `event.extra`,
+    a :class:`ics.parse.Container`. You may add some by appending a
+    :class:`ics.parse.ContentLine` to `.extra`
+    """
+
+    class Meta:
+        name = "VEVENT"
+        parser = EventParser
+        serializer = EventSerializer
+
+    def __init__(
+            self,
+            name: str = None,
+            begin: DatetimeLike = None,
+            end: DatetimeLike = None,
+            duration: timedelta = None,
+            *args, **kwargs
+    ):
+        """Instantiates a new :class:`ics.event.Event`.
+
+        Args:
+            name: rfc5545 SUMMARY property
+            begin (datetime)
+            end (datetime)
+            duration
+            uid: must be unique
+            description
+            created (datetime)
+            last_modified (datetime)
+            location
+            url
+            transparent
+            alarms
+            attendees
+            categories
+            status
+            organizer
+            classification
+
+        Raises:
+            ValueError: if `end` and `duration` are specified at the same time
+        """
+        super(Event, self).__init__(
+            Timespan(ensure_datetime(begin), ensure_datetime(end), duration),
+            name, *args, **kwargs)

@@ -9,7 +9,7 @@ from ics.serializers.alarm_serializer import EmailAlarmSerializer
 from ics.utils import check_is_instance
 
 
-@attr.s
+@attr.s(repr=False)
 class EmailAlarm(BaseAlarm):
     """
     A calendar event VALARM with Email option.

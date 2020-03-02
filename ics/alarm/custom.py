@@ -6,7 +6,7 @@ from ics.serializers.alarm_serializer import CustomAlarmSerializer
 from ics.utils import validate_not_none
 
 
-@attr.s
+@attr.s(repr=False)
 class CustomAlarm(BaseAlarm):
     """
     A calendar event VALARM with custom ACTION.
