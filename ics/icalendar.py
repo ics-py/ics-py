@@ -13,19 +13,19 @@ from ics.todo import Todo
 
 @attr.s
 class CalendarAttrs(Component):
-    version: Optional[str] = attr.ib(default=None)
+    version: str = attr.ib()  # default set by Calendar.Meta.DEFAULT_VERSION
+    prodid: str = attr.ib()  # default set by Calendar.Meta.DEFAULT_PRODID
+    scale: Optional[str] = attr.ib(default=None)
+    method: Optional[str] = attr.ib(default=None)
+
     version_params: Dict[str, List[str]] = attr.ib(factory=dict)
+    prodid_params: Dict[str, List[str]] = attr.ib(factory=dict)
+    scale_params: Dict[str, List[str]] = attr.ib(factory=dict)
+    method_params: Dict[str, List[str]] = attr.ib(factory=dict)
 
     _timezones: Dict = attr.ib(factory=dict, init=False, repr=False, cmp=False, hash=False)
     events: Set[Event] = attr.ib(factory=set, converter=set)
     todos: Set[Todo] = attr.ib(factory=set, converter=set)
-
-    prodid: Optional[str] = attr.ib(default=None)
-    prodid_params: Dict[str, List[str]] = attr.ib(factory=dict)
-    scale: Optional[str] = attr.ib(default=None)
-    scale_params: Dict[str, List[str]] = attr.ib(factory=dict)
-    method: Optional[str] = attr.ib(default=None)
-    method_params: Dict[str, List[str]] = attr.ib(factory=dict)
 
 
 class Calendar(CalendarAttrs):
@@ -44,6 +44,9 @@ class Calendar(CalendarAttrs):
         name = 'VCALENDAR'
         parser = CalendarParser
         serializer = CalendarSerializer
+
+        DEFAULT_VERSION = "2.0"
+        DEFAULT_PRODID = "ics.py - http://git.io/lLljaA"
 
     def __init__(
             self,
@@ -67,7 +70,9 @@ class Calendar(CalendarAttrs):
             events = tuple()
         if todos is None:
             todos = tuple()
-        super(Calendar, self).__init__(events=events, todos=todos, prodid=creator, **kwargs)  # type: ignore
+        kwargs.setdefault("version", self.Meta.DEFAULT_VERSION)
+        kwargs.setdefault("prodid", creator if creator is not None else self.Meta.DEFAULT_PRODID)
+        super(Calendar, self).__init__(events=events, todos=todos, **kwargs)  # type: ignore
         self.timeline = Timeline(self, None)
 
         if imports is not None:
