@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 from ics.grammar.parse import Container, ContentLine
@@ -10,13 +9,16 @@ if TYPE_CHECKING:
 
 
 class TodoSerializer(Serializer):
-    def serialize_dtstamp(todo: "Todo", container: Container):
-        if todo.dtstamp:
-            instant = todo.dtstamp
-        else:
-            instant = datetime.utcnow()
+    def serialize_dtstamp(todo: "Todo", container: "Container"):
+        container.append(serialize_datetime_to_contentline("DTSTAMP", todo.dtstamp))
 
-        container.append(serialize_datetime_to_contentline("DTSTAMP", instant))
+    def serialize_created(todo: "Todo", container: "Container"):
+        if todo.created:
+            container.append(serialize_datetime_to_contentline("CREATED", todo.created))
+
+    def serialize_last_modified(todo: "Todo", container: "Container"):
+        if todo.last_modified:
+            container.append(serialize_datetime_to_contentline("LAST-MODIFIED", todo.last_modified))
 
     def serialize_uid(todo: "Todo", container: Container):
         if todo.uid:
@@ -30,12 +32,6 @@ class TodoSerializer(Serializer):
         if todo.completed:
             container.append(
                 serialize_datetime_to_contentline("COMPLETED", todo.completed)
-            )
-
-    def serialize_created(todo: "Todo", container: Container):
-        if todo.created:
-            container.append(
-                serialize_datetime_to_contentline("CREATED", todo.created)
             )
 
     def serialize_description(todo: "Todo", container: Container):

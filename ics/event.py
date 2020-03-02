@@ -53,9 +53,11 @@ class CalendarEntryAttrs(Component):
     url: Optional[str] = attr.ib(default=None)
     status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=v_optional(in_(STATUS_VALUES)))  # type: ignore
 
-    created: Optional[datetime] = attr.ib(factory=datetime.now, converter=ensure_datetime)  # type: ignore
-    last_modified: Optional[datetime] = attr.ib(factory=datetime.now, converter=ensure_datetime)  # type: ignore
-    # self.dtstamp = datetime.utcnow() if not dtstamp else ensure_datetime(dtstamp) # ToDo
+    # TODO these three timestamps must be in UTC according to the RFC
+    created: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
+    last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
+    dtstamp: datetime = attr.ib(factory=datetime.now, converter=ensure_datetime, validator=validate_not_none)  # type: ignore
+
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
 
     ####################################################################################################################

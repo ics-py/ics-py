@@ -11,9 +11,12 @@ if TYPE_CHECKING:
 
 
 class EventSerializer(Serializer):
+    def serialize_dtstamp(event: "Event", container: "Container"):
+        container.append(serialize_datetime_to_contentline("DTSTAMP", event.dtstamp))
+
     def serialize_created(event: "Event", container: "Container"):
         if event.created:
-            container.append(serialize_datetime_to_contentline("DTSTAMP", event.created))
+            container.append(serialize_datetime_to_contentline("CREATED", event.created))
 
     def serialize_last_modified(event: "Event", container: "Container"):
         if event.last_modified:
