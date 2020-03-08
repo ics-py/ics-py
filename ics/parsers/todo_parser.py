@@ -17,6 +17,11 @@ class TodoParser(Parser):
             tz_dict = todo._classmethod_kwargs["tz"]
             todo.dtstamp = parse_datetime(line, tz_dict)
 
+    def parse_last_modified(todo: "Todo", line: ContentLine):
+        if line:
+            tz_dict = todo._classmethod_kwargs["tz"]
+            todo.last_modified = parse_datetime(line, tz_dict)
+
     @option(required=True)
     def parse_uid(todo: "Todo", line: ContentLine):
         if line:

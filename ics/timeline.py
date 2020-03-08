@@ -119,7 +119,7 @@ class Timeline(object):
 
         :param strict: if True events will be returned only if they are strictly *included* in `day`
         """
-        query = self.normalize_timespan(instant, ceil_datetime_to_midnight(instant) - timedelta.min)
+        query = self.normalize_timespan(instant, ceil_datetime_to_midnight(instant) - timedelta.resolution)
         if strict:
             return self.included(query)
         else:

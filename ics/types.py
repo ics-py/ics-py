@@ -1,5 +1,5 @@
-from datetime import date, datetime, tzinfo
-from typing import Dict, List, Optional, TYPE_CHECKING, Union, overload
+from datetime import date, datetime, timedelta, tzinfo
+from typing import Dict, List, Optional, TYPE_CHECKING, Tuple, Union, overload
 
 if TYPE_CHECKING:
     # noinspection PyUnresolvedReferences
@@ -20,8 +20,10 @@ __all__ = [
 ContainerItem = Union["ContentLine", "Container"]
 ContainerList = List[ContainerItem]
 
-DatetimeLike = Union[datetime, date]
-OptionalDatetimeLike = Union[datetime, date, None]
+DatetimeLike = Union[Tuple, Dict, datetime, date]
+OptionalDatetimeLike = Union[Tuple, Dict, datetime, date, None]
+TimedeltaLike = Union[Tuple, Dict, timedelta]
+OptionalTimedeltaLike = Union[Tuple, Dict, timedelta, None]
 
 TimespanOrBegin = Union[datetime, date, "Timespan"]
 EventOrTimespan = Union["Event", "Timespan"]

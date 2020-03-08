@@ -4,18 +4,18 @@
 
 import functools
 import warnings
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
 import attr
-from attr.validators import in_, optional as v_optional
+from attr.validators import in_, instance_of, optional as v_optional
 
 from ics.event import CalendarEntryAttrs
 from ics.parsers.todo_parser import TodoParser
 from ics.serializers.todo_serializer import TodoSerializer
-from ics.timespan import Timespan
-from ics.types import DatetimeLike
-from ics.utils import ensure_datetime
+from ics.timespan import TodoTimespan
+from ics.types import DatetimeLike, TimedeltaLike
+from ics.utils import ensure_datetime, ensure_timedelta
 
 MAX_PERCENT = 100
 MAX_PRIORITY = 9
@@ -38,7 +38,7 @@ def deprecated_due(fun):
 class TodoAttrs(CalendarEntryAttrs):
     percent: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PERCENT + 1))))
     priority: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PRIORITY + 1))))
-    completed: Optional[datetime] = attr.ib(factory=datetime.now, converter=ensure_datetime)  # type: ignore
+    completed: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
 
 
 class Todo(TodoAttrs):
@@ -47,6 +47,7 @@ class Todo(TodoAttrs):
     Can have a start time and duration, or start and due time,
     or only start/due time.
     """
+    _timespan: TodoTimespan = attr.ib(validator=instance_of(TodoTimespan))
 
     class Meta:
         name = "VTODO"
@@ -57,12 +58,13 @@ class Todo(TodoAttrs):
             self,
             begin: DatetimeLike = None,
             due: DatetimeLike = None,
-            duration: timedelta = None,
+            duration: TimedeltaLike = None,
             *args, **kwargs
     ):
-        super(Todo, self).__init__(
-            Timespan(ensure_datetime(begin), ensure_datetime(due), duration),
-            *args, **kwargs)
+        if (begin is not None or due is not None or duration is not None) and "timespan" in kwargs:
+            raise ValueError("can't specify explicit timespan together with any of begin, due or duration")
+        kwargs.setdefault("timespan", TodoTimespan(ensure_datetime(begin), ensure_datetime(due), ensure_timedelta(duration)))
+        super(Todo, self).__init__(kwargs.pop("timespan"), *args, **kwargs)
 
     ####################################################################################################################
 
@@ -73,11 +75,11 @@ class Todo(TodoAttrs):
 
     due = property(TodoAttrs.end.fget, TodoAttrs.end.fset)  # type: ignore
     due_representation = property(TodoAttrs.end_representation.fget)  # type: ignore
-    has_due = property(TodoAttrs.has_end.fget)  # type: ignore
+    has_explicit_due = property(TodoAttrs.has_explicit_end.fget)  # type: ignore
     due_within = TodoAttrs.ends_within
 
     end = property(deprecated_due(TodoAttrs.end.fget), deprecated_due(TodoAttrs.end.fset))  # type: ignore
     convert_end = deprecated_due(TodoAttrs.convert_end)
     end_representation = property(deprecated_due(TodoAttrs.end_representation.fget))  # type: ignore
-    has_end = property(deprecated_due(TodoAttrs.has_end.fget))  # type: ignore
+    has_explicit_end = property(deprecated_due(TodoAttrs.has_explicit_end.fget))  # type: ignore
     ends_within = deprecated_due(TodoAttrs.ends_within)

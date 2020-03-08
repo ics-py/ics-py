@@ -10,9 +10,9 @@ from ics.attendee import Attendee, Organizer
 from ics.component import Component
 from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
-from ics.timespan import Timespan
-from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, get_timespan_if_calendar_entry
-from ics.utils import check_is_instance, ensure_datetime, uid_gen, validate_not_none
+from ics.timespan import EventTimespan, Timespan
+from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, get_timespan_if_calendar_entry
+from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, uid_gen, validate_not_none
 
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
@@ -125,8 +125,8 @@ class CalendarEntryAttrs(Component):
         return self._timespan.get_end_representation()
 
     @property
-    def has_end(self) -> bool:
-        return self._timespan.has_end()
+    def has_explicit_end(self) -> bool:
+        return self._timespan.has_explicit_end()
 
     @property
     def all_day(self):
@@ -164,7 +164,9 @@ class CalendarEntryAttrs(Component):
         return self._timespan
 
     def __repr__(self) -> str:
-        name = [self.__class__.__name__, "'%s'" % (self.name or "",)]
+        name = [self.__class__.__name__]
+        if self.name:
+            name.append("'%s'" % self.name)
         prefix, _, suffix = self._timespan.get_str_segments()
         return "<%s>" % (" ".join(prefix + name + suffix))
 
@@ -200,13 +202,13 @@ class EventAttrs(CalendarEntryAttrs):
     organizer: Optional[Organizer] = attr.ib(default=None, validator=v_optional(instance_of(Organizer)))
     geo: Optional[Geo] = attr.ib(default=None, converter=make_geo)  # type: ignore
 
-    attendees: Set[Attendee] = attr.ib(factory=set, converter=set)
+    attendees: List[Attendee] = attr.ib(factory=list, converter=list)
     categories: Set[str] = attr.ib(factory=set, converter=set)
 
     def add_attendee(self, attendee: Attendee):
         """ Add an attendee to the attendees set """
         check_is_instance("attendee", attendee, Attendee)
-        self.attendees.add(attendee)
+        self.attendees.append(attendee)
 
 
 class Event(EventAttrs):
@@ -221,6 +223,8 @@ class Event(EventAttrs):
     :class:`ics.parse.ContentLine` to `.extra`
     """
 
+    _timespan: EventTimespan = attr.ib(validator=instance_of(EventTimespan))
+
     class Meta:
         name = "VEVENT"
         parser = EventParser
@@ -231,7 +235,7 @@ class Event(EventAttrs):
             name: str = None,
             begin: DatetimeLike = None,
             end: DatetimeLike = None,
-            duration: timedelta = None,
+            duration: TimedeltaLike = None,
             *args, **kwargs
     ):
         """Instantiates a new :class:`ics.event.Event`.
@@ -258,6 +262,7 @@ class Event(EventAttrs):
         Raises:
             ValueError: if `end` and `duration` are specified at the same time
         """
-        super(Event, self).__init__(
-            Timespan(ensure_datetime(begin), ensure_datetime(end), duration),
-            name, *args, **kwargs)
+        if (begin is not None or end is not None or duration is not None) and "timespan" in kwargs:
+            raise ValueError("can't specify explicit timespan together with any of begin, end or duration")
+        kwargs.setdefault("timespan", EventTimespan(ensure_datetime(begin), ensure_datetime(end), ensure_timedelta(duration)))
+        super(Event, self).__init__(kwargs.pop("timespan"), name, *args, **kwargs)

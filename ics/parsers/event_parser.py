@@ -16,6 +16,11 @@ class EventParser(Parser):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = event._classmethod_kwargs["tz"]
+            event.dtstamp = parse_datetime(line, tz_dict)
+
+    def parse_created(event: "Event", line: ContentLine):
+        if line:
+            tz_dict = event._classmethod_kwargs["tz"]
             event.created = parse_datetime(line, tz_dict)
 
     def parse_last_modified(event: "Event", line: ContentLine):
@@ -23,7 +28,7 @@ class EventParser(Parser):
             tz_dict = event._classmethod_kwargs["tz"]
             event.last_modified = parse_datetime(line, tz_dict)
 
-    def parse_dtstart(event: "Event", line: ContentLine):
+    def parse1_dtstart(event: "Event", line: ContentLine):
         if line:
             # get the dict of vtimezones passed to the classmethod
             tz_dict = event._classmethod_kwargs["tz"]
@@ -32,13 +37,13 @@ class EventParser(Parser):
                 precision=iso_precision(line.value)
             )
 
-    def parse_duration(event: "Event", line: ContentLine):
+    def parse2_duration(event: "Event", line: ContentLine):
         if line:
             event._timespan = event._timespan.replace(
                 duration=parse_duration(line.value)
             )
 
-    def parse_dtend(event: "Event", line: ContentLine):
+    def parse3_dtend(event: "Event", line: ContentLine):
         if line:
             tz_dict = event._classmethod_kwargs["tz"]
             event._timespan = event._timespan.replace(
@@ -54,7 +59,7 @@ class EventParser(Parser):
     @option(multiple=True)
     def parse_attendee(event: "Event", lines: List[ContentLine]):
         for line in lines:
-            event.attendees.add(Attendee.parse(line))
+            event.attendees.append(Attendee.parse(line))
 
     def parse_description(event: "Event", line: ContentLine):
         event.description = unescape_string(line.value) if line else None

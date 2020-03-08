@@ -25,16 +25,16 @@ class BaseAlarmParser(Parser):
 
     def parse_duration(alarm: "BaseAlarm", line: ContentLine):
         if line:
-            alarm._duration = parse_duration(line.value)
+            alarm.duration = parse_duration(line.value)
 
     def parse_repeat(alarm: "BaseAlarm", line: ContentLine):
         if line:
-            alarm._repeat = int(line.value)
+            alarm.repeat = int(line.value)
 
 
 class CustomAlarmParser(BaseAlarmParser):
     @option(required=True)
-    def parse_attach(alarm: "CustomAlarm", line: ContentLine):
+    def parse_action(alarm: "CustomAlarm", line: ContentLine):
         if line:
             alarm._action = line.value
 
@@ -42,7 +42,7 @@ class CustomAlarmParser(BaseAlarmParser):
 class AudioAlarmParser(BaseAlarmParser):
     def parse_attach(alarm: "AudioAlarm", line: ContentLine):
         if line:
-            alarm._sound = line
+            alarm.sound = line
 
 
 class DisplayAlarmParser(BaseAlarmParser):

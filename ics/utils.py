@@ -1,11 +1,11 @@
 from datetime import date, datetime, time, timedelta
-from typing import Dict, Optional, Tuple, Union, overload
+from typing import Generator, Optional, overload
 from uuid import uuid4
 
 from dateutil.tz import UTC as tzutc, gettz
 
 from ics.grammar.parse import Container, ContentLine, ParseError
-from ics.types import ContainerList, DatetimeLike, OptionalTZDict
+from ics.types import ContainerList, DatetimeLike, OptionalTZDict, TimedeltaLike
 
 midnight = time()
 DATE_FORMATS = {
@@ -88,7 +88,7 @@ def ensure_datetime(value: None) -> None: ...
 
 
 @overload
-def ensure_datetime(value: Union[Tuple, Dict, datetime, date]) -> datetime: ...
+def ensure_datetime(value: DatetimeLike) -> datetime: ...
 
 
 def ensure_datetime(value):
@@ -129,8 +129,8 @@ def serialize_datetime_to_contentline(name: str, instant: datetime, used_timezon
 
 
 def serialize_date(instant: DatetimeLike) -> str:
-    if isinstance(instant, datetime):
-        instant = instant.date()
+    if not isinstance(instant, date):
+        instant = ensure_datetime(instant).date()
     return instant.strftime('%Y%m%d')
 
 
@@ -140,6 +140,27 @@ def iso_precision(string: str) -> str:
         return 'second'
     else:
         return 'day'
+
+
+@overload
+def ensure_timedelta(value: None) -> None: ...
+
+
+@overload
+def ensure_timedelta(value: TimedeltaLike) -> timedelta: ...
+
+
+def ensure_timedelta(value):
+    if value is None:
+        return None
+    elif isinstance(value, timedelta):
+        return value
+    elif isinstance(value, tuple):
+        return timedelta(*value)
+    elif isinstance(value, dict):
+        return timedelta(**value)
+    else:
+        raise ValueError("can't construct timedelta from %s" % repr(value))
 
 
 def parse_duration(line: str) -> timedelta:
@@ -206,7 +227,7 @@ def serialize_duration(dt: timedelta) -> str:
             res += str(seconds) + 'S'
 
     if not res:
-        res = '0S'
+        res = 'T0S'
     if dt.total_seconds() >= 0:
         return 'P' + res
     else:
@@ -317,14 +338,28 @@ def escape_string(string: str) -> str:
 
 
 def unescape_string(string: str) -> str:
-    return string.translate(
-        {ord("\\;"): ";",
-         ord("\\,"): ",",
-         ord("\\n"): "\n",
-         ord("\\N"): "\n",
-         ord("\\r"): "\r",
-         ord("\\R"): "\r",
-         ord("\\\\"): "\\"})
+    return "".join(unescape_string_iter(string))
+
+
+def unescape_string_iter(string: str) -> Generator[str, None, None]:
+    it = iter(string)
+    for c1 in it:
+        if c1 == "\\":
+            c2 = next(it)
+            if c2 == ";":
+                yield ";"
+            elif c2 == ",":
+                yield ","
+            elif c2 == "n" or c2 == "N":
+                yield "\n"
+            elif c2 == "r" or c2 == "R":
+                yield "\r"
+            elif c2 == "\\":
+                yield "\\"
+            else:
+                raise ValueError("can't handle escaped character '%s'" % c2)
+        else:
+            yield c1
 
 
 ###############################################################################

@@ -72,7 +72,7 @@ class CalendarParser(Parser):
         def event_factory(x):
             return Event._from_container(x, tz=calendar._timezones)
 
-        calendar.events = set(map(event_factory, lines))
+        calendar.events = list(map(event_factory, lines))
 
     @option(multiple=True)
     def parse_vtodo(calendar: "Calendar", lines: List["ContentLine"]):
@@ -81,4 +81,4 @@ class CalendarParser(Parser):
         def todo_factory(x):
             return Todo._from_container(x, tz=calendar._timezones)
 
-        calendar.todos = set(map(todo_factory, lines))
+        calendar.todos = list(map(todo_factory, lines))

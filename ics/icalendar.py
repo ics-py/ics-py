@@ -25,8 +25,8 @@ class CalendarAttrs(Component):
     method_params: Dict[str, List[str]] = attr.ib(factory=dict)
 
     _timezones: Dict = attr.ib(factory=dict, init=False, repr=False, cmp=False, hash=False)
-    events: Set[Event] = attr.ib(factory=set, converter=set)
-    todos: Set[Todo] = attr.ib(factory=set, converter=set)
+    events: List[Event] = attr.ib(factory=list, converter=list)
+    todos: List[Todo] = attr.ib(factory=list, converter=list)
 
 
 class Calendar(CalendarAttrs):
@@ -86,6 +86,14 @@ class Calendar(CalendarAttrs):
                         'Multiple calendars in one file are not supported by this method. Use ics.Calendar.parse_multiple()')
 
                 self._populate(containers[0])  # Use first calendar
+
+    @property
+    def creator(self) -> str:
+        return self.prodid
+
+    @creator.setter
+    def creator(self, value: str):
+        self.prodid = value
 
     @classmethod
     def parse_multiple(cls, string):

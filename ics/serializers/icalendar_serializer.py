@@ -7,12 +7,12 @@ class CalendarSerializer(Serializer):
         container.append(ContentLine("VERSION", value="2.0"))
 
     def serialize_1prodid(calendar, container):  # 1prodid will be sorted second
-        if calendar.creator:
-            creator = calendar.creator
+        if calendar.prodid:
+            prodid = calendar.prodid
         else:
-            creator = "ics.py - http://git.io/lLljaA"
+            prodid = "ics.py - http://git.io/lLljaA"
 
-        container.append(ContentLine("PRODID", value=creator))
+        container.append(ContentLine("PRODID", value=prodid))
 
     def serialize_calscale(calendar, container):
         if calendar.scale:
