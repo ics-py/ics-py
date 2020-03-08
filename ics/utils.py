@@ -1,12 +1,13 @@
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from typing import Generator, Optional, overload
 from uuid import uuid4
 
-from dateutil.tz import UTC as tzutc, gettz
+from dateutil.tz import UTC as dateutil_tzutc, gettz
 
 from ics.grammar.parse import Container, ContentLine, ParseError
 from ics.types import ContainerList, DatetimeLike, OptionalTZDict, TimedeltaLike
 
+datetime_tzutc = timezone.utc
 midnight = time()
 DATE_FORMATS = {
     6: "%Y%m",
@@ -55,7 +56,7 @@ def parse_datetime(time_container, available_tz=None):
     if fixed_utc:
         if param_tz:
             raise ValueError("can't specify UTC via appended 'Z' and TZID param '%s'" % param_tz)
-        return dt.replace(tzinfo=tzutc)
+        return dt.replace(tzinfo=dateutil_tzutc)
     elif param_tz:
         selected_tz = None
         if available_tz:
@@ -115,12 +116,12 @@ def serialize_datetime(instant: datetime, is_utc: bool = False) -> str:
 
 def serialize_datetime_to_contentline(name: str, instant: datetime, used_timezones: OptionalTZDict = None) -> ContentLine:
     # ToDo keep track of used_timezones
-    if instant.tzinfo == tzutc:
-        return ContentLine(name, value=serialize_datetime(instant, True))
-    elif instant.tzinfo is not None:
+    if instant.tzinfo is not None:
         tzname = instant.tzinfo.tzname(instant)
         if tzname is None:
             raise ValueError("timezone of instant '%s' is not None but has no name" % instant)
+        if instant.tzinfo == dateutil_tzutc or instant.tzinfo == datetime_tzutc or tzname.upper() == "UTC":
+            return ContentLine(name, value=serialize_datetime(instant, True))
         if used_timezones:
             used_timezones[tzname] = instant.tzinfo
         return ContentLine(name, params={'TZID': [tzname]}, value=serialize_datetime(instant, False))
@@ -252,7 +253,7 @@ def floor_datetime_to_midnight(value: None) -> None: ...
 def floor_datetime_to_midnight(value):
     if value is None:
         return None
-    if isinstance(value, date):
+    if isinstance(value, date) and not isinstance(value, datetime):
         return value
     return datetime.combine(ensure_datetime(value).date(), midnight, tzinfo=value.tzinfo)
 
@@ -272,7 +273,7 @@ def ceil_datetime_to_midnight(value: None) -> None: ...
 def ceil_datetime_to_midnight(value):
     if value is None:
         return None
-    if isinstance(value, date):
+    if isinstance(value, date) and not isinstance(value, datetime):
         return value
     floored = floor_datetime_to_midnight(value)
     if floored != value:

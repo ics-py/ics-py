@@ -198,7 +198,7 @@ class Timespan(object):
                 suffix.append(str(end))
 
         duration = self.get_effective_duration()
-        if end_repr is not None:
+        if duration is not None and end_repr is not None:
             if end_repr == "duration":
                 suffix.append("fixed")
             suffix.append("duration:")
