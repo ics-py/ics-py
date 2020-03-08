@@ -115,7 +115,7 @@ class CalendarEntryAttrs(Component):
 
     @duration.setter
     def duration(self, value: timedelta):
-        self._timespan = self._timespan.replace(duration=value)
+        self._timespan = self._timespan.replace(duration=ensure_timedelta(value))
 
     def convert_end(self, representation):
         self._timespan = self._timespan.convert_end(representation)
@@ -194,7 +194,7 @@ class CalendarEntryAttrs(Component):
 
 @attr.s(repr=False)
 class EventAttrs(CalendarEntryAttrs):
-    classification: Optional[str] = attr.ib(default=None)
+    classification: Optional[str] = attr.ib(default=None, validator=v_optional(instance_of(str)))
 
     transparent: Optional[bool] = attr.ib(default=None)
     organizer: Optional[Organizer] = attr.ib(default=None, validator=v_optional(instance_of(Organizer)))

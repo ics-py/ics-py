@@ -3,13 +3,14 @@ from datetime import datetime, timedelta
 from typing import Any, Type, Union
 
 import attr
-from attr.validators import instance_of
+from attr.converters import optional as c_optional
+from attr.validators import instance_of, optional as v_optional
 
 from ics.component import Component, ComponentType
 from ics.grammar.parse import Container
 from ics.parsers.alarm_parser import BaseAlarmParser
 from ics.serializers.alarm_serializer import BaseAlarmSerializer
-from ics.utils import get_lines
+from ics.utils import ensure_timedelta, get_lines
 
 
 def call_validate_on_inst(inst, attr, value):
@@ -27,14 +28,14 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         parser = BaseAlarmParser
         serializer = BaseAlarmSerializer
 
-    trigger: Union[timedelta, datetime] = attr.ib(
+    trigger: Union[timedelta, datetime, None] = attr.ib(
         default=None,
-        validator=instance_of((timedelta, datetime))  # type: ignore
+        validator=v_optional(instance_of((timedelta, datetime)))  # type: ignore
     )
     repeat: int = attr.ib(default=None, validator=call_validate_on_inst)
-    duration: timedelta = attr.ib(default=None, validator=call_validate_on_inst)
+    duration: timedelta = attr.ib(default=None, converter=c_optional(ensure_timedelta), validator=call_validate_on_inst)
 
-    def validate(self):
+    def validate(self, attr=None, value=None):
         if self.repeat is not None:
             if self.repeat < 0:
                 raise ValueError("Repeat must be great than or equal to 0.")
