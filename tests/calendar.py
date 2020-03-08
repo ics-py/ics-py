@@ -1,7 +1,9 @@
 import unittest
 from collections.abc import Iterable
+from datetime import datetime
 
-import arrow
+import attr
+from dateutil.tz import UTC as tzutc, gettz
 
 from ics.event import Event
 from ics.grammar.parse import Container
@@ -11,7 +13,6 @@ from .fixture import cal1, cal10, cal12, cal14, cal34
 
 
 class TestCalendar(unittest.TestCase):
-
     fixtures = [cal1, cal10, cal12]
 
     def test_init(self):
@@ -25,9 +26,13 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(c._timezones, {})
 
     def test_selfload(self):
+        def filter(attr, value):
+            return not attr.name.startswith("_classmethod") and not attr.name == "_timezones"
+
         for fix in self.fixtures:
             c = Calendar(fix)
             d = Calendar(str(c))
+            self.assertEqual(attr.asdict(c, filter=filter), attr.asdict(d, filter=filter))
             self.assertEqual(c, d)
             self.assertEqual(c.events, d.events)
             self.assertEqual(c.todos, d.todos)
@@ -40,12 +45,12 @@ class TestCalendar(unittest.TestCase):
         c = Calendar()
         self.assertEqual(c.__repr__(), '<Calendar with 0 event and 0 todo>')
 
-        c.events.add(Event())
-        c.todos.add(Todo())
+        c.events.append(Event())
+        c.todos.append(Todo())
         self.assertEqual(c.__repr__(), '<Calendar with 1 event and 1 todo>')
 
-        c.events.add(Event())
-        c.todos.add(Todo())
+        c.events.append(Event())
+        c.todos.append(Todo())
         self.assertEqual(c.__repr__(), '<Calendar with 2 events and 2 todos>')
 
     def test_iter(self):
@@ -60,35 +65,35 @@ class TestCalendar(unittest.TestCase):
         c0, c1 = Calendar(), Calendar()
         e = Event()
 
-        c0.events.add(e)
-        c1.events.add(e)
+        c0.events.append(e)
+        c1.events.append(e)
 
         self.assertEqual(c0, c1)
 
         t = Todo()
 
-        c0.todos.add(t)
-        c1.todos.add(t)
+        c0.todos.append(t)
+        c1.todos.append(t)
 
     def test_neq_len(self):
         c0, c1 = Calendar(), Calendar()
         e1 = Event()
         e2 = Event()
 
-        c0.events.add(e1)
-        c0.events.add(e2)
+        c0.events.append(e1)
+        c0.events.append(e2)
 
-        c1.events.add(e1)
+        c1.events.append(e1)
 
         self.assertNotEqual(c0, c1)
 
         t1 = Todo()
         t2 = Todo()
 
-        c0.todos.add(t1)
-        c0.todos.add(t2)
+        c0.todos.append(t1)
+        c0.todos.append(t2)
 
-        c1.todos.add(t1)
+        c1.todos.append(t1)
 
         self.assertNotEqual(c0, c1)
 
@@ -96,15 +101,15 @@ class TestCalendar(unittest.TestCase):
         c0, c1 = Calendar(), Calendar()
         e = Event()
 
-        c0.events.add(e)
-        c1.events.add(e)
+        c0.events.append(e)
+        c1.events.append(e)
 
         self.assertEqual(c0, c1)
 
         t = Todo()
 
-        c0.todos.add(t)
-        c1.todos.add(t)
+        c0.todos.append(t)
+        c1.todos.append(t)
 
         self.assertEqual(c0, c1)
 
@@ -112,8 +117,8 @@ class TestCalendar(unittest.TestCase):
         c0, c1 = Calendar(), Calendar()
         e0, e1 = Event(), Event()
 
-        c0.events.add(e0)
-        c1.events.add(e1)
+        c0.events.append(e0)
+        c1.events.append(e1)
 
         self.assertNotEqual(c0, c1)
 
@@ -121,8 +126,8 @@ class TestCalendar(unittest.TestCase):
         c0, c1 = Calendar(), Calendar()
         t0, t1 = Todo(), Todo()
 
-        c0.events.add(t0)
-        c1.events.add(t1)
+        c0.events.append(t0)
+        c1.events.append(t1)
 
         self.assertNotEqual(c0, c1)
 
@@ -135,7 +140,7 @@ class TestCalendar(unittest.TestCase):
         c0 = Calendar()
         c1 = Calendar()
         c0.creator = u'42'
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             c1.creator = 42
 
         self.assertEqual(c0.creator, u'42')
@@ -156,14 +161,14 @@ class TestCalendar(unittest.TestCase):
     def test_version(self):
 
         c = Calendar(cal10)
-        self.assertEqual(c.version, u'2.0')
+        self.assertEqual(u'2.0', c.version)
         lines = str(c).splitlines()
         self.assertEqual(lines[:3], cal10.strip().splitlines()[:3])
         self.assertEqual("VERSION:2.0", lines[1])
         self.assertIn("PRODID", lines[2])
 
         c = Calendar(cal14)
-        self.assertEqual(c.version, u'42')
+        self.assertEqual(u'42', c.version)
 
     def test_events_setter(self):
 
@@ -185,8 +190,8 @@ class TestCalendar(unittest.TestCase):
         c0 = Calendar()
         e = Event()
         t = Todo()
-        c0.events.add(e)
-        c0.todos.add(t)
+        c0.events.append(e)
+        c0.todos.append(t)
         c1 = c0.clone()
 
         self.assertEqual(c0.events, c1.events)
@@ -209,13 +214,14 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(c.method, 'PUBLISH')
         e = next(iter(c.events))
         self.assertFalse(e.all_day)
-        self.assertEqual(arrow.get(2013, 10, 29, 9, 30), e.begin)
-        self.assertEqual(arrow.get(2013, 10, 29, 10, 30), e.end)
+        tz = gettz('Europe/Brussels')
+        self.assertEqual(datetime(2013, 10, 29, 10, 30, tzinfo=tz), e.begin)
+        self.assertEqual(datetime(2013, 10, 29, 11, 30, tzinfo=tz), e.end)
         self.assertEqual(1, len(c.events))
         t = next(iter(c.todos))
-        self.assertEqual(t.dtstamp, arrow.get(2018, 2, 18, 15, 47))
-        self.assertEqual(t.uid, 'Uid')
-        self.assertEqual(len(c.todos), 1)
+        self.assertEqual(datetime(2018, 2, 18, 15, 47, tzinfo=tzutc), t.dtstamp)
+        self.assertEqual('Uid', t.uid)
+        self.assertEqual(1, len(c.todos))
 
     def test_multiple(self):
         cals = Calendar.parse_multiple(cal34)

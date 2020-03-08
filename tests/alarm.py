@@ -1,16 +1,16 @@
 import unittest
 from datetime import datetime, timedelta
 
-import arrow
+import attr
+from dateutil.tz import UTC as tzutc
 
-from ics.alarm.base import BaseAlarm
-from ics.alarm.none import NoneAlarm
-from ics.alarm.custom import CustomAlarm
 from ics.alarm import AudioAlarm, DisplayAlarm
-from ics.icalendar import Calendar
+from ics.alarm.base import BaseAlarm
+from ics.alarm.custom import CustomAlarm
 from ics.alarm.email import EmailAlarm
+from ics.alarm.none import NoneAlarm
 from ics.grammar.parse import ContentLine
-
+from ics.icalendar import Calendar
 from .fixture import cal21, cal22, cal23, cal24, cal25, cal35, cal36
 
 CRLF = "\r\n"
@@ -30,7 +30,7 @@ class TestAlarm(unittest.TestCase):
     def test_alarm_datetime_trigger(self):
         alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
         a = FakeAlarm(trigger=alarm_time)
-        self.assertEqual(arrow.get(alarm_time), a.trigger)
+        self.assertEqual(alarm_time, a.trigger)
 
     def test_alarm_repeat(self):
         a = FakeAlarm(
@@ -66,7 +66,7 @@ class TestAlarm(unittest.TestCase):
         self.assertEqual(desired_output, str(a))
 
     def test_alarm_datetime_trigger_output(self):
-        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
+        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0, tzinfo=tzutc)
         a = FakeAlarm(trigger=alarm_time)
 
         desired_output = CRLF.join(
@@ -142,8 +142,8 @@ class TestDisplayAlarm(unittest.TestCase):
         c = Calendar(cal23)
         a = next(iter(c.events)).alarms[0]
 
-        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
-        self.assertEqual(a.trigger, arrow.get(alarm_time))
+        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0, tzinfo=tzutc)
+        self.assertEqual(a.trigger, alarm_time)
         self.assertIsNone(a.repeat)
         self.assertIsNone(a.duration)
         self.assertEqual(a.display_text, "Event reminder")
@@ -179,10 +179,10 @@ class TestAudioAlarm(unittest.TestCase):
     def test_alarm_without_attach_extraction(self):
         c = Calendar(cal24)
         a = next(iter(c.events)).alarms[0]
-        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
+        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0, tzinfo=tzutc)
 
         self.assertEqual(a.action, "AUDIO")
-        self.assertEqual(a.trigger, arrow.get(alarm_time))
+        self.assertEqual(a.trigger, alarm_time)
         self.assertIsNone(a.repeat)
         self.assertIsNone(a.duration)
         self.assertIsNone(a.sound)
@@ -190,10 +190,10 @@ class TestAudioAlarm(unittest.TestCase):
     def test_alarm_with_attach_extraction(self):
         c = Calendar(cal25)
         a = next(iter(c.events)).alarms[0]
-        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0)
+        alarm_time = datetime(year=2016, month=1, day=1, hour=0, minute=0, second=0, tzinfo=tzutc)
 
         self.assertEqual(a.action, "AUDIO")
-        self.assertEqual(a.trigger, arrow.get(alarm_time))
+        self.assertEqual(a.trigger, alarm_time)
         self.assertIsNone(a.repeat)
         self.assertIsNone(a.duration)
         self.assertEqual(a.sound.value, "ftp://example.com/pub/sounds/bell-01.aud")
@@ -218,6 +218,8 @@ def test_custom():
 def test_custom_back_forth():
     c = Calendar(cal36)
     c1 = Calendar(str(c))
+    c.events[0].dtstamp = c1.events[0].dtstamp = datetime.now()
+    assert attr.asdict(c) == attr.asdict(c1)
     assert c == c1
 
 

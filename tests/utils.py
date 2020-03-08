@@ -44,13 +44,16 @@ class TestParseDuration(unittest.TestCase):
 
 class TestTimedeltaToDuration(unittest.TestCase):
     dataset_simple = {
-        (0, 0): 'P',
+        # (0, 0): 'P',
+        (0, 0): 'PT0S',
         (0, 1): 'PT1S', (0, 60): 'PT1M', (0, 3600): 'PT1H',
-        (1, 0): 'P1D', (7, 0): 'P1W',
+        (1, 0): 'P1D', (7, 0): 'P7D',  # (7, 0): 'P1W',
     }
 
     dataset_combined = {
-        (1, 1): 'P1DT1S', (8, 3661): 'P1W1DT1H1M1S', (15, 18020): 'P2W1DT5H20S',
+        (1, 1): 'P1DT1S',
+        # (8, 3661): 'P1W1DT1H1M1S', (15, 18020): 'P2W1DT5H20S',
+        (8, 3661): 'P8DT1H1M1S', (15, 18020): 'P15DT5H20S',
     }
 
     def run_on_dataset(self, dataset):
@@ -80,7 +83,7 @@ class TestRemoveX(unittest.TestCase):
         self.assertSequenceEqual(c, c2)
 
 
-class TestIso_to_arrow(unittest.TestCase):
+class Test_parse_datetime(unittest.TestCase):
 
     def test_none(self):
         self.assertIs(None, parse_datetime(None))

@@ -1,8 +1,6 @@
 import unittest
 from datetime import datetime
 
-import arrow
-
 from ics.event import Event
 from ics.icalendar import Calendar
 from ics.timeline import Timeline
@@ -17,9 +15,9 @@ class TestTimeline(unittest.TestCase):
 
     def test_iter_is_ordered(self):
         c = Calendar()
-        c.events.add(Event(begin=1236))
-        c.events.add(Event(begin=1235))
-        c.events.add(Event(begin=1234))
+        c.events.append(Event(begin=datetime.fromtimestamp(1236)))
+        c.events.append(Event(begin=datetime.fromtimestamp(1235)))
+        c.events.append(Event(begin=datetime.fromtimestamp(1234)))
 
         last = None
         for event in c.timeline:
@@ -29,9 +27,9 @@ class TestTimeline(unittest.TestCase):
 
     def test_iter_over_all(self):
         c = Calendar()
-        c.events.add(Event(begin=1234))
-        c.events.add(Event(begin=1235))
-        c.events.add(Event(begin=1236))
+        c.events.append(Event(begin=datetime.fromtimestamp(1234)))
+        c.events.append(Event(begin=datetime.fromtimestamp(1235)))
+        c.events.append(Event(begin=datetime.fromtimestamp(1236)))
 
         i = 0
         for event in c.timeline:
@@ -43,9 +41,9 @@ class TestTimeline(unittest.TestCase):
         c = Calendar()
 
         empty = Event()
-        c.events.add(empty)
-        c.events.add(Event(begin=1234))
-        c.events.add(Event(begin=1235))
+        c.events.append(empty)
+        c.events.append(Event(begin=datetime.fromtimestamp(1234)))
+        c.events.append(Event(begin=datetime.fromtimestamp(1235)))
 
         for event in c.timeline:
             self.assertIsNot(empty, event)
@@ -63,11 +61,11 @@ class TestTimeline(unittest.TestCase):
         ]
 
         for ev in e:
-            c.events.add(ev)
+            c.events.append(ev)
 
         included = list(c.timeline.included(
-            arrow.get(datetime(2013, 10, 10)),
-            arrow.get(datetime(2017, 10, 10))
+            (datetime(2013, 10, 10)),
+            (datetime(2017, 10, 10))
         ))
         self.assertSequenceEqual(included, [e[3]] + [e[0]])
 
@@ -81,11 +79,11 @@ class TestTimeline(unittest.TestCase):
         ]
 
         for ev in e:
-            c.events.add(ev)
+            c.events.append(ev)
 
         overlap = list(c.timeline.overlapping(
-            arrow.get(datetime(2011, 10, 10)),
-            arrow.get(datetime(2015, 10, 10))
+            (datetime(2011, 10, 10)),
+            (datetime(2015, 10, 10))
         ))
         self.assertSequenceEqual(overlap, [e[0]] + [e[1]])
 
@@ -102,9 +100,9 @@ class TestTimeline(unittest.TestCase):
         ]
 
         for ev in e:
-            c.events.add(ev)
+            c.events.append(ev)
 
-        now = arrow.get(datetime(2015, 10, 10, 12))
+        now = (datetime(2015, 10, 10, 12))
         on = list(c.timeline.on(now))
         self.assertSequenceEqual(on, [e[4], e[0]])
 
@@ -121,8 +119,8 @@ class TestTimeline(unittest.TestCase):
         ]
 
         for ev in e:
-            c.events.add(ev)
+            c.events.append(ev)
 
-        now = arrow.get(datetime(2015, 10, 10, 12))
+        now = (datetime(2015, 10, 10, 12))
         on = list(c.timeline.on(now, strict=True))
         self.assertSequenceEqual(on, [e[0]])
