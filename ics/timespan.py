@@ -103,7 +103,7 @@ class Timespan(object):
         begin = self.get_begin()
         if begin is not None:
             begin = begin.replace(tzinfo=tzinfo)
-        if self.end_time:
+        if self.end_time is not None:
             return self.replace(begin_time=begin, end_time=self.end_time.replace(tzinfo=tzinfo))
         else:
             return self.replace(begin_time=begin)
@@ -116,7 +116,7 @@ class Timespan(object):
         begin = self.get_begin()
         if begin is not None:
             begin = begin.astimezone(tzinfo)
-        if self.end_time:
+        if self.end_time is not None:
             return self.replace(begin_time=begin, end_time=self.end_time.astimezone(tzinfo))
         else:
             return self.replace(begin_time=begin)
@@ -241,7 +241,7 @@ class Timespan(object):
         target_is_end = target == "end" or target == self._end_name()
         if current == target or (current_is_end and target_is_end):
             return self
-        elif target_is_end and target == "duration":
+        elif current_is_end and target == "duration":
             return self.replace(end_time=None, duration=self.get_effective_duration())
         elif current == "duration" and target_is_end:
             return self.replace(end_time=self.get_effective_end(), duration=None)
@@ -260,7 +260,7 @@ class Timespan(object):
             return self.end_time
         elif self.begin_time is not None:
             duration = self.get_effective_duration()
-            if duration:
+            if duration is not None:
                 return self.begin_time + duration
 
         return None

@@ -74,6 +74,7 @@ class Todo(TodoAttrs):
         super(Todo, self).convert_end(representation)
 
     due = property(TodoAttrs.end.fget, TodoAttrs.end.fset)  # type: ignore
+    # convert_due = TodoAttrs.convert_end  # see above
     due_representation = property(TodoAttrs.end_representation.fget)  # type: ignore
     has_explicit_due = property(TodoAttrs.has_explicit_end.fget)  # type: ignore
     due_within = TodoAttrs.ends_within

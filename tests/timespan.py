@@ -4,15 +4,14 @@ from datetime import datetime as dt, timedelta as td
 import dateutil
 import pytest
 
-from ics.timespan import Timespan
+from ics.timespan import EventTimespan
 from ics.utils import floor_datetime_to_midnight
 
 
-class TestTimespan(object):
-    def __init__(self):
-        self.data = []
+class TestEventTimespan(object):
+    data = []
 
-    def assert_end_eq_duration(self, by_dur: Timespan, by_end: Timespan):
+    def assert_end_eq_duration(self, by_dur: EventTimespan, by_end: EventTimespan):
 
         assert by_dur.get_begin() == by_end.get_begin()
         assert by_dur.get_effective_end() == by_end.get_effective_end()
@@ -21,7 +20,7 @@ class TestTimespan(object):
         assert by_dur == by_end.convert_end("duration")
         assert by_end == by_dur.convert_end("end")
 
-    def assert_make_all_day_valid(self, ts_secs: Timespan, ts_days: Timespan):
+    def assert_make_all_day_valid(self, ts_secs: EventTimespan, ts_days: EventTimespan):
         # check resolution for all_day
         assert ts_days.get_effective_duration() % td(days=1) == td(0)
         assert floor_datetime_to_midnight(ts_days.get_begin()) == ts_days.get_begin()
@@ -103,10 +102,10 @@ class TestTimespan(object):
     def test(self, begin_tz, begin_hour, dur_hours):
         tzoffset = dateutil.tz.tzoffset("%+03d:00" % begin_tz, td(hours=begin_tz))
         start = dt(2019, 5, 29, tzinfo=tzoffset) + td(hours=begin_hour)
-        timespan_seconds = Timespan(begin_time=start, duration=td(hours=dur_hours))
+        timespan_seconds = EventTimespan(begin_time=start, duration=td(hours=dur_hours))
         timespan_all_day = timespan_seconds.make_all_day()
 
-        timespan_seconds_end = Timespan(begin_time=start, end_time=start + td(hours=dur_hours))
+        timespan_seconds_end = EventTimespan(begin_time=start, end_time=start + td(hours=dur_hours))
         timespan_all_day_end = timespan_seconds_end.make_all_day()
 
         # TODO none of the following will hold if begin_tz and end_tz differ - e.g. for plane flights
