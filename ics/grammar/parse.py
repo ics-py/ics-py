@@ -93,6 +93,7 @@ class Container(List[ContainerItem]):
     """
 
     def __init__(self, name: str, *items: ContainerItem):
+        self.check_items(*items)
         super(Container, self).__init__(items)
         self.name = name
 
@@ -126,6 +127,34 @@ class Container(List[ContainerItem]):
     def clone(self):
         """Makes a copy of itself"""
         return self.__class__(self.name, *self)
+
+    def check_items(self, *items):
+        from ics.utils import check_is_instance
+        if len(items) == 1:
+            check_is_instance("item", items[0], (ContentLine, Container))
+        else:
+            for nr, item in enumerate(items):
+                check_is_instance("item %s" % nr, item, (ContentLine, Container))
+
+    def __setitem__(self, index, value):
+        self.check_items(value)
+        super(Container, self).__setitem__(index, value)
+
+    def insert(self, index, value):
+        self.check_items(value)
+        super(Container, self).insert(index, value)
+
+    def append(self, value):
+        self.check_items(value)
+        super(Container, self).append(value)
+
+    def extend(self, values):
+        self.check_items(*values)
+        super(Container, self).extend(values)
+
+    def __iadd__(self, values):
+        self.extend(values)
+        return self
 
 
 def unfold_lines(physical_lines):
