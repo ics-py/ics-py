@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional, Tuple, Union, overload
 import attr
 from attr.validators import instance_of, optional as v_optional
 
+from ics.types import TimespanOrBegin
 from ics.utils import TIMEDELTA_CACHE, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight, timedelta_nearly_zero
 
 
@@ -15,6 +16,8 @@ class NormalizeIgnore(Enum):
 
 
 Normalization = Union[TZInfo, None, NormalizeIgnore]
+TimespanTuple = Tuple[datetime, datetime]
+NullableTimespanTuple = Tuple[Optional[datetime], Optional[datetime]]
 CMP_DATETIME_NONE_DEFAULT = datetime.min
 
 
@@ -67,7 +70,7 @@ def normalize(value, normalization):
 
 
 @functools.total_ordering
-@attr.s(slots=True, frozen=True, cmp=False)
+@attr.s(slots=True, frozen=True, eq=True, order=False)
 class Timespan(object):
     begin_time: Optional[datetime] = attr.ib(validator=v_optional(instance_of(datetime)), default=None)
     end_time: Optional[datetime] = attr.ib(validator=v_optional(instance_of(datetime)), default=None)
@@ -302,11 +305,11 @@ class Timespan(object):
     ####################################################################################################################
 
     @overload
-    def timespan_tuple(self, default: None = None) -> Tuple[Optional[datetime], Optional[datetime]]:
+    def timespan_tuple(self, default: None = None) -> NullableTimespanTuple:
         ...
 
     @overload
-    def timespan_tuple(self, default: datetime) -> Tuple[datetime, datetime]:
+    def timespan_tuple(self, default: datetime) -> TimespanTuple:
         ...
 
     def timespan_tuple(self, default=None):
@@ -411,29 +414,36 @@ class Timespan(object):
     def is_included_in(self, second: "Timespan") -> bool:
         return second.includes(self)
 
-    def __lt__(self, second: Any) -> bool:
-        if isinstance(second, datetime):
-            first, second = self.__normalize_datetime(second)
-            return first.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT) \
-                   < (second, CMP_DATETIME_NONE_DEFAULT)
-        elif isinstance(second, Timespan):
-            first, second = self.__normalize_timespans(second)
-            return first.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT) \
-                   < second.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT)
-        else:
-            return NotImplemented
+    @overload
+    def cmp_tuples(self, second: TimespanOrBegin, default: None = None) -> Tuple[NullableTimespanTuple, NullableTimespanTuple]:
+        ...
 
-    def __eq__(self, second: Any) -> bool:
+    @overload
+    def cmp_tuples(self, second: TimespanOrBegin, default: datetime) -> Tuple[TimespanTuple, TimespanTuple]:
+        ...
+
+    @overload
+    def cmp_tuples(self, second: Any, default: Any = None) -> None:
+        ...
+
+    def cmp_tuples(self, second: Any, default=None):
         if isinstance(second, datetime):
             first, second = self.__normalize_datetime(second)
-            return (first.get_begin() or CMP_DATETIME_NONE_DEFAULT) \
-                   == (second or CMP_DATETIME_NONE_DEFAULT)
+            return first.timespan_tuple(default=default), \
+                   (second, default)
         elif isinstance(second, Timespan):
             first, second = self.__normalize_timespans(second)
-            return first.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT) \
-                   == second.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT)
+            return first.timespan_tuple(default=default), \
+                   second.timespan_tuple(default=default)
         else:
+            return None
+
+    def __lt__(self, second: Any) -> bool:
+        tuples = self.cmp_tuples(second, CMP_DATETIME_NONE_DEFAULT)
+        if tuples is None:
             return NotImplemented
+        else:
+            return tuples[0] < tuples[1]
 
     def is_identical(self, second: "Timespan") -> bool:
         return isinstance(second, Timespan) and attr.astuple(self) == attr.astuple(second)

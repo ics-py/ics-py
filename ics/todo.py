@@ -34,7 +34,7 @@ def deprecated_due(fun):
     return wrapper
 
 
-@attr.s(repr=False)
+@attr.s(repr=False, eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
 class TodoAttrs(CalendarEntryAttrs):
     percent: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PERCENT + 1))))
     priority: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PRIORITY + 1))))

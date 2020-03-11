@@ -21,9 +21,9 @@ class Component(RuntimeAttrValidation):
         parser = Parser
         serializer = Serializer
 
-    extra: Container = attr.ib(init=False, default=PLACEHOLDER_CONTAINER, validator=instance_of(Container), cmp=False)
-    _classmethod_args: Tuple = attr.ib(init=False, default=None, repr=False, cmp=False, hash=False)
-    _classmethod_kwargs: Dict = attr.ib(init=False, default=None, repr=False, cmp=False, hash=False)
+    extra: Container = attr.ib(init=False, default=PLACEHOLDER_CONTAINER, validator=instance_of(Container))
+    _classmethod_args: Tuple = attr.ib(init=False, default=None, repr=False, eq=False, order=False, hash=False)
+    _classmethod_kwargs: Dict = attr.ib(init=False, default=None, repr=False, eq=False, order=False, hash=False)
 
     def __attrs_post_init__(self):
         super(Component, self).__attrs_post_init__()

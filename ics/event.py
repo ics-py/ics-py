@@ -1,5 +1,6 @@
+import functools
 from datetime import datetime, timedelta
-from typing import Dict, List, NamedTuple, Optional, Set, Tuple, Union, overload
+from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, overload
 
 import attr
 from attr.converters import optional as c_optional
@@ -10,7 +11,7 @@ from ics.attendee import Attendee, Organizer
 from ics.component import Component
 from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
-from ics.timespan import EventTimespan, Timespan
+from ics.timespan import CMP_DATETIME_NONE_DEFAULT, EventTimespan, Timespan
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, get_timespan_if_calendar_entry
 from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, uid_gen, validate_not_none
 
@@ -41,9 +42,9 @@ def make_geo(value):
         return None
 
 
-@attr.s(repr=False)
+@functools.total_ordering
+@attr.s(repr=False, eq=True, order=False)
 class CalendarEntryAttrs(Component):
-    # _timespan must be the first cmp=True attribute to allow ordering by (begin, end) time
     _timespan: Timespan = attr.ib(validator=instance_of(Timespan))
     name: Optional[str] = attr.ib(default=None)
     uid: str = attr.ib(factory=uid_gen)
@@ -172,6 +173,13 @@ class CalendarEntryAttrs(Component):
 
     ####################################################################################################################
 
+    def __lt__(self, second: Any) -> bool:
+        tuples = self.timespan.cmp_tuples(second, CMP_DATETIME_NONE_DEFAULT)
+        if tuples is None:
+            return NotImplemented
+        else:
+            return (tuples[0] + (self.name or "",)) < (tuples[1] + (second.name or "",))
+
     def starts_within(self, second: EventOrTimespan) -> bool:
         return self._timespan.starts_within(get_timespan_if_calendar_entry(second))
 
@@ -194,7 +202,7 @@ class CalendarEntryAttrs(Component):
         self._timespan = self._timespan.union(get_timespan_if_calendar_entry(second))
 
 
-@attr.s(repr=False)
+@attr.s(repr=False, eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
 class EventAttrs(CalendarEntryAttrs):
     classification: Optional[str] = attr.ib(default=None, validator=v_optional(instance_of(str)))
 

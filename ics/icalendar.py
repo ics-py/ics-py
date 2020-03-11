@@ -24,7 +24,7 @@ class CalendarAttrs(Component):
     scale_params: Dict[str, List[str]] = attr.ib(factory=dict)
     method_params: Dict[str, List[str]] = attr.ib(factory=dict)
 
-    _timezones: Dict = attr.ib(factory=dict, init=False, repr=False, cmp=False, hash=False)
+    _timezones: Dict = attr.ib(factory=dict, init=False, repr=False, eq=False, order=False, hash=False)
     events: List[Event] = attr.ib(factory=list, converter=list)
     todos: List[Todo] = attr.ib(factory=list, converter=list)
 
