@@ -1,6 +1,8 @@
 from datetime import date, datetime, timedelta, tzinfo
 from typing import Dict, List, Optional, TYPE_CHECKING, Tuple, Union, overload
 
+import attr
+
 if TYPE_CHECKING:
     # noinspection PyUnresolvedReferences
     from ics.event import Event, CalendarEntryAttrs
@@ -54,3 +56,28 @@ def get_timespan_if_calendar_entry(value):
         return value._timespan
     else:
         return value
+
+
+@attr.s
+class RuntimeAttrValidation(object):
+    __post_init__ = False
+    __attr_fields__ = {}
+
+    def __attrs_post_init__(self):
+        self.__post_init__ = True
+
+    def __setattr__(self, key, value):
+        if self.__post_init__:
+            cls = self.__class__
+            if not cls.__attr_fields__:
+                cls.__attr_fields__ = attr.fields_dict(cls)
+            try:
+                field = cls.__attr_fields__[key]
+            except KeyError:
+                pass
+            else:  # when no KeyError was thrown
+                if field.converter is not None:
+                    value = field.converter(value)
+                if field.validator is not None:
+                    field.validator(self, field, value)
+        super(RuntimeAttrValidation, self).__setattr__(key, value)

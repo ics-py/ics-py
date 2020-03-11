@@ -6,7 +6,7 @@ import attr
 import tatsu
 from tatsu.exceptions import FailedToken
 
-from ics.types import ContainerItem
+from ics.types import ContainerItem, RuntimeAttrValidation
 
 grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
 
@@ -19,7 +19,7 @@ class ParseError(Exception):
 
 
 @attr.s(repr=False)
-class ContentLine:
+class ContentLine(RuntimeAttrValidation):
     """
     Represents one property line.
 

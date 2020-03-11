@@ -7,6 +7,7 @@ from attr.validators import instance_of
 from ics.grammar.parse import Container
 from ics.parsers.parser import Parser
 from ics.serializers.serializer import Serializer
+from ics.types import RuntimeAttrValidation
 from ics.utils import get_lines
 
 ComponentType = TypeVar('ComponentType', bound='Component')
@@ -14,7 +15,7 @@ PLACEHOLDER_CONTAINER = Container("PLACEHOLDER")
 
 
 @attr.s
-class Component(object):
+class Component(RuntimeAttrValidation):
     class Meta:
         name = "ABSTRACT"
         parser = Parser
@@ -25,10 +26,12 @@ class Component(object):
     _classmethod_kwargs: Dict = attr.ib(init=False, default=None, repr=False, cmp=False, hash=False)
 
     def __attrs_post_init__(self):
+        super(Component, self).__attrs_post_init__()
         if self.extra is PLACEHOLDER_CONTAINER:
             self.extra = Container(self.Meta.name)
 
-    def __init_subclass__(cls):
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
         if cls.__str__ != Component.__str__:
             raise TypeError("%s may not overwrite %s" % (cls, Component.__str__))
 
