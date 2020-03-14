@@ -1,4 +1,3 @@
-import functools
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, overload
 
@@ -11,7 +10,7 @@ from ics.attendee import Attendee, Organizer
 from ics.component import Component
 from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
-from ics.timespan import CMP_DATETIME_NONE_DEFAULT, EventTimespan, Timespan
+from ics.timespan import EventTimespan, Timespan
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, get_timespan_if_calendar_entry
 from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, uid_gen, validate_not_none
 
@@ -42,7 +41,6 @@ def make_geo(value):
         return None
 
 
-@functools.total_ordering
 @attr.s(repr=False, eq=True, order=False)
 class CalendarEntryAttrs(Component):
     _timespan: Timespan = attr.ib(validator=instance_of(Timespan))
@@ -60,6 +58,13 @@ class CalendarEntryAttrs(Component):
     dtstamp: datetime = attr.ib(factory=datetime.now, converter=ensure_datetime, validator=validate_not_none)  # type: ignore
 
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+        for cmp in ("__lt__", "__gt__", "__le__", "__ge__"):
+            child_cmp, parent_cmp = getattr(cls, cmp), getattr(CalendarEntryAttrs, cmp)
+            if child_cmp != parent_cmp:
+                raise TypeError("%s may not overwrite %s" % (child_cmp, parent_cmp))
 
     ####################################################################################################################
 
@@ -173,12 +178,32 @@ class CalendarEntryAttrs(Component):
 
     ####################################################################################################################
 
-    def __lt__(self, second: Any) -> bool:
-        tuples = self.timespan.cmp_tuples(second, CMP_DATETIME_NONE_DEFAULT)
-        if tuples is None:
-            return NotImplemented
+    def cmp_tuple(self):
+        return (*self.timespan.cmp_tuple(), self.name or "")
+
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, CalendarEntryAttrs):
+            return self.cmp_tuple() < other.cmp_tuple()
         else:
-            return (tuples[0] + (self.name or "",)) < (tuples[1] + (second.name or "",))
+            return NotImplemented
+
+    def __gt__(self, other: Any) -> bool:
+        if isinstance(other, CalendarEntryAttrs):
+            return self.cmp_tuple() > other.cmp_tuple()
+        else:
+            return NotImplemented
+
+    def __le__(self, other: Any) -> bool:
+        if isinstance(other, CalendarEntryAttrs):
+            return self.cmp_tuple() <= other.cmp_tuple()
+        else:
+            return NotImplemented
+
+    def __ge__(self, other: Any) -> bool:
+        if isinstance(other, CalendarEntryAttrs):
+            return self.cmp_tuple() >= other.cmp_tuple()
+        else:
+            return NotImplemented
 
     def starts_within(self, second: EventOrTimespan) -> bool:
         return self._timespan.starts_within(get_timespan_if_calendar_entry(second))
@@ -194,12 +219,6 @@ class CalendarEntryAttrs(Component):
 
     def is_included_in(self, second: EventOrTimespan) -> bool:
         return self._timespan.is_included_in(get_timespan_if_calendar_entry(second))
-
-    def is_identical_timespan(self, second: EventOrTimespan) -> bool:
-        return self._timespan.is_identical(get_timespan_if_calendar_entry(second))
-
-    def union_timespan(self, second: EventOrTimespanOrInstant):
-        self._timespan = self._timespan.union(get_timespan_if_calendar_entry(second))
 
 
 @attr.s(repr=False, eq=True, order=False)  # order methods are provided by CalendarEntryAttrs

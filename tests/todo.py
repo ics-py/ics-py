@@ -153,8 +153,6 @@ class TestTodo(unittest.TestCase):
         t3 = Todo(name='b')
         t4 = Todo(due=datetime.fromtimestamp(10))
         t5 = Todo(due=datetime.fromtimestamp(20))
-        due_time = datetime(2018, 2, 18, 12, 19, tzinfo=datetime_tzutc)
-        t6 = Todo(due=due_time)
 
         # Check comparison by name
         self.assertFalse(t1 < t1)
@@ -168,15 +166,9 @@ class TestTodo(unittest.TestCase):
         self.assertFalse(t4 < t4)
         self.assertFalse(t5 < t4)
 
-        # Check comparison with datetime
-        self.assertTrue(t4 < due_time)
-        self.assertFalse(t6 < due_time)
-
         # Check invalid call
         with self.assertRaises(TypeError):
-            t1 < due_time
-        with self.assertRaises(TypeError):
-            t2 < due_time
+            t4 > t4.due
         with self.assertRaises(TypeError):
             t2 < 1
 
@@ -186,9 +178,6 @@ class TestTodo(unittest.TestCase):
         t3 = Todo(name='b')
         t4 = Todo(due=datetime.fromtimestamp(10))
         t5 = Todo(due=datetime.fromtimestamp(20))
-        due_time = datetime(2018, 2, 18, 12, 19, tzinfo=datetime_tzutc)
-        t6 = Todo(due=due_time)
-        t7 = Todo(due=due_time + timedelta(days=1))
 
         # Check comparison by name
         self.assertTrue(t1 <= t1)
@@ -203,16 +192,9 @@ class TestTodo(unittest.TestCase):
         self.assertTrue(t4 <= t4)
         self.assertFalse(t5 <= t4)
 
-        # Check comparison with datetime
-        self.assertTrue(t4 <= due_time)
-        self.assertTrue(t6 <= due_time)
-        self.assertFalse(t7 <= due_time)
-
         # Check invalid call
         with self.assertRaises(TypeError):
-            t1 <= due_time
-        with self.assertRaises(TypeError):
-            t2 <= due_time
+            t4 > t4.due
         with self.assertRaises(TypeError):
             t2 <= 1
 
@@ -222,9 +204,6 @@ class TestTodo(unittest.TestCase):
         t3 = Todo(name='b')
         t4 = Todo(due=datetime.fromtimestamp(10))
         t5 = Todo(due=datetime.fromtimestamp(20))
-        due_time = datetime(2018, 2, 18, 12, 19, tzinfo=datetime_tzutc)
-        t6 = Todo(due=due_time)
-        t7 = Todo(due=due_time + timedelta(days=1))
 
         # Check comparison by name
         self.assertFalse(t1 > t1)
@@ -239,16 +218,9 @@ class TestTodo(unittest.TestCase):
         self.assertFalse(t4 > t4)
         self.assertTrue(t5 > t4)
 
-        # Check comparison with datetime
-        self.assertFalse(t4 > due_time)
-        self.assertFalse(t6 > due_time)
-        self.assertTrue(t7 > due_time)
-
         # Check invalid call
         with self.assertRaises(TypeError):
-            t1 > due_time
-        with self.assertRaises(TypeError):
-            t2 > due_time
+            t4 > t4.due
         with self.assertRaises(TypeError):
             t2 > 1
 
@@ -258,14 +230,11 @@ class TestTodo(unittest.TestCase):
         t3 = Todo(name='b')
         t4 = Todo(due=datetime.fromtimestamp(10))
         t5 = Todo(due=datetime.fromtimestamp(20))
-        due_time = datetime(2018, 2, 18, 12, 19, tzinfo=datetime_tzutc)
-        t6 = Todo(due=due_time)
-        t7 = Todo(due=due_time + timedelta(days=1))
 
         # Check comparison by name
         self.assertTrue(t1 >= t1)
-        self.assertTrue(t1 >= t2)
-        self.assertFalse(t2 >= t1)
+        self.assertTrue(t1 <= t2)
+        self.assertFalse(t2 <= t1)
         self.assertFalse(t2 >= t3)
         self.assertTrue(t2 >= t2)
         self.assertTrue(t3 >= t2)
@@ -275,16 +244,9 @@ class TestTodo(unittest.TestCase):
         self.assertTrue(t4 >= t4)
         self.assertTrue(t5 >= t4)
 
-        # Check comparison with datetime
-        self.assertFalse(t4 >= due_time)
-        self.assertTrue(t6 >= due_time)
-        self.assertTrue(t7 >= due_time)
-
         # Check invalid call
         with self.assertRaises(TypeError):
-            t1 >= due_time
-        with self.assertRaises(TypeError):
-            t2 >= due_time
+            t4 > t4.due
         with self.assertRaises(TypeError):
             t2 >= 1
 

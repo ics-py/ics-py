@@ -1,72 +1,66 @@
 import functools
-from datetime import date, datetime, timedelta, tzinfo as TZInfo
-from enum import Enum
-from typing import Any, Dict, Optional, Tuple, Union, overload
+from datetime import datetime, timedelta, tzinfo as TZInfo
+from typing import Any, NamedTuple, Optional, TypeVar, Union, cast, overload
 
 import attr
 from attr.validators import instance_of, optional as v_optional
+from dateutil.tz import tzlocal
 
-from ics.types import TimespanOrBegin
+from ics.types import DatetimeLike
 from ics.utils import TIMEDELTA_CACHE, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight, timedelta_nearly_zero
 
 
-class NormalizeIgnore(Enum):
-    ONLY_FLOATING = 1
-    ONLY_WITH_TZ = 2
+@attr.s
+class Normalization(object):
+    normalize_floating: bool = attr.ib()
+    normalize_with_tz: bool = attr.ib()
+    replacement: Union[TZInfo, None] = attr.ib()
+
+    @overload
+    def normalize(self, value: "Timespan") -> "Timespan":
+        ...
+
+    @overload
+    def normalize(self, value: DatetimeLike) -> datetime:
+        ...
+
+    @overload
+    def normalize(self, value: None) -> None:
+        ...
+
+    def normalize(self, value):
+        """
+        Normalize datetime or timespan instances to make naive/floating ones (without timezone, i.e. tzinfo == None)
+        comparable to aware ones with a fixed timezone.
+        The options from NormalizeIgnore will lead to the ignored type being converted to None.
+        If None is selected as normalization, the timezone information will be stripped from aware datetimes.
+        If the normalization is set to any tzinfo instance, naive datetimes will be interpreted in that timezone.
+        """
+        if value is None:
+            return None
+        elif not isinstance(value, Timespan):
+            value = ensure_datetime(value)
+            floating = (value.tzinfo is None)
+            replace_timezone = lambda value, tzinfo: value.replace(tzinfo=tzinfo)
+        else:
+            floating = value.is_floating()
+            replace_timezone = Timespan.replace_timezone
+
+        normalize = (floating and self.normalize_floating) or (not floating and self.normalize_with_tz)
+
+        if normalize:
+            return replace_timezone(value, self.replacement)
+        else:
+            return value
 
 
-Normalization = Union[TZInfo, None, NormalizeIgnore]
-TimespanTuple = Tuple[datetime, datetime]
-NullableTimespanTuple = Tuple[Optional[datetime], Optional[datetime]]
 CMP_DATETIME_NONE_DEFAULT = datetime.min
+CMP_NORMALIZATION = Normalization(normalize_floating=True, normalize_with_tz=False, replacement=tzlocal())
 
+TimespanTuple = NamedTuple("TimespanTuple", [("begin", datetime), ("end", datetime)])
+NullableTimespanTuple = NamedTuple("NullableTimespanTuple", [("begin", Optional[datetime]), ("end", Optional[datetime])])
 
-@overload
-def normalize(value: "Timespan", normalization: Normalization) -> "Timespan": ...
-
-
-@overload
-def normalize(value: Union[Tuple, Dict, datetime, date], normalization: Normalization) -> datetime: ...
-
-
-@overload
-def normalize(value: None, normalization: Normalization) -> None: ...
-
-
-def normalize(value, normalization):
-    """
-    Normalize datetime or timespan instances to make naive/floating ones (without timezone, i.e. tzinfo == None)
-    comparable to aware ones with a fixed timezone.
-    The options from NormalizeIgnore will lead to the ignored type being converted to None.
-    If None is selected as normalization, the timezone information will be stripped from aware datetimes.
-    If the normalization is set to any tzinfo instance, naive datetimes will be interpreted in that timezone.
-    """
-    if not isinstance(value, Timespan):
-        value = ensure_datetime(value)
-        floating = (value.tzinfo is None)
-        replace_timezone = lambda value, tzinfo: value.replace(tzinfo=tzinfo)
-    else:
-        floating = value.is_floating()
-        replace_timezone = Timespan.replace_timezone
-
-    if floating:
-        if normalization is NormalizeIgnore.ONLY_FLOATING:
-            return value
-        elif normalization is NormalizeIgnore.ONLY_WITH_TZ:
-            return None
-        elif normalization is None:
-            return value
-        else:
-            return replace_timezone(value, normalization)
-    else:
-        if normalization is NormalizeIgnore.ONLY_FLOATING:
-            return None
-        elif normalization is NormalizeIgnore.ONLY_WITH_TZ:
-            return value
-        elif normalization is None:
-            return replace_timezone(value, normalization)
-        else:
-            return value
+TimespanT = TypeVar('TimespanT', bound='Timespan')
 
 
 @functools.total_ordering
@@ -78,18 +72,18 @@ class Timespan(object):
     precision: str = attr.ib(default="second")
 
     def _end_name(self) -> str:
-        raise NotImplementedError()
+        return "end"
 
     def __attrs_post_init__(self):
         self.validate()
 
     def replace(
-            self,
+            self: TimespanT,
             begin_time: Optional[datetime] = False,  # type: ignore
             end_time: Optional[datetime] = False,  # type: ignore
             duration: Optional[timedelta] = False,  # type: ignore
             precision: str = False  # type: ignore
-    ) -> "Timespan":
+    ) -> TimespanT:
         if begin_time is False:
             begin_time = self.begin_time
         if end_time is False:
@@ -100,7 +94,7 @@ class Timespan(object):
             precision = self.precision
         return type(self)(begin_time=begin_time, end_time=end_time, duration=duration, precision=precision)
 
-    def replace_timezone(self: "Timespan", tzinfo: Optional[TZInfo]) -> "Timespan":
+    def replace_timezone(self: TimespanT, tzinfo: Optional[TZInfo]) -> TimespanT:
         if self.is_all_day():
             raise ValueError("can't replace timezone of all-day event")
         begin = self.get_begin()
@@ -111,7 +105,7 @@ class Timespan(object):
         else:
             return self.replace(begin_time=begin)
 
-    def convert_timezone(self, tzinfo: Optional[TZInfo]) -> "Timespan":
+    def convert_timezone(self: TimespanT, tzinfo: Optional[TZInfo]) -> TimespanT:
         if self.is_all_day():
             raise ValueError("can't convert timezone of all-day timespan")
         if self.is_floating():
@@ -123,9 +117,6 @@ class Timespan(object):
             return self.replace(begin_time=begin, end_time=self.end_time.astimezone(tzinfo))
         else:
             return self.replace(begin_time=begin)
-
-    def normalize(self, normalization: Normalization) -> "Timespan":
-        return normalize(self, normalization)
 
     def validate(self):
         def validate_timeprecision(value, name):
@@ -150,7 +141,8 @@ class Timespan(object):
                     raise ValueError(self._end_name() + " time may not have a timezone as the begin time doesn't either")
                 if self.begin_time.tzinfo is not None and self.end_time.tzinfo is None:
                     raise ValueError(self._end_name() + " time must have a timezone as the begin time also does")
-                if not timedelta_nearly_zero(self.get_effective_duration() % TIMEDELTA_CACHE[self.precision]):
+                duration = self.get_effective_duration()
+                if duration and not timedelta_nearly_zero(duration % TIMEDELTA_CACHE[self.precision]):
                     raise ValueError("effective duration value %s has higher precision than set precision %s" %
                                      (self.get_effective_duration(), self.precision))
 
@@ -234,6 +226,7 @@ class Timespan(object):
 
         if self.get_end_representation() == "duration":
             assert end is not None
+            assert begin is not None
             return self.replace(begin, None, end - begin, "day")
         else:
             return self.replace(begin, end, None, "day")
@@ -305,159 +298,112 @@ class Timespan(object):
     ####################################################################################################################
 
     @overload
-    def timespan_tuple(self, default: None = None) -> NullableTimespanTuple:
+    def timespan_tuple(self, default: None = None, normalization: Normalization = None) -> NullableTimespanTuple:
         ...
 
     @overload
-    def timespan_tuple(self, default: datetime) -> TimespanTuple:
+    def timespan_tuple(self, default: datetime, normalization: Normalization = None) -> TimespanTuple:
         ...
 
-    def timespan_tuple(self, default=None):
-        # Tuple[datetime, None] is not possible as duration defaults to 0s or 1d as soon as begin time is not None
-        return self.get_begin() or default, self.get_effective_end() or default
+    def timespan_tuple(self, default=None, normalization=None):
+        if normalization:
+            return TimespanTuple(
+                normalization.normalize(self.get_begin() or default),
+                normalization.normalize(self.get_effective_end() or default)
+            )
+        else:
+            return TimespanTuple(
+                self.get_begin() or default,
+                self.get_effective_end() or default
+            )
 
-    def __normalize_timespans(self, second: "Timespan") -> Tuple["Timespan", "Timespan"]:
-        """
-        Normalize this timespan to allow comparision with the given second timespan.
-        If one of the timespans is naive/floating (without timezone, i.e. tzinfo == None) and the other one is aware
-        with a fixed timezone, the timezone information will be stripped from the aware instance.
-        This is similar to calling `normalize` with `normalization=None` if both are not already directly comparable.
-        """
-        if not isinstance(second, Timespan):
-            raise NotImplementedError("cannot compare %s and %s as timespans" % (type(self), type(second)))
-        first = self
-        if not first or not second:
-            # also includes timespan.begin is None
-            return first, second
-        assert first.get_begin() is not None \
-               and first.get_effective_end() is not None \
-               and second.get_begin() is not None \
-               and second.get_effective_end() is not None
-        if first.is_floating() != second.is_floating():
-            if not first.is_floating():
-                first = first.replace_timezone(None)
-                assert first.is_floating()
-            else:
-                assert not second.is_floating()
-                second = second.replace_timezone(None)
-                assert second.is_floating()
-        assert first.is_floating() == second.is_floating()
-        return first, second
+    def cmp_tuple(self) -> TimespanTuple:
+        return self.timespan_tuple(default=datetime.min, normalization=CMP_NORMALIZATION)
 
-    def __normalize_datetime(self, second: datetime) -> Tuple["Timespan", datetime]:
-        """
-        Normalize this timespan to allow comparision with the given second datetime.
-        If this instance is naive/floating (without timezone, i.e. tzinfo == None) and the datetime is aware
-        with a fixed timezone, the timezone information will be stripped from the aware datetime instance.
-        This is similar to calling `normalize` with `normalization=None` if both are not already directly comparable.
-        """
-        if not isinstance(second, datetime):
-            raise NotImplementedError("cannot compare %s and %s as timespans/datetime" % (type(self), type(second)))
-        if self and self.is_floating() and second.tzinfo is not None:
-            second = second.replace(tzinfo=None)
-        return self, second
+    def __require_tuple_components(self, values, *required):
+        for nr, (val, req) in enumerate(zip(values, required)):
+            if req and val is None:
+                event = "this event" if nr < 2 else "other event"
+                prop = "begin" if nr % 2 == 0 else "end"
+                raise ValueError("%s has no %s time" % (event, prop))
 
-    def starts_within(self, second: "Timespan") -> bool:
-        first, second = self.__normalize_timespans(second)
-
-        if first.begin_time is None:
-            raise ValueError("first timespan %s has no begin time" % first)
-
-        if second.begin_time is None:
-            raise ValueError("second timespan %s has no begin time" % second)
-        second_end = second.get_effective_end()
-        if second_end is None:
-            raise ValueError("second timespan %s has no " + self._end_name() + " time" % second)
+    def starts_within(self, other: "Timespan") -> bool:
+        first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
+        second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+        self.__require_tuple_components(first + second, True, False, True, True)
 
         # the timespan doesn't include its end instant / day
-        return second.begin_time <= first.begin_time < second_end
+        return second.begin <= first.begin < second.end
 
-    def ends_within(self, second: "Timespan") -> bool:
-        first, second = self.__normalize_timespans(second)
-
-        first_end = first.get_effective_end()
-        if first_end is None:
-            raise ValueError("first timespan %s has no " + self._end_name() + " time" % first)
-
-        if second.begin_time is None:
-            raise ValueError("second timespan %s has no begin time" % second)
-        second_end = second.get_effective_end()
-        if second_end is None:
-            raise ValueError("second timespan %s has no " + self._end_name() + " time" % second)
+    def ends_within(self, other: "Timespan") -> bool:
+        first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
+        second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+        self.__require_tuple_components(first + second, False, True, True, True)
 
         # the timespan doesn't include its end instant / day
-        return second.begin_time <= first_end < second_end
+        return second.begin <= first.end < second.end
 
-    def intersects(self, second: "Timespan") -> bool:
-        first, second = self.__normalize_timespans(second)
-        return (first.starts_within(second) or first.ends_within(second) or
-                second.starts_within(first) or second.ends_within(first))
+    def intersects(self, other: "Timespan") -> bool:
+        first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
+        second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+        self.__require_tuple_components(first + second, True, True, True, True)
 
-    def includes(self, second: Union["Timespan", datetime]) -> bool:
-        if isinstance(second, datetime):
-            first, second = self.__normalize_datetime(second)
+        # the timespan doesn't include its end instant / day
+        return second.begin <= first.begin < second.end or \
+               second.begin <= first.end < second.end or \
+               first.begin <= second.begin < first.end or \
+               first.begin <= second.end < first.end
 
-            if first.begin_time is None:
-                raise ValueError("first timespan %s has no begin time" % first)
-            first_end = first.get_effective_end()
-            if first_end is None:
-                raise ValueError("first timespan %s has no " + self._end_name() + " time" % first)
+    def includes(self, other: Union["Timespan", datetime]) -> bool:
+        if isinstance(other, datetime):
+            first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
+            other = CMP_NORMALIZATION.normalize(other)
+            self.__require_tuple_components(first, True, True)
 
             # the timespan doesn't include its end instant / day
-            return first.begin_time <= second < first_end
+            return first.begin <= other < first.end
 
-        first, second = self.__normalize_timespans(second)
-        return second.starts_within(first) and second.ends_within(first)
+        else:
+            first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
+            second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+            self.__require_tuple_components(first + second, True, True, True, True)
+
+            # the timespan doesn't include its end instant / day
+            return first.begin <= second.begin and second.end < first.end
 
     __contains__ = includes
 
-    def is_included_in(self, second: "Timespan") -> bool:
-        return second.includes(self)
+    def is_included_in(self, other: "Timespan") -> bool:
+        first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
+        second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+        self.__require_tuple_components(first + second, True, True, True, True)
 
-    @overload
-    def cmp_tuples(self, second: TimespanOrBegin, default: None = None) -> Tuple[NullableTimespanTuple, NullableTimespanTuple]:
-        ...
+        # the timespan doesn't include its end instant / day
+        return second.begin <= first.begin and first.end < second.end
 
-    @overload
-    def cmp_tuples(self, second: TimespanOrBegin, default: datetime) -> Tuple[TimespanTuple, TimespanTuple]:
-        ...
-
-    @overload
-    def cmp_tuples(self, second: Any, default: Any = None) -> None:
-        ...
-
-    def cmp_tuples(self, second: Any, default=None):
-        if isinstance(second, datetime):
-            first, second = self.__normalize_datetime(second)
-            return first.timespan_tuple(default=default), \
-                   (second, default)
-        elif isinstance(second, Timespan):
-            first, second = self.__normalize_timespans(second)
-            return first.timespan_tuple(default=default), \
-                   second.timespan_tuple(default=default)
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, Timespan):
+            return self.cmp_tuple() < other.cmp_tuple()
         else:
-            return None
-
-    def __lt__(self, second: Any) -> bool:
-        tuples = self.cmp_tuples(second, CMP_DATETIME_NONE_DEFAULT)
-        if tuples is None:
             return NotImplemented
-        else:
-            return tuples[0] < tuples[1]
 
-    def is_identical(self, second: "Timespan") -> bool:
-        return isinstance(second, Timespan) and attr.astuple(self) == attr.astuple(second)
-
-    def union(self, second: Union["Timespan", datetime]) -> "Timespan":
-        """
-        this will fail more often than work, mostly due to non-compatible is_floating and is_all_day values
-        """
-        if isinstance(second, datetime):
-            return self.replace(begin_time=min(self.get_begin(), second),
-                                end_time=max(self.get_effective_end(), second))
+    def __gt__(self, other: Any) -> bool:
+        if isinstance(other, Timespan):
+            return self.cmp_tuple() > other.cmp_tuple()
         else:
-            return self.replace(begin_time=min(self.get_begin(), second.get_begin()),
-                                end_time=max(self.get_effective_end(), second.get_effective_end()))
+            return NotImplemented
+
+    def __le__(self, other: Any) -> bool:
+        if isinstance(other, Timespan):
+            return self.cmp_tuple() <= other.cmp_tuple()
+        else:
+            return NotImplemented
+
+    def __ge__(self, other: Any) -> bool:
+        if isinstance(other, Timespan):
+            return self.cmp_tuple() >= other.cmp_tuple()
+        else:
+            return NotImplemented
 
 
 class EventTimespan(Timespan):
