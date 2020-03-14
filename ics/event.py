@@ -104,7 +104,7 @@ class CalendarEntryAttrs(Component):
 
     @end.setter
     def end(self, value: DatetimeLike):
-        self._timespan = self._timespan.replace(end_time=ensure_datetime(value))
+        self._timespan = self._timespan.replace(end_time=ensure_datetime(value), duration=None)
 
     @property
     def duration(self) -> Optional[timedelta]:
@@ -121,7 +121,7 @@ class CalendarEntryAttrs(Component):
 
     @duration.setter
     def duration(self, value: timedelta):
-        self._timespan = self._timespan.replace(duration=ensure_timedelta(value))
+        self._timespan = self._timespan.replace(duration=ensure_timedelta(value), end_time=None)
 
     def convert_end(self, representation):
         self._timespan = self._timespan.convert_end(representation)

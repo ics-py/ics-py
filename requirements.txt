@@ -1,4 +1,4 @@
 python-dateutil
 six>1.5
 tatsu>4.2
-attrs>19.2
+attrs>=19.2

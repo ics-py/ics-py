@@ -30,8 +30,8 @@ class Component(RuntimeAttrValidation):
         if self.extra is PLACEHOLDER_CONTAINER:
             self.extra = Container(self.Meta.name)
 
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
+    def __init_subclass__(cls):
+        super().__init_subclass__()
         if cls.__str__ != Component.__str__:
             raise TypeError("%s may not overwrite %s" % (cls, Component.__str__))
 

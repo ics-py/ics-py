@@ -33,7 +33,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         validator=v_optional(instance_of((timedelta, datetime)))  # type: ignore
     )
     repeat: int = attr.ib(default=None, validator=call_validate_on_inst)
-    duration: timedelta = attr.ib(default=None, converter=c_optional(ensure_timedelta), validator=call_validate_on_inst)
+    duration: timedelta = attr.ib(default=None, converter=c_optional(ensure_timedelta), validator=call_validate_on_inst)  # type: ignore
 
     def validate(self, attr=None, value=None):
         if self.repeat is not None:

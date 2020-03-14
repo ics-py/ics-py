@@ -38,7 +38,7 @@ class CustomAlarmSerializer(BaseAlarmSerializer):
 class AudioAlarmSerializer(BaseAlarmSerializer):
     def serialize_attach(alarm, container):
         if alarm.sound:
-            container.append(str(alarm.sound))
+            container.append(alarm.sound)
 
 
 class DisplayAlarmSerializer(BaseAlarmSerializer):

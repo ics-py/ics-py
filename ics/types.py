@@ -1,5 +1,5 @@
 from datetime import date, datetime, timedelta, tzinfo
-from typing import Dict, List, Optional, TYPE_CHECKING, Tuple, Union, overload
+from typing import Any, Dict, List, Optional, TYPE_CHECKING, Tuple, Union, overload
 
 import attr
 
@@ -58,10 +58,10 @@ def get_timespan_if_calendar_entry(value):
         return value
 
 
-@attr.s
+@attr.s(these={})
 class RuntimeAttrValidation(object):
     __post_init__ = False
-    __attr_fields__ = {}
+    __attr_fields__: Dict[str, Any] = {}
 
     def __attrs_post_init__(self):
         self.__post_init__ = True

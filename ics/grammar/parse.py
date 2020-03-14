@@ -152,6 +152,12 @@ class Container(List[ContainerItem]):
         self.check_items(*values)
         super(Container, self).extend(values)
 
+    def __add__(self, values):
+        container = type(self)(self.name)
+        container.extend(self)
+        container.extend(values)
+        return container
+
     def __iadd__(self, values):
         self.extend(values)
         return self

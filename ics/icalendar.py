@@ -1,7 +1,7 @@
 from typing import Dict, Iterable, List, Optional, Set, Union
 
 import attr
-from attr.validators import instance_of, optional as v_optional
+from attr.validators import instance_of
 
 from ics.component import Component
 from ics.event import Event
@@ -14,8 +14,8 @@ from ics.todo import Todo
 
 @attr.s
 class CalendarAttrs(Component):
-    version: str = attr.ib()  # default set by Calendar.Meta.DEFAULT_VERSION
-    prodid: str = attr.ib(validator=v_optional(instance_of(str)))  # default set by Calendar.Meta.DEFAULT_PRODID
+    version: str = attr.ib(validator=instance_of(str))  # default set by Calendar.Meta.DEFAULT_VERSION
+    prodid: str = attr.ib(validator=instance_of(str))  # default set by Calendar.Meta.DEFAULT_PRODID
     scale: Optional[str] = attr.ib(default=None)
     method: Optional[str] = attr.ib(default=None)
 
