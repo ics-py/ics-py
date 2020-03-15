@@ -120,13 +120,32 @@ def serialize_datetime_to_contentline(name: str, instant: datetime, used_timezon
         tzname = instant.tzinfo.tzname(instant)
         if tzname is None:
             raise ValueError("timezone of instant '%s' is not None but has no name" % instant)
-        if instant.tzinfo == dateutil_tzutc or instant.tzinfo == datetime_tzutc or tzname.upper() == "UTC":
+        if is_utc(instant):
             return ContentLine(name, value=serialize_datetime(instant, True))
         if used_timezones:
             used_timezones[tzname] = instant.tzinfo
         return ContentLine(name, params={'TZID': [tzname]}, value=serialize_datetime(instant, False))
     else:
         return ContentLine(name, value=serialize_datetime(instant, False))
+
+
+def now_in_utc() -> datetime:
+    return datetime.now(tz=dateutil_tzutc)
+
+
+def is_utc(instant: datetime) -> bool:
+    tz = instant.tzinfo
+    if tz is None:
+        return False
+    if tz in [dateutil_tzutc, datetime_tzutc]:
+        return True
+    offset = tz.utcoffset(instant)
+    if offset == TIMEDELTA_CACHE[0]:
+        return True
+    # tzname = tz.tzname(instant)
+    # if tzname and tzname.upper() == "UTC":
+    #     return True
+    return False
 
 
 def serialize_date(instant: DatetimeLike) -> str:
@@ -396,4 +415,14 @@ def check_is_instance(name, value, clazz):
             name,
             clazz,
             value,
+        )
+
+
+def validate_utc(inst, attr, value):
+    check_is_instance(attr.name, value, datetime)
+    if not is_utc(value):
+        raise ValueError(
+            "'{name}' must be in timezone UTC (got {value!r} which has tzinfo {tzinfo!r})".format(
+                name=attr.name, value=value, tzinfo=value.tzinfo
+            )
         )

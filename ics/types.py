@@ -58,18 +58,15 @@ def get_timespan_if_calendar_entry(value):
         return value
 
 
-@attr.s(these={})
+@attr.s
 class RuntimeAttrValidation(object):
-    __post_init__ = False
-    __attr_fields__: Dict[str, Any] = {}
-
     def __attrs_post_init__(self):
         self.__post_init__ = True
 
     def __setattr__(self, key, value):
-        if self.__post_init__:
-            cls = self.__class__
-            if not cls.__attr_fields__:
+        if getattr(self, "__post_init__", None):
+            cls = self.__class__  # type: Any
+            if not getattr(cls, "__attr_fields__", None):
                 cls.__attr_fields__ = attr.fields_dict(cls)
             try:
                 field = cls.__attr_fields__[key]

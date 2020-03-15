@@ -12,7 +12,7 @@ from ics.parsers.event_parser import EventParser
 from ics.serializers.event_serializer import EventSerializer
 from ics.timespan import EventTimespan, Timespan
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, get_timespan_if_calendar_entry
-from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, uid_gen, validate_not_none
+from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, now_in_utc, uid_gen, validate_not_none
 
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
@@ -55,7 +55,7 @@ class CalendarEntryAttrs(Component):
     # TODO these three timestamps must be in UTC according to the RFC
     created: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
     last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
-    dtstamp: datetime = attr.ib(factory=datetime.now, converter=ensure_datetime, validator=validate_not_none)  # type: ignore
+    dtstamp: datetime = attr.ib(factory=now_in_utc, converter=ensure_datetime, validator=validate_not_none)  # type: ignore
 
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
 
