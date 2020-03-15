@@ -49,7 +49,7 @@ parsing ics files that contain unknown properties.
 Private attributes, such as Components' `_classmethod_args`, `_classmethod_kwargs` and iCalendars' `_timezones`
 are excluded from comparision.
 If you want to know the exact differences between two Events,
-either convert the events to their ics representation using `str(e1)` or
+either convert the events to their ics representation using `str(e)` or
 use the `attr.asdict` method to get a dict with all attributes.
 
     >>> e = ics.Event()
@@ -85,15 +85,16 @@ use the `attr.asdict` method to get a dict with all attributes.
 
 ## Ordering
 
-TL;DR: `Event` and `Todo` are ordered by their attributes `begin_time`, `effective_end_time`, and `name`,
-in that exact order.
+TL;DR: `Event`s are ordered by their attributes `begin`, `end`, and `name`, in that exact order.
+For `Todo`s the order is `due`, `begin`, then `name`.
+It doesn't matter whether `duration` is set instead of `end` or `due`, as the effective end / due time will be compared.
 Instances where an attribute isn't set will be sorted before instances where the respective attribute is set.
+Naive `datetime`s (those without a timezone) will be compared in local time.
 
 ### Implementation
 
-The class Timespan used by Event and Todo to represent begin and end times or durations
-has a method `cmp_tuple` returning the respective instance and potentially a second one as 
-tuples `(begin_time, effective_end_time)`:
+The class `EventTimespan` used by `Event` to represent begin and end times or durations
+has a method `cmp_tuple` returning the respective instance as a tuple `(begin_time, effective_end_time)`:
 
     >>> t0 = ics.EventTimespan()
     >>> t0.cmp_tuple()
@@ -114,7 +115,7 @@ as only the effective end time is compared.
     >>> t3 < t2
     False
     
-The classes Event and Todo build on this methods, by appending their `name` to the returned tuple:
+The classes `Event` and `Todo` build on this methods, by appending their `name` to the returned tuple:
 
     >>> e11 = ics.Event(timespan=t1)
     >>> e11.cmp_tuple()
@@ -123,13 +124,11 @@ The classes Event and Todo build on this methods, by appending their `name` to t
     >>> e12.cmp_tuple()
     (datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), 'An Event')
 
-We define `__lt__` (i.e. lower-than, or `<`) explicitly for Timespan, Event and Todo 
-based on comparing their `(begin_time, effective_end_time, name)` tuples component-wise.
+We define `__lt__` (i.e. lower-than, or `<`) explicitly for `Timespan`, `Event` and `Todo` 
+based on comparing their `cmp_tuple`s component-wise (as is the default for comparing python tuples).
 Please note that neither `str` nor `datetime` are comparable as less-than or greater-than `None`.
-So string values are replaced by the empty string `""` and the `datetime` values are replaced by
-whatever is passed as `default` parameter to `cmp_tuple`, which defaults to `datetime.min`.
-This means that instances having no value for a certain parameter will always be sorted before instances,
-where the parameter is set:
+So string values are replaced by the empty string `""` and the `datetime` values are replaced by `datetime.min`.
+This means that instances having no value for a certain parameter will always be sorted before instances where the parameter is set:
 
     >>> ics.Event(timespan=t0) < ics.Event(timespan=t1)
     True
@@ -138,16 +137,56 @@ where the parameter is set:
     >>> ics.Event(timespan=t2) < ics.Event(timespan=t2, name="Event Name")
     True
 
-The functions `__gt__`, `__le__`, `__ge__` are generated from `__lt__` and `__eq__` using `functools.total_ordering`.
+The functions `__gt__`, `__le__`, `__ge__` all behave similarly by applying the respective operation to the `cmp_tuples`.
+Note that for `Todo`s the attribute `due` has higher priority than `begin`:
 
-TODO: something about comparing Events with Todos or plain Timespans
-which is probably different to what attr would do, as we also compare subclasses
-we also make sure that subclasses (also those using attrs) don't override the ordering functions
+    >>> x1 = ics.Todo(begin=dt(2020, 2, 20, 20, 20))
+    >>> x2 = ics.Todo(due=dt(2020, 2, 22, 20, 20))
+    >>> x3 = ics.Todo(begin=dt(2020, 2, 20, 20, 20), due=dt(2020, 2, 22, 20, 20))
+    >>> x1 < x2
+    True
+    >>> x1.begin = dt(2020, 4, 4, 20, 20)
+    >>> x1.begin > x2.due
+    True
+    >>> x1 < x2 # even altough x2 now completely lies before x1
+    True
+    >>> x2 < x3
+    True
+
+### Comparison Caveats
+
+To understand how comparison of events works and what might go wrong in special cases,
+one first needs to understand how the "rich comparision" operators (`__lt__` and the like)
+are [defined](https://docs.python.org/3/reference/datamodel.html#object.__lt__):
+
+> By default, `__ne__()` delegates to `__eq__()` and inverts the result unless it is `NotImplemented`.
+> There are no other implied relationships among the comparison operators, for example, the truth of `(x<y or x==y)` does not imply `x<=y`.
+
+Ordering events relies on comparing the tuples returned by `cmp_tuple` and thus follows the same rules as
+[comparing tuples](https://stackoverflow.com/a/5292332/805569).
+Additionally, as these tuples only represent a part of the instance, the order is not total and the following caveats need to be considered.
+The equality part in `<=` only holds for the compared tuples, but not all the remaining event attributes, thus `(x<=y and not x<y)` does *not* imply `x==y`.
+Moreover, `not (x < y) and not (x > y)` does also *not* imply `i == y`.
+See the end of the next section, where this is shown for two `Timespans` that refer to the same timestamps, but in different timezones.
+
+Unlike all ordering functions, the equality comparision functions `__eq__` and `__ne__` 
+are generated by `attr.s(eq=True, ord=False)` as defined [here](http://www.attrs.org/en/stable/api.html#attr.s):
+
+> They compare the instances as if they were tuples of their attrs attributes, but only iff the types of both classes are identical!
+
+This is similar to defining the operations as follows:
+
+    if other.__class__ is self.__class__:
+        return attrs_to_tuple(self) <OP> attrs_to_tuple(other)
+    else:
+        return NotImplemented
+
+Note that equality, unlike ordering, thus takes all attributes and also the specific class into account.
 
 ### Comparing `datetime`s with and without timezones
 
 By default, `datetime`s with timezones and those without timezones (so called naive `datetimes`) can't directly
-be compared.
+be ordered.
 Furthermore, behaviour of some `datetime` depends on the local timezone,
 so let's first [assume](https://docs.python.org/3/library/time.html#time.tzset)
 we are all living in Berlin, Germany and have the corresponding timezone set:
@@ -208,7 +247,8 @@ used where that is the reasonable behavior.
 
 Thus, clients should default to local time when handling floating events,
 similar to what other datetime methods do.
-We handle this in the `cmp_tuple` method by always converting naive `datetime`s to local ones:
+This is also what ics.py does, handling this in the `cmp_tuple` method
+by always converting naive `datetime`s to local ones:
 
     >>> e_local, e_floating = ics.Event(begin=dt_local), ics.Event(begin=dt_naive)
     >>> e_local.begin, e_floating.begin

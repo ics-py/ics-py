@@ -1,4 +1,3 @@
-import functools
 from datetime import datetime, timedelta, tzinfo as TZInfo
 from typing import Any, NamedTuple, Optional, TypeVar, Union, cast, overload
 
@@ -63,7 +62,6 @@ NullableTimespanTuple = NamedTuple("NullableTimespanTuple", [("begin", Optional[
 TimespanT = TypeVar('TimespanT', bound='Timespan')
 
 
-@functools.total_ordering
 @attr.s(slots=True, frozen=True, eq=True, order=False)
 class Timespan(object):
     begin_time: Optional[datetime] = attr.ib(validator=v_optional(instance_of(datetime)), default=None)
@@ -429,3 +427,10 @@ class EventTimespan(Timespan):
 class TodoTimespan(Timespan):
     def _end_name(self):
         return "due"
+
+    def timespan_tuple(self, default=None, normalization=None):
+        # Todos compare by (due, begin) instead of (begin, end)
+        return tuple(reversed(
+            super(TodoTimespan, self).timespan_tuple(
+                default=default, normalization=normalization)
+        ))

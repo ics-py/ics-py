@@ -12,7 +12,7 @@ of the rfc5545 specification or the lack of time of the developers.
 Here is a non-exhaustive list of the most notable.
 
 Missing support for recurrent events
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+************************************
 
 Events in the iCalendar specification my have a ``RRULE`` property that
 defines a rule or repeating pattern (Todos may have those too).
@@ -25,7 +25,7 @@ Support of ``RRULE`` is expected to be implemented before version 1.0.
 .. _`coverage`:
 
 Coverage of the rfc5545 is not 100%
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+***********************************
 
 ics.py does not indeed support the full rfc5545 specification
 and most likely, it will never do as it is too much work.
@@ -43,7 +43,7 @@ the low level API and have access to unsupported properties.
 
 
 ics.py too is strict when parsing input
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+***************************************
 
 ics.py was made to output rfc-compliant iCalendar files
 and to when possible parse only valid files.
@@ -69,7 +69,7 @@ by email [#email]_. Here are some answers that might be interesting
 to others.
 
 Is there a way to export to format *X* ?
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+****************************************
 
 ics.py does not support exporting data to any other file format than
 the one specified in the rfc5545 and this is not expected to change.
@@ -91,7 +91,7 @@ multiple VTODO and VEVENT and a VEVENT contains multiple VALARM and
 so on.
 
 ics.py does not support the property *Y*, i'm stuck.
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+****************************************************
 
 Please take a look at :ref:`this section <coverage>`.
 
@@ -100,7 +100,7 @@ Known bugs
 ----------
 
 Issues with all-day events
->>>>>>>>>>>>>>>>>>>>>>>>>>
+**************************
 
 The semantics of all-day events in the pyton API were badly defined
 in the early versions of ics.py and this led to incoherence and
@@ -109,7 +109,7 @@ bugs. See this
 for more info.
 
 Datetimes are converted to UTC at parsing time
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+**********************************************
 
 ics.py always uses UTC for internal representation of dates.
 This is wrong and leads to many problems. See this
