@@ -19,15 +19,15 @@ class Normalization(object):
     def normalize(self, value: "Timespan") -> "Timespan":
         ...
 
-    @overload
+    @overload  # noqa
     def normalize(self, value: DatetimeLike) -> datetime:
         ...
 
-    @overload
+    @overload  # noqa
     def normalize(self, value: None) -> None:
         ...
 
-    def normalize(self, value):
+    def normalize(self, value):  # noqa
         """
         Normalize datetime or timespan instances to make naive/floating ones (without timezone, i.e. tzinfo == None)
         comparable to aware ones with a fixed timezone.
@@ -298,11 +298,11 @@ class Timespan(object):
     def timespan_tuple(self, default: None = None, normalization: Normalization = None) -> NullableTimespanTuple:
         ...
 
-    @overload
+    @overload  # noqa
     def timespan_tuple(self, default: datetime, normalization: Normalization = None) -> TimespanTuple:
         ...
 
-    def timespan_tuple(self, default=None, normalization=None):
+    def timespan_tuple(self, default=None, normalization=None):  # noqa
         if normalization:
             return TimespanTuple(
                 normalization.normalize(self.get_begin() or default),

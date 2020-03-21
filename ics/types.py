@@ -39,19 +39,23 @@ OptionalTZDict = Optional[Dict[str, tzinfo]]
 
 
 @overload
-def get_timespan_if_calendar_entry(value: CalendarEntryOrTimespan) -> "Timespan": ...
+def get_timespan_if_calendar_entry(value: CalendarEntryOrTimespan) -> "Timespan":
+    ...
 
 
 @overload
-def get_timespan_if_calendar_entry(value: datetime) -> datetime: ...
+def get_timespan_if_calendar_entry(value: datetime) -> datetime:
+    ...
 
 
 @overload
-def get_timespan_if_calendar_entry(value: None) -> None: ...
+def get_timespan_if_calendar_entry(value: None) -> None:
+    ...
 
 
 def get_timespan_if_calendar_entry(value):
-    from ics.event import CalendarEntryAttrs
+    from ics.event import CalendarEntryAttrs  # noqa
+
     if isinstance(value, CalendarEntryAttrs):
         return value._timespan
     else:

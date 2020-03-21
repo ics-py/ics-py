@@ -1,5 +1,5 @@
 import warnings
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from ics.attendee import Attendee
 from ics.grammar.parse import ContentLine
@@ -7,7 +7,7 @@ from ics.parsers.parser import Parser, option
 from ics.utils import parse_datetime, parse_duration, unescape_string
 
 if TYPE_CHECKING:
-    from ics.alarm import *
+    from ics.alarm import BaseAlarm, AudioAlarm, DisplayAlarm, EmailAlarm, CustomAlarm
 
 
 class BaseAlarmParser(Parser):

@@ -1,6 +1,6 @@
-from .__meta__ import (__author__, __copyright__, __license__, __title__,
-                       __version__)
-from .alarm import *
+from .__meta__ import (__author__, __copyright__, __license__,  # noqa
+                       __title__, __version__)
+from .alarm import *  # noqa
 from .alarm import __all__ as all_alarms
 from .attendee import Attendee, Organizer
 from .event import Event, Geo
