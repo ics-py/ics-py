@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, List, Optional, Set, Union
+from typing import Dict, Iterable, List, Optional, Union
 
 import attr
 from attr.validators import instance_of
@@ -35,9 +35,9 @@ class Calendar(CalendarAttrs):
 
     Attributes:
 
-        events: a set of Event contained in the Calendar
-        todos: a set of Todo contained in the Calendar
-        timeline: a Timeline instance linked to this Calendar
+        events: a list of `Event`s contained in the Calendar
+        todos: a list of `Todo`s contained in the Calendar
+        timeline: a `Timeline` instance for iterating this Calendar in chronological order
 
     """
 
@@ -61,11 +61,9 @@ class Calendar(CalendarAttrs):
 
         Args:
             imports (**str**): data to be imported into the Calendar,
-            events (**Set[Event]**): Events to be added to the calendar
-            todos (Set[Todo]): Todos to be added to the calendar
-            creator (string): uid of the creator program.
-
-        If ``imports`` is specified, every other argument will be ignored.
+            events (**Iterable[Event]**): `Event`s to be added to the calendar
+            todos (**Iterable[Todo]**): `Todo`s to be added to the calendar
+            creator (**string**): uid of the creator program.
         """
         if events is None:
             events = tuple()

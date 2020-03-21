@@ -127,7 +127,7 @@ class CalendarEntryAttrs(Component):
         self._timespan = self._timespan.convert_end(representation)
 
     @property
-    def end_representation(self):
+    def end_representation(self) -> Optional[str]:
         return self._timespan.get_end_representation()
 
     @property
@@ -178,7 +178,7 @@ class CalendarEntryAttrs(Component):
 
     ####################################################################################################################
 
-    def cmp_tuple(self):
+    def cmp_tuple(self) -> Tuple[datetime, datetime, str]:
         return (*self.timespan.cmp_tuple(), self.name or "")
 
     def __lt__(self, other: Any) -> bool:
@@ -271,27 +271,10 @@ class Event(EventAttrs):
     ):
         """Initializes a new :class:`ics.event.Event`.
 
-        Args:
-            name: rfc5545 SUMMARY property
-            begin (datetime)
-            end (datetime)
-            duration
-            uid: must be unique
-            description
-            created (datetime)
-            last_modified (datetime)
-            location
-            url
-            transparent
-            alarms
-            attendees
-            categories
-            status
-            organizer
-            classification
-
         Raises:
-            ValueError: if `end` and `duration` are specified at the same time
+            ValueError: if `timespan` and any of `begin`, `end` or `duration`
+             are specified at the same time,
+             or if validation of the timespan fails (see :method:`ics.timespan.Timespan.validate`).
         """
         if (begin is not None or end is not None or duration is not None) and "timespan" in kwargs:
             raise ValueError("can't specify explicit timespan together with any of begin, end or duration")

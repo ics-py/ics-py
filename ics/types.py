@@ -60,6 +60,15 @@ def get_timespan_if_calendar_entry(value):
 
 @attr.s
 class RuntimeAttrValidation(object):
+    """
+    Mixin that automatically calls the converters and validators of `attr` attributes.
+    The library itself only calls these in the generated `__init__` method, with
+    this mixin they are also called when later (re-)assigning an attribute, which
+    is handled by `__setattr__`. This makes setting attributes as versatile as specifying
+    them as init parameters and also ensures that the guarantees of validators are
+    preserved even after creation of the object, at a small runtime cost.
+    """
+
     def __attrs_post_init__(self):
         self.__post_init__ = True
 

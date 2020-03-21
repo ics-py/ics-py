@@ -31,9 +31,8 @@ class Normalization(object):
         """
         Normalize datetime or timespan instances to make naive/floating ones (without timezone, i.e. tzinfo == None)
         comparable to aware ones with a fixed timezone.
-        The options from NormalizeIgnore will lead to the ignored type being converted to None.
-        If None is selected as normalization, the timezone information will be stripped from aware datetimes.
-        If the normalization is set to any tzinfo instance, naive datetimes will be interpreted in that timezone.
+        If None is selected as replacement, the timezone information will be stripped from aware datetimes.
+        If the replacement is set to any tzinfo instance, naive datetimes will be interpreted in that timezone.
         """
         if value is None:
             return None

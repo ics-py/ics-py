@@ -45,7 +45,7 @@ class Todo(TodoAttrs):
     """A todo list entry.
 
     Can have a start time and duration, or start and due time,
-    or only start/due time.
+    or only start or due time.
     """
     _timespan: TodoTimespan = attr.ib(validator=instance_of(TodoTimespan))
 

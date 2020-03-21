@@ -18,8 +18,6 @@ class Timeline(object):
     """
     `Timeline`s allow iterating all event from a `Calendar` in chronological order, optionally also filtering events
     according to their timestamps.
-    See the documentation of :func:`ics.timespan.normalize` for details on normalization methods to make datetimes
-    with and without timezone comparable.
     """
 
     _calendar: "Calendar" = attr.ib()
