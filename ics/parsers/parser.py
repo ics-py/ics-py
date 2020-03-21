@@ -1,3 +1,5 @@
+import re
+from collections import OrderedDict
 from typing import Callable, Dict, List, NamedTuple, Optional, Tuple
 
 from ics.grammar.parse import ContentLine
@@ -12,31 +14,31 @@ class ParserOption(NamedTuple):
 class Parser:
     @classmethod
     def get_parsers(cls) -> Dict[str, Tuple[Callable, ParserOption]]:
-        methods = [
+        methods = sorted(
             (method_name, getattr(cls, method_name))
             for method_name in dir(cls)
             if callable(getattr(cls, method_name))
-        ]
+        )
         parsers = [
             (method_name, method_callable)
             for (method_name, method_callable) in methods
-            if method_name.startswith("parse_")
+            if re.match("^parse[0-9]*_", method_name)
         ]
-        return {
-            method_name.split("_", 1)[1]
-            .upper()
-            .replace("_", "-"): (
-                method_callable,
-                getattr(method_callable, "options", ParserOption()),
+        return OrderedDict(
+            (
+                method_name.split("_", 1)[1].upper().replace("_", "-"), (
+                    method_callable,
+                    getattr(method_callable, "options", ParserOption()),
+                )
             )
             for (method_name, method_callable) in parsers
-        }
+        )
 
 
 def option(
-    required: bool = False,
-    multiple: bool = False,
-    default: Optional[List[ContentLine]] = None,
+        required: bool = False,
+        multiple: bool = False,
+        default: Optional[List[ContentLine]] = None,
 ) -> Callable:
     def decorator(fn):
         fn.options = ParserOption(required, multiple, default)

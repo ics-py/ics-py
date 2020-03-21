@@ -1,12 +1,15 @@
-from ics.attendee import Attendee
+from typing import List
+
+import attr
+
 from ics.alarm.base import BaseAlarm
-from typing import Union, List
-from datetime import datetime, timedelta
-
-from ics.serializers.alarm_serializer import EmailAlarmSerializer
+from ics.attendee import Attendee
 from ics.parsers.alarm_parser import EmailAlarmParser
+from ics.serializers.alarm_serializer import EmailAlarmSerializer
+from ics.utils import check_is_instance
 
 
+@attr.s(repr=False)
 class EmailAlarm(BaseAlarm):
     """
     A calendar event VALARM with Email option.
@@ -17,21 +20,14 @@ class EmailAlarm(BaseAlarm):
         parser = EmailAlarmParser
         serializer = EmailAlarmSerializer
 
-    def __init__(
-        self,
-        trigger: Union[timedelta, datetime] = None,
-        repeat: int = None,
-        duration: timedelta = None,
-        subject: str = None,
-        body: str = None,
-        recipients: List[Attendee] = None,
-    ):
+    subject: str = attr.ib(default=None)
+    body: str = attr.ib(default=None)
+    recipients: List[Attendee] = attr.ib(factory=list)  # TODO this is a set for Event
 
-        super().__init__(trigger, repeat, duration)
-
-        self.subject = subject
-        self.body = body
-        self.recipients = recipients if recipients else []
+    def add_recipient(self, recipient: Attendee):
+        """ Add an recipient to the recipients list """
+        check_is_instance("recipient", recipient, Attendee)
+        self.recipients.append(recipient)
 
     @property
     def action(self):

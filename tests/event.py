@@ -1,33 +1,37 @@
 import os
 import unittest
-from datetime import datetime as dt
-from datetime import timedelta as td
+from datetime import datetime as dt, timedelta as td
 
-import arrow
 import pytest
+from dateutil.tz import UTC as tzutc
 
 from ics.attendee import Attendee, Organizer
 from ics.event import Event
-from ics.icalendar import Calendar
 from ics.grammar.parse import Container
-
+from ics.icalendar import Calendar
 from .fixture import (cal12, cal13, cal15, cal16, cal17, cal18, cal19,
                       cal19bis, cal20, cal32, cal33_1, cal33_2, cal33_3,
                       cal33_4, cal33_5)
 
 CRLF = "\r\n"
 
+EVENT_A = Event(name="a")
+EVENT_B = Event(name="b")
+EVENT_M = Event(name="m")
+EVENT_Z = Event(name="z")
+EVENT_A.created = EVENT_B.created = EVENT_M.created = EVENT_Z.created = dt.now()
+
 
 class TestEvent(unittest.TestCase):
 
     def test_event(self):
-        e = Event(begin=0, end=20)
-        self.assertEqual(e.begin.timestamp, 0)
-        self.assertEqual(e.end.timestamp, 20)
-        self.assertTrue(e.has_end())
+        e = Event(begin=dt.fromtimestamp(0), end=dt.fromtimestamp(20))
+        self.assertEqual(e.begin.timestamp(), 0)
+        self.assertEqual(e.end.timestamp(), 20)
+        self.assertTrue(e.has_explicit_end)
         self.assertFalse(e.all_day)
 
-        f = Event(begin=10, end=30)
+        f = Event(begin=dt.fromtimestamp(10), end=dt.fromtimestamp(30))
         self.assertTrue(e < f)
         self.assertTrue(e <= f)
         self.assertTrue(f > e)
@@ -36,140 +40,115 @@ class TestEvent(unittest.TestCase):
     def test_event_with_duration(self):
         c = Calendar(cal12)
         e = next(iter(c.events))
-        self.assertEqual(e._duration, td(1, 3600))
+        self.assertEqual(e.duration, td(1, 3600))
         self.assertEqual(e.end - e.begin, td(1, 3600))
 
     def test_event_with_geo(self):
         c = Calendar(cal12)
         e = list(c.events)[0]
-        self.assertEqual(e.geo, (40.779897,-73.968565))
+        self.assertEqual(e.geo, (40.779897, -73.968565))
 
     def test_not_duration_and_end(self):
         with self.assertRaises(ValueError):
             Calendar(cal13)
 
     def test_duration_output(self):
-        e = Event(begin=0, duration=td(1, 23))
+        e = Event(begin=dt.utcfromtimestamp(0), duration=td(1, 23))
+        lines = str(e).splitlines()
+        self.assertIn('DTSTART:19700101T000000', lines)
+        self.assertIn('DURATION:P1DT23S', lines)
+
+    def test_duration_output_utc(self):
+        e = Event(begin=dt.fromtimestamp(0, tz=tzutc), duration=td(days=8, hours=1, minutes=2, seconds=3))
         lines = str(e).splitlines()
         self.assertIn('DTSTART:19700101T000000Z', lines)
-        self.assertIn('DURATION:P1DT23S', lines)
+        self.assertIn('DURATION:P8DT1H2M3S', lines)
 
     def test_geo_output(self):
         e = Event(geo=(40.779897, -73.968565))
         lines = str(e).splitlines()
         self.assertIn('GEO:40.779897;-73.968565', lines)
 
-    def test_make_all_day(self):
-        e = Event(begin=0, end=20)
-        begin = e.begin
-        e.make_all_day()
-        self.assertEqual(e.begin, begin)
-        self.assertEqual(e._end_time, None)
-        self.assertEqual(e._duration, None)
-
-    def test_make_all_day2(self):
-        e = Event(begin="1993/05/24")
-        begin = arrow.get("1993/05/24")
-
-        self.assertEqual(e._begin, begin)
-        self.assertEqual(e.begin, begin)
-
-        self.assertEqual(e._end_time, None)
-        self.assertEqual(e.end, begin)
-
-        e.make_all_day()
-
-        self.assertEqual(e._begin, begin)
-        self.assertEqual(e.begin, begin)
-        self.assertEqual(e._begin_precision, "day")
-
-        self.assertEqual(e._end_time, None)
-        self.assertEqual(e.end, arrow.get("1993/05/25"))
-
     def test_init_duration_end(self):
         with self.assertRaises(ValueError):
-            Event(name="plop", begin=0, end=10, duration=1)
+            Event(name="plop", begin=dt.fromtimestamp(0), end=dt.fromtimestamp(10), duration=td(1))
 
     def test_end_before_begin(self):
-        e = Event(begin="2013/10/10")
+        e = Event(begin=dt(2013, 10, 10))
         with self.assertRaises(ValueError):
-            e.end = "1999/10/10"
+            e.end = dt(1999, 10, 10)
 
     def test_begin_after_end(self):
-        e = Event(end="19991010")
+        e = Event(begin=dt(1999, 10, 9), end=dt(1999, 10, 10))
         with self.assertRaises(ValueError):
-            e.begin = "2013/10/10"
-
-    def test_end_with_prescision(self):
-        e = Event(begin="1999/10/10")
-        e._begin_precision = "day"
-        self.assertEqual(e.end, arrow.get("1999/10/11"))
+            e.begin = dt(2013, 10, 10)
 
     def test_plain_repr(self):
-        self.assertEqual(repr(Event()), "<Event>")
+        self.assertEqual("<floating Event>", repr(Event()))
 
     def test_all_day_repr(self):
-        e = Event(name='plop', begin="1999/10/10")
+        e = Event(name='plop', begin=dt(1999, 10, 10))
         e.make_all_day()
-        self.assertEqual(repr(e), "<all-day Event 'plop' 1999-10-10>")
+        self.assertEqual("<all-day Event 'plop' begin: 1999-10-10 end: 1999-10-11>", repr(e))
+        self.assertEqual(dt(1999, 10, 11), e.end)
 
     def test_name_repr(self):
         e = Event(name='plop')
-        self.assertEqual(repr(e), "<Event 'plop'>")
+        self.assertEqual("<floating Event 'plop'>", repr(e))
 
     def test_repr(self):
-        e = Event(name='plop', begin="1999/10/10")
-        self.assertEqual(repr(e), "<Event 'plop' begin:1999-10-10T00:00:00+00:00 end:1999-10-10T00:00:00+00:00>")
+        e = Event(name='plop', begin=dt(1999, 10, 10))
+        self.assertEqual("<floating Event 'plop' begin: 1999-10-10 00:00:00 end: 1999-10-10 00:00:00>", repr(e))
 
     def test_init(self):
         e = Event()
 
-        self.assertEqual(e._duration, None)
-        self.assertEqual(e._end_time, None)
-        self.assertEqual(e._begin, None)
-        self.assertEqual(e._begin_precision, 'second')
-        self.assertNotEqual(e.uid, None)
-        self.assertEqual(e.description, None)
-        self.assertEqual(e.created, None)
-        self.assertEqual(e.last_modified, None)
-        self.assertEqual(e.location, None)
-        self.assertEqual(e.geo, None)
-        self.assertEqual(e.url, None)
-        self.assertEqual(e.extra, Container(name='VEVENT'))
-        self.assertEqual(e.status, None)
-        self.assertEqual(e.organizer, None)
+        self.assertEqual(td(0), e.duration)
+        self.assertEqual(None, e.end)
+        self.assertEqual(None, e.begin)
+        self.assertEqual('second', e.timespan.precision)
+        self.assertNotEqual(None, e.uid)
+        self.assertEqual(None, e.description)
+        self.assertEqual(None, e.created)
+        self.assertEqual(None, e.last_modified)
+        self.assertEqual(None, e.location)
+        self.assertEqual(None, e.geo)
+        self.assertEqual(None, e.url)
+        self.assertEqual(Container(name='VEVENT'), e.extra)
+        self.assertEqual(None, e.status)
+        self.assertEqual(None, e.organizer)
 
-    def test_has_end(self):
+    def test_has_explicit_end(self):
         e = Event()
-        self.assertFalse(e.has_end())
-        e = Event(begin="1993/05/24", duration=10)
-        self.assertTrue(e.has_end())
-        e = Event(begin="1993/05/24", end="1999/10/11")
-        self.assertTrue(e.has_end())
-        e = Event(begin="1993/05/24")
+        self.assertFalse(e.has_explicit_end)
+        e = Event(begin=dt(1993, 5, 24), duration=td(days=2))
+        self.assertTrue(e.has_explicit_end)
+        e = Event(begin=dt(1993, 5, 24), end=dt(1999, 10, 11))
+        self.assertTrue(e.has_explicit_end)
+        e = Event(begin=dt(1993, 5, 24))
         e.make_all_day()
-        self.assertFalse(e.has_end())
+        self.assertFalse(e.has_explicit_end)
 
     def test_duration(self):
         e = Event()
-        self.assertIsNone(e.duration)
+        self.assertEqual(e.duration, td())
 
-        e1 = Event(begin="1993/05/24")
+        e1 = Event(begin=dt(1993, 5, 24))
         e1.make_all_day()
         self.assertEqual(e1.duration, td(days=1))
 
-        e2 = Event(begin="1993/05/24", end="1993/05/30")
+        e2 = Event(begin=dt(1993, 5, 24), end=dt(1993, 5, 30))
         self.assertEqual(e2.duration, td(days=6))
 
-        e3 = Event(begin="1993/05/24", duration=td(minutes=1))
+        e3 = Event(begin=dt(1993, 5, 24), duration=td(minutes=1))
         self.assertEqual(e3.duration, td(minutes=1))
 
-        e4 = Event(begin="1993/05/24")
+        e4 = Event(begin=dt(1993, 5, 24))
         self.assertEqual(e4.duration, td(0))
 
-        e5 = Event(begin="1993/05/24")
+        e5 = Event(begin=dt(1993, 5, 24))
         e5.duration = {'days': 6, 'hours': 2}
-        self.assertEqual(e5.end, arrow.get("1993-05-30T02:00"))
+        self.assertEqual(e5.end, dt(1993, 5, 30, 2, 0))
         self.assertEqual(e5.duration, td(hours=146))
 
     def test_geo(self):
@@ -222,34 +201,34 @@ class TestEvent(unittest.TestCase):
         self.assertIn('UID:', str(e))
 
     def test_cmp_other(self):
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             Event() < 1
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             Event() > 1
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             Event() <= 1
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             Event() >= 1
 
     def test_cmp_by_name(self):
-        self.assertGreater(Event(name="z"), Event(name="a"))
-        self.assertGreaterEqual(Event(name="z"), Event(name="a"))
-        self.assertGreaterEqual(Event(name="m"), Event(name="m"))
+        self.assertGreater(EVENT_Z, EVENT_A)
+        self.assertGreaterEqual(EVENT_Z, EVENT_A)
+        self.assertGreaterEqual(EVENT_M, EVENT_M)
 
-        self.assertLess(Event(name="a"), Event(name="z"))
-        self.assertLessEqual(Event(name="a"), Event(name="z"))
-        self.assertLessEqual(Event(name="m"), Event(name="m"))
+        self.assertLess(EVENT_A, EVENT_Z)
+        self.assertLessEqual(EVENT_A, EVENT_Z)
+        self.assertLessEqual(EVENT_M, EVENT_M)
 
     def test_cmp_by_name_fail(self):
-        self.assertFalse(Event(name="a") > Event(name="z"))
-        self.assertFalse(Event(name="a") >= Event(name="z"))
+        self.assertFalse(EVENT_A > EVENT_Z)
+        self.assertFalse(EVENT_A >= EVENT_Z)
 
-        self.assertFalse(Event(name="z") < Event(name="a"))
-        self.assertFalse(Event(name="z") <= Event(name="a"))
+        self.assertFalse(EVENT_Z < EVENT_A)
+        self.assertFalse(EVENT_Z <= EVENT_A)
 
     def test_cmp_by_name_fail_not_equal(self):
-        self.assertFalse(Event(name="a") > Event(name="a"))
-        self.assertFalse(Event(name="b") < Event(name="b"))
+        self.assertFalse(EVENT_A > EVENT_A)
+        self.assertFalse(EVENT_B < EVENT_B)
 
     def test_cmp_by_start_time(self):
         ev1 = Event(begin=dt(2018, 6, 29, 6))
@@ -298,17 +277,19 @@ class TestEvent(unittest.TestCase):
         e.name = "Hello, with \\ special; chars and \n newlines"
         e.location = "Here; too"
         e.description = "Every\nwhere ! Yes, yes !"
-        e.created = arrow.Arrow(2013, 1, 1)
+        e.dtstamp = dt(2013, 1, 1)
         e.uid = "empty-uid"
 
-        eq = CRLF.join(("BEGIN:VEVENT",
-                "DTSTAMP:20130101T000000Z",
-                "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
-                "LOCATION:Here\\; too",
-                "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
-                "UID:empty-uid",
-                "END:VEVENT"))
-        self.assertEqual(str(e), eq)
+        eq = list(sorted([
+            "BEGIN:VEVENT",
+            "DTSTAMP:20130101T000000",
+            "DESCRIPTION:Every\\nwhere ! Yes\\, yes !",
+            "LOCATION:Here\\; too",
+            "SUMMARY:Hello\\, with \\\\ special\\; chars and \\n newlines",
+            "UID:empty-uid",
+            "END:VEVENT"
+        ]))
+        self.assertEqual(list(sorted(str(e).splitlines())), eq)
 
     def test_url_input(self):
         c = Calendar(cal16)
@@ -379,7 +360,7 @@ class TestEvent(unittest.TestCase):
         refs http://www.kanzaki.com/docs/ical/dtstart.html
              http://www.kanzaki.com/docs/ical/date.html
         """
-        e = Event(begin="2015/12/21")
+        e = Event(begin=dt(2015, 12, 21))
         e.make_all_day()
         # no time or tz specifier
         self.assertIn('DTSTART;VALUE=DATE:20151221', str(e).splitlines())
@@ -471,49 +452,49 @@ class TestEvent(unittest.TestCase):
         assert event_a.intersects(event_b)
         assert event_b.intersects(event_a)
 
-    def test_join_disjoined(self):
-        # disjoined events
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=20))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 50), duration=td(minutes=20))
-        with pytest.raises(ValueError):
-            event_a.join(event_b)
-        with pytest.raises(ValueError):
-            event_b.join(event_a)
-
-    def test_join_intersected(self):
-        # intersected events
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
-        assert event_a.join(event_b).time_equals(Event(name=None, begin=event_a.begin, end=event_b.end))
-        assert event_b.join(event_a).time_equals(Event(name=None, begin=event_a.begin, end=event_b.end))
-
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
-        assert event_a.join(event_b).time_equals(Event(name=None, begin=event_b.begin, end=event_a.end))
-        assert event_b.join(event_a).time_equals(Event(name=None, begin=event_b.begin, end=event_a.end))
-
-    def test_join_included(self):
-        # included events
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
-        assert event_a.join(event_b).time_equals(Event(name=None, begin=event_a.begin, end=event_a.end))
-        assert event_b.join(event_a).time_equals(Event(name=None, begin=event_a.begin, end=event_a.end))
-
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
-        assert event_a.join(event_b).time_equals(Event(name=None, begin=event_b.begin, end=event_b.end))
-        assert event_b.join(event_a).time_equals(Event(name=None, begin=event_b.begin, end=event_b.end))
-
-        event = Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
-        event.join(event)
-        assert event == Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+    # def test_join_disjoined(self):
+    #     # disjoined events
+    #     event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=20))
+    #     event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 50), duration=td(minutes=20))
+    #     with pytest.raises(ValueError):
+    #         event_a.join(event_b)
+    #     with pytest.raises(ValueError):
+    #         event_b.join(event_a)
+    #
+    # def test_join_intersected(self):
+    #     # intersected events
+    #     event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+    #     event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+    #     assert event_a.join(event_b).time_equals(Event(name=None, begin=event_a.begin, end=event_b.end))
+    #     assert event_b.join(event_a).time_equals(Event(name=None, begin=event_a.begin, end=event_b.end))
+    #
+    #     event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+    #     event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+    #     assert event_a.join(event_b).time_equals(Event(name=None, begin=event_b.begin, end=event_a.end))
+    #     assert event_b.join(event_a).time_equals(Event(name=None, begin=event_b.begin, end=event_a.end))
+    #
+    # def test_join_included(self):
+    #     # included events
+    #     event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+    #     event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+    #     assert event_a.join(event_b).time_equals(Event(name=None, begin=event_a.begin, end=event_a.end))
+    #     assert event_b.join(event_a).time_equals(Event(name=None, begin=event_a.begin, end=event_a.end))
+    #
+    #     event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+    #     event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+    #     assert event_a.join(event_b).time_equals(Event(name=None, begin=event_b.begin, end=event_b.end))
+    #     assert event_b.join(event_a).time_equals(Event(name=None, begin=event_b.begin, end=event_b.end))
+    #
+    #     event = Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+    #     event.join(event)
+    #     assert event == Event(uid='0', name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
 
     def test_issue_92(self):
         c = Calendar(cal32)
         e = list(c.events)[0]
 
-        assert e.begin == arrow.get('2016-10-04')
-        assert e.end == arrow.get('2016-10-05')
+        assert e.begin == dt(2016, 10, 4)
+        assert e.end == dt(2016, 10, 5)
 
     def test_classification_input(self):
         c = Calendar(cal12)
@@ -560,14 +541,13 @@ class TestEvent(unittest.TestCase):
         self.assertIn("CLASS:x-name", str(e).splitlines())
 
     def test_classification_bool(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             Event(name="Name", classification=True)
 
     def test_last_modified(self):
         c = Calendar(cal18)
         e = list(c.events)[0]
-
-        assert e.last_modified == arrow.get('2015-11-13 00:48:09')
+        self.assertEqual(dt(2015, 11, 13, 00, 48, 9, tzinfo=tzutc), e.last_modified)
 
     def equality(self):
         ev1 = Event(begin=dt(2018, 6, 29, 5), end=dt(2018, 6, 29, 7), name="my name")
@@ -583,7 +563,7 @@ class TestEvent(unittest.TestCase):
 
     def test_attendee_parse(self):
         with open(
-            os.path.join(os.path.dirname(__file__), "fixtures/groupscheduled.ics")
+                os.path.join(os.path.dirname(__file__), "fixtures/groupscheduled.ics")
         ) as f:
             c = Calendar(f.read())
             e = list(c.events)[0]

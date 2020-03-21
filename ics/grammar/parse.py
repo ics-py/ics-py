@@ -2,7 +2,11 @@ import collections
 from pathlib import Path
 from typing import Dict, List
 
+import attr
 import tatsu
+from tatsu.exceptions import FailedToken
+
+from ics.types import ContainerItem, RuntimeAttrValidation
 
 grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
 
@@ -14,7 +18,8 @@ class ParseError(Exception):
     pass
 
 
-class ContentLine:
+@attr.s(repr=False)
+class ContentLine(RuntimeAttrValidation):
     """
     Represents one property line.
 
@@ -23,49 +28,31 @@ class ContentLine:
     ``FOO;BAR=1:YOLO`` is represented by
 
     ``ContentLine('FOO', {'BAR': ['1']}, 'YOLO'))``
-
-    Args:
-
-        name:   The name of the property (uppercased for consistency and
-                easier comparison)
-        params: A map name:list of values
-        value:  The value of the property
     """
 
-    def __eq__(self, other):
-        ret = (self.name == other.name and
-               self.params == other.params and
-               self.value == other.value)
-        return ret
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __init__(self, name: str, params: Dict[str, List[str]] = {}, value: str = ''):
-        self.name = name.upper()
-        self.params = params
-        self.value = value
+    name: str = attr.ib(converter=str.upper)  # type: ignore
+    params: Dict[str, List[str]] = attr.ib(factory=dict)
+    value: str = attr.ib(default="")
 
     def __str__(self):
         params_str = ''
         for pname in self.params:
-            params_str += ';{}={}'.format(pname, ','.join(self.params[pname]))
+            params_str += ';{}={}'.format(pname, ','.join(self.params[pname]))  # TODO ensure escaping?
         return "{}{}:{}".format(self.name, params_str, self.value)
 
     def __repr__(self):
-        return "<ContentLine '{}' with {} parameter{}. Value='{}'>" \
-            .format(
-                self.name,
-                len(self.params),
-                "s" if len(self.params) > 1 else "",
-                self.value,
-            )
+        return "<ContentLine '{}' with {} parameter{}. Value='{}'>".format(
+            self.name,
+            len(self.params),
+            "s" if len(self.params) > 1 else "",
+            self.value,
+        )
 
     def __getitem__(self, item):
         return self.params[item]
 
     def __setitem__(self, item, *values):
-        self.params[item] = [val for val in values]
+        self.params[item] = list(values)
 
     @classmethod
     def parse(cls, line):
@@ -74,9 +61,13 @@ class ContentLine:
             raise ValueError("ContentLine can only contain escaped newlines")
         try:
             ast = GRAMMAR.parse(line)
-        except tatsu.exceptions.FailedToken:
+        except FailedToken:
             raise ParseError()
+        else:
+            return cls.interpret_ast(ast)
 
+    @classmethod
+    def interpret_ast(cls, ast):
         name = ''.join(ast['name'])
         value = ''.join(ast['value'])
         params = {}
@@ -88,11 +79,10 @@ class ContentLine:
 
     def clone(self):
         """Makes a copy of itself"""
-        # dict(self.params) -> Make a copy of the dict
-        return self.__class__(self.name, dict(self.params), self.value)
+        return attr.evolve(self)
 
 
-class Container(list):
+class Container(List[ContainerItem]):
     """Represents an iCalendar object.
     Contains a list of ContentLines or Containers.
 
@@ -102,7 +92,8 @@ class Container(list):
         items: Containers or ContentLines
     """
 
-    def __init__(self, name: str, *items: List):
+    def __init__(self, name: str, *items: ContainerItem):
+        self.check_items(*items)
         super(Container, self).__init__(items)
         self.name = name
 
@@ -123,7 +114,7 @@ class Container(list):
         items = []
         for line in tokenized_lines:
             if line.name == 'BEGIN':
-                items.append(Container.parse(line.value, tokenized_lines))
+                items.append(cls.parse(line.value, tokenized_lines))
             elif line.name == 'END':
                 if line.value != name:
                     raise ParseError(
@@ -135,10 +126,41 @@ class Container(list):
 
     def clone(self):
         """Makes a copy of itself"""
-        c = self.__class__(self.name)
-        for elem in self:
-            c.append(elem.clone())
-        return c
+        return self.__class__(self.name, *self)
+
+    def check_items(self, *items):
+        from ics.utils import check_is_instance
+        if len(items) == 1:
+            check_is_instance("item", items[0], (ContentLine, Container))
+        else:
+            for nr, item in enumerate(items):
+                check_is_instance("item %s" % nr, item, (ContentLine, Container))
+
+    def __setitem__(self, index, value):
+        self.check_items(value)
+        super(Container, self).__setitem__(index, value)
+
+    def insert(self, index, value):
+        self.check_items(value)
+        super(Container, self).insert(index, value)
+
+    def append(self, value):
+        self.check_items(value)
+        super(Container, self).append(value)
+
+    def extend(self, values):
+        self.check_items(*values)
+        super(Container, self).extend(values)
+
+    def __add__(self, values):
+        container = type(self)(self.name)
+        container.extend(self)
+        container.extend(values)
+        return container
+
+    def __iadd__(self, values):
+        self.extend(values)
+        return self
 
 
 def unfold_lines(physical_lines):
@@ -164,7 +186,9 @@ def tokenize_line(unfolded_lines):
         yield ContentLine.parse(line)
 
 
-def parse(tokenized_lines, block_name=None):
+def parse(tokenized_lines):
+    # tokenized_lines must be an iterator, so that Container.parse can consume/steal lines
+    tokenized_lines = iter(tokenized_lines)
     res = []
     for line in tokenized_lines:
         if line.name == 'BEGIN':
@@ -180,17 +204,6 @@ def lines_to_container(lines):
 
 def string_to_container(txt):
     return lines_to_container(txt.splitlines())
-
-
-def interpret_ast(ast):
-    name = ''.join(ast['name'])
-    value = ''.join(ast['value'])
-    params = {}
-    for param_ast in ast.get('params', []):
-        param_name = ''.join(param_ast["name"])
-        param_values = [''.join(x) for x in param_ast["values_"]]
-        params[param_name] = param_values
-    return ContentLine(name, params, value)
 
 
 def calendar_string_to_containers(string):

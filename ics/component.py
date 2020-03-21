@@ -1,35 +1,46 @@
 import warnings
-from collections import namedtuple
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, Type, TypeVar
+
+import attr
+from attr.validators import instance_of
 
 from ics.grammar.parse import Container
-from .utils import get_lines
-from .serializers.serializer import Serializer
-from .parsers.parser import Parser
+from ics.parsers.parser import Parser
+from ics.serializers.serializer import Serializer
+from ics.types import RuntimeAttrValidation
+from ics.utils import get_lines
 
-Extractor = namedtuple(
-    'Extractor',
-    ['function', 'type', 'required', 'multiple', 'default']
-)
+ComponentType = TypeVar('ComponentType', bound='Component')
+PLACEHOLDER_CONTAINER = Container("PLACEHOLDER")
 
 
-class Component(object):
-
+@attr.s
+class Component(RuntimeAttrValidation):
     class Meta:
         name = "ABSTRACT"
         parser = Parser
         serializer = Serializer
 
-    _classmethod_args: Tuple
-    _classmethod_kwargs: Dict
+    extra: Container = attr.ib(init=False, default=PLACEHOLDER_CONTAINER, validator=instance_of(Container))
+    _classmethod_args: Tuple = attr.ib(init=False, default=None, repr=False, eq=False, order=False, hash=False)
+    _classmethod_kwargs: Dict = attr.ib(init=False, default=None, repr=False, eq=False, order=False, hash=False)
+
+    def __attrs_post_init__(self):
+        super(Component, self).__attrs_post_init__()
+        if self.extra is PLACEHOLDER_CONTAINER:
+            self.extra = Container(self.Meta.name)
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+        if cls.__str__ != Component.__str__:
+            raise TypeError("%s may not overwrite %s" % (cls, Component.__str__))
 
     @classmethod
-    def _from_container(cls, container: Container, *args: Any, **kwargs: Any):
+    def _from_container(cls: Type[ComponentType], container: Container, *args: Any, **kwargs: Any) -> ComponentType:
         k = cls()
         k._classmethod_args = args
         k._classmethod_kwargs = kwargs
         k._populate(container)
-
         return k
 
     def _populate(self, container: Container) -> None:
@@ -43,17 +54,13 @@ class Component(object):
                     lines = options.default
                     default_str = "\\n".join(map(str, options.default))
                     message = ("The %s property was not found and is required by the RFC." +
-                        " A default value of \"%s\" has been used instead") % (line_name, default_str)
+                               " A default value of \"%s\" has been used instead") % (line_name, default_str)
                     warnings.warn(message)
                 else:
-                    raise ValueError(
-                        'A {} must have at least one {}'
-                        .format(container.name, line_name))
+                    raise ValueError('A {} must have at least one {}'.format(container.name, line_name))
 
             if not options.multiple and len(lines) > 1:
-                raise ValueError(
-                    'A {} must have at most one {}'
-                    .format(container.name, line_name))
+                raise ValueError('A {} must have at most one {}'.format(container.name, line_name))
 
             if options.multiple:
                 parser(self, lines)  # Send a list or empty list
@@ -65,9 +72,19 @@ class Component(object):
 
         self.extra = container  # Store unused lines
 
-    def __str__(self) -> str:
-        """Returns the component in an iCalendar format."""
+    def clone(self):
+        """
+        Returns:
+            Event: an exact copy of self
+        """
+        return attr.evolve(self)
+
+    def serialize(self) -> Container:
         container = self.extra.clone()
         for output in self.Meta.serializer.get_serializers():
             output(self, container)
-        return str(container)
+        return container
+
+    def __str__(self) -> str:
+        """Returns the component in an iCalendar format."""
+        return str(self.serialize())

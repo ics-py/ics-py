@@ -2,8 +2,8 @@ import unittest
 from datetime import timedelta
 
 from ics.grammar.parse import ParseError, string_to_container
-from ics.utils import (iso_to_arrow, parse_duration, remove_x,
-                       timedelta_to_duration)
+from ics.utils import (parse_datetime, parse_duration, remove_x,
+                       serialize_duration)
 from tests.fixture import cal1, cal2
 
 
@@ -44,19 +44,22 @@ class TestParseDuration(unittest.TestCase):
 
 class TestTimedeltaToDuration(unittest.TestCase):
     dataset_simple = {
-        (0, 0): 'P',
+        # (0, 0): 'P',
+        (0, 0): 'PT0S',
         (0, 1): 'PT1S', (0, 60): 'PT1M', (0, 3600): 'PT1H',
-        (1, 0): 'P1D', (7, 0): 'P1W',
+        (1, 0): 'P1D', (7, 0): 'P7D',  # (7, 0): 'P1W',
     }
 
     dataset_combined = {
-        (1, 1): 'P1DT1S', (8, 3661): 'P1W1DT1H1M1S', (15, 18020): 'P2W1DT5H20S',
+        (1, 1): 'P1DT1S',
+        # (8, 3661): 'P1W1DT1H1M1S', (15, 18020): 'P2W1DT5H20S',
+        (8, 3661): 'P8DT1H1M1S', (15, 18020): 'P15DT5H20S',
     }
 
     def run_on_dataset(self, dataset):
         for test in dataset:
             expected = dataset[test]
-            self.assertEqual(timedelta_to_duration(timedelta(*test)), expected)
+            self.assertEqual(serialize_duration(timedelta(*test)), expected)
 
     def test_simple(self):
         self.run_on_dataset(self.dataset_simple)
@@ -80,7 +83,7 @@ class TestRemoveX(unittest.TestCase):
         self.assertSequenceEqual(c, c2)
 
 
-class TestIso_to_arrow(unittest.TestCase):
+class Test_parse_datetime(unittest.TestCase):
 
     def test_none(self):
-        self.assertIs(None, iso_to_arrow(None))
+        self.assertIs(None, parse_datetime(None))
