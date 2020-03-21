@@ -17,6 +17,14 @@ In progress:
  - Fix timezone issues
  - Fix SEQUENCE bug
  - Introduce Timespan
+ - `arrow` was removed, use built-in `datetime` and `timedelta` instead
+ - `events`, `todos`, `attendees` and `alarms` are now all lists instead of sets, as their contained types are not actually hashable and in order to keep the order they had in the file. Use `append` instead of `add` to insert new entries.
+ - `attendees` and `organizer` now must be instances of the respective classes, plain strings with the e-mail are no longer allowed
+ - `extra` can now only contain nested `Container`s and `ContentLine`s, no plain strings
+ - some attributes now have further validators that restrict which values they can be set to, which might further change once we have configurable levels of strictness
+ - `dtstamp` and `created` have been separated, `dtstamp` is the only one set automatically (hopefully more conforming with the RFC)
+ - `Event.join` is hard to do right and now gone if nobody needs it (and is able to formulate a clear behaviour faced with floating events vs events in different timezones and also all-day events)   
+ - method `has_end()` -> property `has_explicit_end` as any Event with a begin time has an end
 
 **************
 0.7 - Katherine Johnson
