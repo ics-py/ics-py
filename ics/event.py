@@ -135,7 +135,7 @@ class CalendarEntryAttrs(Component):
         return self._timespan.has_explicit_end()
 
     @property
-    def all_day(self):
+    def all_day(self) -> bool:
         return self._timespan.is_all_day()
 
     def make_all_day(self):
@@ -156,7 +156,7 @@ class CalendarEntryAttrs(Component):
         self._timespan = self._timespan.replace(precision="seconds")
 
     @property
-    def floating(self):
+    def floating(self) -> bool:
         return self._timespan.is_floating()
 
     def replace_timezone(self, tzinfo):
@@ -182,24 +182,28 @@ class CalendarEntryAttrs(Component):
         return (*self.timespan.cmp_tuple(), self.name or "")
 
     def __lt__(self, other: Any) -> bool:
+        """self < other"""
         if isinstance(other, CalendarEntryAttrs):
             return self.cmp_tuple() < other.cmp_tuple()
         else:
             return NotImplemented
 
     def __gt__(self, other: Any) -> bool:
+        """self > other"""
         if isinstance(other, CalendarEntryAttrs):
             return self.cmp_tuple() > other.cmp_tuple()
         else:
             return NotImplemented
 
     def __le__(self, other: Any) -> bool:
+        """self <= other"""
         if isinstance(other, CalendarEntryAttrs):
             return self.cmp_tuple() <= other.cmp_tuple()
         else:
             return NotImplemented
 
     def __ge__(self, other: Any) -> bool:
+        """self >= other"""
         if isinstance(other, CalendarEntryAttrs):
             return self.cmp_tuple() >= other.cmp_tuple()
         else:
@@ -265,7 +269,7 @@ class Event(EventAttrs):
             duration: TimedeltaLike = None,
             *args, **kwargs
     ):
-        """Instantiates a new :class:`ics.event.Event`.
+        """Initializes a new :class:`ics.event.Event`.
 
         Args:
             name: rfc5545 SUMMARY property

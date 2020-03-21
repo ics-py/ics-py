@@ -75,7 +75,8 @@ class Component(RuntimeAttrValidation):
     def clone(self):
         """
         Returns:
-            Event: an exact copy of self"""
+            Event: an exact copy of self
+        """
         return attr.evolve(self)
 
     def serialize(self) -> Container:

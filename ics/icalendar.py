@@ -31,7 +31,7 @@ class CalendarAttrs(Component):
 
 class Calendar(CalendarAttrs):
     """
-    Represents an unique rfc5545 iCalendar.
+    Represents an unique RFC 5545 iCalendar.
 
     Attributes:
 
@@ -57,7 +57,7 @@ class Calendar(CalendarAttrs):
             creator: str = None,
             **kwargs
     ):
-        """Instantiates a new Calendar.
+        """Initializes a new Calendar.
 
         Args:
             imports (**str**): data to be imported into the Calendar,
