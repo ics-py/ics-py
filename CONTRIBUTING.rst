@@ -1,5 +1,5 @@
-Contributing
-============
+Contributing to ics.py
+======================
 
 Do you want to contribute? We would love your help 🤗
 
@@ -34,7 +34,7 @@ are already working on it or have a specific idea on how the problem should
 be solved.
 
 If you are fixing a bug
->>>>>>>>>>>>>>>>>>>>>>>
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Please add a test and add a link to it in the PR description
 proving that the bug is fixed.
@@ -42,16 +42,18 @@ This will help us merge your PR quickly and above all, this will make
 sure that we won't re-introduce the bug later by mistake.
 
 If you are adding a feature
->>>>>>>>>>>>>>>>>>>>>>>>>>>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We will ask you to provide:
 
 * A few tests showing your feature works as intended (they are also great examples and will prevent regressions)
-* Docstrings on the public API
-* Type annotations where possible
+* Write docstrings on the public API
+* Add type annotations where possible
+* Think about where and how this will affect documentation and amend
+  the respective section
 
 Last thing
->>>>>>>>>>
+^^^^^^^^^^
 
 * Please add yourself to ``AUTHORS.rst``
 * and state your changes in ``CHANGELOG.rst``.

@@ -1,7 +1,20 @@
-:orphan:
+Quickstart
+==========
 
-Import a calendar from a file
------------------------------
+.. meta::
+   :keywords: quickstart
+
+.. topic:: Abstract
+
+   In this document, we show you how to make first contact with ics.py.
+
+.. contents::  Content
+   :local:
+
+
+
+Importing a Calendar from a File
+--------------------------------
 
 .. code-block:: python
 
@@ -22,8 +35,8 @@ Import a calendar from a file
     # "Event 'Workshop Git' started 2 years ago"
 
 
-Create a new calendar and add events
-------------------------------------
+Creating a new Calendar and Add Events
+--------------------------------------
 
 .. code-block:: python
 
@@ -36,8 +49,9 @@ Create a new calendar and add events
     c.events
     # {<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>}
 
-Export a Calendar to a file
----------------------------
+
+Exporting a Calendar to a File
+------------------------------
 
 .. code-block:: python
 
