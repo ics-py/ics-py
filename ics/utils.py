@@ -43,6 +43,21 @@ def ensure_datetime(value):
         raise ValueError("can't construct datetime from %s" % repr(value))
 
 
+@overload
+def ensure_utc(value: None) -> None: ...
+
+
+@overload
+def ensure_utc(value: DatetimeLike) -> datetime: ...
+
+
+def ensure_utc(value):
+    value = ensure_datetime(value)
+    if value is not None:
+        value = value.astimezone(dateutil_tzutc)
+    return value
+
+
 def now_in_utc() -> datetime:
     return datetime.now(tz=dateutil_tzutc)
 

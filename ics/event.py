@@ -14,7 +14,7 @@ from ics.converter.timespan import TimespanConverter
 from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, get_timespan_if_calendar_entry
-from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, now_in_utc, uid_gen, validate_not_none
+from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, ensure_utc, now_in_utc, uid_gen, validate_not_none
 
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
@@ -30,10 +30,9 @@ class CalendarEntryAttrs(Component):
     url: Optional[str] = attr.ib(default=None)
     status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=v_optional(in_(STATUS_VALUES)))  # type: ignore
 
-    # TODO these three timestamps must be in UTC according to the RFC
-    created: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
-    last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
-    dtstamp: datetime = attr.ib(factory=now_in_utc, converter=ensure_datetime, validator=validate_not_none)  # type: ignore
+    created: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore
+    last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore
+    dtstamp: datetime = attr.ib(factory=now_in_utc, converter=ensure_utc, validator=validate_not_none)  # type: ignore
 
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
 
