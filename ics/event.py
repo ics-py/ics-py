@@ -1,15 +1,17 @@
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, overload
+from typing import Any, List, Optional, Tuple
 
 import attr
 from attr.converters import optional as c_optional
 from attr.validators import in_, instance_of, optional as v_optional
 
-from ics.alarm.base import BaseAlarm
+from ics.alarm import BaseAlarm
 from ics.attendee import Attendee, Organizer
 from ics.component import Component
-from ics.parsers.event_parser import EventParser
-from ics.serializers.event_serializer import EventSerializer
+from ics.converter.base import ics_attr_meta
+from ics.converter.component import ComponentMeta
+from ics.converter.timespan import TimespanConverter
+from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, get_timespan_if_calendar_entry
 from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, now_in_utc, uid_gen, validate_not_none
@@ -17,34 +19,10 @@ from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, now_
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
 
-class Geo(NamedTuple):
-    latitude: float
-    longitude: float
-
-
-@overload
-def make_geo(value: None) -> None:
-    ...
-
-
-@overload
-def make_geo(value: Union[Dict[str, float], Tuple[float, float]]) -> "Geo":
-    ...
-
-
-def make_geo(value):
-    if isinstance(value, dict):
-        return Geo(**value)
-    elif isinstance(value, tuple):
-        return Geo(*value)
-    else:
-        return None
-
-
-@attr.s(repr=False, eq=True, order=False)
+@attr.s(eq=True, order=False)
 class CalendarEntryAttrs(Component):
-    _timespan: Timespan = attr.ib(validator=instance_of(Timespan))
-    name: Optional[str] = attr.ib(default=None)
+    _timespan: Timespan = attr.ib(validator=instance_of(Timespan), metadata=ics_attr_meta(converter=TimespanConverter))
+    name: Optional[str] = attr.ib(default=None)  # TODO name -> summary
     uid: str = attr.ib(factory=uid_gen)
 
     description: Optional[str] = attr.ib(default=None)
@@ -225,7 +203,7 @@ class CalendarEntryAttrs(Component):
         return self._timespan.is_included_in(get_timespan_if_calendar_entry(second))
 
 
-@attr.s(repr=False, eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
+@attr.s(eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
 class EventAttrs(CalendarEntryAttrs):
     classification: Optional[str] = attr.ib(default=None, validator=v_optional(instance_of(str)))
 
@@ -234,7 +212,7 @@ class EventAttrs(CalendarEntryAttrs):
     geo: Optional[Geo] = attr.ib(default=None, converter=make_geo)  # type: ignore
 
     attendees: List[Attendee] = attr.ib(factory=list, converter=list)
-    categories: Set[str] = attr.ib(factory=set, converter=set)
+    categories: List[str] = attr.ib(factory=list, converter=list)
 
     def add_attendee(self, attendee: Attendee):
         """ Add an attendee to the attendees set """
@@ -256,10 +234,7 @@ class Event(EventAttrs):
 
     _timespan: EventTimespan = attr.ib(validator=instance_of(EventTimespan))
 
-    class Meta:
-        name = "VEVENT"
-        parser = EventParser
-        serializer = EventSerializer
+    Meta = ComponentMeta("VEVENT")
 
     def __init__(
             self,

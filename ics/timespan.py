@@ -6,7 +6,7 @@ from attr.validators import instance_of, optional as v_optional
 from dateutil.tz import tzlocal
 
 from ics.types import DatetimeLike
-from ics.utils import TIMEDELTA_CACHE, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight, timedelta_nearly_zero
+from ics.utils import TIMEDELTA_CACHE, TIMEDELTA_DAY, TIMEDELTA_ZERO, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight, timedelta_nearly_zero
 
 
 @attr.s
@@ -130,7 +130,7 @@ class Timespan(object):
                 validate_timeprecision(self.end_time, self._end_name())
                 if self.begin_time > self.end_time:
                     raise ValueError("begin time must be before " + self._end_name() + " time")
-                if self.precision == "day" and self.end_time < (self.begin_time + TIMEDELTA_CACHE["day"]):
+                if self.precision == "day" and self.end_time < (self.begin_time + TIMEDELTA_DAY):
                     raise ValueError("all-day timespan duration must be at least one day")
                 if self.duration is not None:
                     raise ValueError("can't set duration together with " + self._end_name() + " time")
@@ -144,9 +144,9 @@ class Timespan(object):
                                      (self.get_effective_duration(), self.precision))
 
             if self.duration is not None:
-                if self.duration < TIMEDELTA_CACHE[0]:
+                if self.duration < TIMEDELTA_ZERO:
                     raise ValueError("timespan duration must be positive")
-                if self.precision == "day" and self.duration < TIMEDELTA_CACHE["day"]:
+                if self.precision == "day" and self.duration < TIMEDELTA_DAY:
                     raise ValueError("all-day timespan duration must be at least one day")
                 if not timedelta_nearly_zero(self.duration % TIMEDELTA_CACHE[self.precision]):
                     raise ValueError("duration value %s has higher precision than set precision %s" %
@@ -219,7 +219,7 @@ class Timespan(object):
         if end is not None:
             end = ceil_datetime_to_midnight(end).replace(tzinfo=None)
             if end == begin:  # we also add another day if the duration would be 0 otherwise
-                end = end + TIMEDELTA_CACHE["day"]
+                end = end + TIMEDELTA_DAY
 
         if self.get_end_representation() == "duration":
             assert end is not None
@@ -418,9 +418,9 @@ class EventTimespan(Timespan):
         elif self.end_time is not None and self.begin_time is not None:
             return self.end_time - self.begin_time
         elif self.is_all_day():
-            return TIMEDELTA_CACHE["day"]
+            return TIMEDELTA_DAY
         else:
-            return TIMEDELTA_CACHE[0]
+            return TIMEDELTA_ZERO
 
 
 class TodoTimespan(Timespan):

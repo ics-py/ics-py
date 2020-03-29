@@ -11,12 +11,27 @@ if TYPE_CHECKING:
     # noinspection PyUnresolvedReferences
     from ics.timespan import Timespan
     # noinspection PyUnresolvedReferences
-    from ics.grammar.parse import ContentLine, Container
+    from ics.grammar import ContentLine, Container
 
 __all__ = [
-    "ContainerItem", "ContainerList", "DatetimeLike", "OptionalDatetimeLike", "TimespanOrBegin", "EventOrTimespan",
-    "EventOrTimespanOrInstant", "TodoOrTimespan", "TodoOrTimespanOrInstant", "CalendarEntryOrTimespan",
-    "CalendarEntryOrTimespanOrInstant", "OptionalTZDict", "get_timespan_if_calendar_entry"
+    "ContainerItem", "ContainerList",
+
+    "DatetimeLike", "OptionalDatetimeLike",
+    "TimedeltaLike", "OptionalTimedeltaLike",
+
+    "TimespanOrBegin",
+    "EventOrTimespan",
+    "EventOrTimespanOrInstant",
+    "TodoOrTimespan",
+    "TodoOrTimespanOrInstant",
+    "CalendarEntryOrTimespan",
+    "CalendarEntryOrTimespanOrInstant",
+
+    "OptionalTZDict",
+
+    "get_timespan_if_calendar_entry",
+
+    "RuntimeAttrValidation",
 ]
 
 ContainerItem = Union["ContentLine", "Container"]

@@ -65,15 +65,13 @@ attributes.
 ::
 
    >>> e = ics.Event()
-   >>> e
-   <floating Event>
-   >>> str(e) # doctest: +ELLIPSIS
-   'BEGIN:VEVENT\r\nDTSTAMP:2020...\r\nUID:...@....org\r\nEND:VEVENT'
+   >>> e # doctest: +ELLIPSIS
+   Event(extra=Container('VEVENT', []), extra_params={}, _timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), name=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=tzutc()), alarms=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
+   >>> e.to_container().serialize() # doctest: +ELLIPSIS
+   'BEGIN:VEVENT\r\nUID:...@....org\r\nDTSTAMP:2020...T...Z\r\nEND:VEVENT'
    >>> import attr, pprint
    >>> pprint.pprint(attr.asdict(e)) # doctest: +ELLIPSIS
-   {'_classmethod_args': None,
-    '_classmethod_kwargs': None,
-    '_timespan': {'begin_time': None,
+   {'_timespan': {'begin_time': None,
                   'duration': None,
                   'end_time': None,
                   'precision': 'second'},
@@ -83,8 +81,9 @@ attributes.
     'classification': None,
     'created': None,
     'description': None,
-    'dtstamp': datetime.datetime(2020, ...),
+    'dtstamp': datetime.datetime(2020, ..., tzinfo=tzutc()),
     'extra': [],
+    'extra_params': {},
     'geo': None,
     'last_modified': None,
     'location': None,
