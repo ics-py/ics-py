@@ -23,6 +23,12 @@ class TimespanConverter(AttributeConverter):
     def populate(self, component: "Component", item: ContainerItem, context: Dict) -> bool:
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
+
+        seen_items = context.setdefault("timespan_items", set())
+        if item.name in seen_items:
+            raise ValueError("duplicate value for %s in %s" % (item.name, item))
+        seen_items.add(item.name)
+
         params = dict(item.params)
         if item.name in ["DTSTART", "DTEND", "DUE"]:
             value_type = params.pop("VALUE", ["DATE-TIME"])
@@ -49,7 +55,9 @@ class TimespanConverter(AttributeConverter):
                 self.set_or_append_extra_params(component, params, name="begin")
                 context["timespan_begin_time"] = value
             else:
-                self.set_or_append_extra_params(component, params, name="end")  # FIXME due?
+                end_name = {"DTEND": "end", "DUE": "due"}[item.name]
+                context["timespan_end_name"] = end_name
+                self.set_or_append_extra_params(component, params, name=end_name)
                 context["timespan_end_time"] = value
 
         else:
@@ -61,11 +69,18 @@ class TimespanConverter(AttributeConverter):
 
     def finalize(self, component: "Component", context: Dict):
         self._check_component(component, context)
-        self.set_or_append_value(component, self.value_type(
-            ensure_datetime(context["timespan_begin_time"]),
-            ensure_datetime(context["timespan_end_time"]),
-            context["timespan_duration"], context["timespan_precision"]))
+        # missing values will be reported by the Timespan validator
+        timespan = self.value_type(
+            ensure_datetime(context["timespan_begin_time"]), ensure_datetime(context["timespan_end_time"]),
+            context["timespan_duration"], context["timespan_precision"])
+        if context["timespan_end_name"] and context["timespan_end_name"] != timespan._end_name():
+            raise ValueError("expected to get %s value, but got %s instead"
+                             % (timespan._end_name(), context["timespan_end_name"]))
+        self.set_or_append_value(component, timespan)
         super(TimespanConverter, self).finalize(component, context)
+        # we need to clear all values, otherwise they might not get overwritten by the next parsed Timespan
+        context["timespan_begin_time"] = context["timespan_end_time"] = context["timespan_duration"] \
+            = context["timespan_precision"] = context["timespan_end_name"] = None
 
     def serialize(self, component: "Component", output: Container, context: Dict):
         self._check_component(component, context)
@@ -74,7 +89,7 @@ class TimespanConverter(AttributeConverter):
             value_type = {"VALUE": ["DATE"]}
             dt_conv = DateConverter.INST
         else:
-            value_type = {"VALUE": ["DATE-TIME"]}
+            value_type = {}  # implicit default is {"VALUE": ["DATE-TIME"]}
             dt_conv = DatetimeConverter.INST
 
         if value.get_begin():
