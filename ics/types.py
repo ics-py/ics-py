@@ -1,5 +1,6 @@
+import warnings
 from datetime import date, datetime, timedelta
-from typing import Any, Dict, Iterator, List, Mapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, cast, overload
+from typing import Any, Dict, Iterator, List, MutableMapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, cast, overload
 
 import attr
 
@@ -106,11 +107,19 @@ class RuntimeAttrValidation(object):
         super(RuntimeAttrValidation, self).__setattr__(key, value)
 
 
-class EmptyDictType(Mapping[Any, None]):
+class EmptyDictType(MutableMapping[Any, None]):
     """An empty, immutable dict that returns `None` for any key. Useful as default value for function arguments."""
 
     def __getitem__(self, k: Any) -> None:
         return None
+
+    def __setitem__(self, k: Any, v: None) -> None:
+        warnings.warn("%s[%r] = %s ignored" % (self.__class__.__name__, k, v))
+        return
+
+    def __delitem__(self, v: Any) -> None:
+        warnings.warn("del %s[%r] ignored" % (self.__class__.__name__, v))
+        return
 
     def __len__(self) -> int:
         return 0
@@ -121,9 +130,9 @@ class EmptyDictType(Mapping[Any, None]):
 
 EmptyDict = EmptyDictType()
 ExtraParams = NewType("ExtraParams", Dict[str, List[str]])
-EmptyParams = cast("ExtraParams", EmptyDictType())
+EmptyParams = cast("ExtraParams", EmptyDict)
 ContextDict = NewType("ContextDict", Dict[Any, Any])
-EmptyContext = cast("ContextDict", EmptyDictType())
+EmptyContext = cast("ContextDict", EmptyDict)
 
 
 def copy_extra_params(old: Optional[ExtraParams]) -> ExtraParams:
