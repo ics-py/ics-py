@@ -5,10 +5,10 @@ from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, TYPE_CH
 import attr
 
 from ics.grammar import Container
-from ics.types import ContainerItem
+from ics.types import ContainerItem, ExtraParams
 
 if TYPE_CHECKING:
-    from ics.component import Component, ExtraParams
+    from ics.component import Component
     from ics.converter.component import InflatedComponentMeta
 
 
@@ -99,16 +99,16 @@ class AttributeConverter(GenericConverter, abc.ABC):
         else:
             return [self.get_value(component)]
 
-    def set_or_append_extra_params(self, component: "Component", value: "ExtraParams", name: Optional[str] = None):
+    def set_or_append_extra_params(self, component: "Component", value: ExtraParams, name: Optional[str] = None):
         name = name or self.attribute.name
         if self.is_multi_value:
             extras = component.extra_params.setdefault(name, [])
-            cast(List["ExtraParams"], extras).append(value)
+            cast(List[ExtraParams], extras).append(value)
         elif value:
             component.extra_params[name] = value
 
-    def get_extra_params(self, component: "Component", name: Optional[str] = None) -> Union["ExtraParams", List["ExtraParams"]]:
-        default: Union["ExtraParams", List["ExtraParams"]] = list() if self.multi_value_type else dict()
+    def get_extra_params(self, component: "Component", name: Optional[str] = None) -> Union[ExtraParams, List[ExtraParams]]:
+        default: Union[ExtraParams, List[ExtraParams]] = list() if self.multi_value_type else dict()
         name = name or self.attribute.name
         return component.extra_params.get(name, default)
 

@@ -2,13 +2,15 @@ import abc
 import inspect
 from typing import Dict, Generic, Type, TypeVar
 
+from ics.types import EmptyDict, ExtraParams
+
 T = TypeVar('T')
 
 
 class ValueConverter(abc.ABC, Generic[T]):
     BY_NAME: Dict[str, "ValueConverter"] = {}
     BY_TYPE: Dict[Type, "ValueConverter"] = {}
-    INST: "ValueConverter"
+    INST: "ValueConverter[T]"
 
     def __init_subclass__(cls) -> None:
         super().__init_subclass__()
@@ -28,11 +30,11 @@ class ValueConverter(abc.ABC, Generic[T]):
         pass
 
     @abc.abstractmethod
-    def parse(self, value: str) -> T:
+    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> T:
         pass
 
     @abc.abstractmethod
-    def serialize(self, value: T) -> str:
+    def serialize(self, value: T, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
         pass
 
     def __str__(self):

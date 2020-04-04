@@ -1,5 +1,5 @@
-from datetime import date, datetime, timedelta, tzinfo
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Tuple, Union, overload
+from datetime import date, datetime, timedelta
+from typing import Any, Dict, Iterator, List, Mapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, overload
 
 import attr
 
@@ -27,11 +27,11 @@ __all__ = [
     "CalendarEntryOrTimespan",
     "CalendarEntryOrTimespanOrInstant",
 
-    "OptionalTZDict",
-
     "get_timespan_if_calendar_entry",
 
     "RuntimeAttrValidation",
+
+    "EmptyDict", "EmptyDictType", "ExtraParams", "copy_extra_params",
 ]
 
 ContainerItem = Union["ContentLine", "Container"]
@@ -49,8 +49,6 @@ TodoOrTimespan = Union["Todo", "Timespan"]
 TodoOrTimespanOrInstant = Union["Todo", "Timespan", datetime]
 CalendarEntryOrTimespan = Union["CalendarEntryAttrs", "Timespan"]
 CalendarEntryOrTimespanOrInstant = Union["CalendarEntryAttrs", "Timespan", datetime]
-
-OptionalTZDict = Optional[Dict[str, tzinfo]]
 
 
 @overload
@@ -106,3 +104,34 @@ class RuntimeAttrValidation(object):
                 if field.validator is not None:
                     field.validator(self, field, value)
         super(RuntimeAttrValidation, self).__setattr__(key, value)
+
+
+class EmptyDictType(Mapping[Any, None]):
+    """An empty, immutable dict that returns `None` for any key. Useful as default value for function arguments."""
+
+    def __getitem__(self, k: Any) -> None:
+        return None
+
+    def __len__(self) -> int:
+        return 0
+
+    def __iter__(self) -> Iterator[Any]:
+        return iter([])
+
+
+EmptyDict = EmptyDictType()
+ExtraParams = NewType('ExtraParams', Dict[str, List[str]])
+
+
+def copy_extra_params(old: Optional[ExtraParams]) -> ExtraParams:
+    new: ExtraParams = ExtraParams(dict())
+    if not old:
+        return new
+    for key, value in old.items():
+        if isinstance(value, str):
+            new[key] = value
+        elif isinstance(value, list):
+            new[key] = list(value)
+        else:
+            raise ValueError("can't convert extra param %s with value of type %s: %s" % (key, type(value), value))
+    return new

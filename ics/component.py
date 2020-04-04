@@ -5,11 +5,10 @@ from attr.validators import instance_of
 
 from ics.converter.component import ComponentMeta, InflatedComponentMeta
 from ics.grammar import Container
-from ics.types import RuntimeAttrValidation
+from ics.types import ExtraParams, RuntimeAttrValidation
 
 PLACEHOLDER_CONTAINER = Container("PLACEHOLDER")
 ComponentType = TypeVar('ComponentType', bound='Component')
-ExtraParams = Dict[str, List[str]]
 ComponentExtraParams = Dict[str, Union[ExtraParams, List[ExtraParams]]]
 
 

@@ -1,13 +1,14 @@
 import re
+import warnings
 from datetime import date, datetime, time, timedelta
-from typing import Optional, Type, cast
+from typing import Dict, List, Optional, Type, cast
 
 from dateutil.tz import UTC as dateutil_tzutc, gettz, tzoffset as UTCOffset
 
 from ics.timespan import Timespan
-from ics.types import OptionalTZDict
-from ics.utils import ensure_datetime, is_utc
-from ics.valuetype.base import ValueConverter
+from ics.types import EmptyDict, ExtraParams, copy_extra_params
+from ics.utils import is_utc
+from ics.valuetype.base import T, ValueConverter
 
 
 class DatetimeConverterMixin(object):
@@ -15,15 +16,32 @@ class DatetimeConverterMixin(object):
         6: "%Y%m",
         8: "%Y%m%d"
     }
+    CONTEXT_KEY_AVAILABLE_TZ = "DatetimeAvailableTimezones"
 
-    def serialize(self, value: datetime) -> str:  # type: ignore
+    def _serialize_dt(self, value: datetime, params: ExtraParams, context: Dict,
+                      utc_fmt="%Y%m%dT%H%M%SZ", nonutc_fmt="%Y%m%dT%H%M%S") -> str:
         if is_utc(value):
-            return value.strftime('%Y%m%dT%H%M%SZ')
+            return value.strftime(utc_fmt)
         else:
-            return value.strftime('%Y%m%dT%H%M%S')
+            if value.tzinfo is not None:
+                tzname = value.tzinfo.tzname(value)
+                params["TZID"] = [tzname]
+                available_tz = context.setdefault(self.CONTEXT_KEY_AVAILABLE_TZ, {})
+                available_tz.setdefault(tzname, value.tzinfo)
+            return value.strftime(nonutc_fmt)
 
-    def parse(self, value: str, param_tz: Optional[str] = None, available_tz: OptionalTZDict = None) -> datetime:  # type: ignore
-        # TODO pass and handle available_tz
+    def _parse_dt(self, value: str, params: ExtraParams, context: Dict,
+                  warn_no_avail_tz=True) -> datetime:
+        param_tz_list: Optional[List[str]] = params.pop("TZID", None)  # we remove the TZID from context
+        if param_tz_list:
+            if len(param_tz_list) > 1:
+                raise ValueError("got multiple TZIDs")
+            param_tz = param_tz_list[0]
+        else:
+            param_tz = None
+        available_tz = context.get(self.CONTEXT_KEY_AVAILABLE_TZ, None)
+        if available_tz is None and warn_no_avail_tz:
+            warnings.warn("DatetimeConverterMixin.parse called without available_tz dict in context")
         fixed_utc = (value[-1].upper() == 'Z')
 
         value = value.translate({
@@ -64,6 +82,12 @@ class DatetimeConverter(DatetimeConverterMixin, ValueConverter[datetime]):
     def python_type(self) -> Type[datetime]:
         return datetime
 
+    def serialize(self, value: T, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+        return self._serialize_dt(value, params, context)
+
+    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> datetime:
+        return self._parse_dt(value, params, context)
+
 
 class DateConverter(DatetimeConverterMixin, ValueConverter[date]):
     @property
@@ -74,11 +98,11 @@ class DateConverter(DatetimeConverterMixin, ValueConverter[date]):
     def python_type(self) -> Type[date]:
         return date
 
-    def serialize(self, value):
-        return value.strftime('%Y%m%d')
+    def serialize(self, value, params: ExtraParams = EmptyDict, context: Dict = EmptyDict):
+        return value.strftime("%Y%m%d")
 
-    def parse(self, *args, **kwargs):
-        return super().parse(*args, **kwargs).date()
+    def parse(self, value, params: ExtraParams = EmptyDict, context: Dict = EmptyDict):
+        return self._parse_dt(value, params, context, warn_no_avail_tz=False).date()
 
 
 class TimeConverter(DatetimeConverterMixin, ValueConverter[time]):
@@ -96,11 +120,11 @@ class TimeConverter(DatetimeConverterMixin, ValueConverter[time]):
     def python_type(self) -> Type[time]:
         return time
 
-    def serialize(self, value):
-        return value.strftime('%H%M%S')
+    def serialize(self, value, params: ExtraParams = EmptyDict, context: Dict = EmptyDict):
+        return self._serialize_dt(value, params, context, utc_fmt="%H%M%SZ", nonutc_fmt="%H%M%S")
 
-    def parse(self, *args, **kwargs):
-        return super().parse(*args, **kwargs).timetz()
+    def parse(self, value, params: ExtraParams = EmptyDict, context: Dict = EmptyDict):
+        return self._parse_dt(value, params, context).timetz()
 
 
 class UTCOffsetConverter(ValueConverter[UTCOffset]):
@@ -112,7 +136,7 @@ class UTCOffsetConverter(ValueConverter[UTCOffset]):
     def python_type(self) -> Type[UTCOffset]:
         return UTCOffset
 
-    def parse(self, value: str) -> UTCOffset:
+    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> UTCOffset:
         match = re.fullmatch(r"(?P<sign>\+|-|)(?P<hours>[0-9]{2})(?P<minutes>[0-9]{2})(?P<seconds>[0-9]{2})?", value)
         if not match:
             raise ValueError("value '%s' is not a valid UTCOffset")
@@ -123,7 +147,7 @@ class UTCOffsetConverter(ValueConverter[UTCOffset]):
             td *= -1
         return UTCOffset(value, td)
 
-    def serialize(self, value: UTCOffset) -> str:
+    def serialize(self, value: UTCOffset, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
         offset = value.utcoffset(None)
         assert offset is not None
         seconds = offset.seconds
@@ -156,7 +180,7 @@ class DurationConverter(ValueConverter[timedelta]):
     def python_type(self) -> Type[timedelta]:
         return timedelta
 
-    def parse(self, value: str) -> timedelta:
+    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> timedelta:
         DAYS = {'D': 1, 'W': 7}
         SECS = {'S': 1, 'M': 60, 'H': 3600}
 
@@ -191,7 +215,7 @@ class DurationConverter(ValueConverter[timedelta]):
             i = j + 1
         return timedelta(sign * days, sign * secs)
 
-    def serialize(self, value: timedelta) -> str:
+    def serialize(self, value: timedelta, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
         ONE_DAY_IN_SECS = 3600 * 24
         total = abs(int(value.total_seconds()))
         days = total // ONE_DAY_IN_SECS
@@ -229,31 +253,39 @@ class PeriodConverter(DatetimeConverterMixin, ValueConverter[Timespan]):
     def python_type(self) -> Type[Timespan]:
         return Timespan
 
-    def parse(self, value: str, *args, **kwargs):
+    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict):
         start, sep, end = value.partition("/")
         if not sep:
             raise ValueError("PERIOD '%s' must contain the separator '/'")
         if end.startswith("P"):  # period-start = date-time "/" dur-value
-            return Timespan(begin_time=ensure_datetime(super(PeriodConverter, self).parse(start, *args, **kwargs)),
-                            duration=DurationConverter.INST.parse(end))
+            return Timespan(begin_time=self._parse_dt(start, params, context),
+                            duration=DurationConverter.INST.parse(end, params, context))
         else:  # period-explicit = date-time "/" date-time
-            return Timespan(begin_time=ensure_datetime(super(PeriodConverter, self).parse(start, *args, **kwargs)),
-                            end_time=ensure_datetime(super(PeriodConverter, self).parse(end, *args, **kwargs)))
+            end_params = copy_extra_params(params)  # ensure that the first parse doesn't remove TZID also needed by the second call
+            return Timespan(begin_time=self._parse_dt(start, params, context),
+                            end_time=self._parse_dt(end, end_params, context))
 
-    def serialize(self, value: Timespan) -> str:  # type: ignore
+    def serialize(self, value: Timespan, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+        # note: there are no DATE to DATE / all-day periods
         begin = value.get_begin()
         if begin is None:
             raise ValueError("PERIOD must have a begin timestamp")
         if value.get_end_representation() == "duration":
+            duration = cast(timedelta, value.get_effective_duration())
             return "%s/%s" % (
-                super(PeriodConverter, self).serialize(begin),
-                DurationConverter.INST.serialize(cast(timedelta, value.get_effective_duration()))
+                self._serialize_dt(begin, params, context),
+                DurationConverter.INST.serialize(duration, params, context)
             )
         else:
             end = value.get_effective_end()
             if end is None:
                 raise ValueError("PERIOD must have a end timestamp")
-            return "%s/%s" % (
-                super(PeriodConverter, self).serialize(begin),
-                super(PeriodConverter, self).serialize(end)
+            end_params = copy_extra_params(params)
+            res = "%s/%s" % (
+                self._serialize_dt(begin, params, context),
+                self._serialize_dt(end, end_params, context)
             )
+            if end_params != params:
+                raise ValueError("Begin and end time of PERIOD %s must serialize to the same params! "
+                                 "Got %s != %s." % (value, params, end_params))
+            return res
