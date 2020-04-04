@@ -1,13 +1,13 @@
 import collections
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 import attr
 import tatsu
 from tatsu.exceptions import FailedToken
 
-from ics.types import ContainerItem, RuntimeAttrValidation
+from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation
 
 grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
 
@@ -32,7 +32,7 @@ class ContentLine(RuntimeAttrValidation):
     """
 
     name: str = attr.ib(converter=str.upper)  # type: ignore
-    params: Dict[str, List[str]] = attr.ib(factory=dict)
+    params: ExtraParams = attr.ib(factory=lambda: ExtraParams(dict()))
     value: str = attr.ib(default="")
 
     # TODO ensure (parameter) value escaping and name normalization
@@ -73,7 +73,7 @@ class ContentLine(RuntimeAttrValidation):
     def interpret_ast(cls, ast):
         name = ''.join(ast['name'])
         value = ''.join(ast['value'])
-        params = {}
+        params = ExtraParams(dict())
         for param_ast in ast.get('params', []):
             param_name = ''.join(param_ast["name"])
             param_values = [''.join(x) for x in param_ast["values_"]]

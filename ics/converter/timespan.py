@@ -1,9 +1,9 @@
-from typing import Dict, List, TYPE_CHECKING, cast
+from typing import List, TYPE_CHECKING, cast
 
 from ics.converter.base import AttributeConverter
 from ics.grammar import Container, ContentLine
 from ics.timespan import EventTimespan, Timespan, TodoTimespan
-from ics.types import ContainerItem, ExtraParams, copy_extra_params
+from ics.types import ContainerItem, ContextDict, ExtraParams, copy_extra_params
 from ics.utils import ensure_datetime
 from ics.valuetype.datetime import DateConverter, DatetimeConverter, DurationConverter
 
@@ -29,7 +29,7 @@ class TimespanConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return ["DTSTART", "DTEND", "DUE", "DURATION"]
 
-    def populate(self, component: "Component", item: ContainerItem, context: Dict) -> bool:
+    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
 
@@ -76,7 +76,7 @@ class TimespanConverter(AttributeConverter):
 
         return True
 
-    def finalize(self, component: "Component", context: Dict):
+    def finalize(self, component: "Component", context: ContextDict):
         self._check_component(component, context)
         # missing values will be reported by the Timespan validator
         timespan = self.value_type(
@@ -91,7 +91,7 @@ class TimespanConverter(AttributeConverter):
         for key in CONTEXT_KEYS:
             context.pop(key, None)
 
-    def serialize(self, component: "Component", output: Container, context: Dict):
+    def serialize(self, component: "Component", output: Container, context: ContextDict):
         self._check_component(component, context)
         value: Timespan = self.get_value(component)
         if value.is_all_day():

@@ -6,7 +6,7 @@ from attr import Attribute
 
 from ics.converter.base import AttributeConverter, GenericConverter
 from ics.grammar import Container
-from ics.types import ContainerItem
+from ics.types import ContainerItem, ContextDict
 
 if TYPE_CHECKING:
     from ics.component import Component
@@ -47,16 +47,16 @@ class InflatedComponentMeta(ComponentMeta):
     def __call__(self, attribute: Attribute):
         return self.converter_class(attribute, self)
 
-    def load_instance(self, container: Container, context: Optional[Dict] = None):
+    def load_instance(self, container: Container, context: Optional[ContextDict] = None):
         instance = self.component_type()
         self.populate_instance(instance, container, context)
         return instance
 
-    def populate_instance(self, instance: "Component", container: Container, context: Optional[Dict] = None):
+    def populate_instance(self, instance: "Component", container: Container, context: Optional[ContextDict] = None):
         if container.name != self.container_name:
             raise ValueError("container isn't an {}".format(self.container_name))
         if not context:
-            context = defaultdict(lambda: None)
+            context = ContextDict(defaultdict(lambda: None))
 
         for line in container:
             consumed = False
@@ -69,9 +69,9 @@ class InflatedComponentMeta(ComponentMeta):
         for conv in self.converters:
             conv.finalize(instance, context)
 
-    def serialize_toplevel(self, component: "Component", context: Optional[Dict] = None):
+    def serialize_toplevel(self, component: "Component", context: Optional[ContextDict] = None):
         if not context:
-            context = defaultdict(lambda: None)
+            context = ContextDict(defaultdict(lambda: None))
         container = Container(self.container_name)
         for conv in self.converters:
             conv.serialize(component, container, context)
@@ -87,13 +87,13 @@ class ComponentConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return [self.meta.container_name]
 
-    def populate(self, component: "Component", item: ContainerItem, context: Dict) -> bool:
+    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, Container)
         self._check_component(component, context)
         self.set_or_append_value(component, self.meta.load_instance(item, context))
         return True
 
-    def serialize(self, parent: "Component", output: Container, context: Dict):
+    def serialize(self, parent: "Component", output: Container, context: ContextDict):
         self._check_component(parent, context)
         extras = self.get_extra_params(parent)
         if extras:

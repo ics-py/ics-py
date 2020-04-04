@@ -1,6 +1,6 @@
 from datetime import tzinfo
 from io import StringIO
-from typing import Dict, List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 
 from dateutil.rrule import rruleset
 from dateutil.tz import tzical
@@ -9,7 +9,7 @@ from ics.attendee import Attendee, Organizer, Person
 from ics.converter.base import AttributeConverter
 from ics.converter.component import ComponentConverter
 from ics.grammar import Container, ContentLine
-from ics.types import ContainerItem
+from ics.types import ContainerItem, ContextDict
 
 if TYPE_CHECKING:
     from ics.component import Component
@@ -20,7 +20,7 @@ class TimezoneConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return ["VTIMEZONE"]
 
-    def populate(self, component: "Component", item: ContainerItem, context: Dict) -> bool:
+    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, Container)
         self._check_component(component, context)
 
@@ -39,7 +39,7 @@ class TimezoneConverter(AttributeConverter):
         print("got timezone", timezones.keys(), timezones.get())
         return True
 
-    def serialize(self, component: "Component", output: Container, context: Dict):
+    def serialize(self, component: "Component", output: Container, context: ContextDict):
         raise NotImplementedError("Timezones can't be serialized")
 
 
@@ -54,17 +54,17 @@ class RecurrenceConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return ["RRULE", "RDATE", "EXRULE", "EXDATE", "DTSTART"]
 
-    def populate(self, component: "Component", item: ContainerItem, context: Dict) -> bool:
+    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
         # self.lines.append(item)
         return False
 
-    def finalize(self, component: "Component", context: Dict):
+    def finalize(self, component: "Component", context: ContextDict):
         self._check_component(component, context)
         # rrulestr("\r\n".join(self.lines), tzinfos={}, compatible=True)
 
-    def serialize(self, component: "Component", output: Container, context: Dict):
+    def serialize(self, component: "Component", output: Container, context: ContextDict):
         pass
         # value = rruleset()
         # for rrule in value._rrule:
@@ -87,12 +87,12 @@ class PersonConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return []
 
-    def populate(self, component: "Component", item: ContainerItem, context: Dict) -> bool:
+    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
         return False
 
-    def serialize(self, component: "Component", output: Container, context: Dict):
+    def serialize(self, component: "Component", output: Container, context: ContextDict):
         pass
 
 
@@ -102,7 +102,7 @@ AttributeConverter.BY_TYPE[Organizer] = PersonConverter
 
 
 class AlarmConverter(ComponentConverter):
-    def populate(self, component: "Component", item: ContainerItem, context: Dict) -> bool:
+    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
         # TODO handle trigger: Union[timedelta, datetime, None] before duration
         assert isinstance(item, Container)
         self._check_component(component, context)

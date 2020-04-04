@@ -1,5 +1,5 @@
 from datetime import date, datetime, timedelta
-from typing import Any, Dict, Iterator, List, Mapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, overload
+from typing import Any, Dict, Iterator, List, Mapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, cast, overload
 
 import attr
 
@@ -31,7 +31,7 @@ __all__ = [
 
     "RuntimeAttrValidation",
 
-    "EmptyDict", "EmptyDictType", "ExtraParams", "copy_extra_params",
+    "EmptyDict", "ExtraParams", "EmptyParams", "ContextDict", "EmptyContext", "copy_extra_params",
 ]
 
 ContainerItem = Union["ContentLine", "Container"]
@@ -120,7 +120,10 @@ class EmptyDictType(Mapping[Any, None]):
 
 
 EmptyDict = EmptyDictType()
-ExtraParams = NewType('ExtraParams', Dict[str, List[str]])
+ExtraParams = NewType("ExtraParams", Dict[str, List[str]])
+EmptyParams = cast("ExtraParams", EmptyDictType())
+ContextDict = NewType("ContextDict", Dict[Any, Any])
+EmptyContext = cast("ContextDict", EmptyDictType())
 
 
 def copy_extra_params(old: Optional[ExtraParams]) -> ExtraParams:

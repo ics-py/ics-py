@@ -1,7 +1,7 @@
-from typing import Dict, Type
+from typing import Type
 
 from ics.geo import Geo
-from ics.types import EmptyDict, ExtraParams
+from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
 from ics.valuetype.base import ValueConverter
 
 
@@ -15,11 +15,11 @@ class GeoConverter(ValueConverter[Geo]):
     def python_type(self) -> Type[Geo]:
         return Geo
 
-    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> Geo:
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> Geo:
         latitude, sep, longitude = value.partition(";")
         if not sep:
             raise ValueError("geo must have two float values")
         return Geo(float(latitude), float(longitude))
 
-    def serialize(self, value: Geo, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+    def serialize(self, value: Geo, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         return "%f;%f" % value

@@ -1,10 +1,10 @@
 import base64
-from typing import Dict, Type
+from typing import Type
 from urllib.parse import ParseResult as URL, urlparse
 
 from dateutil.rrule import rrule
 
-from ics.types import EmptyDict, ExtraParams
+from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
 from ics.valuetype.base import ValueConverter
 
 
@@ -18,10 +18,10 @@ class TextConverter(ValueConverter[str]):
     def python_type(self) -> Type[str]:
         return str
 
-    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         return value
 
-    def serialize(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+    def serialize(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         return value
 
 
@@ -35,10 +35,10 @@ class BinaryConverter(ValueConverter[bytes]):
     def python_type(self) -> Type[bytes]:
         return bytes
 
-    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> bytes:
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> bytes:
         return base64.b64decode(value)
 
-    def serialize(self, value: bytes, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+    def serialize(self, value: bytes, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         return base64.b64encode(value).decode("ascii")
 
 
@@ -55,7 +55,7 @@ class BooleanConverter(ValueConverter[bool]):
     def python_type(self) -> Type[bool]:
         return bool
 
-    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> bool:
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> bool:
         if value == "TRUE":
             return True
         elif value == "FALSE":
@@ -73,7 +73,7 @@ class BooleanConverter(ValueConverter[bool]):
             else:
                 raise ValueError("can't interpret '%s' as boolen" % value)
 
-    def serialize(self, value: bool, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+    def serialize(self, value: bool, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         if value:
             return "TRUE"
         else:
@@ -90,10 +90,10 @@ class IntegerConverter(ValueConverter[int]):
     def python_type(self) -> Type[int]:
         return int
 
-    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> int:
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> int:
         return int(value)
 
-    def serialize(self, value: int, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+    def serialize(self, value: int, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         return str(value)
 
 
@@ -107,10 +107,10 @@ class FloatConverter(ValueConverter[float]):
     def python_type(self) -> Type[float]:
         return float
 
-    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> float:
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> float:
         return float(value)
 
-    def serialize(self, value: float, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+    def serialize(self, value: float, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         return str(value)
 
 
@@ -124,11 +124,11 @@ class RecurConverter(ValueConverter[rrule]):
     def python_type(self) -> Type[rrule]:
         return rrule
 
-    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> rrule:
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> rrule:
         # this won't be called unless a class specifies an attribute with type: rrule
         raise NotImplementedError("parsing 'RECUR' is not yet supported")
 
-    def serialize(self, value: rrule, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+    def serialize(self, value: rrule, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         raise NotImplementedError("serializing 'RECUR' is not yet supported")
 
 
@@ -142,10 +142,10 @@ class URIConverter(ValueConverter[URL]):
     def python_type(self) -> Type[URL]:
         return URL
 
-    def parse(self, value: str, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> URL:
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> URL:
         return urlparse(value)
 
-    def serialize(self, value: URL, params: ExtraParams = EmptyDict, context: Dict = EmptyDict) -> str:
+    def serialize(self, value: URL, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         if isinstance(value, str):
             return value
         else:

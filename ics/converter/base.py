@@ -5,7 +5,7 @@ from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, TYPE_CH
 import attr
 
 from ics.grammar import Container
-from ics.types import ContainerItem, ExtraParams
+from ics.types import ContainerItem, ContextDict, ExtraParams
 
 if TYPE_CHECKING:
     from ics.component import Component
@@ -24,7 +24,7 @@ class GenericConverter(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def populate(self, component: "Component", item: ContainerItem, context: Dict) -> bool:
+    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
         """
         :param context:
         :param component:
@@ -33,11 +33,11 @@ class GenericConverter(abc.ABC):
         """
         pass
 
-    def finalize(self, component: "Component", context: Dict):
+    def finalize(self, component: "Component", context: ContextDict):
         pass
 
     @abc.abstractmethod
-    def serialize(self, component: "Component", output: Container, context: Dict):
+    def serialize(self, component: "Component", output: Container, context: ContextDict):
         pass
 
 
@@ -68,7 +68,7 @@ class AttributeConverter(GenericConverter, abc.ABC):
             if key == "self" or key.startswith("__"): continue
             object.__setattr__(self, key, value)
 
-    def _check_component(self, component: "Component", context: Dict):
+    def _check_component(self, component: "Component", context: ContextDict):
         if context[(self, "current_component")] is None:
             context[(self, "current_component")] = component
             context[(self, "current_value_count")] = 0
@@ -76,7 +76,7 @@ class AttributeConverter(GenericConverter, abc.ABC):
             if context[(self, "current_component")] is not component:
                 raise ValueError("must call finalize before call to populate with another component")
 
-    def finalize(self, component: "Component", context: Dict):
+    def finalize(self, component: "Component", context: ContextDict):
         context[(self, "current_component")] = None
         context[(self, "current_value_count")] = 0
 
@@ -108,7 +108,10 @@ class AttributeConverter(GenericConverter, abc.ABC):
             component.extra_params[name] = value
 
     def get_extra_params(self, component: "Component", name: Optional[str] = None) -> Union[ExtraParams, List[ExtraParams]]:
-        default: Union[ExtraParams, List[ExtraParams]] = list() if self.multi_value_type else dict()
+        if self.multi_value_type:
+            default: Union[ExtraParams, List[ExtraParams]] = cast(List[ExtraParams], list())
+        else:
+            default = ExtraParams(dict())
         name = name or self.attribute.name
         return component.extra_params.get(name, default)
 
