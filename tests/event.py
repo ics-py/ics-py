@@ -4,10 +4,10 @@ from datetime import datetime as dt, timedelta as td
 
 import pytest
 from dateutil.tz import UTC as tzutc
+from ics.grammar.parse import Container
 
 from ics.attendee import Attendee, Organizer
 from ics.event import Event
-from ics.grammar.parse import Container
 from ics.icalendar import Calendar
 from .fixture import (cal12, cal13, cal15, cal16, cal17, cal18, cal19,
                       cal19bis, cal20, cal32, cal33_1, cal33_2, cal33_3,
@@ -15,10 +15,10 @@ from .fixture import (cal12, cal13, cal15, cal16, cal17, cal18, cal19,
 
 CRLF = "\r\n"
 
-EVENT_A = Event(name="a")
-EVENT_B = Event(name="b")
-EVENT_M = Event(name="m")
-EVENT_Z = Event(name="z")
+EVENT_A = Event(summary="a")
+EVENT_B = Event(summary="b")
+EVENT_M = Event(summary="m")
+EVENT_Z = Event(summary="z")
 EVENT_A.created = EVENT_B.created = EVENT_M.created = EVENT_Z.created = dt.now()
 
 
@@ -71,7 +71,7 @@ class TestEvent(unittest.TestCase):
 
     def test_init_duration_end(self):
         with self.assertRaises(ValueError):
-            Event(name="plop", begin=dt.fromtimestamp(0), end=dt.fromtimestamp(10), duration=td(1))
+            Event(summary="plop", begin=dt.fromtimestamp(0), end=dt.fromtimestamp(10), duration=td(1))
 
     def test_end_before_begin(self):
         e = Event(begin=dt(2013, 10, 10))
@@ -87,17 +87,17 @@ class TestEvent(unittest.TestCase):
         self.assertEqual("<floating Event>", repr(Event()))
 
     def test_all_day_repr(self):
-        e = Event(name='plop', begin=dt(1999, 10, 10))
+        e = Event(summary='plop', begin=dt(1999, 10, 10))
         e.make_all_day()
         self.assertEqual("<all-day Event 'plop' begin: 1999-10-10 end: 1999-10-11>", repr(e))
         self.assertEqual(dt(1999, 10, 11), e.end)
 
     def test_name_repr(self):
-        e = Event(name='plop')
+        e = Event(summary='plop')
         self.assertEqual("<floating Event 'plop'>", repr(e))
 
     def test_repr(self):
-        e = Event(name='plop', begin=dt(1999, 10, 10))
+        e = Event(summary='plop', begin=dt(1999, 10, 10))
         self.assertEqual("<floating Event 'plop' begin: 1999-10-10 00:00:00 end: 1999-10-10 00:00:00>", repr(e))
 
     def test_init(self):
@@ -262,19 +262,19 @@ class TestEvent(unittest.TestCase):
     def test_unescape_summary(self):
         c = Calendar(cal15)
         e = next(iter(c.events))
-        self.assertEqual(e.name, "Hello, \n World; This is a backslash : \\ and another new \n line")
+        self.assertEqual(e.summary, "Hello, \n World; This is a backslash : \\ and another new \n line")
 
     def test_unescapte_texts(self):
         c = Calendar(cal17)
         e = next(iter(c.events))
-        self.assertEqual(e.name, "Some special ; chars")
+        self.assertEqual(e.summary, "Some special ; chars")
         self.assertEqual(e.location, "In, every text field")
         self.assertEqual(e.description, "Yes, all of them;")
 
     def test_escape_output(self):
         e = Event()
 
-        e.name = "Hello, with \\ special; chars and \n newlines"
+        e.summary = "Hello, with \\ special; chars and \n newlines"
         e.location = "Here; too"
         e.description = "Every\nwhere ! Yes, yes !"
         e.dtstamp = dt(2013, 1, 1)
@@ -298,7 +298,7 @@ class TestEvent(unittest.TestCase):
 
     def test_url_output(self):
         URL = "http://example.com/pub/calendars/jsmith/mytime.ics"
-        e = Event(name="Name", url=URL)
+        e = Event(summary="Name", url=URL)
         self.assertIn("URL:" + URL, str(e).splitlines())
 
     def test_status_input(self):
@@ -308,7 +308,7 @@ class TestEvent(unittest.TestCase):
 
     def test_status_output(self):
         STATUS = "CONFIRMED"
-        e = Event(name="Name", status=STATUS)
+        e = Event(summary="Name", status=STATUS)
         self.assertIn("STATUS:" + STATUS, str(e).splitlines())
 
     def test_category_input(self):
@@ -320,7 +320,7 @@ class TestEvent(unittest.TestCase):
 
     def test_category_output(self):
         cat = "Simple category"
-        e = Event(name="Name", categories={cat})
+        e = Event(summary="Name", categories={cat})
         self.assertIn("CATEGORIES:" + cat, str(e).splitlines())
 
     def test_all_day_with_end(self):
@@ -380,75 +380,75 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(e.transparent, None)
 
     def test_default_transparent_output(self):
-        e = Event(name="Name")
+        e = Event(summary="Name")
         self.assertNotIn("TRANSP:OPAQUE", str(e).splitlines())
 
     def test_transparent_output(self):
-        e = Event(name="Name", transparent=True)
+        e = Event(summary="Name", transparent=True)
         self.assertIn("TRANSP:TRANSPARENT", str(e).splitlines())
 
-        e = Event(name="Name", transparent=False)
+        e = Event(summary="Name", transparent=False)
         self.assertIn("TRANSP:OPAQUE", str(e).splitlines())
 
     def test_includes_disjoined(self):
         # disjoined events
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=20))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 50), duration=td(minutes=20))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=20))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 50), duration=td(minutes=20))
         assert not event_a.includes(event_b)
         assert not event_b.includes(event_a)
 
     def test_includes_intersected(self):
         # intersected events
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
         assert not event_a.includes(event_b)
         assert not event_b.includes(event_a)
 
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
         assert not event_a.includes(event_b)
         assert not event_b.includes(event_a)
 
     def test_includes_included(self):
         # included events
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
         assert event_a.includes(event_b)
         assert not event_b.includes(event_a)
 
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
         assert not event_a.includes(event_b)
         assert event_b.includes(event_a)
 
     def test_intersects_disjoined(self):
         # disjoined events
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=20))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 50), duration=td(minutes=20))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=20))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 50), duration=td(minutes=20))
         assert not event_a.intersects(event_b)
         assert not event_b.intersects(event_a)
 
     def test_intersects_intersected(self):
         # intersected events
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
         assert event_a.intersects(event_b)
         assert event_b.intersects(event_a)
 
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 30), duration=td(minutes=30))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
         assert event_a.intersects(event_b)
         assert event_b.intersects(event_a)
 
     def test_intersects_included(self):
         # included events
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
         assert event_a.intersects(event_b)
         assert event_b.intersects(event_a)
 
-        event_a = Event(name='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
-        event_b = Event(name='Test #2', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
+        event_a = Event(summary='Test #1', begin=dt(2016, 6, 10, 20, 10), duration=td(minutes=30))
+        event_b = Event(summary='Test #2', begin=dt(2016, 6, 10, 20, 00), duration=td(minutes=60))
         assert event_a.intersects(event_b)
         assert event_b.intersects(event_a)
 
@@ -522,27 +522,27 @@ class TestEvent(unittest.TestCase):
         self.assertEqual('x-name', e.classification)
 
     def test_classification_output(self):
-        e = Event(name="Name")
+        e = Event(summary="Name")
         self.assertNotIn("CLASS:PUBLIC", str(e).splitlines())
 
-        e = Event(name="Name", classification='PUBLIC')
+        e = Event(summary="Name", classification='PUBLIC')
         self.assertIn("CLASS:PUBLIC", str(e).splitlines())
 
-        e = Event(name="Name", classification='PRIVATE')
+        e = Event(summary="Name", classification='PRIVATE')
         self.assertIn("CLASS:PRIVATE", str(e).splitlines())
 
-        e = Event(name="Name", classification='CONFIDENTIAL')
+        e = Event(summary="Name", classification='CONFIDENTIAL')
         self.assertIn("CLASS:CONFIDENTIAL", str(e).splitlines())
 
-        e = Event(name="Name", classification='iana-token')
+        e = Event(summary="Name", classification='iana-token')
         self.assertIn("CLASS:iana-token", str(e).splitlines())
 
-        e = Event(name="Name", classification='x-name')
+        e = Event(summary="Name", classification='x-name')
         self.assertIn("CLASS:x-name", str(e).splitlines())
 
     def test_classification_bool(self):
         with pytest.raises(TypeError):
-            Event(name="Name", classification=True)
+            Event(summary="Name", classification=True)
 
     def test_last_modified(self):
         c = Calendar(cal18)
@@ -550,7 +550,7 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(dt(2015, 11, 13, 00, 48, 9, tzinfo=tzutc), e.last_modified)
 
     def equality(self):
-        ev1 = Event(begin=dt(2018, 6, 29, 5), end=dt(2018, 6, 29, 7), name="my name")
+        ev1 = Event(summary="my name", begin=dt(2018, 6, 29, 5), end=dt(2018, 6, 29, 7))
         ev2 = ev1.clone()
 
         assert ev1 == ev2

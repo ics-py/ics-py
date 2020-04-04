@@ -22,7 +22,7 @@ STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 @attr.s(eq=True, order=False)
 class CalendarEntryAttrs(Component):
     _timespan: Timespan = attr.ib(validator=instance_of(Timespan), metadata=ics_attr_meta(converter=TimespanConverter))
-    name: Optional[str] = attr.ib(default=None)  # TODO name -> summary
+    summary: Optional[str] = attr.ib(default=None)
     uid: str = attr.ib(factory=uid_gen)
 
     description: Optional[str] = attr.ib(default=None)
@@ -148,15 +148,15 @@ class CalendarEntryAttrs(Component):
 
     def __repr__(self) -> str:
         name = [self.__class__.__name__]
-        if self.name:
-            name.append("'%s'" % self.name)
+        if self.summary:
+            name.append("'%s'" % self.summary)
         prefix, _, suffix = self._timespan.get_str_segments()
         return "<%s>" % (" ".join(prefix + name + suffix))
 
     ####################################################################################################################
 
     def cmp_tuple(self) -> Tuple[datetime, datetime, str]:
-        return (*self.timespan.cmp_tuple(), self.name or "")
+        return (*self.timespan.cmp_tuple(), self.summary or "")
 
     def __lt__(self, other: Any) -> bool:
         """self < other"""
@@ -237,7 +237,7 @@ class Event(EventAttrs):
 
     def __init__(
             self,
-            name: str = None,
+            summary: str = None,
             begin: DatetimeLike = None,
             end: DatetimeLike = None,
             duration: TimedeltaLike = None,
@@ -253,4 +253,4 @@ class Event(EventAttrs):
         if (begin is not None or end is not None or duration is not None) and "timespan" in kwargs:
             raise ValueError("can't specify explicit timespan together with any of begin, end or duration")
         kwargs.setdefault("timespan", EventTimespan(ensure_datetime(begin), ensure_datetime(end), ensure_timedelta(duration)))
-        super(Event, self).__init__(kwargs.pop("timespan"), name, *args, **kwargs)
+        super(Event, self).__init__(kwargs.pop("timespan"), summary, *args, **kwargs)

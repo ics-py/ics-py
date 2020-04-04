@@ -66,7 +66,7 @@ attributes.
 
    >>> e = ics.Event()
    >>> e # doctest: +ELLIPSIS
-   Event(extra=Container('VEVENT', []), extra_params={}, _timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), name=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=tzutc()), alarms=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
+   Event(extra=Container('VEVENT', []), extra_params={}, _timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=tzutc()), alarms=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
    >>> e.to_container().serialize() # doctest: +ELLIPSIS
    'BEGIN:VEVENT\r\nUID:...@....org\r\nDTSTAMP:2020...T...Z\r\nEND:VEVENT'
    >>> import attr, pprint
@@ -87,7 +87,7 @@ attributes.
     'geo': None,
     'last_modified': None,
     'location': None,
-    'name': None,
+    'summary': None,
     'organizer': None,
     'status': None,
     'transparent': None,
@@ -98,8 +98,8 @@ Ordering
 --------
 
 TL;DR: ``Event``\ s are ordered by their attributes ``begin``, ``end``,
-and ``name``, in that exact order. For ``Todo``\ s the order is ``due``,
-``begin``, then ``name``. It doesn’t matter whether ``duration`` is set
+and ``summary``, in that exact order. For ``Todo``\ s the order is ``due``,
+``begin``, then ``summary``. It doesn’t matter whether ``duration`` is set
 instead of ``end`` or ``due``, as the effective end / due time will be
 compared. Instances where an attribute isn’t set will be sorted before
 instances where the respective attribute is set. Naive ``datetime``\ s
@@ -136,14 +136,14 @@ the timespan, as only the effective end time is compared.
    False
 
 The classes ``Event`` and ``Todo`` build on this methods, by appending
-their ``name`` to the returned tuple:
+their ``summary`` to the returned tuple:
 
 ::
 
    >>> e11 = ics.Event(timespan=t1)
    >>> e11.cmp_tuple()
    (datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), '')
-   >>> e12 = ics.Event(timespan=t1, name="An Event")
+   >>> e12 = ics.Event(timespan=t1, summary="An Event")
    >>> e12.cmp_tuple()
    (datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), 'An Event')
 
@@ -163,7 +163,7 @@ parameter is set:
    True
    >>> ics.Event(timespan=t1) < ics.Event(timespan=t2)
    True
-   >>> ics.Event(timespan=t2) < ics.Event(timespan=t2, name="Event Name")
+   >>> ics.Event(timespan=t2) < ics.Event(timespan=t2, summary="Event Name")
    True
 
 The functions ``__gt__``, ``__le__``, ``__ge__`` all behave similarly by

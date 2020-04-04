@@ -2,9 +2,9 @@ import unittest
 from datetime import datetime, datetime as dt, timedelta, timezone
 
 from dateutil.tz import UTC as dateutil_tzutc
-
 from ics.alarm.display import DisplayAlarm
 from ics.grammar.parse import Container
+
 from ics.icalendar import Calendar
 from ics.todo import Todo
 from .fixture import cal27, cal28, cal29, cal30, cal31
@@ -28,7 +28,7 @@ class TestTodo(unittest.TestCase):
         self.assertIsNone(t.location)
         self.assertIsNone(t.percent)
         self.assertIsNone(t.priority)
-        self.assertIsNone(t.name)
+        self.assertIsNone(t.summary)
         self.assertIsNone(t.url)
         self.assertIsNone(t.status)
         self.assertEqual(t.extra, Container(name='VTODO'))
@@ -58,7 +58,7 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t.created, created)
         self.assertEqual(t.description, 'description')
         self.assertEqual(t.location, 'location')
-        self.assertEqual(t.name, 'name')
+        self.assertEqual(t.summary, 'name')
         self.assertEqual(t.url, 'url')
         self.assertEqual(t.alarms, alarms)
 
@@ -276,7 +276,7 @@ class TestTodo(unittest.TestCase):
         self.assertEqual(t.location, 'Earth')
         self.assertEqual(t.percent, 0)
         self.assertEqual(t.priority, 0)
-        self.assertEqual(t.name, 'Name')
+        self.assertEqual(t.summary, 'Name')
         self.assertEqual(t.url, 'https://www.example.com/cal.php/todo.ics')
         self.assertEqual(t.duration, timedelta(minutes=10))
         self.assertEqual(len(t.alarms), 1)
@@ -335,7 +335,7 @@ class TestTodo(unittest.TestCase):
     def test_unescape_texts(self):
         c = Calendar(cal31)
         t = next(iter(c.todos))
-        self.assertEqual(t.name, "Hello, \n World; This is a backslash : \\ and another new \n line")
+        self.assertEqual(t.summary, "Hello, \n World; This is a backslash : \\ and another new \n line")
         self.assertEqual(t.location, "In, every text field")
         self.assertEqual(t.description, "Yes, all of them;")
 
@@ -343,7 +343,7 @@ class TestTodo(unittest.TestCase):
         dtstamp = datetime(2018, 2, 19, 21, 00, tzinfo=datetime_tzutc)
         t = Todo(dtstamp=dtstamp, uid='Uid')
 
-        t.name = "Hello, with \\ special; chars and \n newlines"
+        t.summary = "Hello, with \\ special; chars and \n newlines"
         t.location = "Here; too"
         t.description = "Every\nwhere ! Yes, yes !"
 

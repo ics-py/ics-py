@@ -101,7 +101,7 @@ class Calendar(CalendarAttrs):
         Example:
             Can be used to write calendar to a file:
 
-            >>> c = Calendar(); c.events.append(Event(name="My cool event"))
+            >>> c = Calendar(); c.events.append(Event(summary="My cool event"))
             >>> open('my.ics', 'w').writelines(c)
         """
         return iter(str(self).splitlines(keepends=True))
