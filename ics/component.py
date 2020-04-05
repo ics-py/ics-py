@@ -32,8 +32,14 @@ class Component(RuntimeAttrValidation):
     def from_container(cls: Type[ComponentType], container: Container) -> ComponentType:
         return cls.Meta.load_instance(container)  # type: ignore
 
-    def to_container(self):
+    def populate(self, container: Container):
+        self.Meta.populate_instance(self, container)  # type: ignore
+
+    def to_container(self) -> Container:
         return self.Meta.serialize_toplevel(self)  # type: ignore
+
+    def serialize(self) -> str:
+        return self.to_container().serialize()
 
     def strip_extras(self, all_extras=False, extra_properties=None, extra_params=None, property_merging=None):
         if extra_properties is None:

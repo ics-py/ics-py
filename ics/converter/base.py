@@ -12,6 +12,9 @@ if TYPE_CHECKING:
     from ics.converter.component import InflatedComponentMeta
 
 
+# TODO make validation / ValueError / warnings configurable
+# TODO use repr for warning messages and ensure that they don't get to long
+
 class GenericConverter(abc.ABC):
     @property
     @abc.abstractmethod

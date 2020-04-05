@@ -45,9 +45,8 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     @property
     @abstractmethod
     def action(self):
-        """ VALARM action to be implemented by concrete classes
-        """
-        raise NotImplementedError("Base class cannot be instantiated directly")
+        """ VALARM action to be implemented by concrete classes """
+        pass
 
 
 @attr.s

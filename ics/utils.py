@@ -165,6 +165,10 @@ def ceil_timedelta_to_days(value: timedelta) -> timedelta:
 # String Utils
 
 
+def limit_str_length(val):
+    return str(val)  # TODO
+
+
 def uid_gen() -> str:
     uid = str(uuid4())
     return "{}@{}.org".format(uid, uid[:4])

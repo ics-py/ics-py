@@ -67,7 +67,9 @@ attributes.
    >>> e = ics.Event()
    >>> e # doctest: +ELLIPSIS
    Event(extra=Container('VEVENT', []), extra_params={}, _timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=tzutc()), alarms=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
-   >>> e.to_container().serialize() # doctest: +ELLIPSIS
+   >>> str(e)
+   '<floating Event>'
+   >>> e.serialize() # doctest: +ELLIPSIS
    'BEGIN:VEVENT\r\nUID:...@....org\r\nDTSTAMP:2020...T...Z\r\nEND:VEVENT'
    >>> import attr, pprint
    >>> pprint.pprint(attr.asdict(e)) # doctest: +ELLIPSIS
@@ -87,9 +89,9 @@ attributes.
     'geo': None,
     'last_modified': None,
     'location': None,
-    'summary': None,
     'organizer': None,
     'status': None,
+    'summary': None,
     'transparent': None,
     'uid': '...@....org',
     'url': None}

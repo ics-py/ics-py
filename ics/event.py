@@ -146,7 +146,7 @@ class CalendarEntryAttrs(Component):
     def timespan(self) -> Timespan:
         return self._timespan
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         name = [self.__class__.__name__]
         if self.summary:
             name.append("'%s'" % self.summary)

@@ -7,7 +7,8 @@ import attr
 import tatsu
 from tatsu.exceptions import FailedToken
 
-from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation
+from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
+from ics.utils import limit_str_length
 
 grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
 
@@ -35,6 +36,7 @@ class ContentLine(RuntimeAttrValidation):
     params: ExtraParams = attr.ib(factory=lambda: ExtraParams(dict()))
     value: str = attr.ib(default="")
 
+    # TODO store value type for jCal and line number for error messages
     # TODO ensure (parameter) value escaping and name normalization
 
     def serialize(self):
@@ -82,7 +84,10 @@ class ContentLine(RuntimeAttrValidation):
 
     def clone(self):
         """Makes a copy of itself"""
-        return attr.evolve(self)
+        return attr.evolve(self, params=copy_extra_params(self.params))
+
+    def __str__(self):
+        return "%s%s='%s'" % (self.name, self.params or "", limit_str_length(self.value))
 
 
 class Container(List[ContainerItem]):
@@ -101,7 +106,7 @@ class Container(List[ContainerItem]):
         self.name = name.upper()
 
     def __str__(self):
-        return "Container:%s%s" % (self.name, super(Container, self).__repr__())
+        return "%s[%s]" % (self.name, ", ".join(str(cl) for cl in self))
 
     def __repr__(self):
         return "%s(%r, %s)" % (type(self).__name__, self.name, super(Container, self).__repr__())
@@ -129,10 +134,12 @@ class Container(List[ContainerItem]):
                 items.append(line)
         return cls(name, *items)
 
-    def clone(self, items=None):
+    def clone(self, items=None, deep=False):
         """Makes a copy of itself"""
         if items is None:
             items = self
+        if deep:
+            items = (item.clone() for item in items)
         return type(self)(self.name, *items)
 
     def check_items(self, *items):

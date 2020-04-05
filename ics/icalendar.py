@@ -42,7 +42,7 @@ class Calendar(CalendarAttrs):
 
     def __init__(
             self,
-            imports: Union[str, Container] = None,
+            imports: Union[str, Container, None] = None,
             events: Optional[Iterable[Event]] = None,
             todos: Optional[Iterable[Todo]] = None,
             creator: str = None,
@@ -67,14 +67,13 @@ class Calendar(CalendarAttrs):
 
         if imports is not None:
             if isinstance(imports, Container):
-                self.Meta.populate_instance(self, imports)  # type:ignore
+                self.populate(imports)
             else:
                 containers = calendar_string_to_containers(imports)
                 if len(containers) != 1:
-                    raise NotImplementedError(
-                        'Multiple calendars in one file are not supported by this method. Use ics.Calendar.parse_multiple()')
-
-                self.Meta.populate_instance(self, containers[0])  # type:ignore
+                    raise ValueError("Multiple calendars in one file are not supported by this method."
+                                     "Use ics.Calendar.parse_multiple()")
+                self.populate(containers[0])
 
     @property
     def creator(self) -> str:
@@ -93,6 +92,13 @@ class Calendar(CalendarAttrs):
         containers = calendar_string_to_containers(string)
         return [cls(imports=c) for c in containers]
 
+    def __str__(self) -> str:
+        return "<Calendar with {} event{} and {} todo{}>".format(
+            len(self.events),
+            "s" if len(self.events) > 1 else "",
+            len(self.todos),
+            "s" if len(self.todos) > 1 else "")
+
     def __iter__(self) -> Iterable[str]:
         """Returns:
         iterable: an iterable version of __str__, line per line
@@ -104,4 +110,4 @@ class Calendar(CalendarAttrs):
             >>> c = Calendar(); c.events.append(Event(summary="My cool event"))
             >>> open('my.ics', 'w').writelines(c)
         """
-        return iter(str(self).splitlines(keepends=True))
+        return iter(self.serialize().splitlines(keepends=True))
