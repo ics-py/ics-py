@@ -4,16 +4,14 @@ from pathlib import Path
 from typing import List
 
 import attr
-import tatsu
-from tatsu.exceptions import FailedToken
+import importlib_resources  # type: ignore
+import tatsu  # type: ignore
+from tatsu.exceptions import FailedToken  # type: ignore
 
 from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
 from ics.utils import limit_str_length
 
-grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
-
-with open(grammar_path) as fd:
-    GRAMMAR = tatsu.compile(fd.read())
+GRAMMAR = tatsu.compile(importlib_resources.read_text(__name__, "contentline.ebnf"))
 
 
 class ParseError(Exception):
