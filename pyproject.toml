@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "ics"
+version = "0.1.0"
+description = "Pythonic iCalendar (RFC 5545) Parser"
+authors = ["Nikita Marchant <nikita.marchant@gmail.com>", "Niko Fink <icspy@niko.fink.bayern>"]
+license = "Apache-2.0"
+readme = "README.rst"
+homepage = "https://pypi.org/project/ics/"
+repository = "https://github.com/C4ptainCrunch/ics.py"
+documentation = "https://icspy.readthedocs.io/en/stable/"
+keywords = ["ics", "icalendar", "calendar", "event", "rfc5545"]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Topic :: Software Development :: Libraries',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Intended Audience :: Developers',
+    'Topic :: Office/Business :: Scheduling',
+    'License :: OSI Approved :: Apache Software License',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Typing :: Typed',
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+python-dateutil = "^2.8.1"
+attrs = ">=19.2"
+tatsu = ">4.2"
+importlib_resources = "^1.4.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+sphinx = "^3.0.0"
+sphinxcontrib-napoleon = "^0.7"
+sphinx-autodoc-typehints = "^1.10.3"
+pytest-cov = "^2.8.1"
+pytest-flakes = "^4.0.0"
+pytest-pep8 = "^1.0.6"
+pytest-mypy = "^0.6.1"
+mypy = ">=0.770"
+hypothesis = "^5.8.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
