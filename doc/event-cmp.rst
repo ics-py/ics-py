@@ -119,7 +119,7 @@ instance as a tuple ``(begin_time, effective_end_time)``:
 
    >>> t0 = ics.EventTimespan()
    >>> t0.cmp_tuple()
-   TimespanTuple(begin=datetime.datetime(1, 1, 1, 0, 0, tzinfo=tzlocal()), end=datetime.datetime(1, 1, 1, 0, 0, tzinfo=tzlocal()))
+   TimespanTuple(begin=datetime.datetime(1900, 1, 1, 0, 0, tzinfo=tzlocal()), end=datetime.datetime(1900, 1, 1, 0, 0, tzinfo=tzlocal()))
    >>> t1 = ics.EventTimespan(begin_time=dt(2020, 2, 20,  20, 20))
    >>> t1.cmp_tuple()
    TimespanTuple(begin=datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), end=datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()))
@@ -247,10 +247,10 @@ set:
 ::
 
    >>> import os, time
-   >>> os.environ['TZ'] = "Europe/Berlin"
+   >>> os.environ['TZ'] = "Etc/GMT-2"
    >>> time.tzset()
    >>> time.tzname
-   ('CET', 'CEST')
+   ('+02', '+02')
 
 We can easily compare ``datetime`` instances that have an explicit
 timezone specified:
@@ -261,9 +261,11 @@ timezone specified:
    >>> dt_ny = dt(2020, 2, 20,  20, 20, tzinfo=gettz("America/New York"))
    >>> dt_utc = dt(2020, 2, 20,  20, 20, tzinfo=tzutc())
    >>> dt_local = dt(2020, 2, 20,  20, 20, tzinfo=tzlocal())
+   >>> dt_local.tzinfo.tzname(dt_local), dt_local.tzinfo.utcoffset(dt_local)
+   ('+02', datetime.timedelta(seconds=7200))
    >>> dt_utc < dt_ny
    True
-   >>> dt_local < dt_utc # this always holds as tzlocal is Europe/Berlin
+   >>> dt_local < dt_utc # this always holds as tzlocal is +2:00 (i.e. European Summer Time)
    True
 
 We can also compare naive instances with naive ones, but we can’t
@@ -287,7 +289,7 @@ which could also be used for comparing instances:
    >>> (dt_utc.timestamp(), dt_ny.timestamp())
    (1582230000.0, 1582248000.0)
    >>> (dt_local.timestamp(), dt_naive.timestamp())
-   (1582226400.0, 1582226400.0)
+   (1582222800.0, 1582222800.0)
 
 This can be become an issue when you e.g. want to iterate all Events of
 an iCalendar that contains both floating and timezone-aware Events in
