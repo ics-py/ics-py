@@ -13,8 +13,6 @@ def load_converters():
 
 load_converters()  # make sure that converters are initialized before any Component classes are defined
 
-from .__meta__ import *  # noqa
-from .__meta__ import __all__ as all_meta
 from .alarm import *  # noqa
 from .alarm import __all__ as all_alarms
 from .attendee import Attendee, Organizer
@@ -27,7 +25,6 @@ from .timespan import EventTimespan, Timespan, TodoTimespan
 from .todo import Todo
 
 __all__ = [
-    *all_meta,
     *all_alarms,
     "Attendee",
     "Event",
@@ -37,5 +34,8 @@ __all__ = [
     "EventTimespan",
     "TodoTimespan",
     "Todo",
-    "Component"
+    "Component",
+    "__version__"
 ]
+
+__version__ = "0.8.0-dev"

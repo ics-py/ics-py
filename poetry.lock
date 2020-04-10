@@ -665,7 +665,7 @@ version = "0.1.9"
 [[package]]
 category = "main"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-marker = "python_version >= \"3.5\" and python_version < \"3.8\" or python_version < \"3.8\""
+marker = "python_version >= \"3.5\" and python_version < \"3.8\" or python_version < \"3.8\" or python_version >= \"3.5\" and python_version < \"3.8\" and (python_version >= \"3.5\" and python_version < \"3.8\" or python_version < \"3.8\")"
 name = "zipp"
 optional = false
 python-versions = ">=3.6"
@@ -676,7 +676,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "e7eb35d0b51c26096fd35f965980fe1775137f3ee8282686b5fbd1a90e7e2869"
+content-hash = "7034dbca1487d23a411858d7ed7f1769806deb40029cda13224b4f2cdf8db989"
 python-versions = "^3.7"
 
 [metadata.files]
