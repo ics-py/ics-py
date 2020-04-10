@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
-from typing import List, Optional, Union
+from typing import List, Union
 
 import attr
 from attr.converters import optional as c_optional
@@ -10,7 +10,7 @@ from ics.attendee import Attendee
 from ics.component import Component
 from ics.converter.component import ComponentMeta
 from ics.converter.special import AlarmConverter
-from ics.grammar import ContentLine
+from ics.types import URL
 from ics.utils import call_validate_on_inst, check_is_instance, ensure_timedelta
 
 __all__ = ["BaseAlarm", "AudioAlarm", "CustomAlarm", "DisplayAlarm", "EmailAlarm", "NoneAlarm"]
@@ -55,7 +55,7 @@ class AudioAlarm(BaseAlarm):
     A calendar event VALARM with AUDIO option.
     """
 
-    sound: Optional[ContentLine] = attr.ib(default=None, validator=v_optional(instance_of(ContentLine)))
+    attach: Union[URL, bytes] = attr.ib(default="")
 
     @property
     def action(self):

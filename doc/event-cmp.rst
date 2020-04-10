@@ -66,7 +66,7 @@ attributes.
 
    >>> e = ics.Event()
    >>> e # doctest: +ELLIPSIS
-   Event(extra=Container('VEVENT', []), extra_params={}, _timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=tzutc()), alarms=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
+   Event(extra=Container('VEVENT', []), extra_params={}, _timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=tzutc()), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
    >>> str(e)
    '<floating Event>'
    >>> e.serialize() # doctest: +ELLIPSIS
@@ -78,6 +78,7 @@ attributes.
                   'end_time': None,
                   'precision': 'second'},
     'alarms': [],
+    'attach': [],
     'attendees': [],
     'categories': [],
     'classification': None,

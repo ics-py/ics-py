@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, Union
 
 import attr
 from attr.converters import optional as c_optional
@@ -13,7 +13,7 @@ from ics.converter.component import ComponentMeta
 from ics.converter.timespan import TimespanConverter
 from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
-from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, get_timespan_if_calendar_entry
+from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, URL, get_timespan_if_calendar_entry
 from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, ensure_utc, now_in_utc, uid_gen, validate_not_none
 
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
@@ -35,6 +35,7 @@ class CalendarEntryAttrs(Component):
     dtstamp: datetime = attr.ib(factory=now_in_utc, converter=ensure_utc, validator=validate_not_none)  # type: ignore
 
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
+    attach: List[Union[URL, bytes]] = attr.ib(factory=list, converter=list)
 
     def __init_subclass__(cls):
         super().__init_subclass__()

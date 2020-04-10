@@ -11,6 +11,8 @@ if TYPE_CHECKING:
     from ics.component import Component
     from ics.converter.component import InflatedComponentMeta
 
+NoneTypes = [type(None), None]
+
 
 # TODO make validation / ValueError / warnings configurable
 # TODO use repr for warning messages and ensure that they don't get to long
@@ -157,11 +159,15 @@ def extract_attr_type(attribute: attr.Attribute) -> Tuple[Optional[Type[MutableS
     if attr_type is None:
         raise ValueError("can't convert attribute %s with AttributeConverter, "
                          "as it has no type information" % attribute)
+    return unwrap_type(attr_type)
+
+
+def unwrap_type(attr_type: Type) -> Tuple[Optional[Type[MutableSequence]], Type, List[Type]]:
     generic_origin = getattr(attr_type, "__origin__", attr_type)
     generic_vars = getattr(attr_type, "__args__", tuple())
 
     if generic_origin == Union:
-        generic_vars = [v for v in generic_vars if v is not type(None)]
+        generic_vars = [v for v in generic_vars if v not in NoneTypes]
         if len(generic_vars) > 1:
             return None, generic_origin[tuple(generic_vars)], list(generic_vars)
         else:
@@ -170,7 +176,9 @@ def extract_attr_type(attribute: attr.Attribute) -> Tuple[Optional[Type[MutableS
     elif issubclass(generic_origin, MutableSequence):
         if len(generic_vars) > 1:
             warnings.warn("using first parameter for List type %s" % attr_type)
-        return generic_origin, generic_vars[0], [generic_vars[0]]
+        res = unwrap_type(generic_vars[0])
+        assert res[0] is None
+        return generic_origin, res[1], res[2]
 
     else:
         return None, attr_type, [attr_type]

@@ -1,5 +1,5 @@
 from datetime import tzinfo
-from typing import ClassVar, Iterable, List, Optional, Union
+from typing import ClassVar, Iterable, Iterator, List, Optional, Union
 
 import attr
 from attr.validators import instance_of
@@ -7,7 +7,7 @@ from attr.validators import instance_of
 from ics.component import Component
 from ics.converter.component import ComponentMeta
 from ics.event import Event
-from ics.grammar import Container, calendar_string_to_containers
+from ics.grammar import Container, string_to_container
 from ics.timeline import Timeline
 from ics.todo import Todo
 
@@ -69,7 +69,7 @@ class Calendar(CalendarAttrs):
             if isinstance(imports, Container):
                 self.populate(imports)
             else:
-                containers = calendar_string_to_containers(imports)
+                containers = string_to_container(imports)
                 if len(containers) != 1:
                     raise ValueError("Multiple calendars in one file are not supported by this method."
                                      "Use ics.Calendar.parse_multiple()")
@@ -89,7 +89,7 @@ class Calendar(CalendarAttrs):
         Parses an input string that may contain mutiple calendars
         and retruns a list of :class:`ics.event.Calendar`
         """
-        containers = calendar_string_to_containers(string)
+        containers = string_to_container(string)
         return [cls(imports=c) for c in containers]
 
     def __str__(self) -> str:
@@ -99,7 +99,7 @@ class Calendar(CalendarAttrs):
             len(self.todos),
             "s" if len(self.todos) > 1 else "")
 
-    def __iter__(self) -> Iterable[str]:
+    def __iter__(self) -> Iterator[str]:
         """Returns:
         iterable: an iterable version of __str__, line per line
         (with line-endings).
