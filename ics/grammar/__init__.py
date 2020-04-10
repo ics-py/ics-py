@@ -1,7 +1,8 @@
 import functools
 import re
 import warnings
-from typing import Generator, List, MutableSequence
+from collections import UserString
+from typing import Generator, List, MutableSequence, Union
 
 import attr
 import importlib_resources  # type: ignore
@@ -11,10 +12,16 @@ from tatsu.exceptions import FailedToken  # type: ignore
 from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
 from ics.utils import limit_str_length, next_after_str_escape, validate_truthy
 
+__all__ = ["ParseError", "QuotedParamValue", "ContentLine", "Container", "string_to_container"]
+
 GRAMMAR = tatsu.compile(importlib_resources.read_text(__name__, "contentline.ebnf"))
 
 
 class ParseError(Exception):
+    pass
+
+
+class QuotedParamValue(UserString):
     pass
 
 
@@ -48,7 +55,7 @@ class ContentLine(RuntimeAttrValidation):
             for nr, pval in enumerate(self.params[pname]):
                 if nr > 0:
                     yield ","
-                if re.search("[:;,]", pval):
+                if isinstance(pval, QuotedParamValue) or re.search("[:;,]", pval):
                     # Property parameter values that contain the COLON, SEMICOLON, or COMMA character separators
                     # MUST be specified as quoted-string text values.
                     # TODO The DQUOTE character is used as a delimiter for parameter values that contain
@@ -82,13 +89,17 @@ class ContentLine(RuntimeAttrValidation):
 
     @classmethod
     def interpret_ast(cls, ast):
-        name = ''.join(ast['name'])
-        value = ''.join(ast['value'])
+        name = ast['name']
+        value = ast['value']
         params = ExtraParams(dict())
         for param_ast in ast.get('params', []):
-            param_name = ''.join(param_ast["name"])
-            param_values = [unescape_param(''.join(x)) for x in param_ast["values_"]]
-            params[param_name] = param_values
+            param_name = param_ast["name"]
+            params[param_name] = []
+            for param_value_ast in param_ast["values_"]:
+                val = unescape_param(param_value_ast["value"])
+                if param_value_ast["quoted"] == "true":
+                    val = QuotedParamValue(val)
+                params[param_name].append(val)
         return cls(name, params, value)
 
     def clone(self):
@@ -215,8 +226,8 @@ class Container(MutableSequence[ContainerItem]):
     reverse = _wrap_list_func(list.reverse)
 
 
-def escape_param(string: str) -> str:
-    return string.translate(
+def escape_param(string: Union[str, QuotedParamValue]) -> str:
+    return str(string).translate(
         {ord("\""): "^'",
          ord("^"): "^^",
          ord("\n"): "^n",
@@ -249,9 +260,7 @@ def unfold_lines(physical_lines):
     current_line = ''
     for line in physical_lines:
         line = line.rstrip('\r')
-        if len(line.strip()) == 0:
-            continue
-        elif not current_line:
+        if not current_line:
             current_line = line
         elif line[0] in (' ', '\t'):
             current_line += line[1:]

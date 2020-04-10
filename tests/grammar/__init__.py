@@ -1,11 +1,14 @@
+import re
+
 import pytest
 from hypothesis import assume, given
 from hypothesis.strategies import characters, text
 
-from ics.grammar import Container, ContentLine, ParseError, string_to_container, unfold_lines
+from ics.grammar import Container, ContentLine, ParseError, QuotedParamValue, escape_param, string_to_container, unfold_lines
 
+CONTROL = [chr(i) for i in range(ord(" ")) if i != ord("\t")]
 NAME = text(alphabet=(characters(whitelist_categories=["Lu"], whitelist_characters=["-"], max_codepoint=128)), min_size=1)
-VALUE = text(characters(blacklist_categories=["Cs"], blacklist_characters=["\n", "\r"]))
+VALUE = text(characters(blacklist_categories=["Cs"], blacklist_characters=CONTROL))
 
 
 @pytest.mark.parametrize("inp, out", [
@@ -26,16 +29,16 @@ VALUE = text(characters(blacklist_categories=["Cs"], blacklist_characters=["\n",
             ContentLine(name='DTSTART', params={'TZID': ['Europe/Brussels']}, value='20131029T103000')
     ), (
             'haha;p2=v2;p1=v1:',
-            ContentLine(name='HAHA', params={'p1': ['v1'], 'p2': ['v2']}, value='')
+            ContentLine(name='HAHA', params={'p2': ['v2'], 'p1': ['v1']}, value='')
     ), (
             'haha;hihi=p3,p4,p5;hoho=p1,p2:blabla:blublu',
-            ContentLine(name='HAHA', params={'hoho': ['p1', 'p2'], 'hihi': ['p3', 'p4', 'p5']}, value='blabla:blublu')
+            ContentLine(name='HAHA', params={'hihi': ['p3', 'p4', 'p5'], 'hoho': ['p1', 'p2']}, value='blabla:blublu')
     ), (
             'ATTENDEE;X-A="I&rsquo\\;ll be in NYC":mailto:a@a.com',
             ContentLine(name='ATTENDEE', params={'X-A': ['I&rsquo\\;ll be in NYC']}, value='mailto:a@a.com')
     ), (
             'DTEND;TZID="UTC":20190107T000000',
-            ContentLine(name='DTEND', params={'TZID': ['UTC']}, value='20190107T000000')
+            ContentLine(name='DTEND', params={'TZID': [QuotedParamValue('UTC')]}, value='20190107T000000')
     ), (
             "ATTENDEE;MEMBER=\"mailto:ietf-calsch@example.org\":mailto:jsmith@example.com",
             ContentLine("ATTENDEE", {"MEMBER": ["mailto:ietf-calsch@example.org"]}, "mailto:jsmith@example.com")
@@ -79,6 +82,26 @@ def test_example_recode(inp, out):
     assert string_to_container(inp) == [out]
 
 
+def test_param_quoting():
+    inp = 'TEST;P1="A";P2=B;P3=C,"D",E,"F":"VAL"'
+    out = ContentLine("TEST", {
+        "P1": [QuotedParamValue("A")],
+        "P2": ["B"],
+        "P3": ["C", QuotedParamValue("D"), "E", QuotedParamValue("F")],
+    }, '"VAL"')
+    par = ContentLine.parse(inp)
+    assert par == out
+    ser = out.serialize()
+    assert inp == ser
+    par_ser = par.serialize()
+    assert inp == par_ser
+    assert string_to_container(inp) == [out]
+
+    for param in out.params.keys():
+        for o_val, p_val in zip(out[param], par[param]):
+            assert type(o_val) == type(p_val)
+
+
 def test_trailing_escape_param():
     with pytest.raises(ValueError) as excinfo:
         ContentLine.parse("TEST;PARAM=this ^^ is a ^'param^',with a ^trailing escape^:value")
@@ -96,23 +119,31 @@ def test_any_name_value_recode(name, value):
     assert string_to_container(raw) == [cl]
 
 
+def quote_escape_param(pval):
+    if re.search("[:;,]", pval):
+        return '"%s"' % escape_param(pval)
+    else:
+        return escape_param(pval)
+
+
 @given(param=NAME, value=VALUE)
 def test_any_param_value_recode(param, value):
-    raw = "TEST;%s=%s:VALUE" % (param, value)
+    raw = "TEST;%s=%s:VALUE" % (param, quote_escape_param(value))
     assert ContentLine.parse(raw).serialize() == raw
-    cl = ContentLine("TEST", {param: value}, "VALUE")
+    cl = ContentLine("TEST", {param: [value]}, "VALUE")
     assert ContentLine.parse(cl.serialize()) == cl
     assert string_to_container(raw) == [cl]
 
 
 @given(name=NAME, value=VALUE,
        param1=NAME, p1value=VALUE,
-       param2=NAME, p2value=VALUE)
-def test_any_name_params_value_recode(name, value, param1, p1value, param2, p2value):
+       param2=NAME, p2value1=VALUE, p2value2=VALUE)
+def test_any_name_params_value_recode(name, value, param1, p1value, param2, p2value1, p2value2):
     assume(param1 != param2)
-    raw = "%s;%s=%s;%s=%s:%s" % (name, param1, p1value, param2, p2value, value)
+    raw = "%s;%s=%s;%s=%s,%s:%s" % (name, param1, quote_escape_param(p1value),
+                                    param2, quote_escape_param(p2value1), quote_escape_param(p2value2), value)
     assert ContentLine.parse(raw).serialize() == raw
-    cl = ContentLine(name, {param1: p1value, param2: p2value}, value)
+    cl = ContentLine(name, {param1: [p1value], param2: [p2value1, p2value2]}, value)
     assert ContentLine.parse(cl.serialize()) == cl
     assert string_to_container(raw) == [cl]
 
@@ -165,6 +196,7 @@ END:TEST"""
     out_shallow.extend([ContentLine("CL3")])
     out_shallow.insert(1, ContentLine("CL2"))
     out_shallow += [ContentLine("CL4")]
+    assert out_shallow[1:3] == Container("DIFFERENT", [ContentLine("CL2"), ContentLine("CL3")])
     assert out_shallow == Container("DIFFERENT", [ContentLine("CL1"), ContentLine("CL2"), ContentLine("CL3"), ContentLine("CL4")])
 
     with pytest.warns(UserWarning, match="not all-uppercase"):
@@ -230,7 +262,7 @@ def test_value_characters():
     special_chars = ";:,\"^"
     inp = "TEST;P1={chars};P2={chars},{chars},\"{chars}\",{chars}:{chars}:{chars}{special}".format(
         chars=chars, special=special_chars)
-    out = ContentLine("TEST", {"P1": [chars], "P2": [chars, chars, chars, chars]},
+    out = ContentLine("TEST", {"P1": [chars], "P2": [chars, chars, QuotedParamValue(chars), chars]},
                       chars + ":" + chars + special_chars)
     par = ContentLine.parse(inp)
     assert par == out
