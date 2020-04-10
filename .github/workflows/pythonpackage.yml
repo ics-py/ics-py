@@ -17,13 +17,11 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip setuptools
-        pip install -r requirements.txt -r dev/requirements-test.txt
-    - name: Static checking with mypy
-      run: |
-        mypy ics
-    - name: Run pytest
-      run: |
-        python setup.py test
+    - name: Install poetry and tox
+      run: python -m pip install --upgrade tox tox-gh-actions
+    - name: Run tox
+      run: tox
+    - name: Publish coverage
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
