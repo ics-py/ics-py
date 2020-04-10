@@ -35,7 +35,7 @@ class AttributeValueConverter(AttributeConverter):
             name = self.attribute.name.upper().replace("_", "-").strip("-")
         return name
 
-    def __parse_value(self, line: "ContentLine", value: str, context: ContextDict) -> Tuple[ExtraParams, ValueConverter]:
+    def __prepare_params(self, line: "ContentLine") -> Tuple[ExtraParams, ValueConverter]:
         params = copy_extra_params(line.params)
         value_type = params.pop("VALUE", None)
         if value_type:
@@ -48,8 +48,7 @@ class AttributeValueConverter(AttributeConverter):
                 raise ValueError("can't convert %s with %s" % (line, self))
         else:
             converter = self.value_converters[0]
-        parsed = converter.parse(value, params, context)  # might modify params and context
-        return params, parsed
+        return params, converter
 
     # TODO make storing/writing extra values/params configurably optional, but warn when information is lost
 
@@ -57,10 +56,11 @@ class AttributeValueConverter(AttributeConverter):
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
         if self.is_multi_value:
-            params = None
-            for value in item.value_list:
+            params, converter = self.__prepare_params(item)
+            for value in converter.split_value_list(item.value):
                 context[(self, "current_value_count")] += 1
-                params, parsed = self.__parse_value(item, value, context)
+                params = copy_extra_params(params)
+                parsed = converter.parse(value, params, context)  # might modify params and context
                 params["__merge_next"] = True  # type: ignore
                 self.set_or_append_extra_params(component, params)
                 self.set_or_append_value(component, parsed)
@@ -70,7 +70,8 @@ class AttributeValueConverter(AttributeConverter):
             if context[(self, "current_value_count")] > 0:
                 raise ValueError("attribute %s can only be set once, second occurrence is %s" % (self.ics_name, item))
             context[(self, "current_value_count")] += 1
-            params, parsed = self.__parse_value(item, item.value, context)
+            params, converter = self.__prepare_params(item)
+            parsed = converter.parse(item.value, params, context)  # might modify params and context
             self.set_or_append_extra_params(component, params)
             self.set_or_append_value(component, parsed)
         return True
@@ -129,8 +130,7 @@ class AttributeValueConverter(AttributeConverter):
             current_values.append(serialized)
 
             if not merge_next:
-                cl = ContentLine(name=self.ics_name, params=params)
-                cl.value_list = current_values
+                cl = ContentLine(name=self.ics_name, params=params, value=converter.join_value_list(current_values))
                 output.append(cl)
                 current_params = None
                 current_values = []

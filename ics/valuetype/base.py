@@ -1,6 +1,6 @@
 import abc
 import inspect
-from typing import Dict, Generic, Type, TypeVar
+from typing import Dict, Generic, Iterable, Type, TypeVar
 
 from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
 
@@ -28,6 +28,12 @@ class ValueConverter(abc.ABC, Generic[T]):
     @abc.abstractmethod
     def python_type(self) -> Type[T]:
         pass
+
+    def split_value_list(self, values: str) -> Iterable[str]:
+        yield from values.split(",")
+
+    def join_value_list(self, values: Iterable[str]) -> str:
+        return ",".join(values)
 
     @abc.abstractmethod
     def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> T:

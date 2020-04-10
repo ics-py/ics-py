@@ -1,28 +1,11 @@
 import base64
 from typing import Type
-from urllib.parse import ParseResult as URL, urlparse
+from urllib.parse import urlparse
 
 from dateutil.rrule import rrule
 
-from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
+from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, URL
 from ics.valuetype.base import ValueConverter
-
-
-class TextConverter(ValueConverter[str]):
-
-    @property
-    def ics_type(self) -> str:
-        return "TEXT"
-
-    @property
-    def python_type(self) -> Type[str]:
-        return str
-
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
-        return value
-
-    def serialize(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
-        return value
 
 
 class BinaryConverter(ValueConverter[bytes]):
@@ -126,13 +109,15 @@ class RecurConverter(ValueConverter[rrule]):
 
     def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> rrule:
         # this won't be called unless a class specifies an attribute with type: rrule
-        raise NotImplementedError("parsing 'RECUR' is not yet supported")
+        raise NotImplementedError("parsing 'RECUR' is not yet supported")  # TODO is this a valuetype or a composed object
 
     def serialize(self, value: rrule, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         raise NotImplementedError("serializing 'RECUR' is not yet supported")
 
 
 class URIConverter(ValueConverter[URL]):
+    # TODO URI PARAMs need percent escaping, preventing all illegal characters except for ", in which they also need to wrapped
+    # TODO URI values also need percent escaping (escaping COMMA characters in URI Lists), but no quoting
 
     @property
     def ics_type(self) -> str:

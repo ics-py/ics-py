@@ -1,5 +1,5 @@
 from datetime import date, datetime, time, timedelta, timezone
-from typing import Generator, overload
+from typing import overload
 from uuid import uuid4
 
 from dateutil.tz import UTC as dateutil_tzutc
@@ -68,12 +68,9 @@ def is_utc(instant: datetime) -> bool:
         return False
     if tz in [dateutil_tzutc, datetime_tzutc]:
         return True
-    offset = tz.utcoffset(instant)
-    if offset == TIMEDELTA_ZERO:
+    tzname = tz.tzname(instant)
+    if tzname and tzname.upper() == "UTC":
         return True
-    # tzname = tz.tzname(instant)
-    # if tzname and tzname.upper() == "UTC":
-    #     return True
     return False
 
 
@@ -166,46 +163,19 @@ def ceil_timedelta_to_days(value: timedelta) -> timedelta:
 
 
 def limit_str_length(val):
-    return str(val)  # TODO
+    return str(val)  # TODO limit_str_length
+
+
+def next_after_str_escape(it, full_str):
+    try:
+        return next(it)
+    except StopIteration as e:
+        raise ValueError("value '%s' may not end with an escape sequence" % full_str) from e
 
 
 def uid_gen() -> str:
     uid = str(uuid4())
     return "{}@{}.org".format(uid, uid[:4])
-
-
-def escape_string(string: str) -> str:
-    return string.translate(
-        {ord("\\"): "\\\\",
-         ord(";"): "\\;",
-         ord(","): "\\,",
-         ord("\n"): "\\n",
-         ord("\r"): "\\r"})
-
-
-def unescape_string(string: str) -> str:
-    return "".join(unescape_string_iter(string))
-
-
-def unescape_string_iter(string: str) -> Generator[str, None, None]:
-    it = iter(string)
-    for c1 in it:
-        if c1 == "\\":
-            c2 = next(it)
-            if c2 == ";":
-                yield ";"
-            elif c2 == ",":
-                yield ","
-            elif c2 == "n" or c2 == "N":
-                yield "\n"
-            elif c2 == "r" or c2 == "R":
-                yield "\r"
-            elif c2 == "\\":
-                yield "\\"
-            else:
-                raise ValueError("can't handle escaped character '%s'" % c2)
-        else:
-            yield c1
 
 
 ###############################################################################

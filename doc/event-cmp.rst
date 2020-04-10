@@ -70,7 +70,7 @@ attributes.
    >>> str(e)
    '<floating Event>'
    >>> e.serialize() # doctest: +ELLIPSIS
-   'BEGIN:VEVENT\r\nUID:...@....org\r\nDTSTAMP:2020...T...Z\r\nEND:VEVENT'
+   'BEGIN:VEVENT\r\nUID:...@...org\r\nDTSTAMP:2020...T...Z\r\nEND:VEVENT'
    >>> import attr, pprint
    >>> pprint.pprint(attr.asdict(e)) # doctest: +ELLIPSIS
    {'_timespan': {'begin_time': None,
@@ -84,7 +84,7 @@ attributes.
     'created': None,
     'description': None,
     'dtstamp': datetime.datetime(2020, ..., tzinfo=tzutc()),
-    'extra': [],
+    'extra': {'data': [], 'name': 'VEVENT'},
     'extra_params': {},
     'geo': None,
     'last_modified': None,

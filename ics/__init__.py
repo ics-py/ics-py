@@ -6,7 +6,8 @@ def load_converters():
     from ics.converter.value import AttributeValueConverter
     from ics.valuetype.base import ValueConverter
     from ics.valuetype.datetime import DateConverter, DatetimeConverter, DurationConverter, PeriodConverter, TimeConverter, UTCOffsetConverter
-    from ics.valuetype.generic import BinaryConverter, BooleanConverter, CalendarUserAddressConverter, FloatConverter, IntegerConverter, RecurConverter, TextConverter, URIConverter
+    from ics.valuetype.generic import BinaryConverter, BooleanConverter, CalendarUserAddressConverter, FloatConverter, IntegerConverter, RecurConverter, URIConverter
+    from ics.valuetype.text import TextConverter
     from ics.valuetype.special import GeoConverter
 
 
