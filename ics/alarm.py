@@ -55,7 +55,7 @@ class AudioAlarm(BaseAlarm):
     A calendar event VALARM with AUDIO option.
     """
 
-    attach: Union[URL, bytes] = attr.ib(default="")
+    attach: Union[URL, bytes, None] = attr.ib(default=None)
 
     @property
     def action(self):

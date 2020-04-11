@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, tzinfo as TZInfo
-from typing import Any, NamedTuple, Optional, TypeVar, Union, cast, overload
+from typing import Any, Callable, NamedTuple, Optional, TypeVar, Union, cast, overload
 
 import attr
 from attr.validators import instance_of, optional as v_optional
@@ -13,7 +13,7 @@ from ics.utils import TIMEDELTA_CACHE, TIMEDELTA_DAY, TIMEDELTA_ZERO, ceil_datet
 class Normalization(object):
     normalize_floating: bool = attr.ib()
     normalize_with_tz: bool = attr.ib()
-    replacement: Union[TZInfo, None] = attr.ib()
+    replacement: Union[TZInfo, Callable[[], TZInfo], None] = attr.ib()
 
     @overload
     def normalize(self, value: "Timespan") -> "Timespan":
@@ -47,13 +47,17 @@ class Normalization(object):
         normalize = (floating and self.normalize_floating) or (not floating and self.normalize_with_tz)
 
         if normalize:
-            return replace_timezone(value, self.replacement)
+            replacement = self.replacement
+            if callable(replacement):
+                replacement = replacement()
+            return replace_timezone(value, replacement)
         else:
             return value
 
 
-CMP_DATETIME_NONE_DEFAULT = datetime.min
-CMP_NORMALIZATION = Normalization(normalize_floating=True, normalize_with_tz=False, replacement=tzlocal())
+# using datetime.min might lead to problems when doing timezone conversions / comparisions (e.g. by substracting an 1 hour offset)
+CMP_DATETIME_NONE_DEFAULT = datetime(1900, 1, 1, 0, 0)
+CMP_NORMALIZATION = Normalization(normalize_floating=True, normalize_with_tz=False, replacement=tzlocal)
 
 TimespanTuple = NamedTuple("TimespanTuple", [("begin", datetime), ("end", datetime)])
 NullableTimespanTuple = NamedTuple("NullableTimespanTuple", [("begin", Optional[datetime]), ("end", Optional[datetime])])
@@ -315,7 +319,7 @@ class Timespan(object):
             )
 
     def cmp_tuple(self) -> TimespanTuple:
-        return self.timespan_tuple(default=datetime.min, normalization=CMP_NORMALIZATION)
+        return self.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT, normalization=CMP_NORMALIZATION)
 
     def __require_tuple_components(self, values, *required):
         for nr, (val, req) in enumerate(zip(values, required)):
