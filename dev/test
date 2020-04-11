@@ -1,5 +1,0 @@
-#!/bin/bash
-
-source ve3/bin/activate
-python setup.py test
-deactivate
