@@ -35,20 +35,17 @@ importlib_resources =        "^1.4"
 # Tools used by tox for testing and building docs 
 # see https://github.com/python-poetry/poetry/issues/1941#issuecomment-581602064
 # [tool.poetry.dev-dependencies]
-packaging =                  { version = ">=20.3",  optional = true }
 pytest =                     { version = "^5.2",    optional = true }
 pytest-cov =                 { version = "^2.8.1",  optional = true }
-pytest-flakes =              { version = "^4.0.0",  optional = true }
-pytest-pep8 =                { version = "^1.0.6",  optional = true }
-mypy =                       { version = ">=0.770", optional = true }
-pytest-mypy =                { version = "^0.6.1",  optional = true }
 hypothesis =                 { version = "^5.8.0",  optional = true }
+mypy =                       { version = ">=0.770", optional = true }
+flake8 =                     { version = "^3.7.9",  optional = true }
 sphinx =                     { version = "^3.0.0",  optional = true }
 sphinxcontrib-napoleon =     { version = "^0.7",    optional = true }
 sphinx-autodoc-typehints =   { version = "^1.10.3", optional = true }
 
 [tool.poetry.extras]
-dev = ["packaging", "pytest", "pytest-cov", "pytest-flakes", "pytest-pep8", "mypy", "pytest-mypy", "hypothesis", "sphinx", "sphinxcontrib-napoleon", "sphinx-autodoc-typehints"]
+dev = ["pytest", "pytest-cov", "hypothesis", "mypy", "flake8", "sphinx", "sphinxcontrib-napoleon", "sphinx-autodoc-typehints"]
 
 [build-system]
 requires = ["poetry>=0.12"]
