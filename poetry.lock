@@ -687,10 +687,10 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [extras]
-dev = ["pytest", "sphinx", "sphinxcontrib-napoleon", "sphinx-autodoc-typehints", "pytest-cov", "pytest-flakes", "pytest-pep8", "pytest-mypy", "mypy", "hypothesis", "packaging"]
+dev = ["packaging", "pytest", "pytest-cov", "pytest-flakes", "pytest-pep8", "mypy", "pytest-mypy", "hypothesis", "sphinx", "sphinxcontrib-napoleon", "sphinx-autodoc-typehints"]
 
 [metadata]
-content-hash = "d92b5a0c465d0263f6b865d6a2d1d40a2a3badb3d58d30304ba8e925fecdd60b"
+content-hash = "a41d4283c02d5f183761e69a982064900359aa26c1993bc9adb421ead2ebe22f"
 python-versions = "^3.6"
 
 [metadata.files]

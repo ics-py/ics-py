@@ -32,6 +32,7 @@ attrs =                      ">=19.2"
 tatsu =                      ">4.2"
 importlib_resources =        "^1.4"
 
+# Tools used by tox for testing and building docs 
 # see https://github.com/python-poetry/poetry/issues/1941#issuecomment-581602064
 # [tool.poetry.dev-dependencies]
 packaging =                  { version = ">=20.3",  optional = true }
