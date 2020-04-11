@@ -261,8 +261,8 @@ timezone specified:
    >>> dt_ny = dt(2020, 2, 20,  20, 20, tzinfo=gettz("America/New York"))
    >>> dt_utc = dt(2020, 2, 20,  20, 20, tzinfo=tzutc())
    >>> dt_local = dt(2020, 2, 20,  20, 20, tzinfo=tzlocal())
-   >>> dt_local.tzinfo.tzname(dt_local), dt_local.tzinfo.utcoffset(dt_local)
-   ('+02', datetime.timedelta(seconds=7200))
+   >>> dt_local.tzinfo.tzname(dt_local), dt_local.tzinfo.utcoffset(dt_local).total_seconds()
+   ('+02', 7200.0)
    >>> dt_utc < dt_ny
    True
    >>> dt_local < dt_utc # this always holds as tzlocal is +2:00 (i.e. European Summer Time)
