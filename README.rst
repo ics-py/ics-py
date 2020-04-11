@@ -1,4 +1,4 @@
-ics.py `0.8.0` : iCalendar for Humans
+ics.py `0.9.0-dev` : iCalendar for Humans
 =========================================
 
 `Original repository <https://github.com/C4ptainCrunch/ics.py>`_ (GitHub) -

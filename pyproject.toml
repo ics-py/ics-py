@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ics"
-version = "0.8.0"
+version = "0.9.0-dev"
 description = "Pythonic iCalendar (RFC 5545) Parser"
 authors = ["Nikita Marchant <nikita.marchant@gmail.com>", "Niko Fink <icspy@niko.fink.bayern>"]
 license = "Apache-2.0"
