@@ -4,7 +4,7 @@ First, let’s import the latest version of ics.py :date:
 
    >>> import ics
    >>> ics.__version__
-   '0.9.0-dev'
+   '0.9.0'
 
 We’re also going to create a lot of ``datetime`` and ``timedelta``
 objects, so we import them as short-hand aliases ``dt`` and ``td``:
