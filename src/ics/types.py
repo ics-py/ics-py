@@ -71,7 +71,7 @@ def get_timespan_if_calendar_entry(value: None) -> None:
 
 
 def get_timespan_if_calendar_entry(value):
-    from ics.event import CalendarEntryAttrs  # noqa
+    from ics.event import CalendarEntryAttrs  # noqa: F811 # pyflakes considers this a redef of the unused if TYPE_CHECKING import above
 
     if isinstance(value, CalendarEntryAttrs):
         return value._timespan

@@ -28,7 +28,7 @@ class CalendarEntryAttrs(Component):
     description: Optional[str] = attr.ib(default=None)
     location: Optional[str] = attr.ib(default=None)
     url: Optional[str] = attr.ib(default=None)
-    status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=v_optional(in_(STATUS_VALUES)))  # type: ignore
+    status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=in_(STATUS_VALUES))  # type: ignore
 
     created: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore
     last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore
@@ -209,7 +209,7 @@ class EventAttrs(CalendarEntryAttrs):
 
     transparent: Optional[bool] = attr.ib(default=None)
     organizer: Optional[Organizer] = attr.ib(default=None, validator=v_optional(instance_of(Organizer)))
-    geo: Optional[Geo] = attr.ib(default=None, converter=make_geo)  # type: ignore
+    geo: Optional[Geo] = attr.ib(default=None, converter=make_geo)
 
     attendees: List[Attendee] = attr.ib(factory=list, converter=list)
     categories: List[str] = attr.ib(factory=list, converter=list)

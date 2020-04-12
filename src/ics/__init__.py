@@ -13,7 +13,7 @@ def load_converters():
 
 load_converters()  # make sure that converters are initialized before any Component classes are defined
 
-from .alarm import *  # noqa
+from .alarm import *
 from .alarm import __all__ as all_alarms
 from .attendee import Attendee, Organizer
 from .component import Component

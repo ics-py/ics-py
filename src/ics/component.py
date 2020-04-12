@@ -3,7 +3,7 @@ from typing import ClassVar, Dict, List, Type, TypeVar, Union
 import attr
 from attr.validators import instance_of
 
-from ics.converter.component import ComponentMeta, InflatedComponentMeta
+from ics.converter.component import ComponentMeta
 from ics.grammar import Container
 from ics.types import ExtraParams, RuntimeAttrValidation
 
@@ -14,7 +14,7 @@ ComponentExtraParams = Dict[str, Union[ExtraParams, List[ExtraParams]]]
 
 @attr.s
 class Component(RuntimeAttrValidation):
-    Meta: ClassVar[Union[ComponentMeta, InflatedComponentMeta]] = ComponentMeta("ABSTRACT-COMPONENT")
+    Meta: ClassVar[ComponentMeta] = ComponentMeta("ABSTRACT-COMPONENT")
 
     extra: Container = attr.ib(init=False, default=PLACEHOLDER_CONTAINER, validator=instance_of(Container), metadata={"ics_ignore": True})
     extra_params: ComponentExtraParams = attr.ib(init=False, factory=dict, validator=instance_of(dict), metadata={"ics_ignore": True})
@@ -30,13 +30,13 @@ class Component(RuntimeAttrValidation):
 
     @classmethod
     def from_container(cls: Type[ComponentType], container: Container) -> ComponentType:
-        return cls.Meta.load_instance(container)  # type: ignore
+        return cls.Meta.load_instance(container)
 
     def populate(self, container: Container):
-        self.Meta.populate_instance(self, container)  # type: ignore
+        self.Meta.populate_instance(self, container)
 
     def to_container(self) -> Container:
-        return self.Meta.serialize_toplevel(self)  # type: ignore
+        return self.Meta.serialize_toplevel(self)
 
     def serialize(self) -> str:
         return self.to_container().serialize()

@@ -37,7 +37,7 @@ def deprecated_due(fun):
 class TodoAttrs(CalendarEntryAttrs):
     percent: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PERCENT + 1))))
     priority: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PRIORITY + 1))))
-    completed: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
+    completed: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)
 
 
 class Todo(TodoAttrs):
@@ -69,14 +69,14 @@ class Todo(TodoAttrs):
             representation = "end"
         super(Todo, self).convert_end(representation)
 
-    due = property(TodoAttrs.end.fget, TodoAttrs.end.fset)  # type: ignore
+    due = property(TodoAttrs.end.fget, TodoAttrs.end.fset)
     # convert_due = TodoAttrs.convert_end  # see above
-    due_representation = property(TodoAttrs.end_representation.fget)  # type: ignore
-    has_explicit_due = property(TodoAttrs.has_explicit_end.fget)  # type: ignore
+    due_representation = property(TodoAttrs.end_representation.fget)
+    has_explicit_due = property(TodoAttrs.has_explicit_end.fget)
     due_within = TodoAttrs.ends_within
 
-    end = property(deprecated_due(TodoAttrs.end.fget), deprecated_due(TodoAttrs.end.fset))  # type: ignore
+    end = property(deprecated_due(TodoAttrs.end.fget), deprecated_due(TodoAttrs.end.fset))
     convert_end = deprecated_due(TodoAttrs.convert_end)
-    end_representation = property(deprecated_due(TodoAttrs.end_representation.fget))  # type: ignore
-    has_explicit_end = property(deprecated_due(TodoAttrs.has_explicit_end.fget))  # type: ignore
+    end_representation = property(deprecated_due(TodoAttrs.end_representation.fget))
+    has_explicit_end = property(deprecated_due(TodoAttrs.has_explicit_end.fget))
     ends_within = deprecated_due(TodoAttrs.ends_within)

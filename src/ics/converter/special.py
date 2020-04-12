@@ -25,9 +25,7 @@ class TimezoneConverter(AttributeConverter):
         self._check_component(component, context)
 
         item = item.clone([
-            line for line in item if
-            not line.name.startswith("X-") and
-            not line.name == "SEQUENCE"
+            line for line in item if not line.name.startswith("X-") and not line.name == "SEQUENCE"
         ])
 
         fake_file = StringIO()

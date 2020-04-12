@@ -25,7 +25,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
 
     trigger: Union[timedelta, datetime, None] = attr.ib(
         default=None,
-        validator=v_optional(instance_of((timedelta, datetime)))  # type: ignore
+        validator=v_optional(instance_of((timedelta, datetime)))
     )  # TODO is this relative to begin or end?
     repeat: int = attr.ib(default=None, validator=call_validate_on_inst)
     duration: timedelta = attr.ib(default=None, converter=c_optional(ensure_timedelta), validator=call_validate_on_inst)  # type: ignore

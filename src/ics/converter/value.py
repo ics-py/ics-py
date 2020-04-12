@@ -61,11 +61,11 @@ class AttributeValueConverter(AttributeConverter):
                 context[(self, "current_value_count")] += 1
                 params = copy_extra_params(params)
                 parsed = converter.parse(value, params, context)  # might modify params and context
-                params["__merge_next"] = True  # type: ignore
+                params["__merge_next"] = ["TRUE"]
                 self.set_or_append_extra_params(component, params)
                 self.set_or_append_value(component, parsed)
             if params is not None:
-                params["__merge_next"] = False  # type: ignore
+                params["__merge_next"] = ["FALSE"]
         else:
             if context[(self, "current_value_count")] > 0:
                 raise ValueError("attribute %s can only be set once, second occurrence is %s" % (self.ics_name, item))
@@ -116,7 +116,7 @@ class AttributeValueConverter(AttributeConverter):
         for value, params in zip(values, extra_params):
             merge_next = False
             params = copy_extra_params(params)
-            if params.pop("__merge_next", False):  # type: ignore
+            if params.pop("__merge_next", None) == ["TRUE"]:
                 merge_next = True
             converter = self.__find_value_converter(params, value)
             serialized = converter.serialize(value, params, context)  # might modify params and context

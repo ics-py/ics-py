@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, tzinfo as TZInfo
-from typing import Any, Callable, NamedTuple, Optional, TypeVar, Union, cast, overload
+from typing import Any, Callable, NamedTuple, Optional, TYPE_CHECKING, TypeVar, Union, cast, overload
 
 import attr
 from attr.validators import instance_of, optional as v_optional
@@ -8,6 +8,11 @@ from dateutil.tz import tzlocal
 from ics.types import DatetimeLike
 from ics.utils import TIMEDELTA_CACHE, TIMEDELTA_DAY, TIMEDELTA_ZERO, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight, timedelta_nearly_zero
 
+if TYPE_CHECKING:
+    # Literal is new in python 3.8, but backported via typing_extensions
+    # we don't need typing_extensions as actual (dev-)dependency as mypy has builtin support
+    from typing_extensions import Literal
+
 
 @attr.s
 class Normalization(object):
@@ -15,19 +20,19 @@ class Normalization(object):
     normalize_with_tz: bool = attr.ib()
     replacement: Union[TZInfo, Callable[[], TZInfo], None] = attr.ib()
 
-    @overload
+    @overload  # noqa: F811 # pyflakes < 2.2 reports 'redefinition of unused' for overloaded class members
     def normalize(self, value: "Timespan") -> "Timespan":
         ...
 
-    @overload  # noqa
+    @overload  # noqa: F811
     def normalize(self, value: DatetimeLike) -> datetime:
         ...
 
-    @overload  # noqa
+    @overload  # noqa: F811
     def normalize(self, value: None) -> None:
         ...
 
-    def normalize(self, value):  # noqa
+    def normalize(self, value):  # noqa: F811
         """
         Normalize datetime or timespan instances to make naive/floating ones (without timezone, i.e. tzinfo == None)
         comparable to aware ones with a fixed timezone.
@@ -80,10 +85,10 @@ class Timespan(object):
 
     def replace(
             self: TimespanT,
-            begin_time: Optional[datetime] = False,  # type: ignore
-            end_time: Optional[datetime] = False,  # type: ignore
-            duration: Optional[timedelta] = False,  # type: ignore
-            precision: str = False  # type: ignore
+            begin_time: Union[datetime, None, "Literal[False]"] = False,
+            end_time: Union[datetime, None, "Literal[False]"] = False,
+            duration: Union[timedelta, None, "Literal[False]"] = False,
+            precision: Union[str, "Literal[False]"] = False
     ) -> TimespanT:
         if begin_time is False:
             begin_time = self.begin_time
@@ -93,7 +98,10 @@ class Timespan(object):
             duration = self.duration
         if precision is False:
             precision = self.precision
-        return type(self)(begin_time=begin_time, end_time=end_time, duration=duration, precision=precision)
+        return type(self)(begin_time=cast(Optional[datetime], begin_time),
+                          end_time=cast(Optional[datetime], end_time),
+                          duration=cast(Optional[timedelta], duration),
+                          precision=cast(str, precision))
 
     def replace_timezone(self: TimespanT, tzinfo: Optional[TZInfo]) -> TimespanT:
         if self.is_all_day():
@@ -298,15 +306,15 @@ class Timespan(object):
 
     ####################################################################################################################
 
-    @overload
+    @overload  # noqa: F811
     def timespan_tuple(self, default: None = None, normalization: Normalization = None) -> NullableTimespanTuple:
         ...
 
-    @overload  # noqa
+    @overload  # noqa: F811
     def timespan_tuple(self, default: datetime, normalization: Normalization = None) -> TimespanTuple:
         ...
 
-    def timespan_tuple(self, default=None, normalization=None):  # noqa
+    def timespan_tuple(self, default=None, normalization=None):  # noqa: F811
         if normalization:
             return TimespanTuple(
                 normalization.normalize(self.get_begin() or default),

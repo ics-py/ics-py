@@ -30,6 +30,15 @@ class ComponentMeta(object):
             container_name=self.container_name,
             converter_class=self.converter_class or ComponentConverter)
 
+    def load_instance(self, container: Container, context: Optional[ContextDict] = None):
+        raise NotImplementedError("this is only available for InflatedComponentMeta, was Component.__init_subclass__ called?")
+
+    def populate_instance(self, instance: "Component", container: Container, context: Optional[ContextDict] = None):
+        raise NotImplementedError("this is only available for InflatedComponentMeta, was Component.__init_subclass__ called?")
+
+    def serialize_toplevel(self, component: "Component", context: Optional[ContextDict] = None):
+        raise NotImplementedError("this is only available for InflatedComponentMeta, was Component.__init_subclass__ called?")
+
 
 @attr.s(frozen=True)
 class InflatedComponentMeta(ComponentMeta):
