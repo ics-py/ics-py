@@ -20,16 +20,17 @@ class Normalization(object):
     normalize_with_tz: bool = attr.ib()
     replacement: Union[TZInfo, Callable[[], TZInfo], None] = attr.ib()
 
-    @overload  # noqa: F811 # pyflakes < 2.2 reports 'redefinition of unused' for overloaded class members
+    @overload
     def normalize(self, value: "Timespan") -> "Timespan":
         ...
 
-    @overload  # noqa: F811
-    def normalize(self, value: DatetimeLike) -> datetime:
+    # pyflakes < 2.2 reports 'redefinition of unused' for overloaded class members
+    @overload
+    def normalize(self, value: DatetimeLike) -> datetime:  # noqa: F811
         ...
 
-    @overload  # noqa: F811
-    def normalize(self, value: None) -> None:
+    @overload
+    def normalize(self, value: None) -> None:  # noqa: F811
         ...
 
     def normalize(self, value):  # noqa: F811
@@ -306,12 +307,12 @@ class Timespan(object):
 
     ####################################################################################################################
 
-    @overload  # noqa: F811
+    @overload
     def timespan_tuple(self, default: None = None, normalization: Normalization = None) -> NullableTimespanTuple:
         ...
 
-    @overload  # noqa: F811
-    def timespan_tuple(self, default: datetime, normalization: Normalization = None) -> TimespanTuple:
+    @overload
+    def timespan_tuple(self, default: datetime, normalization: Normalization = None) -> TimespanTuple:  # noqa: F811
         ...
 
     def timespan_tuple(self, default=None, normalization=None):  # noqa: F811

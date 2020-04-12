@@ -21,12 +21,12 @@ class GenericConverter(abc.ABC):
     @property
     @abc.abstractmethod
     def priority(self) -> int:
-        pass
+        ...
 
     @property
     @abc.abstractmethod
     def filter_ics_names(self) -> List[str]:
-        pass
+        ...
 
     @abc.abstractmethod
     def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
@@ -36,14 +36,14 @@ class GenericConverter(abc.ABC):
         :param item:
         :return: True, if the line was consumed and shouldn't be stored as extra (but might still be passed on)
         """
-        pass
+        ...
 
     def finalize(self, component: "Component", context: ContextDict):
-        pass
+        ...
 
     @abc.abstractmethod
     def serialize(self, component: "Component", output: Container, context: ContextDict):
-        pass
+        ...
 
 
 @attr.s(frozen=True)

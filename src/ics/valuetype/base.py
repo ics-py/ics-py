@@ -23,12 +23,12 @@ class ValueConverter(Generic[T], abc.ABC):
     @property
     @abc.abstractmethod
     def ics_type(self) -> str:
-        pass
+        ...
 
     @property
     @abc.abstractmethod
     def python_type(self) -> Type[T]:
-        pass
+        ...
 
     def split_value_list(self, values: str) -> Iterable[str]:
         yield from values.split(",")
@@ -38,11 +38,11 @@ class ValueConverter(Generic[T], abc.ABC):
 
     @abc.abstractmethod
     def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> T:
-        pass
+        ...
 
     @abc.abstractmethod
     def serialize(self, value: T, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
-        pass
+        ...
 
     def __str__(self):
         return "<" + self.__class__.__name__ + ">"

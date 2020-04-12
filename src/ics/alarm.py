@@ -50,7 +50,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     @abstractmethod
     def action(self):
         """ VALARM action to be implemented by concrete classes """
-        pass
+        ...
 
 
 @attr.s
