@@ -43,9 +43,6 @@ There are three Python tools required to develop, test, and release ics.py:
 * `bumpversion <https://pypi.org/project/bumpversion/>`_ to help with making a release.
 
 Their respective configuration files are :file:`pyproject.toml`, :file:`tox.ini` and :file:`.bumpversion.cfg`.
-The ``poetry.lock`` file optionally locks the dependency versions against which we want to develop,
-which is independent from the versions the library pulls in when installed as a dependency itself (where we are pretty liberal),
-and the versions we test against (which is always the latest releases installed by tox).
 Install the tools via pip:
 
 .. code-block:: bash
@@ -73,6 +70,11 @@ Now you are ready to setup your development environment using the following comm
 This will create a new virtualenv and install the dependencies for using ics.py.
 Furthermore, the current source of the ics.py package will be available similar to running ``./setup.py develop``.
 To access the virtualenv, use ``poetry run python`` or ``poetry shell``.
+The :file:`poetry.lock` file locks the versions of dependencies in the development environment set up by poetry, so that this environment is the same for everyone.
+The file is only read by poetry and not included in any distributions, so these restrictions don't apply when running ``pip install ics``.
+As tox manages its own environments and also doesn't read the lock file, it just installs the latest versions of dependencies for testing.
+More details on the poetry side can be found `here <https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control>`_.
+
 If you made some changes and now want to lint your code, run the testsuite, or build the documentation, run tox.
 You don't have to worry about which versions in which venvs are installed and whether you're directly testing against the sources or against a built package, tox handles all that for you:
 
@@ -89,15 +91,16 @@ To run a single task and not the whole testsuite, use the ``-e`` flag:
 To get a list of all available tasks, run :command:`tox -av`.
 
 .. note::
-    If you want to run any tasks of tox manually, you need to make sure that you also have all the dependencies of the task installed.
-    This is easily ensured by also installing the "dev" extra dependencies into you main environment:
+    If you want to run any tasks of tox manually, you need to make sure that you also have all the testing dependencies of the task listed in ``tox.ini`` installed.
+    You can also let tox `set up <https://tox.readthedocs.io/en/latest/example/devenv.html#creating-development-environments-using-the-devenv-option>`_ your development environment or re-use one of its test environments:
 
     .. code-block:: bash
 
-        $ poetry install --extras "dev"
-        $ poetry shell
-        (.venv) $ pytest
-        (.venv) $ cd doc && sphinx-build
+        $ tox -e py38
+        $ source .tox/py38/bin/activate
+        (py38) $ pytest
+
+    This also works without having poetry installed.
 
 If you are fixing a bug
 ^^^^^^^^^^^^^^^^^^^^^^^
