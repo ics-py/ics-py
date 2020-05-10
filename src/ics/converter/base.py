@@ -1,5 +1,6 @@
 import abc
 import warnings
+from types import SimpleNamespace
 from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, TYPE_CHECKING, Tuple, Type, Union, cast
 
 import attr
@@ -59,18 +60,18 @@ class AttributeConverter(GenericConverter, abc.ABC):
     is_required: bool
 
     def __attrs_post_init__(self):
-        multi_value_type, value_type, value_types = extract_attr_type(self.attribute)
-        _priority = self.attribute.metadata.get("ics_priority", self.default_priority)
-        is_required = self.attribute.metadata.get("ics_required", None)
-        if is_required is None:
+        v = SimpleNamespace()
+        v.multi_value_type, v.value_type, v.value_types = extract_attr_type(self.attribute)
+        v._priority = self.attribute.metadata.get("ics_priority", self.default_priority)
+        v.is_required = self.attribute.metadata.get("ics_required", None)
+        if v.is_required is None:
             if not self.attribute.init:
-                is_required = False
+                v.is_required = False
             elif self.attribute.default is not attr.NOTHING:
-                is_required = False
+                v.is_required = False
             else:
-                is_required = True
-        for key, value in locals().items():  # all variables created in __attrs_post_init__ will be set on self
-            if key == "self" or key.startswith("__"): continue
+                v.is_required = True
+        for key, value in v.__dict__.items():  # all variables created in __attrs_post_init__.v will be set on self
             object.__setattr__(self, key, value)
 
     def _check_component(self, component: "Component", context: ContextDict):
