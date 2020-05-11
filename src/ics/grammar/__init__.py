@@ -81,7 +81,7 @@ class ContentLine(RuntimeAttrValidation):
         if "\n" in line or "\r" in line:
             raise ValueError("ContentLine can only contain escaped newlines")
         try:
-            ast = GRAMMAR.parse(line)
+            ast = GRAMMAR.parse(line, whitespace="")
         except FailedToken:
             raise ParseError()
         else:
@@ -262,10 +262,11 @@ def unfold_lines(physical_lines):
         line = line.rstrip('\r')
         if not current_line:
             current_line = line
-        elif line[0] in (' ', '\t'):
+        elif line and line[0] in (' ', '\t'):
             current_line += line[1:]
         else:
-            yield current_line
+            if len(current_line) > 0:
+                yield current_line
             current_line = line
     if current_line:
         yield current_line
@@ -293,4 +294,6 @@ def lines_to_container(lines):
 
 
 def string_to_container(txt):
-    return lines_to_container(txt.splitlines())
+    # unicode newlines are interpreted as such by str.splitlines(), but not by the ics standard
+    # "A:abc\x85def".splitlines() => ['A:abc', 'def'] which is wrong
+    return lines_to_container(re.split("\r?\n|\r", txt))

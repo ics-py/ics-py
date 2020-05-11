@@ -1,7 +1,7 @@
 import re
 
 import pytest
-from hypothesis import assume, given
+from hypothesis import assume, given, example
 from hypothesis.strategies import characters, text
 
 from ics.grammar import Container, ContentLine, ParseError, QuotedParamValue, escape_param, string_to_container, unfold_lines
@@ -111,6 +111,7 @@ def test_trailing_escape_param():
 
 
 @given(name=NAME, value=VALUE)
+@example(name='A', value='abc\x85abc')
 def test_any_name_value_recode(name, value):
     raw = "%s:%s" % (name, value)
     assert ContentLine.parse(raw).serialize() == raw
