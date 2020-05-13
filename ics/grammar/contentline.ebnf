@@ -2,34 +2,19 @@
 @@whitespace :: None
 
 start = contentline $ ;
+full = {(contentline ?"\r?\n")}+ ;
 
-ALPHADIGIT = ? "[a-zA-Z0-9]";
-ALPHADIGIT_3_OR_MORE = ? "[a-zA-Z0-9]{3,}";
-ALPHADIGIT_MINUS = ? "[a-zA-Z0-9\-]";
 ALPHADIGIT_MINUS_PLUS = ? "[a-zA-Z0-9\-]+";
-WSP = " ";
-
 DQUOTE = '"' ;
-
-QSAFE_CHAR         = ?"[^\x00-\x08\x0A-\x1F\x22\x7F]";
 QSAFE_CHAR_STAR    = ?"[^\x00-\x08\x0A-\x1F\x22\x7F]*";
-
-SAFE_CHAR          = ?"[^\x00-\x08\x0A-\x1F\x22\x2C\x3A\x3B\x7F]";
 SAFE_CHAR_STAR     = ?"[^\x00-\x08\x0A-\x1F\x22\x2C\x3A\x3B\x7F]*";
-
-VALUE_CHAR         = ?"[^\x00-\x08\x0A-\x1F\x7F]";
 VALUE_CHAR_STAR    = ?"[^\x00-\x08\x0A-\x1F\x7F]*";
 
-
-name          = iana_token | x_name ;
-iana_token    = ALPHADIGIT_MINUS_PLUS ;
-x_name        = "X-" [vendorid "-"] ALPHADIGIT_MINUS_PLUS ;
-vendorid      = ALPHADIGIT_3_OR_MORE ;
-
 contentline   = name:name {(";" params+:param )}* ":" value:value ;
+name          = ALPHADIGIT_MINUS_PLUS ;
 
 param         = name:param_name "=" values+:param_value {("," values+:param_value)}* ;
-param_name    = iana_token | x_name ;
+param_name    = ALPHADIGIT_MINUS_PLUS ;
 param_value   = quoted_string | paramtext ;
 
 paramtext     = SAFE_CHAR_STAR ;
