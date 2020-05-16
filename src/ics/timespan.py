@@ -6,7 +6,8 @@ from attr.validators import instance_of, optional as v_optional
 from dateutil.tz import tzlocal
 
 from ics.types import DatetimeLike
-from ics.utils import TIMEDELTA_CACHE, TIMEDELTA_DAY, TIMEDELTA_ZERO, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight, timedelta_nearly_zero
+from ics.utils import TIMEDELTA_CACHE, TIMEDELTA_DAY, TIMEDELTA_ZERO, ceil_datetime_to_midnight, ensure_datetime, \
+    floor_datetime_to_midnight, timedelta_nearly_zero
 
 if TYPE_CHECKING:
     # Literal is new in python 3.8, but backported via typing_extensions
@@ -26,14 +27,14 @@ class Normalization(object):
 
     # pyflakes < 2.2 reports 'redefinition of unused' for overloaded class members
     @overload
-    def normalize(self, value: DatetimeLike) -> datetime:  # noqa: F811
+    def normalize(self, value: DatetimeLike) -> datetime:
         ...
 
     @overload
-    def normalize(self, value: None) -> None:  # noqa: F811
+    def normalize(self, value: None) -> None:
         ...
 
-    def normalize(self, value):  # noqa: F811
+    def normalize(self, value):
         """
         Normalize datetime or timespan instances to make naive/floating ones (without timezone, i.e. tzinfo == None)
         comparable to aware ones with a fixed timezone.
@@ -312,10 +313,10 @@ class Timespan(object):
         ...
 
     @overload
-    def timespan_tuple(self, default: datetime, normalization: Normalization = None) -> TimespanTuple:  # noqa: F811
+    def timespan_tuple(self, default: datetime, normalization: Normalization = None) -> TimespanTuple:
         ...
 
-    def timespan_tuple(self, default=None, normalization=None):  # noqa: F811
+    def timespan_tuple(self, default=None, normalization=None):
         if normalization:
             return TimespanTuple(
                 normalization.normalize(self.get_begin() or default),
