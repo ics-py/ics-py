@@ -1,19 +1,19 @@
 from datetime import datetime, timedelta, tzinfo as TZInfo
-from typing import Any, NamedTuple, Optional, TypeVar, Union, cast, overload
+from typing import Any, Callable, NamedTuple, Optional, TypeVar, Union, cast, overload
 
 import attr
 from attr.validators import instance_of, optional as v_optional
 from dateutil.tz import tzlocal
 
 from ics.types import DatetimeLike
-from ics.utils import TIMEDELTA_CACHE, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight, timedelta_nearly_zero
+from ics.utils import TIMEDELTA_CACHE, TIMEDELTA_DAY, TIMEDELTA_ZERO, ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight, timedelta_nearly_zero
 
 
 @attr.s
 class Normalization(object):
     normalize_floating: bool = attr.ib()
     normalize_with_tz: bool = attr.ib()
-    replacement: Union[TZInfo, None] = attr.ib()
+    replacement: Union[TZInfo, Callable[[], TZInfo], None] = attr.ib()
 
     @overload
     def normalize(self, value: "Timespan") -> "Timespan":
@@ -47,13 +47,17 @@ class Normalization(object):
         normalize = (floating and self.normalize_floating) or (not floating and self.normalize_with_tz)
 
         if normalize:
-            return replace_timezone(value, self.replacement)
+            replacement = self.replacement
+            if callable(replacement):
+                replacement = replacement()
+            return replace_timezone(value, replacement)
         else:
             return value
 
 
-CMP_DATETIME_NONE_DEFAULT = datetime.min
-CMP_NORMALIZATION = Normalization(normalize_floating=True, normalize_with_tz=False, replacement=tzlocal())
+# using datetime.min might lead to problems when doing timezone conversions / comparisions (e.g. by substracting an 1 hour offset)
+CMP_DATETIME_NONE_DEFAULT = datetime(1900, 1, 1, 0, 0)
+CMP_NORMALIZATION = Normalization(normalize_floating=True, normalize_with_tz=False, replacement=tzlocal)
 
 TimespanTuple = NamedTuple("TimespanTuple", [("begin", datetime), ("end", datetime)])
 NullableTimespanTuple = NamedTuple("NullableTimespanTuple", [("begin", Optional[datetime]), ("end", Optional[datetime])])
@@ -130,7 +134,7 @@ class Timespan(object):
                 validate_timeprecision(self.end_time, self._end_name())
                 if self.begin_time > self.end_time:
                     raise ValueError("begin time must be before " + self._end_name() + " time")
-                if self.precision == "day" and self.end_time < (self.begin_time + TIMEDELTA_CACHE["day"]):
+                if self.precision == "day" and self.end_time < (self.begin_time + TIMEDELTA_DAY):
                     raise ValueError("all-day timespan duration must be at least one day")
                 if self.duration is not None:
                     raise ValueError("can't set duration together with " + self._end_name() + " time")
@@ -144,9 +148,9 @@ class Timespan(object):
                                      (self.get_effective_duration(), self.precision))
 
             if self.duration is not None:
-                if self.duration < TIMEDELTA_CACHE[0]:
+                if self.duration < TIMEDELTA_ZERO:
                     raise ValueError("timespan duration must be positive")
-                if self.precision == "day" and self.duration < TIMEDELTA_CACHE["day"]:
+                if self.precision == "day" and self.duration < TIMEDELTA_DAY:
                     raise ValueError("all-day timespan duration must be at least one day")
                 if not timedelta_nearly_zero(self.duration % TIMEDELTA_CACHE[self.precision]):
                     raise ValueError("duration value %s has higher precision than set precision %s" %
@@ -219,7 +223,7 @@ class Timespan(object):
         if end is not None:
             end = ceil_datetime_to_midnight(end).replace(tzinfo=None)
             if end == begin:  # we also add another day if the duration would be 0 otherwise
-                end = end + TIMEDELTA_CACHE["day"]
+                end = end + TIMEDELTA_DAY
 
         if self.get_end_representation() == "duration":
             assert end is not None
@@ -315,7 +319,7 @@ class Timespan(object):
             )
 
     def cmp_tuple(self) -> TimespanTuple:
-        return self.timespan_tuple(default=datetime.min, normalization=CMP_NORMALIZATION)
+        return self.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT, normalization=CMP_NORMALIZATION)
 
     def __require_tuple_components(self, values, *required):
         for nr, (val, req) in enumerate(zip(values, required)):
@@ -418,9 +422,9 @@ class EventTimespan(Timespan):
         elif self.end_time is not None and self.begin_time is not None:
             return self.end_time - self.begin_time
         elif self.is_all_day():
-            return TIMEDELTA_CACHE["day"]
+            return TIMEDELTA_DAY
         else:
-            return TIMEDELTA_CACHE[0]
+            return TIMEDELTA_ZERO
 
 
 class TodoTimespan(Timespan):

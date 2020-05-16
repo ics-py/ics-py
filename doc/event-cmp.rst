@@ -65,32 +65,34 @@ attributes.
 ::
 
    >>> e = ics.Event()
-   >>> e
-   <floating Event>
-   >>> str(e) # doctest: +ELLIPSIS
-   'BEGIN:VEVENT\r\nDTSTAMP:2020...\r\nUID:...@....org\r\nEND:VEVENT'
+   >>> e # doctest: +ELLIPSIS
+   Event(extra=Container('VEVENT', []), extra_params={}, _timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=tzutc()), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
+   >>> str(e)
+   '<floating Event>'
+   >>> e.serialize() # doctest: +ELLIPSIS
+   'BEGIN:VEVENT\r\nUID:...@...org\r\nDTSTAMP:2020...T...Z\r\nEND:VEVENT'
    >>> import attr, pprint
    >>> pprint.pprint(attr.asdict(e)) # doctest: +ELLIPSIS
-   {'_classmethod_args': None,
-    '_classmethod_kwargs': None,
-    '_timespan': {'begin_time': None,
+   {'_timespan': {'begin_time': None,
                   'duration': None,
                   'end_time': None,
                   'precision': 'second'},
     'alarms': [],
+    'attach': [],
     'attendees': [],
     'categories': [],
     'classification': None,
     'created': None,
     'description': None,
-    'dtstamp': datetime.datetime(2020, ...),
-    'extra': [],
+    'dtstamp': datetime.datetime(2020, ..., tzinfo=tzutc()),
+    'extra': {'data': [], 'name': 'VEVENT'},
+    'extra_params': {},
     'geo': None,
     'last_modified': None,
     'location': None,
-    'name': None,
     'organizer': None,
     'status': None,
+    'summary': None,
     'transparent': None,
     'uid': '...@....org',
     'url': None}
@@ -99,8 +101,8 @@ Ordering
 --------
 
 TL;DR: ``Event``\ s are ordered by their attributes ``begin``, ``end``,
-and ``name``, in that exact order. For ``Todo``\ s the order is ``due``,
-``begin``, then ``name``. It doesn’t matter whether ``duration`` is set
+and ``summary``, in that exact order. For ``Todo``\ s the order is ``due``,
+``begin``, then ``summary``. It doesn’t matter whether ``duration`` is set
 instead of ``end`` or ``due``, as the effective end / due time will be
 compared. Instances where an attribute isn’t set will be sorted before
 instances where the respective attribute is set. Naive ``datetime``\ s
@@ -117,7 +119,7 @@ instance as a tuple ``(begin_time, effective_end_time)``:
 
    >>> t0 = ics.EventTimespan()
    >>> t0.cmp_tuple()
-   TimespanTuple(begin=datetime.datetime(1, 1, 1, 0, 0, tzinfo=tzlocal()), end=datetime.datetime(1, 1, 1, 0, 0, tzinfo=tzlocal()))
+   TimespanTuple(begin=datetime.datetime(1900, 1, 1, 0, 0, tzinfo=tzlocal()), end=datetime.datetime(1900, 1, 1, 0, 0, tzinfo=tzlocal()))
    >>> t1 = ics.EventTimespan(begin_time=dt(2020, 2, 20,  20, 20))
    >>> t1.cmp_tuple()
    TimespanTuple(begin=datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), end=datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()))
@@ -137,14 +139,14 @@ the timespan, as only the effective end time is compared.
    False
 
 The classes ``Event`` and ``Todo`` build on this methods, by appending
-their ``name`` to the returned tuple:
+their ``summary`` to the returned tuple:
 
 ::
 
    >>> e11 = ics.Event(timespan=t1)
    >>> e11.cmp_tuple()
    (datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), '')
-   >>> e12 = ics.Event(timespan=t1, name="An Event")
+   >>> e12 = ics.Event(timespan=t1, summary="An Event")
    >>> e12.cmp_tuple()
    (datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), datetime.datetime(2020, 2, 20, 20, 20, tzinfo=tzlocal()), 'An Event')
 
@@ -164,7 +166,7 @@ parameter is set:
    True
    >>> ics.Event(timespan=t1) < ics.Event(timespan=t2)
    True
-   >>> ics.Event(timespan=t2) < ics.Event(timespan=t2, name="Event Name")
+   >>> ics.Event(timespan=t2) < ics.Event(timespan=t2, summary="Event Name")
    True
 
 The functions ``__gt__``, ``__le__``, ``__ge__`` all behave similarly by
@@ -245,10 +247,10 @@ set:
 ::
 
    >>> import os, time
-   >>> os.environ['TZ'] = "Europe/Berlin"
+   >>> os.environ['TZ'] = "Etc/GMT-2"
    >>> time.tzset()
    >>> time.tzname
-   ('CET', 'CEST')
+   ('+02', '+02')
 
 We can easily compare ``datetime`` instances that have an explicit
 timezone specified:
@@ -259,9 +261,11 @@ timezone specified:
    >>> dt_ny = dt(2020, 2, 20,  20, 20, tzinfo=gettz("America/New York"))
    >>> dt_utc = dt(2020, 2, 20,  20, 20, tzinfo=tzutc())
    >>> dt_local = dt(2020, 2, 20,  20, 20, tzinfo=tzlocal())
+   >>> dt_local.tzinfo.tzname(dt_local), dt_local.tzinfo.utcoffset(dt_local).total_seconds()
+   ('+02', 7200.0)
    >>> dt_utc < dt_ny
    True
-   >>> dt_local < dt_utc # this always holds as tzlocal is Europe/Berlin
+   >>> dt_local < dt_utc # this always holds as tzlocal is +2:00 (i.e. European Summer Time)
    True
 
 We can also compare naive instances with naive ones, but we can’t
@@ -285,7 +289,7 @@ which could also be used for comparing instances:
    >>> (dt_utc.timestamp(), dt_ny.timestamp())
    (1582230000.0, 1582248000.0)
    >>> (dt_local.timestamp(), dt_naive.timestamp())
-   (1582226400.0, 1582226400.0)
+   (1582222800.0, 1582222800.0)
 
 This can be become an issue when you e.g. want to iterate all Events of
 an iCalendar that contains both floating and timezone-aware Events in

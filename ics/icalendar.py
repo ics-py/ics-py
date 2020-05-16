@@ -1,13 +1,13 @@
-from typing import Dict, Iterable, List, Optional, Union
+from datetime import tzinfo
+from typing import ClassVar, Iterable, Iterator, List, Optional, Union
 
 import attr
 from attr.validators import instance_of
 
 from ics.component import Component
+from ics.converter.component import ComponentMeta
 from ics.event import Event
-from ics.grammar.parse import Container, calendar_string_to_containers
-from ics.parsers.icalendar_parser import CalendarParser
-from ics.serializers.icalendar_serializer import CalendarSerializer
+from ics.grammar import Container, string_to_container
 from ics.timeline import Timeline
 from ics.todo import Todo
 
@@ -19,12 +19,7 @@ class CalendarAttrs(Component):
     scale: Optional[str] = attr.ib(default=None)
     method: Optional[str] = attr.ib(default=None)
 
-    version_params: Dict[str, List[str]] = attr.ib(factory=dict)
-    prodid_params: Dict[str, List[str]] = attr.ib(factory=dict)
-    scale_params: Dict[str, List[str]] = attr.ib(factory=dict)
-    method_params: Dict[str, List[str]] = attr.ib(factory=dict)
-
-    _timezones: Dict = attr.ib(factory=dict, init=False, repr=False, eq=False, order=False, hash=False)
+    _timezones: List[tzinfo] = attr.ib(factory=list, converter=list)  # , init=False, repr=False, eq=False, order=False, hash=False)
     events: List[Event] = attr.ib(factory=list, converter=list)
     todos: List[Todo] = attr.ib(factory=list, converter=list)
 
@@ -41,17 +36,13 @@ class Calendar(CalendarAttrs):
 
     """
 
-    class Meta:
-        name = 'VCALENDAR'
-        parser = CalendarParser
-        serializer = CalendarSerializer
-
-        DEFAULT_VERSION = "2.0"
-        DEFAULT_PRODID = "ics.py - http://git.io/lLljaA"
+    Meta = ComponentMeta("VCALENDAR")
+    DEFAULT_VERSION: ClassVar[str] = "2.0"
+    DEFAULT_PRODID: ClassVar[str] = "ics.py - http://git.io/lLljaA"
 
     def __init__(
             self,
-            imports: Union[str, Container] = None,
+            imports: Union[str, Container, None] = None,
             events: Optional[Iterable[Event]] = None,
             todos: Optional[Iterable[Todo]] = None,
             creator: str = None,
@@ -69,21 +60,20 @@ class Calendar(CalendarAttrs):
             events = tuple()
         if todos is None:
             todos = tuple()
-        kwargs.setdefault("version", self.Meta.DEFAULT_VERSION)
-        kwargs.setdefault("prodid", creator if creator is not None else self.Meta.DEFAULT_PRODID)
+        kwargs.setdefault("version", self.DEFAULT_VERSION)
+        kwargs.setdefault("prodid", creator if creator is not None else self.DEFAULT_PRODID)
         super(Calendar, self).__init__(events=events, todos=todos, **kwargs)  # type: ignore
         self.timeline = Timeline(self, None)
 
         if imports is not None:
             if isinstance(imports, Container):
-                self._populate(imports)
+                self.populate(imports)
             else:
-                containers = calendar_string_to_containers(imports)
+                containers = string_to_container(imports)
                 if len(containers) != 1:
-                    raise NotImplementedError(
-                        'Multiple calendars in one file are not supported by this method. Use ics.Calendar.parse_multiple()')
-
-                self._populate(containers[0])  # Use first calendar
+                    raise ValueError("Multiple calendars in one file are not supported by this method."
+                                     "Use ics.Calendar.parse_multiple()")
+                self.populate(containers[0])
 
     @property
     def creator(self) -> str:
@@ -99,17 +89,17 @@ class Calendar(CalendarAttrs):
         Parses an input string that may contain mutiple calendars
         and retruns a list of :class:`ics.event.Calendar`
         """
-        containers = calendar_string_to_containers(string)
+        containers = string_to_container(string)
         return [cls(imports=c) for c in containers]
 
-    def __repr__(self) -> str:
-        return "<Calendar with {} event{} and {} todo{}>" \
-            .format(len(self.events),
-                    "s" if len(self.events) > 1 else "",
-                    len(self.todos),
-                    "s" if len(self.todos) > 1 else "")
+    def __str__(self) -> str:
+        return "<Calendar with {} event{} and {} todo{}>".format(
+            len(self.events),
+            "s" if len(self.events) > 1 else "",
+            len(self.todos),
+            "s" if len(self.todos) > 1 else "")
 
-    def __iter__(self) -> Iterable[str]:
+    def __iter__(self) -> Iterator[str]:
         """Returns:
         iterable: an iterable version of __str__, line per line
         (with line-endings).
@@ -117,7 +107,7 @@ class Calendar(CalendarAttrs):
         Example:
             Can be used to write calendar to a file:
 
-            >>> c = Calendar(); c.events.append(Event(name="My cool event"))
+            >>> c = Calendar(); c.events.append(Event(summary="My cool event"))
             >>> open('my.ics', 'w').writelines(c)
         """
-        return iter(str(self).splitlines(keepends=True))
+        return iter(self.serialize().splitlines(keepends=True))

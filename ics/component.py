@@ -1,90 +1,66 @@
-import warnings
-from typing import Any, Dict, Tuple, Type, TypeVar
+from typing import ClassVar, Dict, List, Type, TypeVar, Union
 
 import attr
 from attr.validators import instance_of
 
-from ics.grammar.parse import Container
-from ics.parsers.parser import Parser
-from ics.serializers.serializer import Serializer
-from ics.types import RuntimeAttrValidation
-from ics.utils import get_lines
+from ics.converter.component import ComponentMeta, InflatedComponentMeta
+from ics.grammar import Container
+from ics.types import ExtraParams, RuntimeAttrValidation
 
-ComponentType = TypeVar('ComponentType', bound='Component')
 PLACEHOLDER_CONTAINER = Container("PLACEHOLDER")
+ComponentType = TypeVar('ComponentType', bound='Component')
+ComponentExtraParams = Dict[str, Union[ExtraParams, List[ExtraParams]]]
 
 
 @attr.s
 class Component(RuntimeAttrValidation):
-    class Meta:
-        name = "ABSTRACT"
-        parser = Parser
-        serializer = Serializer
+    Meta: ClassVar[Union[ComponentMeta, InflatedComponentMeta]] = ComponentMeta("ABSTRACT-COMPONENT")
 
-    extra: Container = attr.ib(init=False, default=PLACEHOLDER_CONTAINER, validator=instance_of(Container))
-    _classmethod_args: Tuple = attr.ib(init=False, default=None, repr=False, eq=False, order=False, hash=False)
-    _classmethod_kwargs: Dict = attr.ib(init=False, default=None, repr=False, eq=False, order=False, hash=False)
+    extra: Container = attr.ib(init=False, default=PLACEHOLDER_CONTAINER, validator=instance_of(Container), metadata={"ics_ignore": True})
+    extra_params: ComponentExtraParams = attr.ib(init=False, factory=dict, validator=instance_of(dict), metadata={"ics_ignore": True})
 
     def __attrs_post_init__(self):
         super(Component, self).__attrs_post_init__()
         if self.extra is PLACEHOLDER_CONTAINER:
-            self.extra = Container(self.Meta.name)
+            self.extra = Container(self.Meta.container_name)
 
     def __init_subclass__(cls):
         super().__init_subclass__()
-        if cls.__str__ != Component.__str__:
-            raise TypeError("%s may not overwrite %s" % (cls, Component.__str__))
+        cls.Meta.inflate(cls)
 
     @classmethod
-    def _from_container(cls: Type[ComponentType], container: Container, *args: Any, **kwargs: Any) -> ComponentType:
-        k = cls()
-        k._classmethod_args = args
-        k._classmethod_kwargs = kwargs
-        k._populate(container)
-        return k
+    def from_container(cls: Type[ComponentType], container: Container) -> ComponentType:
+        return cls.Meta.load_instance(container)  # type: ignore
 
-    def _populate(self, container: Container) -> None:
-        if container.name != self.Meta.name:
-            raise ValueError("container isn't an {}".format(self.Meta.name))
+    def populate(self, container: Container):
+        self.Meta.populate_instance(self, container)  # type: ignore
 
-        for line_name, (parser, options) in self.Meta.parser.get_parsers().items():
-            lines = get_lines(container, line_name)
-            if not lines and options.required:
-                if options.default:
-                    lines = options.default
-                    default_str = "\\n".join(map(str, options.default))
-                    message = ("The %s property was not found and is required by the RFC." +
-                               " A default value of \"%s\" has been used instead") % (line_name, default_str)
-                    warnings.warn(message)
-                else:
-                    raise ValueError('A {} must have at least one {}'.format(container.name, line_name))
+    def to_container(self) -> Container:
+        return self.Meta.serialize_toplevel(self)  # type: ignore
 
-            if not options.multiple and len(lines) > 1:
-                raise ValueError('A {} must have at most one {}'.format(container.name, line_name))
+    def serialize(self) -> str:
+        return self.to_container().serialize()
 
-            if options.multiple:
-                parser(self, lines)  # Send a list or empty list
-            else:
-                if len(lines) == 1:
-                    parser(self, lines[0])  # Send the element
-                else:
-                    parser(self, None)  # Send None
-
-        self.extra = container  # Store unused lines
+    def strip_extras(self, all_extras=False, extra_properties=None, extra_params=None, property_merging=None):
+        if extra_properties is None:
+            extra_properties = all_extras
+        if extra_params is None:
+            extra_params = all_extras
+        if property_merging is None:
+            property_merging = all_extras
+        if not any([extra_properties, extra_params, property_merging]):
+            raise ValueError("need to strip at least one thing")
+        if extra_properties:
+            self.extra.clear()
+        if extra_params:
+            self.extra_params.clear()
+        elif property_merging:
+            for val in self.extra_params.values():
+                if not isinstance(val, list): continue
+                for v in val:
+                    v.pop("__merge_next", None)
 
     def clone(self):
-        """
-        Returns:
-            Event: an exact copy of self
-        """
+        """Returns an exact (shallow) copy of self"""
+        # TODO deep copies?
         return attr.evolve(self)
-
-    def serialize(self) -> Container:
-        container = self.extra.clone()
-        for output in self.Meta.serializer.get_serializers():
-            output(self, container)
-        return container
-
-    def __str__(self) -> str:
-        """Returns the component in an iCalendar format."""
-        return str(self.serialize())

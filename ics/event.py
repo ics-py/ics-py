@@ -1,50 +1,28 @@
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, overload
+from typing import Any, List, Optional, Tuple, Union
 
 import attr
 from attr.converters import optional as c_optional
 from attr.validators import in_, instance_of, optional as v_optional
 
-from ics.alarm.base import BaseAlarm
+from ics.alarm import BaseAlarm
 from ics.attendee import Attendee, Organizer
 from ics.component import Component
-from ics.parsers.event_parser import EventParser
-from ics.serializers.event_serializer import EventSerializer
+from ics.converter.base import ics_attr_meta
+from ics.converter.component import ComponentMeta
+from ics.converter.timespan import TimespanConverter
+from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
-from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, get_timespan_if_calendar_entry
-from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, now_in_utc, uid_gen, validate_not_none
+from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, URL, get_timespan_if_calendar_entry
+from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, ensure_utc, now_in_utc, uid_gen, validate_not_none
 
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
 
-class Geo(NamedTuple):
-    latitude: float
-    longitude: float
-
-
-@overload
-def make_geo(value: None) -> None:
-    ...
-
-
-@overload
-def make_geo(value: Union[Dict[str, float], Tuple[float, float]]) -> "Geo":
-    ...
-
-
-def make_geo(value):
-    if isinstance(value, dict):
-        return Geo(**value)
-    elif isinstance(value, tuple):
-        return Geo(*value)
-    else:
-        return None
-
-
-@attr.s(repr=False, eq=True, order=False)
+@attr.s(eq=True, order=False)
 class CalendarEntryAttrs(Component):
-    _timespan: Timespan = attr.ib(validator=instance_of(Timespan))
-    name: Optional[str] = attr.ib(default=None)
+    _timespan: Timespan = attr.ib(validator=instance_of(Timespan), metadata=ics_attr_meta(converter=TimespanConverter))
+    summary: Optional[str] = attr.ib(default=None)
     uid: str = attr.ib(factory=uid_gen)
 
     description: Optional[str] = attr.ib(default=None)
@@ -52,12 +30,12 @@ class CalendarEntryAttrs(Component):
     url: Optional[str] = attr.ib(default=None)
     status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=v_optional(in_(STATUS_VALUES)))  # type: ignore
 
-    # TODO these three timestamps must be in UTC according to the RFC
-    created: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
-    last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_datetime)  # type: ignore
-    dtstamp: datetime = attr.ib(factory=now_in_utc, converter=ensure_datetime, validator=validate_not_none)  # type: ignore
+    created: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore
+    last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore
+    dtstamp: datetime = attr.ib(factory=now_in_utc, converter=ensure_utc, validator=validate_not_none)  # type: ignore
 
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
+    attach: List[Union[URL, bytes]] = attr.ib(factory=list, converter=list)
 
     def __init_subclass__(cls):
         super().__init_subclass__()
@@ -169,17 +147,17 @@ class CalendarEntryAttrs(Component):
     def timespan(self) -> Timespan:
         return self._timespan
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         name = [self.__class__.__name__]
-        if self.name:
-            name.append("'%s'" % self.name)
+        if self.summary:
+            name.append("'%s'" % self.summary)
         prefix, _, suffix = self._timespan.get_str_segments()
         return "<%s>" % (" ".join(prefix + name + suffix))
 
     ####################################################################################################################
 
     def cmp_tuple(self) -> Tuple[datetime, datetime, str]:
-        return (*self.timespan.cmp_tuple(), self.name or "")
+        return (*self.timespan.cmp_tuple(), self.summary or "")
 
     def __lt__(self, other: Any) -> bool:
         """self < other"""
@@ -225,7 +203,7 @@ class CalendarEntryAttrs(Component):
         return self._timespan.is_included_in(get_timespan_if_calendar_entry(second))
 
 
-@attr.s(repr=False, eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
+@attr.s(eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
 class EventAttrs(CalendarEntryAttrs):
     classification: Optional[str] = attr.ib(default=None, validator=v_optional(instance_of(str)))
 
@@ -234,7 +212,7 @@ class EventAttrs(CalendarEntryAttrs):
     geo: Optional[Geo] = attr.ib(default=None, converter=make_geo)  # type: ignore
 
     attendees: List[Attendee] = attr.ib(factory=list, converter=list)
-    categories: Set[str] = attr.ib(factory=set, converter=set)
+    categories: List[str] = attr.ib(factory=list, converter=list)
 
     def add_attendee(self, attendee: Attendee):
         """ Add an attendee to the attendees set """
@@ -256,14 +234,11 @@ class Event(EventAttrs):
 
     _timespan: EventTimespan = attr.ib(validator=instance_of(EventTimespan))
 
-    class Meta:
-        name = "VEVENT"
-        parser = EventParser
-        serializer = EventSerializer
+    Meta = ComponentMeta("VEVENT")
 
     def __init__(
             self,
-            name: str = None,
+            summary: str = None,
             begin: DatetimeLike = None,
             end: DatetimeLike = None,
             duration: TimedeltaLike = None,
@@ -279,4 +254,4 @@ class Event(EventAttrs):
         if (begin is not None or end is not None or duration is not None) and "timespan" in kwargs:
             raise ValueError("can't specify explicit timespan together with any of begin, end or duration")
         kwargs.setdefault("timespan", EventTimespan(ensure_datetime(begin), ensure_datetime(end), ensure_timedelta(duration)))
-        super(Event, self).__init__(kwargs.pop("timespan"), name, *args, **kwargs)
+        super(Event, self).__init__(kwargs.pop("timespan"), summary, *args, **kwargs)

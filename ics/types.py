@@ -1,5 +1,8 @@
-from datetime import date, datetime, timedelta, tzinfo
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Tuple, Union, overload
+import functools
+import warnings
+from datetime import date, datetime, timedelta
+from typing import Any, Dict, Iterator, List, MutableMapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, cast, overload
+from urllib.parse import ParseResult
 
 import attr
 
@@ -11,16 +14,32 @@ if TYPE_CHECKING:
     # noinspection PyUnresolvedReferences
     from ics.timespan import Timespan
     # noinspection PyUnresolvedReferences
-    from ics.grammar.parse import ContentLine, Container
+    from ics.grammar import ContentLine, Container
 
 __all__ = [
-    "ContainerItem", "ContainerList", "DatetimeLike", "OptionalDatetimeLike", "TimespanOrBegin", "EventOrTimespan",
-    "EventOrTimespanOrInstant", "TodoOrTimespan", "TodoOrTimespanOrInstant", "CalendarEntryOrTimespan",
-    "CalendarEntryOrTimespanOrInstant", "OptionalTZDict", "get_timespan_if_calendar_entry"
+    "ContainerItem", "ContainerList", "URL",
+
+    "DatetimeLike", "OptionalDatetimeLike",
+    "TimedeltaLike", "OptionalTimedeltaLike",
+
+    "TimespanOrBegin",
+    "EventOrTimespan",
+    "EventOrTimespanOrInstant",
+    "TodoOrTimespan",
+    "TodoOrTimespanOrInstant",
+    "CalendarEntryOrTimespan",
+    "CalendarEntryOrTimespanOrInstant",
+
+    "get_timespan_if_calendar_entry",
+
+    "RuntimeAttrValidation",
+
+    "EmptyDict", "ExtraParams", "EmptyParams", "ContextDict", "EmptyContext", "copy_extra_params",
 ]
 
 ContainerItem = Union["ContentLine", "Container"]
 ContainerList = List[ContainerItem]
+URL = ParseResult
 
 DatetimeLike = Union[Tuple, Dict, datetime, date]
 OptionalDatetimeLike = Union[Tuple, Dict, datetime, date, None]
@@ -34,8 +53,6 @@ TodoOrTimespan = Union["Todo", "Timespan"]
 TodoOrTimespanOrInstant = Union["Todo", "Timespan", datetime]
 CalendarEntryOrTimespan = Union["CalendarEntryAttrs", "Timespan"]
 CalendarEntryOrTimespanOrInstant = Union["CalendarEntryAttrs", "Timespan", datetime]
-
-OptionalTZDict = Optional[Dict[str, tzinfo]]
 
 
 @overload
@@ -91,3 +108,69 @@ class RuntimeAttrValidation(object):
                 if field.validator is not None:
                     field.validator(self, field, value)
         super(RuntimeAttrValidation, self).__setattr__(key, value)
+
+
+class EmptyDictType(MutableMapping[Any, None]):
+    """An empty, immutable dict that returns `None` for any key. Useful as default value for function arguments."""
+
+    def __getitem__(self, k: Any) -> None:
+        return None
+
+    def __setitem__(self, k: Any, v: None) -> None:
+        warnings.warn("%s[%r] = %s ignored" % (self.__class__.__name__, k, v))
+        return
+
+    def __delitem__(self, v: Any) -> None:
+        warnings.warn("del %s[%r] ignored" % (self.__class__.__name__, v))
+        return
+
+    def __len__(self) -> int:
+        return 0
+
+    def __iter__(self) -> Iterator[Any]:
+        return iter([])
+
+
+EmptyDict = EmptyDictType()
+ExtraParams = NewType("ExtraParams", Dict[str, List[str]])
+EmptyParams = cast("ExtraParams", EmptyDict)
+ContextDict = NewType("ContextDict", Dict[Any, Any])
+EmptyContext = cast("ContextDict", EmptyDict)
+
+
+def copy_extra_params(old: Optional[ExtraParams]) -> ExtraParams:
+    new: ExtraParams = ExtraParams(dict())
+    if not old:
+        return new
+    for key, value in old.items():
+        if isinstance(value, str):
+            new[key] = value
+        elif isinstance(value, list):
+            new[key] = list(value)
+        else:
+            raise ValueError("can't convert extra param %s with value of type %s: %s" % (key, type(value), value))
+    return new
+
+
+def attrs_custom_init(cls):
+    assert attr.has(cls)
+    attr_init = cls.__init__
+    custom_init = cls.__attr_custom_init__
+
+    @functools.wraps(attr_init)
+    def new_init(self, *args, **kwargs):
+        custom_init(self, attr_init, *args, **kwargs)
+
+    cls.__init__ = new_init
+    cls.__attr_custom_init__ = None
+    del cls.__attr_custom_init__
+    return cls
+
+# @attrs_custom_init
+# @attr.s
+# class Test(object):
+#     val1 = attr.ib()
+#     val2 = attr.ib()
+#
+#     def __attr_custom_init__(self, attr_init, val1, val1_suffix, *args, **kwargs):
+#         attr_init(self, val1 + val1_suffix, *args, **kwargs)

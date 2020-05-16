@@ -69,5 +69,5 @@ setup(
     cmdclass={'test': PyTest},
     tests_require=tests_require,
     test_suite="py.test",
-    zip_safe=False,
+    zip_safe=True,
 )

@@ -10,9 +10,8 @@ from typing import Optional
 import attr
 from attr.validators import in_, instance_of, optional as v_optional
 
+from ics.converter.component import ComponentMeta
 from ics.event import CalendarEntryAttrs
-from ics.parsers.todo_parser import TodoParser
-from ics.serializers.todo_serializer import TodoSerializer
 from ics.timespan import TodoTimespan
 from ics.types import DatetimeLike, TimedeltaLike
 from ics.utils import ensure_datetime, ensure_timedelta
@@ -34,7 +33,7 @@ def deprecated_due(fun):
     return wrapper
 
 
-@attr.s(repr=False, eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
+@attr.s(eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
 class TodoAttrs(CalendarEntryAttrs):
     percent: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PERCENT + 1))))
     priority: Optional[int] = attr.ib(default=None, validator=v_optional(in_(range(0, MAX_PRIORITY + 1))))
@@ -49,10 +48,7 @@ class Todo(TodoAttrs):
     """
     _timespan: TodoTimespan = attr.ib(validator=instance_of(TodoTimespan))
 
-    class Meta:
-        name = "VTODO"
-        parser = TodoParser
-        serializer = TodoSerializer
+    Meta = ComponentMeta("VTODO")
 
     def __init__(
             self,
