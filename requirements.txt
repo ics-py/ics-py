@@ -1,4 +1,0 @@
-python-dateutil
-tatsu>4.2
-attrs>=19.2
-importlib_resources

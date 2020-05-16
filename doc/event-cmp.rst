@@ -69,7 +69,7 @@ attributes.
    Event(extra=Container('VEVENT', []), extra_params={}, _timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=tzutc()), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
    >>> str(e)
    '<floating Event>'
-   >>> e.serialize() # doctest: +ELLIPSIS
+   >>> e.serialize()  # doctest: +ELLIPSIS
    'BEGIN:VEVENT\r\nUID:...@...org\r\nDTSTAMP:2020...T...Z\r\nEND:VEVENT'
    >>> import attr, pprint
    >>> pprint.pprint(attr.asdict(e)) # doctest: +ELLIPSIS
@@ -274,7 +274,7 @@ compare naive ones with timezone-aware ones:
 ::
 
    >>> dt_naive = dt(2020, 2, 20,  20, 20)
-   >>> dt_naive < dt_local
+   >>> dt_naive < dt_local  # doctest: +IGNORE_EXCEPTION_DETAIL
    Traceback (most recent call last):
      ...
    TypeError: can't compare offset-naive and offset-aware datetimes
@@ -340,7 +340,7 @@ compared:
    False
    >>> e_local > e_floating
    False
-   >>> e_local.begin < e_floating.begin
+   >>> e_local.begin < e_floating.begin  # doctest: +IGNORE_EXCEPTION_DETAIL
    Traceback (most recent call last):
      ...
    TypeError: can't compare offset-naive and offset-aware datetimes

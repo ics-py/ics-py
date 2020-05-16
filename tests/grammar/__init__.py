@@ -1,12 +1,12 @@
 import re
 
 import pytest
-from hypothesis import assume, given
+from hypothesis import assume, given, example
 from hypothesis.strategies import characters, text
 
 from ics.grammar import Container, ContentLine, ParseError, QuotedParamValue, escape_param, string_to_container, unfold_lines
 
-CONTROL = [chr(i) for i in range(ord(" ")) if i != ord("\t")]
+CONTROL = [chr(i) for i in range(ord(" ")) if i != ord("\t")] + [chr(0x7F)]
 NAME = text(alphabet=(characters(whitelist_categories=["Lu"], whitelist_characters=["-"], max_codepoint=128)), min_size=1)
 VALUE = text(characters(blacklist_categories=["Cs"], blacklist_characters=CONTROL))
 
@@ -111,6 +111,7 @@ def test_trailing_escape_param():
 
 
 @given(name=NAME, value=VALUE)
+@example(name='A', value='abc\x85abc')
 def test_any_name_value_recode(name, value):
     raw = "%s:%s" % (name, value)
     assert ContentLine.parse(raw).serialize() == raw
