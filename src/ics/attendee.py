@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 import attr
 
-from ics.converter.component import ComponentMeta
+from ics.converter.component import ComponentMetaInfo
 
 
 @attr.s
@@ -13,11 +13,11 @@ class Person(object):
     sent_by: Optional[str] = attr.ib(default=None)
     extra: Dict[str, List[str]] = attr.ib(factory=dict)
 
-    Meta = ComponentMeta("ABSTRACT-PERSON")
+    MetaInfo = ComponentMetaInfo("ABSTRACT-PERSON")
 
 
 class Organizer(Person):
-    Meta = ComponentMeta("ORGANIZER")
+    MetaInfo = ComponentMetaInfo("ORGANIZER")
 
 
 @attr.s
@@ -27,4 +27,4 @@ class Attendee(Person):
     partstat: Optional[str] = attr.ib(default=None)
     cutype: Optional[str] = attr.ib(default=None)
 
-    Meta = ComponentMeta("ATTENDEE")
+    MetaInfo = ComponentMetaInfo("ATTENDEE")

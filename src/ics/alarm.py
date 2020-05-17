@@ -8,7 +8,7 @@ from attr.validators import instance_of, optional as v_optional
 
 from ics.attendee import Attendee
 from ics.component import Component
-from ics.converter.component import ComponentMeta
+from ics.converter.component import ComponentMetaInfo
 from ics.converter.special import AlarmConverter
 from ics.types import URL
 from ics.utils import call_validate_on_inst, check_is_instance, ensure_timedelta
@@ -21,7 +21,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     """
     A calendar event VALARM base class
     """
-    Meta = ComponentMeta("VALARM", converter_class=AlarmConverter)
+    MetaInfo = ComponentMetaInfo("VALARM", converter_class=AlarmConverter)
 
     trigger: Union[timedelta, datetime, None] = attr.ib(
         default=None,

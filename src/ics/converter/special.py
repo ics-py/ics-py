@@ -7,7 +7,7 @@ from dateutil.tz import tzical
 
 from ics.attendee import Attendee, Organizer, Person
 from ics.converter.base import AttributeConverter
-from ics.converter.component import ComponentConverter
+from ics.converter.component import MemberComponentConverter
 from ics.contentline import Container, ContentLine
 from ics.types import ContainerItem, ContextDict
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from ics.component import Component
 
 
-class TimezoneConverter(AttributeConverter):
+class TimezoneConverter(MemberComponentConverter):
     @property
     def filter_ics_names(self) -> List[str]:
         return ["VTIMEZONE"]
@@ -101,7 +101,7 @@ AttributeConverter.BY_TYPE[Attendee] = PersonConverter
 AttributeConverter.BY_TYPE[Organizer] = PersonConverter
 
 
-class AlarmConverter(ComponentConverter):
+class AlarmConverter(MemberComponentConverter):
     def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
         # TODO handle trigger: Union[timedelta, datetime, None] before duration
         assert isinstance(item, Container)
@@ -110,6 +110,6 @@ class AlarmConverter(ComponentConverter):
         from ics.alarm import get_type_from_action
         alarm_type = get_type_from_action(item)
         instance = alarm_type()
-        alarm_type.Meta.populate_instance(instance, item, context)
+        alarm_type.InflatedMeta().populate_instance(instance, item, context)
         self.set_or_append_value(component, instance)
         return True

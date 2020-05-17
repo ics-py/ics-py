@@ -10,7 +10,6 @@ from ics.types import ContainerItem, ContextDict, ExtraParams
 
 if TYPE_CHECKING:
     from ics.component import Component
-    from ics.converter.component import InflatedComponentMeta
 
 NoneTypes = [type(None), None]
 
@@ -144,11 +143,7 @@ class AttributeConverter(GenericConverter, abc.ABC):
         multi_value_type, value_type, value_types = extract_attr_type(attribute)
         if len(value_types) == 1:
             assert [value_type] == value_types
-            from ics.component import Component
-            if issubclass(value_type, Component):
-                meta: "InflatedComponentMeta" = cast("InflatedComponentMeta", value_type.Meta)
-                return meta(attribute)
-            elif value_type in AttributeConverter.BY_TYPE:
+            if value_type in AttributeConverter.BY_TYPE:
                 return AttributeConverter.BY_TYPE[value_type](attribute)
 
         from ics.converter.value import AttributeValueConverter

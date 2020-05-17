@@ -1,6 +1,6 @@
 def load_converters():
     from ics.converter.base import AttributeConverter
-    from ics.converter.component import ComponentConverter
+    from ics.converter.component import MemberComponentConverter
     from ics.converter.special import TimezoneConverter, AlarmConverter, PersonConverter, RecurrenceConverter
     from ics.converter.timespan import TimespanConverter
     from ics.converter.value import AttributeValueConverter

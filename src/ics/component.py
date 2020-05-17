@@ -3,7 +3,7 @@ from typing import ClassVar, Dict, List, Type, TypeVar, Union
 import attr
 from attr.validators import instance_of
 
-from ics.converter.component import ComponentMeta
+from ics.converter.component import ComponentMetaInfo, InflatedComponentMeta
 from ics.contentline import Container
 from ics.types import ExtraParams, RuntimeAttrValidation
 
@@ -14,29 +14,23 @@ ComponentExtraParams = Dict[str, Union[ExtraParams, List[ExtraParams]]]
 
 @attr.s
 class Component(RuntimeAttrValidation):
-    Meta: ClassVar[ComponentMeta] = ComponentMeta("ABSTRACT-COMPONENT")
-
     extra: Container = attr.ib(init=False, default=PLACEHOLDER_CONTAINER, validator=instance_of(Container), metadata={"ics_ignore": True})
     extra_params: ComponentExtraParams = attr.ib(init=False, factory=dict, validator=instance_of(dict), metadata={"ics_ignore": True})
 
     def __attrs_post_init__(self):
         super(Component, self).__attrs_post_init__()
         if self.extra is PLACEHOLDER_CONTAINER:
-            self.extra = Container(self.Meta.container_name)
-
-    def __init_subclass__(cls):
-        super().__init_subclass__()
-        cls.Meta.inflate(cls)
+            object.__setattr__(self, "extra", Container(self.MetaInfo.container_name))
 
     @classmethod
     def from_container(cls: Type[ComponentType], container: Container) -> ComponentType:
-        return cls.Meta.load_instance(container)
+        return cls.InflatedMeta().load_instance(container)
 
     def populate(self, container: Container):
-        self.Meta.populate_instance(self, container)
+        self.InflatedMeta().populate_instance(self, container)
 
     def to_container(self) -> Container:
-        return self.Meta.serialize_toplevel(self)
+        return self.InflatedMeta().serialize_toplevel(self)
 
     def serialize(self) -> str:
         return self.to_container().serialize()
