@@ -5,7 +5,7 @@ import attr
 from attr.validators import instance_of
 
 from ics.component import Component
-from ics.converter.component import ComponentMeta
+from ics.converter.component import ComponentMetaInfo
 from ics.event import Event
 from ics.contentline import Container, string_to_containers
 from ics.timeline import Timeline
@@ -14,8 +14,8 @@ from ics.todo import Todo
 
 @attr.s
 class CalendarAttrs(Component):
-    version: str = attr.ib(validator=instance_of(str))  # default set by Calendar.Meta.DEFAULT_VERSION
-    prodid: str = attr.ib(validator=instance_of(str))  # default set by Calendar.Meta.DEFAULT_PRODID
+    version: str = attr.ib(validator=instance_of(str))  # default set by Calendar.DEFAULT_VERSION
+    prodid: str = attr.ib(validator=instance_of(str))  # default set by Calendar.DEFAULT_PRODID
     scale: Optional[str] = attr.ib(default=None)
     method: Optional[str] = attr.ib(default=None)
 
@@ -36,7 +36,7 @@ class Calendar(CalendarAttrs):
 
     """
 
-    Meta = ComponentMeta("VCALENDAR")
+    MetaInfo = ComponentMetaInfo("VCALENDAR")
     DEFAULT_VERSION: ClassVar[str] = "2.0"
     DEFAULT_PRODID: ClassVar[str] = "ics.py - http://git.io/lLljaA"
 

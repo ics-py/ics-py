@@ -9,7 +9,7 @@ from ics.alarm import BaseAlarm
 from ics.attendee import Attendee, Organizer
 from ics.component import Component
 from ics.converter.base import ics_attr_meta
-from ics.converter.component import ComponentMeta
+from ics.converter.component import ComponentMetaInfo
 from ics.converter.timespan import TimespanConverter
 from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
@@ -234,7 +234,7 @@ class Event(EventAttrs):
 
     _timespan: EventTimespan = attr.ib(validator=instance_of(EventTimespan))
 
-    Meta = ComponentMeta("VEVENT")
+    MetaInfo = ComponentMetaInfo("VEVENT")
 
     def __init__(
             self,
