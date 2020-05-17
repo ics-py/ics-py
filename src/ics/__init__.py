@@ -1,12 +1,13 @@
 def load_converters():
     from ics.converter.base import AttributeConverter
     from ics.converter.component import MemberComponentConverter
-    from ics.converter.special import TimezoneConverter, AlarmConverter, PersonConverter, RecurrenceConverter
+    from ics.converter.special import AlarmConverter, PersonConverter, RecurrenceConverter
+    from ics.converter.timezone import InflatedTimezoneMeta
     from ics.converter.timespan import TimespanConverter
     from ics.converter.value import AttributeValueConverter
     from ics.valuetype.base import ValueConverter
     from ics.valuetype.datetime import DateConverter, DatetimeConverter, DurationConverter, PeriodConverter, \
-        TimeConverter, UTCOffsetConverter
+        TimeConverter, BuiltinUTCOffsetConverter, DateutilUTCOffsetConverter
     from ics.valuetype.generic import BinaryConverter, BooleanConverter, CalendarUserAddressConverter, FloatConverter, \
         IntegerConverter, RecurConverter, \
         URIConverter

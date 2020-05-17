@@ -14,7 +14,8 @@ from ics.converter.timespan import TimespanConverter
 from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, URL, get_timespan_if_calendar_entry
-from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, ensure_utc, now_in_utc, uid_gen, validate_not_none
+from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, uid_gen, validate_not_none
+from ics.timezone import ensure_utc, now_in_utc
 
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 

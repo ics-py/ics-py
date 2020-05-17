@@ -2,8 +2,6 @@ from datetime import date, datetime, time, timedelta, timezone
 from typing import overload
 from uuid import uuid4
 
-from dateutil.tz import UTC as dateutil_tzutc
-
 from ics.types import DatetimeLike, TimedeltaLike
 
 datetime_tzutc = timezone.utc
@@ -41,37 +39,6 @@ def ensure_datetime(value):
         return datetime(**value)
     else:
         raise ValueError("can't construct datetime from %s" % repr(value))
-
-
-@overload
-def ensure_utc(value: None) -> None: ...
-
-
-@overload
-def ensure_utc(value: DatetimeLike) -> datetime: ...
-
-
-def ensure_utc(value):
-    value = ensure_datetime(value)
-    if value is not None:
-        value = value.astimezone(dateutil_tzutc)
-    return value
-
-
-def now_in_utc() -> datetime:
-    return datetime.now(tz=dateutil_tzutc)
-
-
-def is_utc(instant: datetime) -> bool:
-    tz = instant.tzinfo
-    if tz is None:
-        return False
-    if tz in [dateutil_tzutc, datetime_tzutc]:
-        return True
-    tzname = tz.tzname(instant)
-    if tzname and tzname.upper() == "UTC":
-        return True
-    return False
 
 
 @overload
@@ -211,16 +178,6 @@ def check_is_instance(name, value, clazz):
             name,
             clazz,
             value,
-        )
-
-
-def validate_utc(inst, attr, value):
-    check_is_instance(attr.name, value, datetime)
-    if not is_utc(value):
-        raise ValueError(
-            "'{name}' must be in timezone UTC (got {value!r} which has tzinfo {tzinfo!r})".format(
-                name=attr.name, value=value, tzinfo=value.tzinfo
-            )
         )
 
 
