@@ -4,7 +4,7 @@ import attr
 from attr.validators import instance_of
 
 from ics.converter.component import ComponentMeta
-from ics.grammar import Container
+from ics.contentline import Container
 from ics.types import ExtraParams, RuntimeAttrValidation
 
 PLACEHOLDER_CONTAINER = Container("PLACEHOLDER")

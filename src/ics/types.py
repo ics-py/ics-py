@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     # noinspection PyUnresolvedReferences
     from ics.timespan import Timespan
     # noinspection PyUnresolvedReferences
-    from ics.grammar import ContentLine, Container
+    from ics.contentline import ContentLine, Container
 
 __all__ = [
     "ContainerItem", "ContainerList", "URL",

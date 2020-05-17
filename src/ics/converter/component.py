@@ -5,7 +5,7 @@ import attr
 from attr import Attribute
 
 from ics.converter.base import AttributeConverter, GenericConverter
-from ics.grammar import Container
+from ics.contentline import Container
 from ics.types import ContainerItem, ContextDict
 
 if TYPE_CHECKING:
