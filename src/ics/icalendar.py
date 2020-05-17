@@ -69,7 +69,10 @@ class Calendar(CalendarAttrs):
             if isinstance(imports, Container):
                 self.populate(imports)
             else:
-                containers = iter(string_to_containers(imports))
+                if isinstance(imports, str):
+                    containers = iter(string_to_container(imports))
+                else:
+                    containers = iter(lines_to_container(imports))
                 try:
                     container = next(containers)
                     if not isinstance(container, Container):
