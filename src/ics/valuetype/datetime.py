@@ -1,14 +1,15 @@
+import abc
 import re
-import warnings
-from datetime import date, datetime, time, timedelta
-from typing import List, Optional, Type, cast
+from datetime import date, datetime, time, timedelta, timezone as UTCOffset
+from typing import Generic, List, Optional, Type, cast
 
-from dateutil.tz import UTC as dateutil_tzutc, gettz, tzoffset as UTCOffset
+from dateutil.tz import UTC as dateutil_tzutc, gettz, tzoffset as Dateutil_UTCOffset
 
+from ics.converter.timezone_utils import UnserializeableTimezone
 from ics.timespan import Timespan
+from ics.timezone import Timezone, is_utc
 from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, copy_extra_params
-from ics.utils import is_utc
-from ics.valuetype.base import ValueConverter
+from ics.valuetype.base import T, ValueConverter
 
 
 class DatetimeConverterMixin(object):
@@ -24,13 +25,10 @@ class DatetimeConverterMixin(object):
             return value.strftime(utc_fmt)
         else:
             if value.tzinfo is not None:
-                tzname = value.tzinfo.tzname(value)
-                if not tzname:
-                    # TODO generate unique identifier as name
-                    raise ValueError("could not generate name for tzinfo %s" % value.tzinfo)
-                params["TZID"] = [tzname]
+                tz = Timezone.from_tzinfo(value.tzinfo, context)
+                params["TZID"] = [tz.tzid]
                 available_tz = context.setdefault(self.CONTEXT_KEY_AVAILABLE_TZ, {})
-                available_tz.setdefault(tzname, value.tzinfo)
+                available_tz.setdefault(tz.tzid, tz)
             return value.strftime(nonutc_fmt)
 
     def _parse_dt(self, value: str, params: ExtraParams, context: ContextDict,
@@ -42,22 +40,22 @@ class DatetimeConverterMixin(object):
             param_tz: Optional[str] = str(param_tz_list[0])  # convert QuotedParamValues
         else:
             param_tz = None
-        available_tz = context.get(self.CONTEXT_KEY_AVAILABLE_TZ, None)
+        available_tz = context.setdefault(self.CONTEXT_KEY_AVAILABLE_TZ, {})
         if available_tz is None and warn_no_avail_tz:
             warnings.warn("DatetimeConverterMixin.parse called without available_tz dict in context")
         fixed_utc = (value[-1].upper() == 'Z')
 
-        value = value.translate({
+        tr_value = value.translate({
             ord("/"): "",
             ord("-"): "",
             ord("Z"): "",
             ord("z"): ""})
         try:
-            fmt = self.FORMATS[len(value)]
+            format = self.FORMATS[len(tr_value)]
         except KeyError:
             raise ValueError("couldn't find format matching %r (%s chars), tried %s"
-                             % (value, len(value), self.FORMATS))
-        dt = datetime.strptime(value, fmt)
+                             % (tr_value, len(tr_value), self.FORMATS))
+        dt = datetime.strptime(tr_value, format)
 
         if fixed_utc:
             if param_tz:
@@ -68,7 +66,17 @@ class DatetimeConverterMixin(object):
             if available_tz:
                 selected_tz = available_tz.get(param_tz, None)
             if selected_tz is None:
-                selected_tz = gettz(param_tz)  # be lenient with missing vtimezone definitions
+                try:
+                    selected_tz = Timezone.from_tzid(param_tz)  # be lenient with missing vtimezone definitions
+                except ValueError:
+                    found_tz = gettz(param_tz)
+                    if not found_tz:
+                        import platform
+                        import sys
+                        raise ValueError("timezone %s is unknown on this system (%s on %s)" %
+                                         (found_tz, sys.version, platform.platform(terse=True)))
+                    selected_tz = UnserializeableTimezone(param_tz, found_tz)
+                available_tz.setdefault(param_tz, selected_tz)
             return dt.replace(tzinfo=selected_tz)
         else:
             return dt
@@ -135,14 +143,10 @@ class TimeConverter(DatetimeConverterMixin, ValueConverter[time]):
         return self._parse_dt(value, params, context).timetz()
 
 
-class UTCOffsetConverter(ValueConverter[UTCOffset]):
+class BaseUTCOffsetConverter(ValueConverter[T], Generic[T], abc.ABC):
     @property
     def ics_type(self) -> str:
         return "UTC-OFFSET"
-
-    @property
-    def python_type(self) -> Type[UTCOffset]:
-        return UTCOffset
 
     def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> UTCOffset:
         match = re.fullmatch(r"(?P<sign>\+|-|)(?P<hours>[0-9]{2})(?P<minutes>[0-9]{2})(?P<seconds>[0-9]{2})?", value)
@@ -153,7 +157,7 @@ class UTCOffsetConverter(ValueConverter[UTCOffset]):
         td = timedelta(**{k: int(v) for k, v in groups.items() if v})
         if sign == "-":
             td *= -1
-        return UTCOffset(value, td)
+        return self.python_type(name=value, offset=td)
 
     def serialize(self, value: UTCOffset, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         offset = value.utcoffset(None)
@@ -177,6 +181,18 @@ class UTCOffsetConverter(ValueConverter[UTCOffset]):
             res += '%02d' % seconds
 
         return res
+
+
+class BuiltinUTCOffsetConverter(BaseUTCOffsetConverter[UTCOffset]):
+    @property
+    def python_type(self) -> Type[UTCOffset]:
+        return UTCOffset
+
+
+class DateutilUTCOffsetConverter(BaseUTCOffsetConverter[Dateutil_UTCOffset]):
+    @property
+    def python_type(self) -> Type[Dateutil_UTCOffset]:
+        return Dateutil_UTCOffset
 
 
 class DurationConverter(ValueConverter[timedelta]):

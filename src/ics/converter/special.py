@@ -1,9 +1,6 @@
-from datetime import tzinfo
-from io import StringIO
 from typing import List, TYPE_CHECKING
 
 from dateutil.rrule import rruleset
-from dateutil.tz import tzical
 
 from ics.attendee import Attendee, Organizer, Person
 from ics.converter.base import AttributeConverter
@@ -13,37 +10,6 @@ from ics.types import ContainerItem, ContextDict
 
 if TYPE_CHECKING:
     from ics.component import Component
-
-
-class TimezoneConverter(MemberComponentConverter):
-    @property
-    def filter_ics_names(self) -> List[str]:
-        return ["VTIMEZONE"]
-
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
-        assert isinstance(item, Container)
-        self._check_component(component, context)
-
-        item = item.clone([
-            line for line in item if not line.name.startswith("X-") and not line.name == "SEQUENCE"
-        ])
-
-        fake_file = StringIO()
-        fake_file.write(item.serialize())  # Represent the block as a string
-        fake_file.seek(0)
-        timezones = tzical(fake_file)  # tzical does not like strings
-
-        # timezones is a tzical object and could contain multiple timezones
-        print("got timezone", timezones.keys(), timezones.get())
-        self.set_or_append_value(component, timezones.get())
-        return True
-
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
-        for tz in self.get_value_list(component):
-            raise NotImplementedError("Timezones can't be serialized")
-
-
-AttributeConverter.BY_TYPE[tzinfo] = TimezoneConverter
 
 
 class RecurrenceConverter(AttributeConverter):
