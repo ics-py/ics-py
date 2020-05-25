@@ -24,6 +24,7 @@ lines_to_containers = PARSER.lines_to_containers
 if __name__ == "__main__":
     import argparse
     import sys
+    import platform
     import time
     import resource
     import json
@@ -65,6 +66,7 @@ if __name__ == "__main__":
     else:
         assert False
 
+    success = False
     lines = []
     start = (time.perf_counter(), time.process_time())
     try:
@@ -72,24 +74,31 @@ if __name__ == "__main__":
             lines = list(parser.lines_to_containers(args.infile))
         else:
             lines = list(parser.string_to_containers(args.infile.read()))
+        success = True
     except Exception:
-        print("Exception!")
         print_exc()
     end = (time.perf_counter(), time.process_time())
 
     if not args.quiet:
         name = dict(vars(args))
-        del name["infile"]
-        del name["outfile"]
+        name["infile"] = name["infile"].name
+        name["outfile"] = name["outfile"].name
         data = {"perf_counter": end[0] - start[0], "process_time": end[1] - start[1]}
         data.update(zip(
             ("utime", "stime", "maxrss", "ixrss", "idrss", "isrss", "minflt", "majflt",
              "nswap", "inblock", "oublock", "msgsnd", "msgrcv", "nsignals", "nvcsw", "nivcsw"),
             resource.getrusage(resource.RUSAGE_SELF)))
-        print(json.dumps([name, data]), file=sys.stderr)
+        sysinfo = {
+            "platform": platform.platform(),
+            "pyver": platform.python_version_tuple(),
+            "pyimpl": platform.python_implementation()
+        }
+        print(json.dumps([name, data, sysinfo]), file=sys.stderr)
 
     if not args.no_write:
         for line in lines:
-            for chunk in line.serialize_iter(True):
+            for chunk in line.serialize_iter(False):
                 args.outfile.write(chunk)
         args.outfile.flush()
+
+    exit(0 if success else 1)
