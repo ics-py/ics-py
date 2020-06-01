@@ -60,8 +60,7 @@ class ContentLine:
         return "{}{}:{}".format(self.name, params_str, self.value)
 
     def __repr__(self):
-        return "<ContentLine '{}' with {} parameter{}. Value='{}'>" \
-            .format(
+        return "<ContentLine '{}' with {} parameter{}. Value='{}'>".format(
             self.name,
             len(self.params),
             "s" if len(self.params) > 1 else "",
@@ -148,7 +147,7 @@ class Container(list):
         return c
 
 
-def unfold_lines(physical_lines):
+def unfold_lines(physical_lines, with_linenr=False):
     if not isinstance(physical_lines, collections.abc.Iterable):
         raise ParseError('Parameter `physical_lines` must be an iterable')
     current_nr = -1
@@ -162,16 +161,25 @@ def unfold_lines(physical_lines):
         elif line[0] in (' ', '\t'):
             current_line += line[1:].strip('\r')
         else:
-            yield current_nr, current_line
+            if with_linenr:
+                yield current_nr, current_line
+            else:
+                yield current_line
             current_nr = nr
             current_line = line.strip('\r')
     if current_line:
-        yield current_nr, current_line
+        if with_linenr:
+            yield current_nr, current_line
+        else:
+            yield current_line
 
 
 def tokenize_line(unfolded_lines):
-    for nr, line in unfolded_lines:
-        yield ContentLine.parse(line, nr)
+    for line in unfolded_lines:
+        if isinstance(line, tuple):
+            yield ContentLine.parse(line[1], line[0])
+        else:
+            yield ContentLine.parse(line)
 
 
 def parse(tokenized_lines, block_name=None):
@@ -186,7 +194,7 @@ def parse(tokenized_lines, block_name=None):
 
 def lines_to_container(lines, linewise=True):
     if linewise:
-        return parse(tokenize_line(unfold_lines(lines)))  # linewise
+        return parse(tokenize_line(unfold_lines(lines, with_linenr=True)))  # linewise
     else:
         return string_to_container("\r\n".join(lines), linewise)  # full-string
 
