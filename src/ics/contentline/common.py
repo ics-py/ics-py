@@ -5,6 +5,7 @@ from collections import UserString
 from typing import MutableSequence, Iterator, Tuple, List, Union
 
 import attr
+
 from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
 from ics.utils import limit_str_length, validate_truthy, next_after_str_escape
 
@@ -211,10 +212,6 @@ class Container(MutableSequence[ContainerItem]):
             for nr, item in enumerate(items):
                 check_is_instance("item %s" % nr, item, (ContentLine, Container))
 
-    def __setitem__(self, index, value):  # index might be slice and value might be iterable
-        self.data.__setitem__(index, value)
-        attr.validate(self)
-
     def insert(self, index, value):
         self.check_items(value)
         self.data.insert(index, value)
@@ -228,13 +225,24 @@ class Container(MutableSequence[ContainerItem]):
         attr.validate(self)
 
     def __getitem__(self, i):
-        if isinstance(i, slice):
+        if isinstance(i, str):
+            return tuple(cl for cl in self.data if cl.name == i)
+        elif isinstance(i, slice):
             return attr.evolve(self, data=self.data[i])
         else:
             return self.data[i]
 
+    def __delitem__(self, i):
+        if isinstance(i, str):
+            self.data = [cl for cl in self.data if cl.name != i]
+        else:
+            del self.data[i]
+
+    def __setitem__(self, index, value):  # index might be slice and value might be iterable
+        self.data.__setitem__(index, value)
+        attr.validate(self)
+
     __contains__ = _wrap_list_func(list.__contains__)
-    __delitem__ = _wrap_list_func(list.__delitem__)
     __iter__ = _wrap_list_func(list.__iter__)
     __len__ = _wrap_list_func(list.__len__)
     __reversed__ = _wrap_list_func(list.__reversed__)
