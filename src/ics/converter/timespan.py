@@ -92,7 +92,6 @@ class TimespanConverter(AttributeConverter):
             context.pop(key, None)
 
     def serialize(self, component: "Component", output: Container, context: ContextDict):
-        self._check_component(component, context)
         value: Timespan = self.get_value(component)
         if value.is_all_day():
             value_type = {"VALUE": ["DATE"]}

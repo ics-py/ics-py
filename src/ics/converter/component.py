@@ -103,7 +103,6 @@ class ComponentConverter(AttributeConverter):
         return True
 
     def serialize(self, parent: "Component", output: Container, context: ContextDict):
-        self._check_component(parent, context)
         extras = self.get_extra_params(parent)
         if extras:
             raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))

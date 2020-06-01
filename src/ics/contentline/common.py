@@ -164,7 +164,7 @@ class Container(MutableSequence[ContainerItem]):
         return "".join(self.serialize_iter())
 
     def serialize_iter(self, newline=False):
-        yield "BEGIN:%s"
+        yield "BEGIN:"
         yield self.name
         yield "\r\n"
         for line in self:

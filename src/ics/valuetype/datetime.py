@@ -39,7 +39,7 @@ class DatetimeConverterMixin(object):
         if param_tz_list:
             if len(param_tz_list) > 1:
                 raise ValueError("got multiple TZIDs")
-            param_tz: Optional[str] = param_tz_list[0]
+            param_tz: Optional[str] = str(param_tz_list[0])  # convert QuotedParamValues
         else:
             param_tz = None
         available_tz = context.get(self.CONTEXT_KEY_AVAILABLE_TZ, None)
@@ -52,7 +52,12 @@ class DatetimeConverterMixin(object):
             ord("-"): "",
             ord("Z"): "",
             ord("z"): ""})
-        dt = datetime.strptime(value, self.FORMATS[len(value)])
+        try:
+            fmt = self.FORMATS[len(value)]
+        except KeyError:
+            raise ValueError("couldn't find format matching %r (%s chars), tried %s"
+                             % (value, len(value), self.FORMATS))
+        dt = datetime.strptime(value, fmt)
 
         if fixed_utc:
             if param_tz:
