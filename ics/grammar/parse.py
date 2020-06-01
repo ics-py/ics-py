@@ -1,21 +1,24 @@
 import collections
 import re
-from pathlib import Path
 from typing import Dict, List
 
+import attr
 import tatsu
+
+from ics.grammar.contentline import contentlineParser
 
 # grammar_path = Path(__file__).parent.joinpath('contentline.ebnf')
 #
 # with open(grammar_path) as fd:
 #     GRAMMAR = tatsu.compile(fd.read())
 
-from ics.grammar.contentline import contentlineParser
-
 GRAMMAR = contentlineParser()
 
+
+@attr.s(auto_exc=True)
 class ParseError(Exception):
-    pass
+    line: str = attr.ib(default="")
+    nr: int = attr.ib(default=-1)
 
 
 class ContentLine:
@@ -72,21 +75,21 @@ class ContentLine:
         self.params[item] = [val for val in values]
 
     @classmethod
-    def parse(cls, line):
+    def parse(cls, line, nr=-1):
         """Parse a single iCalendar-formatted line into a ContentLine"""
         if "\n" in line or "\r" in line:
             raise ValueError("ContentLine can only contain escaped newlines")
         try:
             ast = GRAMMAR.parse(line)
         except tatsu.exceptions.FailedToken:
-            raise ParseError()
+            raise ParseError(line, nr)
 
         name = ''.join(ast['name'])
         value = ''.join(ast['value'])
         params = {}
         for param_ast in ast.get('params', []):
             param_name = ''.join(param_ast["name"])
-            param_values = [''.join(x) for x in param_ast["values_"]]
+            param_values = [''.join(x["value"]) for x in param_ast["values"]]
             params[param_name] = param_values
         return cls(name, params, value)
 
@@ -168,12 +171,7 @@ def unfold_lines(physical_lines):
 
 def tokenize_line(unfolded_lines):
     for nr, line in unfolded_lines:
-        try:
-            yield ContentLine.parse(line)
-        except:
-            print(nr)
-            print(line)
-            raise
+        yield ContentLine.parse(line, nr)
 
 
 def parse(tokenized_lines, block_name=None):
@@ -186,20 +184,23 @@ def parse(tokenized_lines, block_name=None):
     return res
 
 
-def lines_to_container(lines):
-    # return parse(tokenize_line(unfold_lines(lines)))
-    return string_to_container("\r\n".join(lines))
+def lines_to_container(lines, linewise=True):
+    if linewise:
+        return parse(tokenize_line(unfold_lines(lines)))  # linewise
+    else:
+        return string_to_container("\r\n".join(lines), linewise)  # full-string
 
 
-def string_to_container(txt):
-    # return lines_to_container(txt.split("\n"))
-    return parse(string_to_content_lines(txt))
+def string_to_container(txt, linewise=True):
+    if linewise:
+        return lines_to_container(txt.split("\n"), linewise)  # linewise
+    else:
+        return parse(string_to_content_lines(txt))  # full-string
 
 
 def string_to_content_lines(txt):
     txt = re.sub("\r?\n[ \t]", "", txt)
     ast = GRAMMAR.parse(txt, rule_name='full')
-    # print(ast)
     for line in ast:
         line = line[0]
         name = ''.join(line['name'])
@@ -207,7 +208,7 @@ def string_to_content_lines(txt):
         params = {}
         for param_ast in line.get('params', []):
             param_name = ''.join(param_ast["name"])
-            param_values = [''.join(x) for x in param_ast["values_"]]
+            param_values = [''.join(x["value"]) for x in param_ast["values"]]
             params[param_name] = param_values
         yield ContentLine(name, params, value)
 

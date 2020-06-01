@@ -57,7 +57,7 @@ class contentlineParser(Parser):
         comments_re=None,
         eol_comments_re=None,
         ignorecase=None,
-        left_recursion=True,
+        left_recursion=False,
         parseinfo=True,
         keywords=None,
         namechars='',
@@ -83,24 +83,83 @@ class contentlineParser(Parser):
     @tatsumasu()
     def _start_(self):  # noqa
         self._contentline_()
+        self.name_last_node('@')
         self._check_eof()
 
     @tatsumasu()
     def _full_(self):  # noqa
+        self._contentline_()
+        self.add_last_node_to_name('@')
 
-        def block0():
-            with self._group():
-                self._contentline_()
-                self._pattern('\\r?\\n')
-        self._positive_closure(block0)
+        def block1():
+            self._pattern('(\\r?\\n)+')
+            self._contentline_()
+            self.add_last_node_to_name('@')
+        self._positive_closure(block1)
+        self._pattern('(\\r?\\n)*')
+        self._check_eof()
+
+    @tatsumasu()
+    def _contentline_(self):  # noqa
+        self._ALPHADIGIT_MINUS_PLUS_()
+        self.name_last_node('name')
+
+        def block1():
+            self._token(';')
+            self._param_()
+            self.add_last_node_to_name('params')
+        self._closure(block1)
+        self._token(':')
+        self._VALUE_CHAR_STAR_()
+        self.name_last_node('value')
+        self.ast._define(
+            ['name', 'value'],
+            ['params']
+        )
+
+    @tatsumasu()
+    def _param_(self):  # noqa
+        self._ALPHADIGIT_MINUS_PLUS_()
+        self.name_last_node('name')
+        self._token('=')
+        self._param_value_()
+        self.add_last_node_to_name('values')
+
+        def block2():
+            self._token(',')
+            self._param_value_()
+            self.add_last_node_to_name('values')
+        self._closure(block2)
+        self.ast._define(
+            ['name'],
+            ['values']
+        )
+
+    @tatsumasu()
+    def _param_value_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._DQUOTE_()
+                self._cut()
+                self._QSAFE_CHAR_STAR_()
+                self.name_last_node('value')
+                self._DQUOTE_()
+                self._constant('true')
+                self.name_last_node('quoted')
+            with self._option():
+                self._SAFE_CHAR_STAR_()
+                self.name_last_node('value')
+                self._constant('false')
+                self.name_last_node('quoted')
+            self._error('no available options')
+        self.ast._define(
+            ['quoted', 'value'],
+            []
+        )
 
     @tatsumasu()
     def _ALPHADIGIT_MINUS_PLUS_(self):  # noqa
-        self._pattern('[a-zA-Z0-9\\-]+')
-
-    @tatsumasu()
-    def _DQUOTE_(self):  # noqa
-        self._token('"')
+        self._pattern('[a-zA-Z0-9-]+')
 
     @tatsumasu()
     def _QSAFE_CHAR_STAR_(self):  # noqa
@@ -115,74 +174,8 @@ class contentlineParser(Parser):
         self._pattern('[^\\x00-\\x08\\x0A-\\x1F\\x7F]*')
 
     @tatsumasu()
-    def _contentline_(self):  # noqa
-        self._name_()
-        self.name_last_node('name')
-
-        def block1():
-            with self._group():
-                self._token(';')
-                self._param_()
-                self.add_last_node_to_name('params')
-        self._closure(block1)
-        self._token(':')
-        self._value_()
-        self.name_last_node('value')
-        self.ast._define(
-            ['name', 'value'],
-            ['params']
-        )
-
-    @tatsumasu()
-    def _name_(self):  # noqa
-        self._ALPHADIGIT_MINUS_PLUS_()
-
-    @tatsumasu()
-    def _param_(self):  # noqa
-        self._param_name_()
-        self.name_last_node('name')
-        self._token('=')
-        self._param_value_()
-        self.add_last_node_to_name('values')
-
-        def block2():
-            with self._group():
-                self._token(',')
-                self._param_value_()
-                self.add_last_node_to_name('values')
-        self._closure(block2)
-        self.ast._define(
-            ['name'],
-            ['values']
-        )
-
-    @tatsumasu()
-    def _param_name_(self):  # noqa
-        self._ALPHADIGIT_MINUS_PLUS_()
-
-    @tatsumasu()
-    def _param_value_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._quoted_string_()
-            with self._option():
-                self._paramtext_()
-            self._error('no available options')
-
-    @tatsumasu()
-    def _paramtext_(self):  # noqa
-        self._SAFE_CHAR_STAR_()
-
-    @tatsumasu()
-    def _value_(self):  # noqa
-        self._VALUE_CHAR_STAR_()
-
-    @tatsumasu()
-    def _quoted_string_(self):  # noqa
-        self._DQUOTE_()
-        self._QSAFE_CHAR_STAR_()
-        self.name_last_node('@')
-        self._DQUOTE_()
+    def _DQUOTE_(self):  # noqa
+        self._token('"')
 
 
 class contentlineSemantics(object):
@@ -192,10 +185,16 @@ class contentlineSemantics(object):
     def full(self, ast):  # noqa
         return ast
 
-    def ALPHADIGIT_MINUS_PLUS(self, ast):  # noqa
+    def contentline(self, ast):  # noqa
         return ast
 
-    def DQUOTE(self, ast):  # noqa
+    def param(self, ast):  # noqa
+        return ast
+
+    def param_value(self, ast):  # noqa
+        return ast
+
+    def ALPHADIGIT_MINUS_PLUS(self, ast):  # noqa
         return ast
 
     def QSAFE_CHAR_STAR(self, ast):  # noqa
@@ -207,28 +206,7 @@ class contentlineSemantics(object):
     def VALUE_CHAR_STAR(self, ast):  # noqa
         return ast
 
-    def contentline(self, ast):  # noqa
-        return ast
-
-    def name(self, ast):  # noqa
-        return ast
-
-    def param(self, ast):  # noqa
-        return ast
-
-    def param_name(self, ast):  # noqa
-        return ast
-
-    def param_value(self, ast):  # noqa
-        return ast
-
-    def paramtext(self, ast):  # noqa
-        return ast
-
-    def value(self, ast):  # noqa
-        return ast
-
-    def quoted_string(self, ast):  # noqa
+    def DQUOTE(self, ast):  # noqa
         return ast
 
 
