@@ -1,7 +1,6 @@
 import re
-from typing import Tuple, Iterator, Match, List, Union
+from typing import Tuple, Iterator, Union
 
-import attr
 from ics.contentline.common import *
 
 
@@ -15,19 +14,20 @@ class HandwrittenParser(Parser):
                 yield ContentLineParser(line).parse(self.regex_impl)
 
 
-@attr.s(slots=True)
 class ContentLineParser(object):
-    line: str = attr.ib()
-    line_nr: int = attr.ib(default=-1)
+    __slots__ = [
+        "line", "line_nr", "delims", "delim", "cl", "param_value_start", "param_values",
+    ]
 
-    delims: Iterator[Match[str]] = attr.ib(init=False)
-    delim: Match[str] = attr.ib(init=False)
-    cl: ContentLine = attr.ib(init=False)
-    param_value_start: int = attr.ib(init=False)
-    param_values: List[Union[str, QuotedParamValue]] = attr.ib(init=False)
+    def __init__(self, line, line_nr=-1):
+        self.line = line
+        self.line_nr = line_nr
 
     def error(self, msg: str, col: Union[int, Tuple[int, int]] = -1) -> ParseError:
         return ParseError(msg, self.line_nr, col, self.line, str(self))
+
+    def __str__(self):
+        return str({s: getattr(self, s) for s in self.__slots__ if hasattr(self, s)})
 
     def next_delim(self):
         try:
