@@ -1,30 +1,14 @@
-from typing import ClassVar, Dict, Iterable, Iterator, List, Optional, Union
+from typing import ClassVar, Iterable, Iterator, List, Optional, Union
 
 import attr
 from attr.validators import instance_of
 
 from ics.component import Component
-from ics.converter.base import AttributeConverter, ics_attr_meta
-from ics.converter.component import ComponentMetaInfo, InflatedComponentMeta
 from ics.event import Event
 from ics.contentline import Container, string_to_containers
 from ics.timeline import Timeline
 from ics.timezone import Timezone
 from ics.todo import Todo
-from ics.types import ContainerItem, ContextDict
-from ics.valuetype.datetime import DatetimeConverterMixin
-
-
-class CalendarTimezoneConsumer(AttributeConverter):
-    @property
-    def filter_ics_names(self) -> List[str]:
-        return Timezone.MetaInfo.container_name
-
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
-        return item.name == "VTIMEZONE" and isinstance(item, Container)
-
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
-        return
 
 
 @attr.s
@@ -34,34 +18,10 @@ class CalendarAttrs(Component):
     scale: Optional[str] = attr.ib(default=None)
     method: Optional[str] = attr.ib(default=None)
 
-    _timezones: List[Timezone] = attr.ib(factory=list, converter=list, metadata=ics_attr_meta(converter=CalendarTimezoneConsumer),
-                                         init=False, repr=False, eq=False, order=False, hash=False)
+    timezones: List[Timezone] = attr.ib(factory=list, converter=list, metadata={"ics_ignore": True},
+                                        init=False, repr=False, eq=False, order=False, hash=False)
     events: List[Event] = attr.ib(factory=list, converter=list)
     todos: List[Todo] = attr.ib(factory=list, converter=list)
-
-
-class CalendarMeta(InflatedComponentMeta):
-    def _populate_attrs(self, instance: "Component", container: Container, context: ContextDict):
-        avail_tz: Dict[str, Timezone] = context.setdefault(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
-        for child in container:
-            if child.name == "VTIMEZONE" and isinstance(child, Container):
-                tz = Timezone.from_container(child)
-                avail_tz.setdefault(tz.tzid, tz)
-
-        super()._populate_attrs(instance, container, context)
-
-        instance._timezones = context[DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ].values()
-
-    def _serialize_attrs(self, component: "Component", context: ContextDict, container: Container):
-        assert isinstance(component, Calendar)
-        avail_tz: Dict[str, Timezone] = context.setdefault(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
-        for tz in component._timezones:
-            avail_tz.setdefault(tz.tzid, tz)
-
-        super()._serialize_attrs(component, context, container)
-
-        timezones = [tz.to_container() for tz in context[DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ].values()]
-        container.data = timezones + container.data
 
 
 class Calendar(CalendarAttrs):
@@ -76,7 +36,7 @@ class Calendar(CalendarAttrs):
 
     """
 
-    MetaInfo = ComponentMetaInfo("VCALENDAR", inflated_meta_class=CalendarMeta)
+    NAME = "VCALENDAR"
     DEFAULT_VERSION: ClassVar[str] = "2.0"
     DEFAULT_PRODID: ClassVar[str] = "ics.py - http://git.io/lLljaA"
 

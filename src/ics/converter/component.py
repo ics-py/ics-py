@@ -1,16 +1,19 @@
 from collections import defaultdict
-from typing import Dict, Iterable, List, Optional, TYPE_CHECKING, Tuple, Type, cast
+from typing import Dict, Iterable, List, Optional, Tuple, Type, cast, ClassVar
 
 import attr
 from attr import Attribute
 
+from ics.component import Component
 from ics.converter.base import AttributeConverter, GenericConverter
 from ics.contentline import Container
 from ics.types import ContainerItem, ContextDict
 from ics.utils import check_is_instance
 
-if TYPE_CHECKING:
-    from ics.component import Component
+__all__ = [
+    "MemberComponentConverter",
+    "ComponentMeta",
+]
 
 
 @attr.s(frozen=True)
@@ -19,7 +22,7 @@ class MemberComponentConverter(AttributeConverter):
 
     @property
     def filter_ics_names(self) -> List[str]:
-        return [self.meta.container_name]
+        return [self.meta.component_type.NAME]
 
     def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, Container)
@@ -36,38 +39,32 @@ class MemberComponentConverter(AttributeConverter):
             output.append(self.meta.serialize_toplevel(value, context))
 
 
-EMPTY_CONVERTERS = tuple()
-
-
 @attr.s(frozen=True)
 class ComponentMeta(object):
-    container_name: str = attr.ib()
-    component_type: Type["Component"] = attr.ib()
+    BY_TYPE: ClassVar[Dict[Type, "ComponentMeta"]] = {}
 
-    converter_class: Type[MemberComponentConverter] = attr.ib(default=MemberComponentConverter)
-    converters: Tuple[GenericConverter, ...] = attr.ib(default=EMPTY_CONVERTERS)
+    component_type: Type[Component] = attr.ib()
 
-    converter_lookup: Dict[str, List[GenericConverter]]
+    converters: Tuple[GenericConverter, ...]
+    converter_lookup: Dict[str, Tuple[GenericConverter]]
 
     def __attrs_post_init__(self):
-        if self.converters is EMPTY_CONVERTERS:
-            converters = cast(Iterable["AttributeConverter"], filter(bool, (
-                AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type))))
-        else:
-            converters = self.converters
-        object.__setattr__(self, "converters", tuple(sorted(converters, key=lambda c: c.priority)))
-
-        object.__setattr__(self, "converter_lookup", defaultdict(list))
+        object.__setattr__(self, "converters", tuple(self.find_converters()))
+        converter_lookup = defaultdict(list)
         for converter in self.converters:
             for name in converter.filter_ics_names:
-                self.converter_lookup[name].append(converter)
+                converter_lookup[name].append(converter)
+        object.__setattr__(self, "converter_lookup", {k: tuple(vs) for k, vs in converter_lookup.items()})
 
-        self.component_type.Meta = self
         AttributeConverter.BY_TYPE[self.component_type] = self
 
+    def find_converters(self) -> Iterable["AttributeConverter"]:
+        converters = cast(Iterable["AttributeConverter"], filter(bool, (
+            AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type))))
+        return sorted(converters, key=lambda c: c.priority)
+
     def __call__(self, attribute: Attribute):
-        converter_class = self.converter_class or MemberComponentConverter
-        return converter_class(attribute, self)
+        return MemberComponentConverter(attribute, self)
 
     def load_instance(self, container: Container, context: Optional[ContextDict] = None):
         instance = self.component_type()
@@ -75,8 +72,8 @@ class ComponentMeta(object):
         return instance
 
     def populate_instance(self, instance: "Component", container: Container, context: Optional[ContextDict] = None):
-        if container.name != self.container_name:
-            raise ValueError("container isn't an {}".format(self.container_name))
+        if container.name != self.component_type.NAME:
+            raise ValueError("container isn't an {}".format(self.component_type.NAME))
         check_is_instance("instance", instance, self.component_type)
         if not context:
             context = ContextDict(defaultdict(lambda: None))
@@ -99,7 +96,7 @@ class ComponentMeta(object):
         check_is_instance("instance", component, self.component_type)
         if not context:
             context = ContextDict(defaultdict(lambda: None))
-        container = Container(self.container_name)
+        container = Container(self.component_type.NAME)
         self._serialize_attrs(component, context, container)
         return container
 
@@ -130,3 +127,7 @@ class ComponentConverter(AttributeConverter):
             raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
         for value in self.get_value_list(parent):
             output.append(self.meta.serialize_toplevel(value, context))
+
+
+for ComponentClass in Component.SUBTYPES:
+    ComponentMeta.BY_TYPE[ComponentClass] = ComponentMeta(ComponentClass)

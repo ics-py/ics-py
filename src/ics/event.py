@@ -8,9 +8,6 @@ from attr.validators import in_, instance_of, optional as v_optional
 from ics.alarm import BaseAlarm
 from ics.attendee import Attendee, Organizer
 from ics.component import Component
-from ics.converter.base import ics_attr_meta
-from ics.converter.component import ComponentMetaInfo
-from ics.converter.timespan import TimespanConverter
 from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, URL, get_timespan_if_calendar_entry
@@ -22,7 +19,7 @@ STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
 @attr.s(eq=True, order=False)
 class CalendarEntryAttrs(Component):
-    _timespan: Timespan = attr.ib(validator=instance_of(Timespan), metadata=ics_attr_meta(converter=TimespanConverter))
+    _timespan: Timespan = attr.ib(validator=instance_of(Timespan))
     summary: Optional[str] = attr.ib(default=None)
     uid: str = attr.ib(factory=uid_gen)
 
@@ -233,9 +230,8 @@ class Event(EventAttrs):
     :class:`ics.parse.ContentLine` to `.extra`
     """
 
+    NAME = "VEVENT"
     _timespan: EventTimespan = attr.ib(validator=instance_of(EventTimespan))
-
-    MetaInfo = ComponentMetaInfo("VEVENT")
 
     def __init__(
             self,

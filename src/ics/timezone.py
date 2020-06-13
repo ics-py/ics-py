@@ -6,17 +6,16 @@ import dateutil
 import dateutil.tz
 
 from ics.component import Component
-from ics.converter.component import ComponentMetaInfo
 from ics.types import ContextDict, DatetimeLike
 from ics.utils import check_is_instance, ensure_datetime
 
 
 @attr.s(frozen=True)
 class Timezone(Component, datetime.tzinfo):
-    MetaInfo = ComponentMetaInfo("VTIMEZONE")
+    NAME = "VTIMEZONE"
 
-    tzid: str = attr.ib()
-    tzinfo_inst: datetime.tzinfo = attr.ib()
+    tzid: str = attr.ib(metadata={"ics_ignore": True})
+    tzinfo_inst: datetime.tzinfo = attr.ib(metadata={"ics_ignore": True})
 
     @classmethod
     def from_tzid(cls, tzid: str) -> "Timezone":

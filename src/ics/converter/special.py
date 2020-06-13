@@ -2,6 +2,7 @@ from typing import List, TYPE_CHECKING
 
 from dateutil.rrule import rruleset
 
+from ics.alarm import *
 from ics.attendee import Attendee, Organizer, Person
 from ics.converter.base import AttributeConverter
 from ics.converter.component import MemberComponentConverter
@@ -74,8 +75,13 @@ class AlarmConverter(MemberComponentConverter):
         self._check_component(component, context)
 
         from ics.alarm import get_type_from_action
-        alarm_type = get_type_from_action(item)
-        instance = alarm_type()
-        alarm_type.InflatedMeta().populate_instance(instance, item, context)
-        self.set_or_append_value(component, instance)
+        self.set_or_append_value(component, get_type_from_action(item).from_container(item, context))
         return True
+
+
+AttributeConverter.BY_TYPE[BaseAlarm] = AlarmConverter
+AttributeConverter.BY_TYPE[AudioAlarm] = AlarmConverter
+AttributeConverter.BY_TYPE[CustomAlarm] = AlarmConverter
+AttributeConverter.BY_TYPE[DisplayAlarm] = AlarmConverter
+AttributeConverter.BY_TYPE[EmailAlarm] = AlarmConverter
+AttributeConverter.BY_TYPE[NoneAlarm] = AlarmConverter

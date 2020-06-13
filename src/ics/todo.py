@@ -10,7 +10,6 @@ from typing import Optional
 import attr
 from attr.validators import in_, instance_of, optional as v_optional
 
-from ics.converter.component import ComponentMetaInfo
 from ics.event import CalendarEntryAttrs
 from ics.timespan import TodoTimespan
 from ics.types import DatetimeLike, TimedeltaLike
@@ -46,9 +45,8 @@ class Todo(TodoAttrs):
     Can have a start time and duration, or start and due time,
     or only start or due time.
     """
+    NAME = "VTODO"
     _timespan: TodoTimespan = attr.ib(validator=instance_of(TodoTimespan))
-
-    MetaInfo = ComponentMetaInfo("VTODO")
 
     def __init__(
             self,

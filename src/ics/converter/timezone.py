@@ -5,8 +5,7 @@ from typing import Dict, Optional, TextIO, Tuple, Union
 import dateutil
 
 from ics.component import Component
-from ics.converter.base import AttributeConverter
-from ics.converter.component import InflatedComponentMeta
+from ics.converter.component import ComponentMeta
 from ics.converter.timezone_utils import Timezone_from_builtin, Timezone_from_dateutil, Timezone_from_pytz
 from ics.grammar import Container, string_to_container
 from ics.timezone import Timezone, UTC, is_utc
@@ -78,7 +77,7 @@ def Timezone_from_tzinfo(tzinfo: datetime.tzinfo, context: ContextDict) -> Timez
     return tz
 
 
-class InflatedTimezoneMeta(InflatedComponentMeta):
+class TimezoneMeta(ComponentMeta):
     def load_instance(self, container: Container, context: Optional[ContextDict] = None):
         timezone = Timezone(*tzical_from_str(container.serialize(), filter_unknown=True))
         timezone.extra.data.extend(container.data)
@@ -96,5 +95,4 @@ class InflatedTimezoneMeta(InflatedComponentMeta):
         return component.extra
 
 
-object.__setattr__(Timezone.MetaInfo, "inflated_meta_class", InflatedTimezoneMeta)
-object.__setattr__(Timezone.MetaInfo, "converters", [])
+ComponentMeta.BY_TYPE[Timezone] = TimezoneMeta(Timezone)
