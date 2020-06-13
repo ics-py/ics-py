@@ -42,7 +42,7 @@ __all__ = [
     "Timespan",
     "Todo",
     "TodoTimespan",
-    "__version__"
+    "__version__",
 ]
 
 __version__ = "0.8.0-dev"

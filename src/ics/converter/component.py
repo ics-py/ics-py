@@ -24,13 +24,13 @@ class MemberComponentConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return [self.meta.component_type.NAME]
 
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, Container)
         self._check_component(component, context)
         self.set_or_append_value(component, self.meta.load_instance(item, context))
         return True
 
-    def serialize(self, parent: "Component", output: Container, context: ContextDict):
+    def serialize(self, parent: Component, output: Container, context: ContextDict):
         self._check_component(parent, context)
         extras = self.get_extra_params(parent)
         if extras:
@@ -80,7 +80,7 @@ class ComponentMeta(object):
 
         self._populate_attrs(instance, container, context)
 
-    def _populate_attrs(self, instance: "Component", container: Container, context: ContextDict):
+    def _populate_attrs(self, instance: Component, container: Container, context: ContextDict):
         for line in container:
             consumed = False
             for conv in self.converter_lookup[line.name]:
@@ -92,7 +92,7 @@ class ComponentMeta(object):
         for conv in self.converters:
             conv.finalize(instance, context)
 
-    def serialize_toplevel(self, component: "Component", context: Optional[ContextDict] = None):
+    def serialize_toplevel(self, component: Component, context: Optional[ContextDict] = None):
         check_is_instance("instance", component, self.component_type)
         if not context:
             context = ContextDict(defaultdict(lambda: None))
@@ -100,7 +100,7 @@ class ComponentMeta(object):
         self._serialize_attrs(component, context, container)
         return container
 
-    def _serialize_attrs(self, component: "Component", context: ContextDict, container: Container):
+    def _serialize_attrs(self, component: Component, context: ContextDict, container: Container):
         for conv in self.converters:
             conv.serialize(component, container, context)
         container.extend(component.extra)

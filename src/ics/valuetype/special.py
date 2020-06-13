@@ -4,6 +4,8 @@ from ics.geo import Geo
 from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
 from ics.valuetype.base import ValueConverter
 
+__all__ = ["GeoConverter"]
+
 
 class GeoConverter(ValueConverter[Geo]):
 

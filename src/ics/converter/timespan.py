@@ -1,14 +1,12 @@
-from typing import List, TYPE_CHECKING, cast
+from typing import List, cast
 
+from ics.component import Component
 from ics.converter.base import AttributeConverter
 from ics.contentline import Container, ContentLine
 from ics.timespan import EventTimespan, Timespan, TodoTimespan
 from ics.types import ContainerItem, ContextDict, ExtraParams, copy_extra_params
 from ics.utils import ensure_datetime
 from ics.valuetype.datetime import DateConverter, DatetimeConverter, DurationConverter
-
-if TYPE_CHECKING:
-    from ics.component import Component
 
 CONTEXT_BEGIN_TIME = "timespan_begin_time"
 CONTEXT_END_TIME = "timespan_end_time"
@@ -18,6 +16,8 @@ CONTEXT_END_NAME = "timespan_end_name"
 CONTEXT_ITEMS = "timespan_items"
 CONTEXT_KEYS = [CONTEXT_BEGIN_TIME, CONTEXT_END_TIME, CONTEXT_DURATION,
                 CONTEXT_PRECISION, CONTEXT_END_NAME, CONTEXT_ITEMS]
+
+__all__ = ["TimespanConverter"]
 
 
 class TimespanConverter(AttributeConverter):
@@ -29,7 +29,7 @@ class TimespanConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return ["DTSTART", "DTEND", "DUE", "DURATION"]
 
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
 
@@ -76,7 +76,7 @@ class TimespanConverter(AttributeConverter):
 
         return True
 
-    def finalize(self, component: "Component", context: ContextDict):
+    def finalize(self, component: Component, context: ContextDict):
         self._check_component(component, context)
         # missing values will be reported by the Timespan validator
         timespan = self.value_type(
@@ -91,7 +91,7 @@ class TimespanConverter(AttributeConverter):
         for key in CONTEXT_KEYS:
             context.pop(key, None)
 
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container, context: ContextDict):
         value: Timespan = self.get_value(component)
         if value.is_all_day():
             value_type = {"VALUE": ["DATE"]}

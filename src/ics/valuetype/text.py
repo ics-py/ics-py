@@ -6,6 +6,8 @@ from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
 from ics.utils import next_after_str_escape
 from ics.valuetype.base import ValueConverter
 
+__all__ = ["TextConverter"]
+
 
 class TextConverter(ValueConverter[str]):
 

@@ -1,17 +1,22 @@
 import abc
 import warnings
 from types import SimpleNamespace
-from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, TYPE_CHECKING, Tuple, Type, Union, cast
+from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, Tuple, Type, Union, cast
 
 import attr
 
+from ics.component import Component
 from ics.contentline import Container
 from ics.types import ContainerItem, ContextDict, ExtraParams
 
-if TYPE_CHECKING:
-    from ics.component import Component
-
 NoneTypes = [type(None), None]
+
+__all__ = [
+    "GenericConverter",
+    "AttributeConverter",
+    "extract_attr_type",
+    "unwrap_type",
+]
 
 
 # TODO make validation / ValueError / warnings configurable
@@ -29,7 +34,7 @@ class GenericConverter(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         """
         :param context:
         :param component:
@@ -38,11 +43,11 @@ class GenericConverter(abc.ABC):
         """
         ...
 
-    def finalize(self, component: "Component", context: ContextDict):
+    def finalize(self, component: Component, context: ContextDict):
         ...
 
     @abc.abstractmethod
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container, context: ContextDict):
         ...
 
 
@@ -73,7 +78,7 @@ class AttributeConverter(GenericConverter, abc.ABC):
         for key, value in v.__dict__.items():  # all variables created in __attrs_post_init__.v will be set on self
             object.__setattr__(self, key, value)
 
-    def _check_component(self, component: "Component", context: ContextDict):
+    def _check_component(self, component: Component, context: ContextDict):
         if context[(self, "current_component")] is None:
             context[(self, "current_component")] = component
             context[(self, "current_value_count")] = 0
@@ -81,11 +86,11 @@ class AttributeConverter(GenericConverter, abc.ABC):
             if context[(self, "current_component")] is not component:
                 raise ValueError("must call finalize before call to populate with another component")
 
-    def finalize(self, component: "Component", context: ContextDict):
+    def finalize(self, component: Component, context: ContextDict):
         context[(self, "current_component")] = None
         context[(self, "current_value_count")] = 0
 
-    def set_or_append_value(self, component: "Component", value: Any):
+    def set_or_append_value(self, component: Component, value: Any):
         if self.multi_value_type is not None:
             container = getattr(component, self.attribute.name)
             if container is None:
@@ -95,16 +100,16 @@ class AttributeConverter(GenericConverter, abc.ABC):
         else:
             setattr(component, self.attribute.name, value)
 
-    def get_value(self, component: "Component") -> Any:
+    def get_value(self, component: Component) -> Any:
         return getattr(component, self.attribute.name)
 
-    def get_value_list(self, component: "Component") -> List[Any]:
+    def get_value_list(self, component: Component) -> List[Any]:
         if self.is_multi_value:
             return list(self.get_value(component))
         else:
             return [self.get_value(component)]
 
-    def set_or_append_extra_params(self, component: "Component", value: ExtraParams, name: Optional[str] = None):
+    def set_or_append_extra_params(self, component: Component, value: ExtraParams, name: Optional[str] = None):
         name = name or self.attribute.name
         if self.is_multi_value:
             extras = component.extra_params.setdefault(name, [])
@@ -112,7 +117,7 @@ class AttributeConverter(GenericConverter, abc.ABC):
         elif value:
             component.extra_params[name] = value
 
-    def get_extra_params(self, component: "Component", name: Optional[str] = None) -> Union[ExtraParams, List[ExtraParams]]:
+    def get_extra_params(self, component: Component, name: Optional[str] = None) -> Union[ExtraParams, List[ExtraParams]]:
         if self.multi_value_type:
             default: Union[ExtraParams, List[ExtraParams]] = cast(List[ExtraParams], list())
         else:
@@ -178,25 +183,3 @@ def unwrap_type(attr_type: Type) -> Tuple[Optional[Type[MutableSequence]], Type,
 
     else:
         return None, attr_type, [attr_type]
-
-
-def ics_attr_meta(name: str = None,
-                  ignore: bool = None,
-                  type: Type = None,
-                  required: bool = None,
-                  priority: int = None,
-                  converter: Type[AttributeConverter] = None) -> Dict[str, Any]:
-    data: Dict[str, Any] = {}
-    if name:
-        data["ics_name"] = name
-    if ignore is not None:
-        data["ics_ignore"] = ignore
-    if type is not None:
-        data["ics_type"] = type
-    if required is not None:
-        data["ics_required"] = required
-    if priority is not None:
-        data["ics_priority"] = priority
-    if converter is not None:
-        data["ics_converter"] = converter
-    return data

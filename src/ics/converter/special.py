@@ -1,16 +1,20 @@
-from typing import List, TYPE_CHECKING
+from typing import List
 
 from dateutil.rrule import rruleset
 
 from ics.alarm import *
 from ics.attendee import Attendee, Organizer, Person
+from ics.component import Component
 from ics.converter.base import AttributeConverter
 from ics.converter.component import MemberComponentConverter
 from ics.contentline import Container, ContentLine
 from ics.types import ContainerItem, ContextDict
 
-if TYPE_CHECKING:
-    from ics.component import Component
+__all__ = [
+    "RecurrenceConverter",
+    "PersonConverter",
+    "AlarmConverter",
+]
 
 
 class RecurrenceConverter(AttributeConverter):
@@ -21,17 +25,17 @@ class RecurrenceConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return ["RRULE", "RDATE", "EXRULE", "EXDATE", "DTSTART"]
 
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
         # self.lines.append(item)
         return False
 
-    def finalize(self, component: "Component", context: ContextDict):
+    def finalize(self, component: Component, context: ContextDict):
         self._check_component(component, context)
         # rrulestr("\r\n".join(self.lines), tzinfos={}, compatible=True)
 
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container, context: ContextDict):
         pass
         # value = rruleset()
         # for rrule in value._rrule:
@@ -54,12 +58,12 @@ class PersonConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return []
 
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
         return False
 
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container, context: ContextDict):
         pass
 
 
@@ -69,7 +73,7 @@ AttributeConverter.BY_TYPE[Organizer] = PersonConverter
 
 
 class AlarmConverter(MemberComponentConverter):
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         # TODO handle trigger: Union[timedelta, datetime, None] before duration
         assert isinstance(item, Container)
         self._check_component(component, context)

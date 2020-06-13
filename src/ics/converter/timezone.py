@@ -12,6 +12,14 @@ from ics.timezone import Timezone, UTC, is_utc
 from ics.types import ContextDict
 from ics.valuetype.datetime import DatetimeConverterMixin
 
+__all__ = [
+    "tzical_from_str",
+    "tzical_from_io",
+    "Timezone_from_tzid",
+    "Timezone_from_tzinfo",
+    "TimezoneMeta",
+]
+
 
 def tzical_from_str(val: str, filter_unknown: bool = False) -> Tuple[str, datetime.tzinfo]:
     fake_file = StringIO()
@@ -86,10 +94,10 @@ class TimezoneMeta(ComponentMeta):
             available_tz.setdefault(timezone.tzid, timezone)
         return timezone
 
-    def populate_instance(self, instance: "Component", container: Container, context: Optional[ContextDict] = None):
+    def populate_instance(self, instance: Component, container: Container, context: Optional[ContextDict] = None):
         raise RuntimeError("can't populate an existing Timezone")
 
-    def serialize_toplevel(self, component: "Component", context: Optional[ContextDict] = None):
+    def serialize_toplevel(self, component: Component, context: Optional[ContextDict] = None):
         if not component.extra:
             raise ValueError("can't serialize Timezone object without extra data")
         return component.extra

@@ -1,4 +1,3 @@
-import functools
 import warnings
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, Iterator, List, MutableMapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, cast, overload
@@ -74,7 +73,7 @@ def get_timespan_if_calendar_entry(value):
     from ics.event import CalendarEntryAttrs  # noqa: F811 # pyflakes considers this a redef of the unused if TYPE_CHECKING import above
 
     if isinstance(value, CalendarEntryAttrs):
-        return value._timespan
+        return value.timespan
     else:
         return value
 
