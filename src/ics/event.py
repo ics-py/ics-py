@@ -19,7 +19,7 @@ STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
 @attr.s(eq=True, order=False)
 class CalendarEntryAttrs(Component):
-    timespan: Timespan = attr.ib(validator=instance_of(Timespan))
+    timespan: Timespan = attr.ib(validator=instance_of(Timespan), metadata={"ics_priority": -100})
     summary: Optional[str] = attr.ib(default=None)
     uid: str = attr.ib(factory=uid_gen)
 

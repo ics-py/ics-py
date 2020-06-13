@@ -21,7 +21,7 @@ class AttributeValueConverter(AttributeConverter):
         for value_type in self.value_types:
             converter = ValueConverter.BY_TYPE.get(value_type, None)
             if converter is None:
-                raise ValueError("can't convert %s with ValueConverter" % value_type)
+                raise ValueError("can't convert attribute %s type %s with ValueConverter" % (self.attribute, value_type))
             self.value_converters.append(converter)
 
     @property

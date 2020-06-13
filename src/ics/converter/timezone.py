@@ -45,6 +45,10 @@ def Timezone_from_tzid(tzid: str) -> Timezone:
     import ics_vtimezones
     tz_ics = ics_vtimezones.find_file_for_tzid(tzid)
     if not tz_ics:
+        olson_tzid = ics_vtimezones.windows_to_olson(tzid)
+        if olson_tzid:
+            tz_ics = ics_vtimezones.find_file_for_tzid(olson_tzid)
+    if not tz_ics:
         raise ValueError("no vTimezone.ics file found for %s" % tzid)
     ics_str = tz_ics.read_text()
 

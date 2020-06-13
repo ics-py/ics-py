@@ -86,7 +86,7 @@ class DatetimeConverterMixin(object):
                         import platform
                         import sys
                         raise ValueError("timezone %s is unknown on this system (%s on %s)" %
-                                         (found_tz, sys.version, platform.platform(terse=True)))
+                                         (param_tz, sys.version, platform.platform(terse=True)))
                     selected_tz = UnserializeableTimezone(param_tz, found_tz)
                 available_tz.setdefault(param_tz, selected_tz)
             return dt.replace(tzinfo=selected_tz)

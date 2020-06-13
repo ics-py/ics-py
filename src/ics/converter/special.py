@@ -1,12 +1,13 @@
 from typing import List
 
+from attr import Attribute
 from dateutil.rrule import rruleset
 
 from ics.alarm import *
 from ics.attendee import Attendee, Organizer, Person
 from ics.component import Component
 from ics.converter.base import AttributeConverter
-from ics.converter.component import MemberComponentConverter
+from ics.converter.component import ComponentMeta
 from ics.contentline import Container, ContentLine
 from ics.types import ContainerItem, ContextDict
 
@@ -72,20 +73,34 @@ AttributeConverter.BY_TYPE[Attendee] = PersonConverter
 AttributeConverter.BY_TYPE[Organizer] = PersonConverter
 
 
-class AlarmConverter(MemberComponentConverter):
+class AlarmMemberComponentConverter(AttributeConverter):
+    @property
+    def filter_ics_names(self) -> List[str]:
+        return [BaseAlarm.NAME]
+
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
-        # TODO handle trigger: Union[timedelta, datetime, None] before duration
         assert isinstance(item, Container)
         self._check_component(component, context)
-
-        from ics.alarm import get_type_from_action
         self.set_or_append_value(component, get_type_from_action(item).from_container(item, context))
         return True
 
+    def serialize(self, parent: Component, output: Container, context: ContextDict):
+        self._check_component(parent, context)
+        extras = self.get_extra_params(parent)
+        if extras:
+            raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
+        for value in self.get_value_list(parent):
+            output.append(value.to_container(context))
 
-AttributeConverter.BY_TYPE[BaseAlarm] = AlarmConverter
-AttributeConverter.BY_TYPE[AudioAlarm] = AlarmConverter
-AttributeConverter.BY_TYPE[CustomAlarm] = AlarmConverter
-AttributeConverter.BY_TYPE[DisplayAlarm] = AlarmConverter
-AttributeConverter.BY_TYPE[EmailAlarm] = AlarmConverter
-AttributeConverter.BY_TYPE[NoneAlarm] = AlarmConverter
+
+class AlarmMeta(ComponentMeta):
+    def __call__(self, attribute: Attribute):
+        return AlarmMemberComponentConverter(attribute)
+
+
+ComponentMeta.BY_TYPE[BaseAlarm] = AlarmMeta(BaseAlarm)
+ComponentMeta.BY_TYPE[AudioAlarm] = AlarmMeta(AudioAlarm)
+ComponentMeta.BY_TYPE[CustomAlarm] = AlarmMeta(CustomAlarm)
+ComponentMeta.BY_TYPE[DisplayAlarm] = AlarmMeta(DisplayAlarm)
+ComponentMeta.BY_TYPE[EmailAlarm] = AlarmMeta(EmailAlarm)
+ComponentMeta.BY_TYPE[NoneAlarm] = AlarmMeta(NoneAlarm)

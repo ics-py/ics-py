@@ -70,7 +70,7 @@ class CustomAlarm(BaseAlarm):
     A calendar event VALARM with custom ACTION.
     """
 
-    _action = attr.ib(default=None)
+    _action: str = attr.ib(default=None)
 
     @property
     def action(self):

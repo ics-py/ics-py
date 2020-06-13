@@ -36,7 +36,8 @@ class MemberComponentConverter(AttributeConverter):
         if extras:
             raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
         for value in self.get_value_list(parent):
-            output.append(self.meta.serialize_toplevel(value, context))
+            # don't force self.meta for serialization, but use the meta registered for the concrete type of value
+            output.append(value.to_container(context))
 
 
 @attr.s(frozen=True)
@@ -56,10 +57,8 @@ class ComponentMeta(object):
                 converter_lookup[name].append(converter)
         object.__setattr__(self, "converter_lookup", {k: tuple(vs) for k, vs in converter_lookup.items()})
 
-        AttributeConverter.BY_TYPE[self.component_type] = self
-
-    def find_converters(self) -> Iterable["AttributeConverter"]:
-        converters = cast(Iterable["AttributeConverter"], filter(bool, (
+    def find_converters(self) -> Iterable[AttributeConverter]:
+        converters = cast(Iterable[AttributeConverter], filter(bool, (
             AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type))))
         return sorted(converters, key=lambda c: c.priority)
 
@@ -71,7 +70,7 @@ class ComponentMeta(object):
         self.populate_instance(instance, container, context)
         return instance
 
-    def populate_instance(self, instance: "Component", container: Container, context: Optional[ContextDict] = None):
+    def populate_instance(self, instance: Component, container: Container, context: Optional[ContextDict] = None):
         if container.name != self.component_type.NAME:
             raise ValueError("container isn't an {}".format(self.component_type.NAME))
         check_is_instance("instance", instance, self.component_type)
@@ -83,7 +82,7 @@ class ComponentMeta(object):
     def _populate_attrs(self, instance: Component, container: Container, context: ContextDict):
         for line in container:
             consumed = False
-            for conv in self.converter_lookup[line.name]:
+            for conv in self.converter_lookup.get(line.name, []):
                 if conv.populate(instance, line, context):
                     consumed = True
             if not consumed:
@@ -127,7 +126,3 @@ class ComponentConverter(AttributeConverter):
             raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
         for value in self.get_value_list(parent):
             output.append(self.meta.serialize_toplevel(value, context))
-
-
-for ComponentClass in Component.SUBTYPES:
-    ComponentMeta.BY_TYPE[ComponentClass] = ComponentMeta(ComponentClass)

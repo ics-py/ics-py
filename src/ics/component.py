@@ -28,14 +28,20 @@ class Component(RuntimeAttrValidation):
 
     @classmethod
     def from_container(cls: Type[ComponentType], container: Container, context: Optional[ContextDict] = None) -> ComponentType:
+        from ics import initialize_converters
+        initialize_converters()
         from ics.converter.component import ComponentMeta
         return ComponentMeta.BY_TYPE[cls].load_instance(container, context)
 
     def populate(self, container: Container, context: Optional[ContextDict] = None):
+        from ics import initialize_converters
+        initialize_converters()
         from ics.converter.component import ComponentMeta
         ComponentMeta.BY_TYPE[type(self)].populate_instance(self, container, context)
 
     def to_container(self, context: Optional[ContextDict] = None) -> Container:
+        from ics import initialize_converters
+        initialize_converters()
         from ics.converter.component import ComponentMeta
         return ComponentMeta.BY_TYPE[type(self)].serialize_toplevel(self, context)
 

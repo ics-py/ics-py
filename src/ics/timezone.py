@@ -15,7 +15,7 @@ class Timezone(Component, datetime.tzinfo):
     NAME = "VTIMEZONE"
 
     tzid: str = attr.ib(metadata={"ics_ignore": True})
-    tzinfo_inst: datetime.tzinfo = attr.ib(metadata={"ics_ignore": True})
+    tzinfo_inst: datetime.tzinfo = attr.ib(metadata={"ics_ignore": True}, cmp=False, hash=False)
 
     @classmethod
     def from_tzid(cls, tzid: str) -> "Timezone":

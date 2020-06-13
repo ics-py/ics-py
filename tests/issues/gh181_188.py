@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import gettz
 
-from ics import Calendar, Container, Event
+from ics import Calendar, Event
+from ics.grammar import lines_to_container
 from ics.timezone import Timezone
 
 vevent = [
@@ -88,19 +89,19 @@ def test_issue_181_timezone_ignored():
     assert tzinfo1.tzname(begin1) == "CET"
     assert tzinfo1.utcoffset(begin1) == timedelta(hours=1)
     assert isinstance(tzinfo2, Timezone)
-    assert tzinfo2 == Timezone.from_container(Container("VTIMEZONE", fixture2_tz))
+    assert tzinfo2 == Timezone.from_container(lines_to_container(fixture2_tz)[0])
     assert tzinfo2.tzid == "W. Europe Standard Time"
     assert tzinfo2.tzname(begin2) == "MEZ"
     assert tzinfo2.utcoffset(begin2) == timedelta(hours=1)
     assert isinstance(tzinfo3, Timezone)
-    assert tzinfo3 == Timezone.from_container(Container("VTIMEZONE", fixture3_tz))
+    assert tzinfo3 == Timezone.from_container(lines_to_container(fixture3_tz)[0])
     assert tzinfo3.tzid == "Europe/Berlin"
     assert tzinfo3.tzname(begin3) == "MEZ"
     assert tzinfo3.utcoffset(begin3) == timedelta(hours=8)
 
 
 def test_issue_188_timezone_dropped():
-    assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid="Europe/Berlin") in Calendar(fixture1).serialize()
+    assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid=Timezone.from_tzid("Europe/Berlin").tzid) in Calendar(fixture1).serialize()
     assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid="W. Europe Standard Time") in Calendar(fixture2).serialize()
     assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid="Europe/Berlin") in Calendar(fixture3).serialize()
 
