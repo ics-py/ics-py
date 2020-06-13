@@ -148,6 +148,9 @@ class AttributeConverter(GenericConverter, abc.ABC):
         multi_value_type, value_type, value_types = extract_attr_type(attribute)
         if len(value_types) == 1:
             assert [value_type] == value_types
+            from ics.converter.component import ComponentMeta
+            if value_type in ComponentMeta.BY_TYPE:
+                return ComponentMeta.BY_TYPE[value_type](attribute)
             if value_type in AttributeConverter.BY_TYPE:
                 return AttributeConverter.BY_TYPE[value_type](attribute)
 

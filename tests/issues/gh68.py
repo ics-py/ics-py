@@ -1,7 +1,6 @@
-from dateutil.tz import gettz
-
 from ics import Event
 from ics.grammar import lines_to_container
+from ics.timezone import Timezone
 
 
 def test_issue_68_timezone_dropped():
@@ -11,5 +10,5 @@ def test_issue_68_timezone_dropped():
         "END:VEVENT"
     ])[0])
     tz = event.begin.tzinfo
-    assert tz == gettz("Europe/Berlin")
+    assert tz == Timezone.from_tzid("Europe/Berlin")
     assert tz.tzname(event.begin) == "CET"

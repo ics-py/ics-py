@@ -16,7 +16,10 @@ def __load():
     import json
     import importlib_resources  # type: ignore
     global PACKAGE_DIR, ZONEINFO_DIR, WINDOWS_ZONE_MAPPING_FILE, WINDOWS_ZONE_MAPPING
-    if PACKAGE_DIR: return
+    try:
+        if PACKAGE_DIR: return
+    except NameError:
+        pass
 
     PACKAGE_DIR = importlib_resources.files(__name__)
     ZONEINFO_DIR = PACKAGE_DIR.joinpath("zoneinfo")
