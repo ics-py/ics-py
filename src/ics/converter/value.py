@@ -1,14 +1,14 @@
-from typing import Any, List, TYPE_CHECKING, Tuple, cast
+from typing import Any, List, Tuple, cast
 
 import attr
 
+from ics.component import Component
 from ics.converter.base import AttributeConverter
 from ics.contentline import Container, ContentLine
 from ics.types import ContainerItem, ContextDict, ExtraParams, copy_extra_params
 from ics.valuetype.base import ValueConverter
 
-if TYPE_CHECKING:
-    from ics.component import Component
+__all__ = ["AttributeValueConverter"]
 
 
 @attr.s(frozen=True)
@@ -35,7 +35,7 @@ class AttributeValueConverter(AttributeConverter):
             name = self.attribute.name.upper().replace("_", "-").strip("-")
         return name
 
-    def __prepare_params(self, line: "ContentLine") -> Tuple[ExtraParams, ValueConverter]:
+    def __prepare_params(self, line: ContentLine) -> Tuple[ExtraParams, ValueConverter]:
         params = copy_extra_params(line.params)
         value_type = params.pop("VALUE", None)
         if value_type:
@@ -51,8 +51,9 @@ class AttributeValueConverter(AttributeConverter):
         return params, converter
 
     # TODO make storing/writing extra values/params configurably optional, but warn when information is lost
+    # TODO better handling of multi-type attributes, maybe try all available converters if no direct candidate was found / worked
 
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
         if self.is_multi_value:
@@ -76,7 +77,7 @@ class AttributeValueConverter(AttributeConverter):
             self.set_or_append_value(component, parsed)
         return True
 
-    def finalize(self, component: "Component", context: ContextDict):
+    def finalize(self, component: Component, context: ContextDict):
         self._check_component(component, context)
         if self.is_required and context[(self, "current_value_count")] < 1:
             raise ValueError("attribute %s is required but got no value" % self.ics_name)
@@ -91,7 +92,7 @@ class AttributeValueConverter(AttributeConverter):
         else:
             raise ValueError("can't convert %s with %s" % (value, self))
 
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container, context: ContextDict):
         if self.is_multi_value:
             self.__serialize_multi(component, output, context)
         else:
@@ -102,7 +103,7 @@ class AttributeValueConverter(AttributeConverter):
                 serialized = converter.serialize(value, params, context)
                 output.append(ContentLine(name=self.ics_name, params=params, value=serialized))
 
-    def __serialize_multi(self, component: "Component", output: "Container", context: ContextDict):
+    def __serialize_multi(self, component: Component, output: Container, context: ContextDict):
         extra_params = cast(List[ExtraParams], self.get_extra_params(component))
         values = self.get_value_list(component)
         if len(extra_params) != len(values):

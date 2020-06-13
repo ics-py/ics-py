@@ -10,16 +10,16 @@ from ics.attendee import Attendee, Organizer
 from ics.component import Component
 from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
+from ics.timezone import ensure_utc, now_in_utc
 from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, URL, get_timespan_if_calendar_entry
 from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, uid_gen, validate_not_none
-from ics.timezone import ensure_utc, now_in_utc
 
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
 
 @attr.s(eq=True, order=False)
 class CalendarEntryAttrs(Component):
-    _timespan: Timespan = attr.ib(validator=instance_of(Timespan))
+    timespan: Timespan = attr.ib(validator=instance_of(Timespan))
     summary: Optional[str] = attr.ib(default=None)
     uid: str = attr.ib(factory=uid_gen)
 
@@ -54,11 +54,11 @@ class CalendarEntryAttrs(Component):
             be set to a superior value.
         |  For all-day events, the time is truncated to midnight when set.
         """
-        return self._timespan.get_begin()
+        return self.timespan.get_begin()
 
     @begin.setter
     def begin(self, value: DatetimeLike):
-        self._timespan = self._timespan.replace(begin_time=ensure_datetime(value))
+        self.timespan = self.timespan.replace(begin_time=ensure_datetime(value))
 
     @property
     def end(self) -> Optional[datetime]:
@@ -76,11 +76,11 @@ class CalendarEntryAttrs(Component):
             rounded up to midnight the next day, including the full day.
             Note that rounding is different from :func:`make_all_day`.
         """
-        return self._timespan.get_effective_end()
+        return self.timespan.get_effective_end()
 
     @end.setter
     def end(self, value: DatetimeLike):
-        self._timespan = self._timespan.replace(end_time=ensure_datetime(value), duration=None)
+        self.timespan = self.timespan.replace(end_time=ensure_datetime(value), duration=None)
 
     @property
     def duration(self) -> Optional[timedelta]:
@@ -93,26 +93,26 @@ class CalendarEntryAttrs(Component):
             existing end time.
         |  Duration of an all-day event is rounded up to a full day.
         """
-        return self._timespan.get_effective_duration()
+        return self.timespan.get_effective_duration()
 
     @duration.setter
     def duration(self, value: timedelta):
-        self._timespan = self._timespan.replace(duration=ensure_timedelta(value), end_time=None)
+        self.timespan = self.timespan.replace(duration=ensure_timedelta(value), end_time=None)
 
     def convert_end(self, representation):
-        self._timespan = self._timespan.convert_end(representation)
+        self.timespan = self.timespan.convert_end(representation)
 
     @property
     def end_representation(self) -> Optional[str]:
-        return self._timespan.get_end_representation()
+        return self.timespan.get_end_representation()
 
     @property
     def has_explicit_end(self) -> bool:
-        return self._timespan.has_explicit_end()
+        return self.timespan.has_explicit_end()
 
     @property
     def all_day(self) -> bool:
-        return self._timespan.is_all_day()
+        return self.timespan.is_all_day()
 
     def make_all_day(self):
         """Transforms self to an all-day event or a time-based event.
@@ -126,30 +126,26 @@ class CalendarEntryAttrs(Component):
         |  If neither duration not end are set, a duration of one day is implied.
         |  If self is already all-day, it is unchanged.
         """
-        self._timespan = self._timespan.make_all_day()
+        self.timespan = self.timespan.make_all_day()
 
     def unset_all_day(self):
-        self._timespan = self._timespan.replace(precision="seconds")
+        self.timespan = self.timespan.replace(precision="seconds")
 
     @property
     def floating(self) -> bool:
-        return self._timespan.is_floating()
+        return self.timespan.is_floating()
 
     def replace_timezone(self, tzinfo):
-        self._timespan = self._timespan.replace_timezone(tzinfo)
+        self.timespan = self.timespan.replace_timezone(tzinfo)
 
     def convert_timezone(self, tzinfo):
-        self._timespan = self._timespan.convert_timezone(tzinfo)
-
-    @property
-    def timespan(self) -> Timespan:
-        return self._timespan
+        self.timespan = self.timespan.convert_timezone(tzinfo)
 
     def __str__(self) -> str:
         name = [self.__class__.__name__]
         if self.summary:
             name.append("'%s'" % self.summary)
-        prefix, _, suffix = self._timespan.get_str_segments()
+        prefix, _, suffix = self.timespan.get_str_segments()
         return "<%s>" % (" ".join(prefix + name + suffix))
 
     ####################################################################################################################
@@ -186,19 +182,19 @@ class CalendarEntryAttrs(Component):
             return NotImplemented
 
     def starts_within(self, second: EventOrTimespan) -> bool:
-        return self._timespan.starts_within(get_timespan_if_calendar_entry(second))
+        return self.timespan.starts_within(get_timespan_if_calendar_entry(second))
 
     def ends_within(self, second: EventOrTimespan) -> bool:
-        return self._timespan.ends_within(get_timespan_if_calendar_entry(second))
+        return self.timespan.ends_within(get_timespan_if_calendar_entry(second))
 
     def intersects(self, second: EventOrTimespan) -> bool:
-        return self._timespan.intersects(get_timespan_if_calendar_entry(second))
+        return self.timespan.intersects(get_timespan_if_calendar_entry(second))
 
     def includes(self, second: EventOrTimespanOrInstant) -> bool:
-        return self._timespan.includes(get_timespan_if_calendar_entry(second))
+        return self.timespan.includes(get_timespan_if_calendar_entry(second))
 
     def is_included_in(self, second: EventOrTimespan) -> bool:
-        return self._timespan.is_included_in(get_timespan_if_calendar_entry(second))
+        return self.timespan.is_included_in(get_timespan_if_calendar_entry(second))
 
 
 @attr.s(eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
@@ -231,7 +227,7 @@ class Event(EventAttrs):
     """
 
     NAME = "VEVENT"
-    _timespan: EventTimespan = attr.ib(validator=instance_of(EventTimespan))
+    timespan: EventTimespan = attr.ib(validator=instance_of(EventTimespan))
 
     def __init__(
             self,

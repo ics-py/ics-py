@@ -62,7 +62,7 @@ class Normalization(object):
             return value
 
 
-# using datetime.min might lead to problems when doing timezone conversions / comparisions (e.g. by substracting an 1 hour offset)
+# using datetime.min might lead to problems when doing timezone conversions / comparisions (e.g. by subtracting an 1 hour offset)
 CMP_DATETIME_NONE_DEFAULT = datetime(1900, 1, 1, 0, 0)
 CMP_NORMALIZATION = Normalization(normalize_floating=True, normalize_with_tz=False, replacement=tzlocal)
 

@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
-from typing import List, Union
+from typing import List, Union, Type
 
 import attr
 from attr.converters import optional as c_optional
@@ -11,7 +11,7 @@ from ics.component import Component
 from ics.types import URL
 from ics.utils import call_validate_on_inst, check_is_instance, ensure_timedelta
 
-__all__ = ["BaseAlarm", "AudioAlarm", "CustomAlarm", "DisplayAlarm", "EmailAlarm", "NoneAlarm"]
+__all__ = ["BaseAlarm", "AudioAlarm", "CustomAlarm", "DisplayAlarm", "EmailAlarm", "NoneAlarm", "get_type_from_action"]
 
 
 @attr.s
@@ -120,7 +120,7 @@ class NoneAlarm(BaseAlarm):
         return "NONE"
 
 
-def get_type_from_action(action_type):
+def get_type_from_action(action_type) -> Type[BaseAlarm]:
     if action_type == "DISPLAY":
         return DisplayAlarm
     elif action_type == "AUDIO":

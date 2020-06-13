@@ -6,6 +6,8 @@ from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
 
 T = TypeVar('T')
 
+__all__ = ["ValueConverter"]
+
 
 class ValueConverter(Generic[T], abc.ABC):
     BY_NAME: Dict[str, "ValueConverter"] = {}
