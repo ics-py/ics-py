@@ -73,7 +73,7 @@ class ComponentMeta(object):
     def populate_instance(self, instance: Component, container: Container, context: Optional[ContextDict] = None):
         if container.name != self.component_type.NAME:
             raise ValueError("container isn't an {}".format(self.component_type.NAME))
-        check_is_instance("instance", instance, self.component_type)
+        check_is_instance("instance", instance, (self.component_type, MutablePseudoComponent))
         if not context:
             context = ContextDict(defaultdict(lambda: None))
 
@@ -126,3 +126,67 @@ class ComponentConverter(AttributeConverter):
             raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
         for value in self.get_value_list(parent):
             output.append(self.meta.serialize_toplevel(value, context))
+
+
+class MutablePseudoComponent(object):
+    def __init__(self, comp: Type[Component]):
+        object.__setattr__(self, "NAME", comp.NAME)
+        object.__setattr__(self, "extra", Container(comp.NAME))
+        object.__setattr__(self, "extra_params", {})
+        data = {}
+        for field in attr.fields(comp):
+            if not field.init:
+                continue
+            elif isinstance(field.default, attr.Factory):  # type: ignore[arg-type]
+                assert field.default is not None
+                if field.default.takes_self:
+                    data[field.name] = field.default.factory(self)
+                else:
+                    data[field.name] = field.default.factory()
+            elif field.default != attr.NOTHING:
+                data[field.name] = field.default
+        object.__setattr__(self, "_MutablePseudoComponent__data", data)
+
+    def __getattr__(self, name: str) -> Any:
+        return self.MutablePseudoComponent_data[name]
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        assert name not in ("NAME", "extra", "extra_params")
+        self.MutablePseudoComponent_data[name] = value
+
+    def __delattr__(self, name: str) -> None:
+        del self.MutablePseudoComponent_data[name]
+
+    @staticmethod
+    def from_container(*args, **kwargs):
+        raise NotImplementedError()
+
+    @staticmethod
+    def populate(*args, **kwargs):
+        raise NotImplementedError()
+
+    @staticmethod
+    def to_container(*args, **kwargs):
+        raise NotImplementedError()
+
+    @staticmethod
+    def serialize(*args, **kwargs):
+        raise NotImplementedError()
+
+    @staticmethod
+    def strip_extras(*args, **kwargs):
+        raise NotImplementedError()
+
+    @staticmethod
+    def clone(*args, **kwargs):
+        raise NotImplementedError()
+
+
+class ImmutableComponentMeta(ComponentMeta):
+    def load_instance(self, container: Container, context: Optional[ContextDict] = None):
+        pseudo_instance = cast(Component, MutablePseudoComponent(self.component_type))
+        self.populate_instance(pseudo_instance, container, context)
+        instance = self.component_type(**{k.lstrip("_"): v for k, v in pseudo_instance.MutablePseudoComponent_data.items()})  # type: ignore
+        instance.extra.extend(pseudo_instance.extra)
+        instance.extra_params.update(pseudo_instance.extra_params)
+        return instance
