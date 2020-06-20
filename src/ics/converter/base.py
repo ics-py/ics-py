@@ -41,14 +41,17 @@ class GenericConverter(abc.ABC):
         :param item:
         :return: True, if the line was consumed and shouldn't be stored as extra (but might still be passed on)
         """
-        ...
+        raise NotImplementedError()
 
-    def finalize(self, component: Component, context: ContextDict):
-        ...
+    def post_populate(self, component: Component, context: ContextDict):
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def serialize(self, component: Component, output: Container, context: ContextDict):
-        ...
+        raise NotImplementedError()
+
+    def post_serialize(self, component: Component, output: Container, context: ContextDict):
+        raise NotImplementedError()
 
 
 @attr.s(frozen=True)
@@ -77,18 +80,6 @@ class AttributeConverter(GenericConverter, abc.ABC):
                 v.is_required = True
         for key, value in v.__dict__.items():  # all variables created in __attrs_post_init__.v will be set on self
             object.__setattr__(self, key, value)
-
-    def _check_component(self, component: Component, context: ContextDict):
-        if context[(self, "current_component")] is None:
-            context[(self, "current_component")] = component
-            context[(self, "current_value_count")] = 0
-        else:
-            if context[(self, "current_component")] is not component:
-                raise ValueError("must call finalize before call to populate with another component")
-
-    def finalize(self, component: Component, context: ContextDict):
-        context[(self, "current_component")] = None
-        context[(self, "current_value_count")] = 0
 
     def set_or_append_value(self, component: Component, value: Any):
         if self.multi_value_type is not None:

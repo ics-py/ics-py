@@ -55,7 +55,13 @@ class AttributeValueConverter(AttributeConverter):
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
-        self._check_component(component, context)
+
+        if context[(self, "current_component")] is None:
+            context[(self, "current_component")] = component
+            context[(self, "current_value_count")] = 0
+        else:
+            assert context[(self, "current_component")] is component
+
         if self.is_multi_value:
             params, converter = self.__prepare_params(item)
             for value in converter.split_value_list(item.value):
@@ -77,11 +83,11 @@ class AttributeValueConverter(AttributeConverter):
             self.set_or_append_value(component, parsed)
         return True
 
-    def finalize(self, component: Component, context: ContextDict):
-        self._check_component(component, context)
-        if self.is_required and context[(self, "current_value_count")] < 1:
+    def post_populate(self, component: Component, context: ContextDict):
+        if self.is_required and not context[(self, "current_value_count")]:
             raise ValueError("attribute %s is required but got no value" % self.ics_name)
-        super(AttributeValueConverter, self).finalize(component, context)
+        context[(self, "current_component")] = None
+        context[(self, "current_value_count")] = 0
 
     def __find_value_converter(self, params: ExtraParams, value: Any) -> ValueConverter:
         for nr, converter in enumerate(self.value_converters):

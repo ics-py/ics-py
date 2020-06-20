@@ -31,8 +31,6 @@ class TimespanConverter(AttributeConverter):
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
-        self._check_component(component, context)
-
         seen_items = context.setdefault(CONTEXT_ITEMS, set())
         if item.name in seen_items:
             raise ValueError("duplicate value for %s in %s" % (item.name, item))
@@ -76,8 +74,7 @@ class TimespanConverter(AttributeConverter):
 
         return True
 
-    def finalize(self, component: Component, context: ContextDict):
-        self._check_component(component, context)
+    def post_populate(self, component: Component, context: ContextDict):
         # missing values will be reported by the Timespan validator
         timespan_type = getattr(component, "_TIMESPAN_TYPE", self.value_type)
         timespan = timespan_type(
@@ -87,7 +84,6 @@ class TimespanConverter(AttributeConverter):
             raise ValueError("expected to get %s value, but got %s instead"
                              % (timespan._end_name(), context[CONTEXT_END_NAME]))
         self.set_or_append_value(component, timespan)
-        super(TimespanConverter, self).finalize(component, context)
         # we need to clear all values, otherwise they might not get overwritten by the next parsed Timespan
         for key in CONTEXT_KEYS:
             context.pop(key, None)
@@ -122,6 +118,9 @@ class TimespanConverter(AttributeConverter):
             params = copy_extra_params(cast(ExtraParams, self.get_extra_params(component, "duration")))
             dur_value = DurationConverter.INST.serialize(value.get_effective_duration(), params, context)
             output.append(ContentLine(name="DURATION", params=params, value=dur_value))
+
+    def post_serialize(self, component: Component, output: Container, context: ContextDict):
+        context.pop("DTSTART", None)
 
 
 AttributeConverter.BY_TYPE[Timespan] = TimespanConverter

@@ -32,17 +32,14 @@ class RecurrenceConverter(AttributeConverter):
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
-        self._check_component(component, context)
         key = (self, "lines")
-        lines = context.get(key, None)
+        lines = context[key]
         if lines is None:
             lines = context[key] = []
         lines.append(item)
         return True
 
-    def finalize(self, component: Component, context: ContextDict):
-        self._check_component(component, context)
-        super(RecurrenceConverter, self).finalize(component, context)
+    def post_populate(self, component: Component, context: ContextDict):
         lines_str = "".join(line.serialize(newline=True) for line in context.pop((self, "lines")))
         # TODO only feed dateutil the params it likes, add the rest as extra
         tzinfos = context.get(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
@@ -57,7 +54,7 @@ class RecurrenceConverter(AttributeConverter):
             assert isinstance(value, dateutil.rrule.rruleset)
         for rrule in itertools.chain(value._rrule, value._exrule):
             if rrule._dtstart is None: continue
-            dtstart = context.get("DTSTART", None)
+            dtstart = context["DTSTART"]
             if dtstart:
                 if dtstart != rrule._dtstart:
                     raise ValueError("differing DTSTART values")
@@ -77,6 +74,9 @@ class RecurrenceConverter(AttributeConverter):
         for exdate in more_itertools.unique_justseen(sorted(value._exdate)):
             output.append(ContentLine(name="EXDATE", value=DatetimeConverter.INST.serialize(exdate)))
 
+    def post_serialize(self, component: Component, output: Container, context: ContextDict):
+        context.pop("DTSTART", None)
+
 
 AttributeConverter.BY_TYPE[dateutil.rrule.rruleset] = RecurrenceConverter
 
@@ -90,7 +90,6 @@ class PersonConverter(AttributeConverter):
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
-        self._check_component(component, context)
         return False
 
     def serialize(self, component: Component, output: Container, context: ContextDict):
@@ -109,12 +108,10 @@ class AlarmMemberComponentConverter(AttributeConverter):
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, Container)
-        self._check_component(component, context)
         self.set_or_append_value(component, get_type_from_action(item).from_container(item, context))
         return True
 
     def serialize(self, parent: Component, output: Container, context: ContextDict):
-        self._check_component(parent, context)
         extras = self.get_extra_params(parent)
         if extras:
             raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))

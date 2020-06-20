@@ -94,7 +94,6 @@ class TimezoneObservanceMemberMeta(AttributeConverter):
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, Container)
-        self._check_component(component, context)
         if item.name.upper() == TimezoneStandardObservance.NAME:
             self.set_or_append_value(component, TimezoneStandardObservance.from_container(item, context))
         elif item.name.upper() == TimezoneDaylightObservance.NAME:

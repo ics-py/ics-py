@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, Iterable, List, Optional, Tuple, Type, cast, ClassVar
+from typing import Dict, Iterable, List, Optional, Tuple, Type, cast, ClassVar, Any, Callable
 
 import attr
 from attr import Attribute
@@ -26,19 +26,16 @@ class MemberComponentConverter(AttributeConverter):
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, Container)
-        self._check_component(component, context)
         self.set_or_append_value(component, self.meta.load_instance(item, context))
         return True
 
     def serialize(self, parent: Component, output: Container, context: ContextDict):
-        self._check_component(parent, context)
         extras = self.get_extra_params(parent)
         if extras:
             raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
         for value in self.get_value_list(parent):
             # don't force self.meta for serialization, but use the meta registered for the concrete type of value
             output.append(value.to_container(context))
-        context.pop("DTSTART", None)  # TODO maybe better use a finalize equivalent for serialize?
 
 
 @attr.s(frozen=True)
@@ -49,14 +46,24 @@ class ComponentMeta(object):
 
     converters: Tuple[GenericConverter, ...]
     converter_lookup: Dict[str, Tuple[GenericConverter]]
+    post_populate_hooks: Tuple[Callable]
+    post_serialize_hooks: Tuple[Callable]
 
     def __attrs_post_init__(self):
         object.__setattr__(self, "converters", tuple(self.find_converters()))
         converter_lookup = defaultdict(list)
+        post_populate_hooks = []
+        post_serialize_hooks = []
         for converter in self.converters:
             for name in converter.filter_ics_names:
                 converter_lookup[name].append(converter)
+            if GenericConverter.post_populate not in (converter.post_populate, getattr(converter.post_populate, "__func__", None)):
+                post_populate_hooks.append(converter.post_populate)
+            if GenericConverter.post_serialize not in (converter.post_serialize, getattr(converter.post_serialize, "__func__", None)):
+                post_serialize_hooks.append(converter.post_serialize)
         object.__setattr__(self, "converter_lookup", {k: tuple(vs) for k, vs in converter_lookup.items()})
+        object.__setattr__(self, "post_populate_hooks", tuple(post_populate_hooks))
+        object.__setattr__(self, "post_serialize_hooks", tuple(post_serialize_hooks))
 
     def find_converters(self) -> Iterable[AttributeConverter]:
         converters = cast(Iterable[AttributeConverter], filter(bool, (
@@ -89,8 +96,8 @@ class ComponentMeta(object):
             if not consumed:
                 instance.extra.append(line)
 
-        for conv in self.converters:
-            conv.finalize(instance, context)
+        for hook in self.post_populate_hooks:
+            hook(instance, context)
 
     def serialize_toplevel(self, component: Component, context: Optional[ContextDict] = None):
         check_is_instance("instance", component, self.component_type)
@@ -104,7 +111,8 @@ class ComponentMeta(object):
         for conv in self.converters:
             conv.serialize(component, container, context)
         container.extend(component.extra)
-        return container
+        for hook in self.post_serialize_hooks:
+            hook(component, container, context)
 
 
 @attr.s(frozen=True)
