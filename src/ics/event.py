@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union, ClassVar, Type
 
 import attr
 from attr.converters import optional as c_optional
@@ -19,7 +19,7 @@ STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
 @attr.s(eq=True, order=False)
 class CalendarEntryAttrs(Component):
-    timespan: Timespan = attr.ib(validator=instance_of(Timespan), metadata={"ics_priority": -100})
+    timespan: Timespan = attr.ib(metadata={"ics_priority": -100})
     summary: Optional[str] = attr.ib(default=None)
     uid: str = attr.ib(factory=uid_gen)
 
@@ -35,12 +35,19 @@ class CalendarEntryAttrs(Component):
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
     attach: List[Union[URL, bytes]] = attr.ib(factory=list, converter=list)
 
+    _TIMESPAN_TYPE: ClassVar[Type[Timespan]] = Timespan
+
     def __init_subclass__(cls):
         super().__init_subclass__()
         for cmp in ("__lt__", "__gt__", "__le__", "__ge__"):
             child_cmp, parent_cmp = getattr(cls, cmp), getattr(CalendarEntryAttrs, cmp)
             if child_cmp != parent_cmp:
                 raise TypeError("%s may not overwrite %s" % (child_cmp, parent_cmp))
+
+    @timespan.validator
+    def validate_timespan(self, attr, value):
+        check_is_instance(attr, value, self._TIMESPAN_TYPE)
+        value.validate()
 
     ####################################################################################################################
 
@@ -227,7 +234,7 @@ class Event(EventAttrs):
     """
 
     NAME = "VEVENT"
-    timespan: EventTimespan = attr.ib(validator=instance_of(EventTimespan))
+    _TIMESPAN_TYPE: ClassVar[Type[Timespan]] = EventTimespan
 
     def __init__(
             self,

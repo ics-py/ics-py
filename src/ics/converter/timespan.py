@@ -79,7 +79,8 @@ class TimespanConverter(AttributeConverter):
     def finalize(self, component: Component, context: ContextDict):
         self._check_component(component, context)
         # missing values will be reported by the Timespan validator
-        timespan = self.value_type(
+        timespan_type = getattr(component, "_TIMESPAN_TYPE", self.value_type)
+        timespan = timespan_type(
             ensure_datetime(context[CONTEXT_BEGIN_TIME]), ensure_datetime(context[CONTEXT_END_TIME]),
             context[CONTEXT_DURATION], context[CONTEXT_PRECISION])
         if context[CONTEXT_END_NAME] and context[CONTEXT_END_NAME] != timespan._end_name():
