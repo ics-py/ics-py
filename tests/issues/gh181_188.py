@@ -105,8 +105,26 @@ def test_issue_188_timezone_dropped():
     assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid="W. Europe Standard Time") in Calendar(fixture2).serialize()
     assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid="Europe/Berlin") in Calendar(fixture3).serialize()
 
-    event = Event(begin=datetime(2014, 1, 1, 0, 0, 0, tzinfo=gettz("US/Pacific")))
-    ser = Calendar(events=[event]).serialize()
-    assert "DTSTART:20140101T000000Z" not in ser
-    assert "DTSTART;TZID=US/Pacific:20140101T000000" in ser
-    assert Calendar(ser).events[0] == event
+    pacific = Timezone.from_tzid("US/Pacific")
+    assert pacific.tzid.endswith("America/Los_Angeles")
+
+    event1 = Event(begin=datetime(2014, 1, 1, 0, 0, 0, tzinfo=gettz("US/Pacific")))
+    event1.dtstamp = event1.dtstamp.replace(microsecond=0)
+    ser1 = Calendar(events=[event1]).serialize()
+    assert "DTSTART:20140101T000000Z" not in ser1
+    assert "DTSTART;TZID=%s:20140101T000000" % pacific.tzid in ser1
+
+    event2 = event1.clone()
+    event2.begin = datetime(2014, 1, 1, 0, 0, 0, tzinfo=pacific)
+    ser2 = Calendar(events=[event1]).serialize()
+    assert "DTSTART:20140101T000000Z" not in ser2
+    assert "DTSTART;TZID=%s:20140101T000000" % pacific.tzid in ser2
+
+    assert event1 == event2
+    assert event1.begin == event2.begin
+    assert event1.begin.tzinfo != event2.begin.tzinfo
+    assert ser1 == ser2
+    deser1 = Calendar(ser1).events[0]
+    deser2 = Calendar(ser2).events[0]
+    assert deser1 == deser2
+    assert deser1 == event2

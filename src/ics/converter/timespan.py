@@ -102,6 +102,10 @@ class TimespanConverter(AttributeConverter):
             dt_conv = DatetimeConverter.INST
 
         if value.get_begin():
+            # prevent rrule serializer from adding its own DTSTART value
+            assert "DTSTART" not in context
+            context["DTSTART"] = value.get_begin()
+
             params = copy_extra_params(cast(ExtraParams, self.get_extra_params(component, "begin")))
             params.update(value_type)
             dt_value = dt_conv.serialize(value.get_begin(), params, context)

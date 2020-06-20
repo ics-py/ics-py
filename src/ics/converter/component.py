@@ -38,6 +38,7 @@ class MemberComponentConverter(AttributeConverter):
         for value in self.get_value_list(parent):
             # don't force self.meta for serialization, but use the meta registered for the concrete type of value
             output.append(value.to_container(context))
+        context.pop("DTSTART", None)  # TODO maybe better use a finalize equivalent for serialize?
 
 
 @attr.s(frozen=True)
