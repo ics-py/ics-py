@@ -3,13 +3,13 @@
 # bug confuses the files
 
 from datetime import datetime
-from typing import Optional
+from typing import Optional, ClassVar, Type
 
 import attr
-from attr.validators import in_, instance_of, optional as v_optional
+from attr.validators import in_, optional as v_optional
 
 from ics.event import CalendarEntryAttrs
-from ics.timespan import TodoTimespan
+from ics.timespan import TodoTimespan, Timespan
 from ics.types import DatetimeLike, TimedeltaLike
 from ics.utils import ensure_datetime, ensure_timedelta
 
@@ -31,7 +31,7 @@ class Todo(TodoAttrs):
     or only start or due time.
     """
     NAME = "VTODO"
-    timespan: TodoTimespan = attr.ib(validator=instance_of(TodoTimespan))
+    _TIMESPAN_TYPE: ClassVar[Type[Timespan]] = TodoTimespan
 
     def __init__(
             self,
