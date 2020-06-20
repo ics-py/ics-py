@@ -40,6 +40,16 @@ ContainerItem = Union["ContentLine", "Container"]
 ContainerList = List[ContainerItem]
 URL = ParseResult
 
+
+class UTCOffsetMeta(type):
+    def __instancecheck__(cls, instance):
+        return isinstance(instance, timedelta)
+
+
+class UTCOffset(timedelta, metaclass=UTCOffsetMeta):
+    pass
+
+
 DatetimeLike = Union[Tuple, Dict, datetime, date]
 OptionalDatetimeLike = Union[Tuple, Dict, datetime, date, None]
 TimedeltaLike = Union[Tuple, Dict, timedelta]

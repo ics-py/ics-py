@@ -1,24 +1,20 @@
-import abc
 import re
 import warnings
-from datetime import date, datetime, time, timedelta, timezone as UTCOffset
-from typing import Generic, List, Optional, Type, cast
+from datetime import date, datetime, time, timedelta
+from typing import List, Optional, Type, cast
 
-from dateutil.tz import UTC as dateutil_tzutc, gettz, tzoffset as Dateutil_UTCOffset
+from dateutil.tz import UTC as dateutil_tzutc, gettz
 
-from ics.converter.timezone_utils import UnserializeableTimezone
 from ics.timespan import Timespan
 from ics.timezone import Timezone, is_utc
-from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, copy_extra_params
-from ics.valuetype.base import T, ValueConverter
+from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, copy_extra_params, UTCOffset
+from ics.valuetype.base import ValueConverter
 
 __all__ = [
     "DatetimeConverter",
     "DateConverter",
     "TimeConverter",
-    "BaseUTCOffsetConverter",
-    "BuiltinUTCOffsetConverter",
-    "DateutilUTCOffsetConverter",
+    "UTCOffsetConverter",
     "DurationConverter",
     "PeriodConverter",
 ]
@@ -155,10 +151,14 @@ class TimeConverter(DatetimeConverterMixin, ValueConverter[time]):
         return self._parse_dt(value, params, context).timetz()
 
 
-class BaseUTCOffsetConverter(ValueConverter[T], Generic[T], abc.ABC):
+class UTCOffsetConverter(ValueConverter[UTCOffset]):
     @property
     def ics_type(self) -> str:
         return "UTC-OFFSET"
+
+    @property
+    def python_type(self) -> Type[UTCOffset]:
+        return UTCOffset
 
     def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> UTCOffset:
         match = re.fullmatch(r"(?P<sign>\+|-|)(?P<hours>[0-9]{2})(?P<minutes>[0-9]{2})(?P<seconds>[0-9]{2})?", value)
@@ -168,14 +168,15 @@ class BaseUTCOffsetConverter(ValueConverter[T], Generic[T], abc.ABC):
         sign = groups.pop("sign")
         td = timedelta(**{k: int(v) for k, v in groups.items() if v})
         if sign == "-":
-            td *= -1
-        return self.python_type(name=value, offset=td)
+            return cast(UTCOffset, -td)
+        else:
+            return cast(UTCOffset, td)
 
     def serialize(self, value: UTCOffset, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
-        offset = value.utcoffset(None)
-        assert offset is not None
-        seconds = offset.seconds
+        assert value is not None
+        seconds = value.total_seconds()
         if seconds < 0:
+            seconds *= -1
             res = "-"
         else:
             res = "+"
@@ -193,18 +194,6 @@ class BaseUTCOffsetConverter(ValueConverter[T], Generic[T], abc.ABC):
             res += '%02d' % seconds
 
         return res
-
-
-class BuiltinUTCOffsetConverter(BaseUTCOffsetConverter[UTCOffset]):
-    @property
-    def python_type(self) -> Type[UTCOffset]:
-        return UTCOffset
-
-
-class DateutilUTCOffsetConverter(BaseUTCOffsetConverter[Dateutil_UTCOffset]):
-    @property
-    def python_type(self) -> Type[Dateutil_UTCOffset]:
-        return Dateutil_UTCOffset
 
 
 class DurationConverter(ValueConverter[timedelta]):
