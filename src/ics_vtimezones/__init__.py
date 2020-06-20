@@ -1,15 +1,19 @@
 import warnings
 from os import PathLike
 from pathlib import Path
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, Optional, Tuple
 
 __all__ = ["get_zoneinfo_dir", "get_windows_zone_mapping", "windows_to_olson", "is_vtimezone_ics_file",
            "get_vtimezone_files", "get_tzid_from_path", "find_file_for_tzid"]
+
+import dateutil.tz
 
 PACKAGE_DIR: Path
 ZONEINFO_DIR: Path
 WINDOWS_ZONE_MAPPING_FILE: Path
 WINDOWS_ZONE_MAPPING: Dict[str, str]
+
+PREFIXES: Tuple[str] = ("", *dateutil.tz.TZPATHS)  # type: ignore[attr-defined,assignment]
 
 
 def __load():
@@ -69,11 +73,16 @@ def get_tzid_from_path(file: Path, root_dir: Optional[Path] = None) -> str:
 
 
 def find_file_for_tzid(tzid: str, root_dir: Optional[Path] = None) -> Optional[Path]:
-    file = __maybe_zoneinfo_dir(root_dir).joinpath(tzid + ".ics")
-    if is_vtimezone_ics_file(file):
-        return file
-    else:
-        return None
+    for prefix in PREFIXES:
+        tzid_stripped = tzid
+        if prefix and tzid_stripped.startswith(prefix):
+            tzid_stripped = tzid_stripped[len(prefix):]
+        tzid_stripped = tzid_stripped.lstrip("/")
+        file = __maybe_zoneinfo_dir(root_dir).joinpath(tzid_stripped + ".ics")
+        if is_vtimezone_ics_file(file):
+            return file
+
+    return None
 
 
 def find_file_for_tzfile_path(file_path: PathLike, root_dir: Optional[Path] = None) -> Optional[Path]:

@@ -1,46 +1,20 @@
 import datetime
-from typing import Optional, overload
+import functools
+from typing import Optional, overload, List, ClassVar, cast
 
 import attr
 import dateutil
+import dateutil.rrule
 import dateutil.tz
+from attr.validators import instance_of
+from dateutil.tz._common import _tzinfo
 
 from ics.component import Component
-from ics.types import ContextDict, DatetimeLike
-from ics.utils import check_is_instance, ensure_datetime
+from ics.types import ContextDict, DatetimeLike, URL, UTCOffset
+from ics.utils import check_is_instance, ensure_datetime, TIMEDELTA_ZERO
 
-
-@attr.s(frozen=True)
-class Timezone(Component, datetime.tzinfo):
-    NAME = "VTIMEZONE"
-
-    tzid: str = attr.ib(metadata={"ics_ignore": True})
-    tzinfo_inst: datetime.tzinfo = attr.ib(metadata={"ics_ignore": True}, cmp=False, hash=False)
-
-    @classmethod
-    def from_tzid(cls, tzid: str) -> "Timezone":
-        from ics.converter.timezone import Timezone_from_tzid
-        return Timezone_from_tzid(tzid)
-
-    @classmethod
-    def from_tzinfo(cls, tzinfo: datetime.tzinfo, context: ContextDict) -> "Timezone":
-        from ics.converter.timezone import Timezone_from_tzinfo
-        return Timezone_from_tzinfo(tzinfo, context)
-
-    def tzname(self, dt: Optional[datetime.datetime]) -> Optional[str]:
-        return self.tzinfo_inst.tzname(dt.replace(tzinfo=self.tzinfo_inst))
-
-    def utcoffset(self, dt: Optional[datetime.datetime]) -> Optional[datetime.timedelta]:
-        return self.tzinfo_inst.utcoffset(dt.replace(tzinfo=self.tzinfo_inst))
-
-    def dst(self, dt: Optional[datetime.datetime]) -> Optional[datetime.timedelta]:
-        return self.tzinfo_inst.dst(dt.replace(tzinfo=self.tzinfo_inst))
-
-    def fromutc(self, dt: datetime.datetime) -> datetime.datetime:
-        return self.tzinfo_inst.fromutc(dt.replace(tzinfo=self.tzinfo_inst))
-
-
-UTC = Timezone("UTC", dateutil.tz.UTC)
+__all__ = ["ensure_utc", "now_in_utc", "is_utc", "validate_utc", "TimezoneObservance", "TimezoneStandardObservance",
+           "TimezoneDaylightObservance", "Timezone", "RRULE_EPOCH_START", "UTC"]
 
 
 @overload
@@ -82,9 +56,9 @@ def is_utc(value):
         return True
     if isinstance(tz, dateutil.tz.tzutc) or type(tz).__qualname__ == "pytz.UTC":
         return True
-    if isinstance(tz, Timezone) and tz.tzid.upper() == "UTC":
+    if isinstance(tz, Timezone) and tz.tzid.upper() in ["UTC", "ETC/UTC"]:
         return True
-    if str(tz).upper() == "UTC":
+    if str(tz).upper() in ["UTC", "ETC/UTC"]:
         return True
 
     return False
@@ -98,3 +72,116 @@ def validate_utc(inst, attr, value):
                 name=attr.name, value=value, tzinfo=value.tzinfo
             )
         )
+
+
+def rrule_to_rruleset(val):
+    if isinstance(val, dateutil.rrule.rrule):
+        rruleset = dateutil.rrule.rruleset()
+        rruleset.rrule(val)
+        return rruleset
+    else:
+        return val
+
+
+@attr.s(slots=True, frozen=True)
+class TimezoneObservance(Component):
+    tzoffsetfrom: UTCOffset = attr.ib()
+    tzoffsetto: UTCOffset = attr.ib()
+    rrule: dateutil.rrule.rruleset = attr.ib(converter=rrule_to_rruleset, validator=instance_of(dateutil.rrule.rruleset))  # type: ignore[misc]
+
+    tzname: Optional[str] = attr.ib(default=None)
+    comment: Optional[str] = attr.ib(default=None)
+
+    is_dst: ClassVar[bool] = False
+
+    @property
+    def tzoffsetdiff(self) -> datetime.timedelta:
+        return self.tzoffsetto - self.tzoffsetfrom
+
+
+class TimezoneStandardObservance(TimezoneObservance):
+    NAME = "STANDARD"
+
+
+class TimezoneDaylightObservance(TimezoneObservance):
+    NAME = "DAYLIGHT"
+
+    is_dst: ClassVar[bool] = True
+
+
+@attr.s(frozen=True)
+class Timezone(Component, _tzinfo):
+    NAME = "VTIMEZONE"
+
+    tzid: str = attr.ib()
+    observances: List[TimezoneObservance] = attr.ib(factory=list)
+    tzurl: Optional[URL] = attr.ib(default=None)
+    last_modified: Optional[datetime.datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore[misc]
+
+    # FIXME is the underscore converted to a dash?
+
+    @classmethod
+    def from_tzid(cls, tzid: str) -> "Timezone":
+        from ics.converter.timezone import Timezone_from_tzid
+        return Timezone_from_tzid(tzid)
+
+    @classmethod
+    def from_tzinfo(cls, tzinfo: datetime.tzinfo, context: ContextDict) -> Optional["Timezone"]:
+        from ics.converter.timezone import Timezone_from_tzinfo
+        return Timezone_from_tzinfo(tzinfo, context)
+
+    def __attrs_post_init__(self):
+        super(Timezone, self).__attrs_post_init__()
+        if len(self.observances) >= 2:
+            # one lru cache per Timezone instance, so no Timezone hashing is needed
+            func = functools.lru_cache(10)(self._find_observance_cachable)
+            object.__setattr__(self, "_find_observance_cachable", func)
+
+    def _find_observance(self, dt):
+        if len(self.observances) < 2:
+            return self.observances[0]
+
+        return self._find_observance_cachable(dt.replace(tzinfo=None))
+
+    def _find_observance_cachable(self, dt):
+        lastcompdt = lastcomp = None
+        for comp in self.observances:
+            if comp.tzoffsetdiff < TIMEDELTA_ZERO and getattr(dt, 'fold', 0):  # TODO ???
+                dt -= comp.tzoffsetdiff
+            compdt = comp.rrule.before(dt, inc=True)
+            if compdt and (not lastcompdt or lastcompdt < compdt):
+                lastcompdt = compdt
+                lastcomp = comp
+
+        if lastcomp:
+            return lastcomp
+        else:
+            # TODO what if past the last until date?
+            # RFC says nothing about what to do when a given time is before the first onset date.
+            # We'll look for the first standard component,
+            # or the first component, if none is found.
+            for comp in self.observances:
+                if not comp.is_dst:
+                    return comp
+
+            return self.observances[0]
+
+    def utcoffset(self, dt):
+        if dt is None:
+            return None
+        else:
+            return self._find_observance(dt).tzoffsetto
+
+    def dst(self, dt):
+        comp = self._find_observance(dt)
+        if comp.is_dst:
+            return comp.tzoffsetdiff
+        else:
+            return TIMEDELTA_ZERO
+
+    def tzname(self, dt):
+        return self._find_observance(dt).tzname
+
+
+RRULE_EPOCH_START = dateutil.rrule.rrule(freq=dateutil.rrule.YEARLY, dtstart=datetime.datetime(1970, 1, 1), count=1)
+UTC = Timezone("UTC", [TimezoneStandardObservance(cast(UTCOffset, TIMEDELTA_ZERO), cast(UTCOffset, TIMEDELTA_ZERO), RRULE_EPOCH_START, "UTC")])
