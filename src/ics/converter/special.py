@@ -1,7 +1,9 @@
-from typing import List
+import itertools
+from typing import List, TYPE_CHECKING
 
+import dateutil.rrule
+import more_itertools
 from attr import Attribute
-from dateutil.rrule import rruleset
 
 from ics.alarm import *
 from ics.attendee import Attendee, Organizer, Person
@@ -9,7 +11,9 @@ from ics.component import Component
 from ics.converter.base import AttributeConverter
 from ics.converter.component import ComponentMeta
 from ics.contentline import Container, ContentLine
+from ics.rrule import rrule_to_ContentLine
 from ics.types import ContainerItem, ContextDict
+from ics.valuetype.datetime import DatetimeConverterMixin, DatetimeConverter
 
 __all__ = [
     "RecurrenceConverter",
@@ -29,27 +33,52 @@ class RecurrenceConverter(AttributeConverter):
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
         self._check_component(component, context)
-        # self.lines.append(item)
-        return False
+        key = (self, "lines")
+        lines = context.get(key, None)
+        if lines is None:
+            lines = context[key] = []
+        lines.append(item)
+        return True
 
     def finalize(self, component: Component, context: ContextDict):
         self._check_component(component, context)
-        # rrulestr("\r\n".join(self.lines), tzinfos={}, compatible=True)
+        super(RecurrenceConverter, self).finalize(component, context)
+        lines_str = "".join(line.serialize(newline=True) for line in context.pop((self, "lines")))
+        # TODO only feed dateutil the params it likes, add the rest as extra
+        tzinfos = context.get(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
+        rrule = dateutil.rrule.rrulestr(lines_str, tzinfos=tzinfos, compatible=True)
+        rrule._rdate = list(more_itertools.unique_justseen(sorted(rrule._rdate)))
+        rrule._exdate = list(more_itertools.unique_justseen(sorted(rrule._exdate)))
+        self.set_or_append_value(component, rrule)
 
     def serialize(self, component: Component, output: Container, context: ContextDict):
-        pass
-        # value = rruleset()
-        # for rrule in value._rrule:
-        #     output.append(ContentLine("RRULE", value=re.match("^RRULE:(.*)$", str(rrule)).group(1)))
-        # for exrule in value._exrule:
-        #     output.append(ContentLine("EXRULE", value=re.match("^RRULE:(.*)$", str(exrule)).group(1)))
-        # for rdate in value._rdate:
-        #     output.append(ContentLine(name="RDATE", value=DatetimeConverter.INST.serialize(rdate)))
-        # for exdate in value._exdate:
-        #     output.append(ContentLine(name="EXDATE", value=DatetimeConverter.INST.serialize(exdate)))
+        value = self.get_value(component)
+        if not TYPE_CHECKING:
+            assert isinstance(value, dateutil.rrule.rruleset)
+        for rrule in itertools.chain(value._rrule, value._exrule):
+            if rrule._dtstart is None: continue
+            dtstart = context.get("DTSTART", None)
+            if dtstart:
+                if dtstart != rrule._dtstart:
+                    raise ValueError("differing DTSTART values")
+            else:
+                context["DTSTART"] = rrule._dtstart
+                dt_value = DatetimeConverter.INST.serialize(rrule._dtstart, context=context)
+                output.append(ContentLine(name="DTSTART", value=dt_value))
+
+        for rrule in value._rrule:
+            output.append(rrule_to_ContentLine(rrule))
+        for exrule in value._exrule:
+            cl = rrule_to_ContentLine(exrule)
+            cl.name = "EXRULE"
+            output.append(cl)
+        for rdate in more_itertools.unique_justseen(sorted(value._rdate)):
+            output.append(ContentLine(name="RDATE", value=DatetimeConverter.INST.serialize(rdate)))
+        for exdate in more_itertools.unique_justseen(sorted(value._exdate)):
+            output.append(ContentLine(name="EXDATE", value=DatetimeConverter.INST.serialize(exdate)))
 
 
-AttributeConverter.BY_TYPE[rruleset] = RecurrenceConverter
+AttributeConverter.BY_TYPE[dateutil.rrule.rruleset] = RecurrenceConverter
 
 
 class PersonConverter(AttributeConverter):

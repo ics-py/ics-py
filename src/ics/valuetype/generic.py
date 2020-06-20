@@ -2,8 +2,6 @@ import base64
 from typing import Type
 from urllib.parse import urlparse
 
-from dateutil.rrule import rrule
-
 from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, URL
 from ics.valuetype.base import ValueConverter
 
@@ -12,7 +10,6 @@ __all__ = [
     "BooleanConverter",
     "IntegerConverter",
     "FloatConverter",
-    "RecurConverter",
     "URIConverter",
     "CalendarUserAddressConverter"
 ]
@@ -105,24 +102,6 @@ class FloatConverter(ValueConverter[float]):
 
     def serialize(self, value: float, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         return str(value)
-
-
-class RecurConverter(ValueConverter[rrule]):
-
-    @property
-    def ics_type(self) -> str:
-        return "RECUR"
-
-    @property
-    def python_type(self) -> Type[rrule]:
-        return rrule
-
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> rrule:
-        # this won't be called unless a class specifies an attribute with type: rrule
-        raise NotImplementedError("parsing 'RECUR' is not yet supported")  # TODO is this a valuetype or a composed object
-
-    def serialize(self, value: rrule, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
-        raise NotImplementedError("serializing 'RECUR' is not yet supported")
 
 
 class URIConverter(ValueConverter[URL]):
