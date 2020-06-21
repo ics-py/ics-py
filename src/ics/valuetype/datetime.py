@@ -11,6 +11,7 @@ from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, copy_
 from ics.valuetype.base import ValueConverter
 
 __all__ = [
+    "DatetimeConverterMixin",
     "DatetimeConverter",
     "DateConverter",
     "TimeConverter",
@@ -34,9 +35,10 @@ class DatetimeConverterMixin(object):
         else:
             if value.tzinfo is not None:
                 tz = Timezone.from_tzinfo(value.tzinfo, context)
-                params["TZID"] = [tz.tzid]
-                available_tz = context.setdefault(self.CONTEXT_KEY_AVAILABLE_TZ, {})
-                available_tz.setdefault(tz.tzid, tz)
+                if tz is not None:
+                    params["TZID"] = [tz.tzid]
+                    available_tz = context.setdefault(self.CONTEXT_KEY_AVAILABLE_TZ, {})
+                    available_tz.setdefault(tz.tzid, tz)
             return value.strftime(nonutc_fmt)
 
     def _parse_dt(self, value: str, params: ExtraParams, context: ContextDict,
@@ -78,12 +80,15 @@ class DatetimeConverterMixin(object):
                     selected_tz = Timezone.from_tzid(param_tz)  # be lenient with missing vtimezone definitions
                 except ValueError:
                     found_tz = gettz(param_tz)
+                    import platform
+                    import sys
                     if not found_tz:
-                        import platform
-                        import sys
                         raise ValueError("timezone %s is unknown on this system (%s on %s)" %
                                          (param_tz, sys.version, platform.platform(terse=True)))
-                    selected_tz = UnserializeableTimezone(param_tz, found_tz)
+                    else:
+                        warnings.warn("no ics representation available for timezone %s, but known to system (%s on %s) as %s " %
+                                      (param_tz, sys.version, platform.platform(terse=True), found_tz))
+                    selected_tz = found_tz
                 available_tz.setdefault(param_tz, selected_tz)
             return dt.replace(tzinfo=selected_tz)
         else:

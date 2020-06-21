@@ -4,7 +4,6 @@ from typing import Dict, NamedTuple, Tuple, Union, overload
 class Geo(NamedTuple):
     latitude: float
     longitude: float
-    # TODO also store params like comment?
 
 
 @overload

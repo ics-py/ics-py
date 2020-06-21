@@ -113,15 +113,15 @@ class ContentLine(RuntimeAttrValidation):
     ``ContentLine('FOO', {'BAR': ['1']}, 'YOLO'))``
     """
 
-    name: str = attr.ib(converter=str.upper)  # type: ignore
+    name: str = attr.ib(converter=str.upper)  # type: ignore[misc]
     params: ExtraParams = attr.ib(factory=lambda: ExtraParams(dict()))
     value: str = attr.ib(default="")
 
     # TODO store value type for jCal
     line_nr: int = attr.ib(default=-1, eq=False)
 
-    def serialize(self):
-        return "".join(self.serialize_iter())
+    def serialize(self, newline=False):
+        return "".join(self.serialize_iter(newline))
 
     def serialize_iter(self, newline=False):
         yield self.name
@@ -189,8 +189,8 @@ class Container(MutableSequence[ContainerItem]):
     def __repr__(self):
         return "%s(%r, %s)" % (type(self).__name__, self.name, repr(self.data))
 
-    def serialize(self):
-        return "".join(self.serialize_iter())
+    def serialize(self, newline=False):
+        return "".join(self.serialize_iter(newline))
 
     def serialize_iter(self, newline=False):
         yield "BEGIN:"

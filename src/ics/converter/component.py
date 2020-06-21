@@ -1,8 +1,8 @@
 from collections import defaultdict
-from typing import Dict, Iterable, List, Optional, Tuple, Type, cast, ClassVar, Any, Callable
 
 import attr
 from attr import Attribute
+from typing import Dict, Iterable, List, Optional, Tuple, Type, cast, ClassVar, Any, Callable
 
 from ics.component import Component
 from ics.converter.base import AttributeConverter, GenericConverter
@@ -65,12 +65,12 @@ class ComponentMeta(object):
         object.__setattr__(self, "post_populate_hooks", tuple(post_populate_hooks))
         object.__setattr__(self, "post_serialize_hooks", tuple(post_serialize_hooks))
 
-    def find_converters(self) -> Iterable[AttributeConverter]:
-        converters = cast(Iterable[AttributeConverter], filter(bool, (
+    def find_converters(self) -> Iterable[GenericConverter]:
+        converters = cast(Iterable[GenericConverter], filter(bool, (
             AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type))))
         return sorted(converters, key=lambda c: c.priority)
 
-    def __call__(self, attribute: Attribute):
+    def __call__(self, attribute: Attribute) -> AttributeConverter:
         return MemberComponentConverter(attribute, self)
 
     def load_instance(self, container: Container, context: Optional[ContextDict] = None):
@@ -157,14 +157,14 @@ class MutablePseudoComponent(object):
         object.__setattr__(self, "_MutablePseudoComponent__data", data)
 
     def __getattr__(self, name: str) -> Any:
-        return self.MutablePseudoComponent_data[name]
+        return self._MutablePseudoComponent__data[name]
 
     def __setattr__(self, name: str, value: Any) -> None:
         assert name not in ("NAME", "extra", "extra_params")
-        self.MutablePseudoComponent_data[name] = value
+        self._MutablePseudoComponent__data[name] = value
 
     def __delattr__(self, name: str) -> None:
-        del self.MutablePseudoComponent_data[name]
+        del self._MutablePseudoComponent__data[name]
 
     @staticmethod
     def from_container(*args, **kwargs):
@@ -195,7 +195,7 @@ class ImmutableComponentMeta(ComponentMeta):
     def load_instance(self, container: Container, context: Optional[ContextDict] = None):
         pseudo_instance = cast(Component, MutablePseudoComponent(self.component_type))
         self.populate_instance(pseudo_instance, container, context)
-        instance = self.component_type(**{k.lstrip("_"): v for k, v in pseudo_instance.MutablePseudoComponent_data.items()})  # type: ignore
+        instance = self.component_type(**{k.lstrip("_"): v for k, v in pseudo_instance._MutablePseudoComponent__data.items()})  # type: ignore[call-arg,attr-defined]
         instance.extra.extend(pseudo_instance.extra)
         instance.extra_params.update(pseudo_instance.extra_params)
         return instance

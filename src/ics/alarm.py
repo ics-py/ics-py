@@ -26,7 +26,7 @@ class BaseAlarm(Component, metaclass=ABCMeta):
         validator=v_optional(instance_of((timedelta, datetime)))
     )  # TODO is this relative to begin or end?
     repeat: int = attr.ib(default=None, validator=call_validate_on_inst)
-    duration: timedelta = attr.ib(default=None, converter=c_optional(ensure_timedelta), validator=call_validate_on_inst)  # type: ignore
+    duration: timedelta = attr.ib(default=None, converter=c_optional(ensure_timedelta), validator=call_validate_on_inst)  # type: ignore[misc]
 
     # FIXME: `attach` can be specified multiple times in a "VEVENT", "VTODO", "VJOURNAL", or "VALARM" calendar component
     #  with the exception of AUDIO alarm that only allows this property to occur once.

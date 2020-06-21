@@ -66,7 +66,7 @@ attributes.
 
    >>> e = ics.Event()
    >>> e # doctest: +ELLIPSIS
-   Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=tzutc()), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
+   Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=Timezone('UTC', ...)), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
    >>> str(e)
    '<floating Event>'
    >>> e.serialize()  # doctest: +ELLIPSIS
@@ -80,7 +80,7 @@ attributes.
     'classification': None,
     'created': None,
     'description': None,
-    'dtstamp': datetime.datetime(2020, ..., tzinfo=tzutc()),
+    'dtstamp': datetime.datetime(2020, ..., tzinfo=Timezone('UTC', ...)),
     'extra': {'data': [], 'name': 'VEVENT'},
     'extra_params': {},
     'geo': None,

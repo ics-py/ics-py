@@ -33,18 +33,18 @@ from .todo import Todo
 def initialize_converters():
     # order is very important here:
     # 1) all simple value type converters
-    from ics.valuetype import base
-    from ics.valuetype import generic
-    from ics.valuetype import text
-    from ics.valuetype import datetime
-    from ics.valuetype import special
+    import ics.valuetype.base
+    import ics.valuetype.generic
+    import ics.valuetype.text
+    import ics.valuetype.datetime
+    import ics.valuetype.special
 
     # 2) all relatively simple attribute converters and advanced component converters
-    from ics.converter import base
-    from ics.converter import value
-    from ics.converter import special
-    from ics.converter import timespan
-    from ics.converter import timezone
+    import ics.converter.base
+    import ics.converter.value
+    import ics.converter.special
+    import ics.converter.timespan
+    import ics.converter.timezone
 
     # 3) converters for all remaining component subclasses
     from ics.converter.component import ComponentMeta
@@ -52,7 +52,7 @@ def initialize_converters():
     ComponentMeta.BY_TYPE[Todo] = ComponentMeta(Todo)
 
     # 4) the converter for the calendar
-    from ics.converter import calendar
+    import ics.converter.calendar
 
     global initialize_converters
     initialize_converters = lambda: None
