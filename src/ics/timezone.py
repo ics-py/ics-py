@@ -130,6 +130,21 @@ class Timezone(Component, _tzinfo):
         from ics.converter.timezone import Timezone_from_tzinfo
         return Timezone_from_tzinfo(tzinfo, context)
 
+    @property
+    def is_builtin(self):
+        import ics_vtimezones  # type: ignore
+        return self.tzid.startswith(ics_vtimezones.BUILTIN_TZID_PREFIX)
+
+    def to_builtin(self) -> "Timezone":
+        import ics_vtimezones  # type: ignore
+        if self.tzid.startswith(ics_vtimezones.BUILTIN_TZID_PREFIX):
+            return self
+        else:
+            builtin = Timezone.from_tzid(self.tzid)
+            if builtin.observances != self.observances:
+                warnings.warn("Converting %s to built-in Timezone %s might change interpretation of some timestamps." % (self, builtin))
+            return builtin
+
     def __attrs_post_init__(self):
         super(Timezone, self).__attrs_post_init__()
         if len(self.observances) >= 2:
