@@ -23,7 +23,7 @@ __all__ = ["TimespanConverter"]
 class TimespanConverter(AttributeConverter):
     @property
     def default_priority(self) -> int:
-        return 10000
+        return -1000
 
     @property
     def filter_ics_names(self) -> List[str]:
@@ -41,22 +41,15 @@ class TimespanConverter(AttributeConverter):
             value_type = params.pop("VALUE", ["DATE-TIME"])
             if value_type == ["DATE-TIME"]:
                 precision = "second"
+                value = DatetimeConverter.INST.parse(item.value, params, context)
             elif value_type == ["DATE"]:
                 precision = "day"
+                value = DateConverter.INST.parse(item.value, params, context)
             else:
                 raise ValueError("can't handle %s with value type %s" % (item.name, value_type))
 
-            if context[CONTEXT_PRECISION] is None:
-                context[CONTEXT_PRECISION] = precision
-            else:
-                if context[CONTEXT_PRECISION] != precision:
-                    raise ValueError("event with diverging begin and end time precision")
-
-            if precision == "day":
-                value = DateConverter.INST.parse(item.value, params, context)
-            else:
-                assert precision == "second"
-                value = DatetimeConverter.INST.parse(item.value, params, context)
+            if context.setdefault(CONTEXT_PRECISION, precision) != precision:
+                raise ValueError("event with diverging begin and end time precision")
 
             if item.name == "DTSTART":
                 self.set_or_append_extra_params(component, params, name="begin")
@@ -75,11 +68,11 @@ class TimespanConverter(AttributeConverter):
         return True
 
     def post_populate(self, component: Component, context: ContextDict):
-        # missing values will be reported by the Timespan validator
         timespan_type = getattr(component, "_TIMESPAN_TYPE", self.value_type)
         timespan = timespan_type(
             ensure_datetime(context[CONTEXT_BEGIN_TIME]), ensure_datetime(context[CONTEXT_END_TIME]),
             context[CONTEXT_DURATION], context[CONTEXT_PRECISION])
+        # missing values will be reported by the Timespan validator
         if context[CONTEXT_END_NAME] and context[CONTEXT_END_NAME] != timespan._end_name():
             raise ValueError("expected to get %s value, but got %s instead"
                              % (timespan._end_name(), context[CONTEXT_END_NAME]))

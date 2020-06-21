@@ -1,11 +1,11 @@
 import itertools
+import operator
 from typing import List, TYPE_CHECKING
 
 import dateutil.rrule
-import more_itertools
 from attr import Attribute
 
-from ics.alarm import *
+from ics import NoneAlarm, EmailAlarm, DisplayAlarm, CustomAlarm, AudioAlarm, BaseAlarm, get_type_from_action
 from ics.attendee import Attendee, Organizer, Person
 from ics.component import Component
 from ics.converter.base import AttributeConverter
@@ -18,14 +18,15 @@ from ics.valuetype.datetime import DatetimeConverterMixin, DatetimeConverter
 __all__ = [
     "RecurrenceConverter",
     "PersonConverter",
-    "AlarmConverter",
+    "AlarmMeta",
 ]
 
 
-class RecurrenceConverter(AttributeConverter):
-    # TODO handle extras?
-    # TODO pass and handle available_tz / tzinfos
+def unique_justseen(iterable, key=None):
+    return map(next, map(operator.itemgetter(1), itertools.groupby(iterable, key)))
 
+
+class RecurrenceConverter(AttributeConverter):
     @property
     def filter_ics_names(self) -> List[str]:
         return ["RRULE", "RDATE", "EXRULE", "EXDATE", "DTSTART"]
@@ -44,8 +45,8 @@ class RecurrenceConverter(AttributeConverter):
         # TODO only feed dateutil the params it likes, add the rest as extra
         tzinfos = context.get(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
         rrule = dateutil.rrule.rrulestr(lines_str, tzinfos=tzinfos, compatible=True)
-        rrule._rdate = list(more_itertools.unique_justseen(sorted(rrule._rdate)))
-        rrule._exdate = list(more_itertools.unique_justseen(sorted(rrule._exdate)))
+        rrule._rdate = list(unique_justseen(sorted(rrule._rdate)))
+        rrule._exdate = list(unique_justseen(sorted(rrule._exdate)))
         self.set_or_append_value(component, rrule)
 
     def serialize(self, component: Component, output: Container, context: ContextDict):
@@ -54,6 +55,7 @@ class RecurrenceConverter(AttributeConverter):
             assert isinstance(value, dateutil.rrule.rruleset)
         for rrule in itertools.chain(value._rrule, value._exrule):
             if rrule._dtstart is None: continue
+            # check that the rrule uses the same DTSTART as a possible Timespan(Converter)
             dtstart = context["DTSTART"]
             if dtstart:
                 if dtstart != rrule._dtstart:
@@ -69,9 +71,9 @@ class RecurrenceConverter(AttributeConverter):
             cl = rrule_to_ContentLine(exrule)
             cl.name = "EXRULE"
             output.append(cl)
-        for rdate in more_itertools.unique_justseen(sorted(value._rdate)):
+        for rdate in unique_justseen(sorted(value._rdate)):
             output.append(ContentLine(name="RDATE", value=DatetimeConverter.INST.serialize(rdate)))
-        for exdate in more_itertools.unique_justseen(sorted(value._exdate)):
+        for exdate in unique_justseen(sorted(value._exdate)):
             output.append(ContentLine(name="EXDATE", value=DatetimeConverter.INST.serialize(exdate)))
 
     def post_serialize(self, component: Component, output: Container, context: ContextDict):
@@ -125,8 +127,8 @@ class AlarmMeta(ComponentMeta):
 
 
 ComponentMeta.BY_TYPE[BaseAlarm] = AlarmMeta(BaseAlarm)
-ComponentMeta.BY_TYPE[AudioAlarm] = AlarmMeta(AudioAlarm)
-ComponentMeta.BY_TYPE[CustomAlarm] = AlarmMeta(CustomAlarm)
-ComponentMeta.BY_TYPE[DisplayAlarm] = AlarmMeta(DisplayAlarm)
-ComponentMeta.BY_TYPE[EmailAlarm] = AlarmMeta(EmailAlarm)
-ComponentMeta.BY_TYPE[NoneAlarm] = AlarmMeta(NoneAlarm)
+ComponentMeta.BY_TYPE[AudioAlarm] = ComponentMeta(AudioAlarm)
+ComponentMeta.BY_TYPE[CustomAlarm] = ComponentMeta(CustomAlarm)
+ComponentMeta.BY_TYPE[DisplayAlarm] = ComponentMeta(DisplayAlarm)
+ComponentMeta.BY_TYPE[EmailAlarm] = ComponentMeta(EmailAlarm)
+ComponentMeta.BY_TYPE[NoneAlarm] = ComponentMeta(NoneAlarm)

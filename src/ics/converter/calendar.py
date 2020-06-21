@@ -20,7 +20,7 @@ __all__ = [
 class CalendarTimezoneConsumer(AttributeConverter):
     @property
     def filter_ics_names(self) -> List[str]:
-        return Timezone.NAME
+        return [Timezone.NAME]
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         return item.name == Timezone.NAME and isinstance(item, Container)

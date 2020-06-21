@@ -19,22 +19,23 @@ STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
 
 @attr.s(eq=True, order=False)
 class CalendarEntryAttrs(Component):
-    timespan: Timespan = attr.ib(metadata={"ics_priority": -100})
+    timespan: Timespan = attr.ib()
     summary: Optional[str] = attr.ib(default=None)
     uid: str = attr.ib(factory=uid_gen)
 
     description: Optional[str] = attr.ib(default=None)
     location: Optional[str] = attr.ib(default=None)
     url: Optional[str] = attr.ib(default=None)
-    status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=in_(STATUS_VALUES))  # type: ignore
+    status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=in_(STATUS_VALUES))  # type: ignore[misc]
 
-    created: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore
-    last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore
-    dtstamp: datetime = attr.ib(factory=now_in_utc, converter=ensure_utc, validator=validate_not_none)  # type: ignore
+    created: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore[misc]
+    last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore[misc]
+    dtstamp: datetime = attr.ib(factory=now_in_utc, converter=ensure_utc, validator=validate_not_none)  # type: ignore[misc]
 
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
     attach: List[Union[URL, bytes]] = attr.ib(factory=list, converter=list)
 
+    # this is overridden by subclasses and then read by the Timespan converter to instantiate an object of the right subclass
     _TIMESPAN_TYPE: ClassVar[Type[Timespan]] = Timespan
 
     def __init_subclass__(cls):

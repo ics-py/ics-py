@@ -1,13 +1,14 @@
-import datetime
-import functools
-from typing import Optional, overload, List, ClassVar, cast
+import warnings
 
 import attr
+import datetime
 import dateutil
 import dateutil.rrule
 import dateutil.tz
+import functools
 from attr.validators import instance_of
 from dateutil.tz._common import _tzinfo
+from typing import Optional, overload, List, ClassVar, cast
 
 from ics.component import Component
 from ics.types import ContextDict, DatetimeLike, URL, UTCOffset
@@ -109,7 +110,7 @@ class TimezoneDaylightObservance(TimezoneObservance):
     is_dst: ClassVar[bool] = True
 
 
-@attr.s(frozen=True)
+@attr.s(frozen=True, repr=False)
 class Timezone(Component, _tzinfo):
     NAME = "VTIMEZONE"
 
@@ -117,8 +118,6 @@ class Timezone(Component, _tzinfo):
     observances: List[TimezoneObservance] = attr.ib(factory=list)
     tzurl: Optional[URL] = attr.ib(default=None)
     last_modified: Optional[datetime.datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore[misc]
-
-    # FIXME is the underscore converted to a dash?
 
     @classmethod
     def from_tzid(cls, tzid: str) -> "Timezone":
@@ -151,6 +150,15 @@ class Timezone(Component, _tzinfo):
             # one lru cache per Timezone instance, so no Timezone hashing is needed
             func = functools.lru_cache(10)(self._find_observance_cachable)
             object.__setattr__(self, "_find_observance_cachable", func)
+
+    def __str__(self):
+        return self.tzid
+
+    def __repr__(self):
+        if self.is_builtin:
+            return "Timezone.from_tzid(%r)" % self.tzid
+        else:
+            return "Timezone(%r, observances=%r)" % (self.tzid, self.observances)
 
     def _find_observance(self, dt):
         if len(self.observances) < 2:

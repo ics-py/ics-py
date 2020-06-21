@@ -62,7 +62,7 @@ class Calendar(CalendarAttrs):
             todos = tuple()
         kwargs.setdefault("version", self.DEFAULT_VERSION)
         kwargs.setdefault("prodid", creator if creator is not None else self.DEFAULT_PRODID)
-        super(Calendar, self).__init__(events=events, todos=todos, **kwargs)  # type: ignore
+        super(Calendar, self).__init__(events=events, todos=todos, **kwargs)  # type: ignore[arg-type]
         self.timeline = Timeline(self, None)
 
         if imports is not None:
