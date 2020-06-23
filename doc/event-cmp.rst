@@ -55,9 +55,7 @@ properties.
    >>> e1 == e2
    False
 
-Private attributes, such as Components’ ``_classmethod_args``,
-``_classmethod_kwargs`` and iCalendars’ ``_timezones`` are excluded from
-comparision. If you want to know the exact differences between two
+If you want to know the exact differences between two
 Events, either convert the events to their ics representation using
 ``str(e)`` or use the ``attr.asdict`` method to get a dict with all
 attributes.
@@ -66,11 +64,14 @@ attributes.
 
    >>> e = ics.Event()
    >>> e # doctest: +ELLIPSIS
-   Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=Timezone('UTC', ...)), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
+   Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2020, ..., tzinfo=Timezone.from_tzid('UTC')), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
    >>> str(e)
    '<floating Event>'
-   >>> e.serialize()  # doctest: +ELLIPSIS
-   'BEGIN:VEVENT\r\nUID:...@...org\r\nDTSTAMP:2020...T...Z\r\nEND:VEVENT'
+   >>> print(e.serialize())  # doctest: +ELLIPSIS,+NORMALIZE_WHITESPACE
+   BEGIN:VEVENT
+   UID:...@...org
+   DTSTAMP:2020...T...Z
+   END:VEVENT
    >>> import attr, pprint
    >>> pprint.pprint(attr.asdict(e)) # doctest: +ELLIPSIS
    {'alarms': [],
@@ -80,7 +81,7 @@ attributes.
     'classification': None,
     'created': None,
     'description': None,
-    'dtstamp': datetime.datetime(2020, ..., tzinfo=Timezone('UTC', ...)),
+    'dtstamp': datetime.datetime(2020, ..., tzinfo=Timezone.from_tzid('UTC')),
     'extra': {'data': [], 'name': 'VEVENT'},
     'extra_params': {},
     'geo': None,

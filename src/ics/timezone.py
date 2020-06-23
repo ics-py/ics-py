@@ -132,11 +132,10 @@ class Timezone(Component, _tzinfo):
     @property
     def is_builtin(self):
         import ics_vtimezones  # type: ignore
-        return self.tzid.startswith(ics_vtimezones.BUILTIN_TZID_PREFIX)
+        return is_utc(self) or self.tzid.startswith(ics_vtimezones.BUILTIN_TZID_PREFIX)
 
     def to_builtin(self) -> "Timezone":
-        import ics_vtimezones  # type: ignore
-        if self.tzid.startswith(ics_vtimezones.BUILTIN_TZID_PREFIX):
+        if self.is_builtin:
             return self
         else:
             builtin = Timezone.from_tzid(self.tzid)
