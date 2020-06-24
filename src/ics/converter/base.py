@@ -1,9 +1,9 @@
-import abc
 import warnings
-from types import SimpleNamespace
-from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, Tuple, Type, Union, cast
 
+import abc
 import attr
+from types import SimpleNamespace
+from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, Tuple, Type, Union, cast, Iterable
 
 from ics.component import Component
 from ics.contentline import Container
@@ -177,3 +177,8 @@ def unwrap_type(attr_type: Type) -> Tuple[Optional[Type[MutableSequence]], Type,
 
     else:
         return None, attr_type, [attr_type]
+
+
+def sort_converters(converters: Iterable[Optional[GenericConverter]]) -> List[GenericConverter]:
+    converters = cast(Iterable[GenericConverter], filter(bool, converters))
+    return sorted(converters, key=lambda c: c.priority, reverse=True)

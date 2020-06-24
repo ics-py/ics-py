@@ -5,7 +5,7 @@ from attr import Attribute
 from typing import Dict, Iterable, List, Optional, Tuple, Type, cast, ClassVar, Any, Callable
 
 from ics.component import Component
-from ics.converter.base import AttributeConverter, GenericConverter
+from ics.converter.base import AttributeConverter, GenericConverter, sort_converters
 from ics.contentline import Container
 from ics.types import ContainerItem, ContextDict
 from ics.utils import check_is_instance
@@ -66,9 +66,7 @@ class ComponentMeta(object):
         object.__setattr__(self, "post_serialize_hooks", tuple(post_serialize_hooks))
 
     def find_converters(self) -> Iterable[GenericConverter]:
-        converters = cast(Iterable[GenericConverter], filter(bool, (
-            AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type))))
-        return sorted(converters, key=lambda c: c.priority)
+        return sort_converters(AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type))
 
     def __call__(self, attribute: Attribute) -> AttributeConverter:
         return MemberComponentConverter(attribute, self)
