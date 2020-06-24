@@ -1,7 +1,6 @@
-from typing import ClassVar, Iterable, Iterator, List, Optional, Union
-
 import attr
 from attr.validators import instance_of
+from typing import ClassVar, Iterable, Iterator, List, Optional, Union
 
 from ics.component import Component
 from ics.event import Event
@@ -13,15 +12,14 @@ from ics.todo import Todo
 
 @attr.s
 class CalendarAttrs(Component):
-    version: str = attr.ib(validator=instance_of(str))  # default set by Calendar.DEFAULT_VERSION
-    prodid: str = attr.ib(validator=instance_of(str))  # default set by Calendar.DEFAULT_PRODID
-    scale: Optional[str] = attr.ib(default=None)
-    method: Optional[str] = attr.ib(default=None)
+    version: str = attr.ib(validator=instance_of(str), metadata={"ics_priority": -1000})  # default set by Calendar.DEFAULT_VERSION
+    prodid: str = attr.ib(validator=instance_of(str), metadata={"ics_priority": -900})  # default set by Calendar.DEFAULT_PRODID
+    scale: Optional[str] = attr.ib(default=None, metadata={"ics_priority": -800})
+    method: Optional[str] = attr.ib(default=None, metadata={"ics_priority": -700})
+    # CalendarTimezoneConverter has priority -600
 
-    timezones: List[Timezone] = attr.ib(factory=list, converter=list, metadata={"ics_ignore": True},
-                                        init=False, repr=False, eq=False, order=False, hash=False)
-    events: List[Event] = attr.ib(factory=list, converter=list)
-    todos: List[Todo] = attr.ib(factory=list, converter=list)
+    events: List[Event] = attr.ib(factory=list, converter=list, metadata={"ics_priority": 100})
+    todos: List[Todo] = attr.ib(factory=list, converter=list, metadata={"ics_priority": 200})
 
 
 class Calendar(CalendarAttrs):
