@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from ics import Calendar
 from ics.component import Component
-from ics.converter.base import GenericConverter
+from ics.converter.base import GenericConverter, sort_converters
 from ics.converter.component import ComponentMeta
 from ics.grammar import Container
 from ics.timezone import Timezone
@@ -19,7 +19,7 @@ __all__ = [
 class CalendarTimezoneConverter(GenericConverter):
     @property
     def priority(self) -> int:
-        return -600
+        return 600
 
     @property
     def filter_ics_names(self) -> List[str]:
@@ -34,7 +34,7 @@ class CalendarTimezoneConverter(GenericConverter):
 
 class CalendarMeta(ComponentMeta):
     def find_converters(self):
-        return sorted(itertools.chain(super(CalendarMeta, self).find_converters(), (CalendarTimezoneConverter(),)), key=lambda c: c.priority)
+        return sort_converters(itertools.chain(super(CalendarMeta, self).find_converters(), (CalendarTimezoneConverter(),)))
 
     def _populate_attrs(self, instance: Component, container: Container, context: ContextDict):
         assert isinstance(instance, Calendar)

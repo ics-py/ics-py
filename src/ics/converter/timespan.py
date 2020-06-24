@@ -23,7 +23,7 @@ __all__ = ["TimespanConverter"]
 class TimespanConverter(AttributeConverter):
     @property
     def default_priority(self) -> int:
-        return -1000
+        return 1000
 
     @property
     def filter_ics_names(self) -> List[str]:
