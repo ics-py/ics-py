@@ -125,7 +125,7 @@ class Timezone(Component, _tzinfo):
         return Timezone_from_tzid(tzid)
 
     @classmethod
-    def from_tzinfo(cls, tzinfo: datetime.tzinfo, context: ContextDict) -> Optional["Timezone"]:
+    def from_tzinfo(cls, tzinfo: datetime.tzinfo, context: Optional[ContextDict] = None) -> Optional["Timezone"]:
         from ics.converter.timezone import Timezone_from_tzinfo
         return Timezone_from_tzinfo(tzinfo, context)
 

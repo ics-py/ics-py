@@ -27,6 +27,7 @@ from .contentline import Container, ContentLine
 from .icalendar import Calendar
 from .rrule import rrule_eq  # ensure the monkey-patching is done
 from .timespan import EventTimespan, Timespan, TodoTimespan
+from .timezone import Timezone
 from .todo import Todo
 
 
@@ -86,6 +87,7 @@ __all__ = [
     "EventTimespan",
     "Geo",
     "Organizer",
+    "Timezone",
     "Timespan",
     "Todo",
     "TodoTimespan",
