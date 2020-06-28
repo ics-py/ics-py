@@ -32,14 +32,14 @@ class DatetimeConverterMixin(object):
                       utc_fmt="%Y%m%dT%H%M%SZ", nonutc_fmt="%Y%m%dT%H%M%S") -> str:
         if is_utc(value):
             return value.strftime(utc_fmt)
-        else:
-            if value.tzinfo is not None:
-                tz = Timezone.from_tzinfo(value.tzinfo, context)
-                if tz is not None:
-                    params["TZID"] = [tz.tzid]
-                    available_tz = context.setdefault(self.CONTEXT_KEY_AVAILABLE_TZ, {})
-                    available_tz.setdefault(tz.tzid, tz)
-            return value.strftime(nonutc_fmt)
+
+        if value.tzinfo is not None:
+            tz = Timezone.from_tzinfo(value.tzinfo, context)
+            if tz is not None:
+                params["TZID"] = [tz.tzid]
+                available_tz = context.setdefault(self.CONTEXT_KEY_AVAILABLE_TZ, {})
+                available_tz.setdefault(tz.tzid, tz)
+        return value.strftime(nonutc_fmt)
 
     def _parse_dt(self, value: str, params: ExtraParams, context: ContextDict,
                   warn_no_avail_tz=True) -> datetime:
