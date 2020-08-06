@@ -7,7 +7,7 @@ from ics.utils import arrow_to_iso, escape_string, timedelta_to_duration
 
 class BaseAlarmSerializer(Serializer):
     def serialize_trigger(alarm, container):
-        if not alarm.trigger:
+        if alarm.trigger is None:
             raise ValueError("Alarm must have a trigger")
 
         if isinstance(alarm.trigger, timedelta):
