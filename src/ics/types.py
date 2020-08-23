@@ -139,7 +139,7 @@ EmptyContext = cast("ContextDict", EmptyDict)
 
 
 def copy_extra_params(old: Optional[ExtraParams]) -> ExtraParams:
-    new: ExtraParams = ExtraParams(dict())
+    new: ExtraParams = ExtraParams({})
     if not old:
         return new
     for key, value in old.items():

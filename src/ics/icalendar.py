@@ -57,9 +57,9 @@ class Calendar(CalendarAttrs):
             creator (**string**): uid of the creator program.
         """
         if events is None:
-            events = tuple()
+            events = ()
         if todos is None:
-            todos = tuple()
+            todos = ()
         kwargs.setdefault("version", self.DEFAULT_VERSION)
         kwargs.setdefault("prodid", creator if creator is not None else self.DEFAULT_PRODID)
         super(Calendar, self).__init__(events=events, todos=todos, **kwargs)  # type: ignore

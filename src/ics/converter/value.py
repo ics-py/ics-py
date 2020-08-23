@@ -88,8 +88,8 @@ class AttributeValueConverter(AttributeConverter):
             if nr > 0:
                 params["VALUE"] = [converter.ics_type]
             return converter
-        else:
-            raise ValueError("can't convert %s with %s" % (value, self))
+            
+        raise ValueError("can't convert %s with %s" % (value, self))
 
     def serialize(self, component: "Component", output: Container, context: ContextDict):
         if self.is_multi_value:
