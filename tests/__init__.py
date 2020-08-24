@@ -8,7 +8,7 @@ import ics
 def test_version_matches():
     dist = pkg_resources.get_distribution('ics')
     print(repr(dist), dist.__dict__, sys.path, ics.__path__)
-    assert len(ics.__path__) is 1
+    assert len(ics.__path__) == 1
     ics_path = ics.__path__[0]
     assert "/site-packages/" in ics_path and not "/src" in ics_path, \
         "ics should be imported from package not from sources '%s' for testing" % ics_path
