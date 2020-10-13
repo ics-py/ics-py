@@ -47,7 +47,6 @@ authors and projects:
 
 A big part of the code was written at `UrLab <http://urlab.be>`_, an awesome
 hackerspace in `ULB <http://ulb.ac.be>`_ in Brussels, Belgium.
-A big part of the code was written at `UrLab <http://urlab.be>`_, an awesome hackerspace in `ULB <http://ulb.ac.be>`_ in Brussels, Belgium.
 
 Thanks to:
 
