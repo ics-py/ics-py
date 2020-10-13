@@ -50,7 +50,7 @@ hackerspace in `ULB <http://ulb.ac.be>`_ in Brussels, Belgium.
 
 Thanks to:
 
-* `arrow <http://crsmithdev.com/arrow/>`_ which provides a nice API for dates, times and deltas,
+* `arrow <https://github.com/arrow-py/arrow>`_ which provides a nice API for dates, times and deltas,
 * `python-dateutil <http://labix.org/python-dateutil>`_ for parsing timezones from VTIMEZONE blocks,
 * `requests <http://python-requests.org/>`_ for giving me inspiration from it's beautiful and pythonic API (and its doc too),
 * `six <http://pythonhosted.org/six/>`_ to have made the python3 transition easier,
