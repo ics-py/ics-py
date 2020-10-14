@@ -56,7 +56,7 @@ Exporting a Calendar to a File
 .. code-block:: python
 
     with open('my.ics', 'w') as f:
-        f.write(str(c))
+        f.writelines(c)
     # And it's done !
 
     # iCalendar-formatted data is also available in a string
