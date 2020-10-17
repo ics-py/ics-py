@@ -1,15 +1,12 @@
 import functools
 import re
-import warnings
 from collections import UserString
-from typing import MutableSequence, Iterator, Tuple, List, Union
+from typing import MutableSequence, Tuple, List, Union
 
 import attr
 
 from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
-from ics.utils import limit_str_length, validate_truthy, next_after_str_escape
-
-__all__ = ["ParseError", "QuotedParamValue", "Patterns", "ContentLine", "Container", "escape_param", "Parser"]
+from ics.utils import limit_str_length, validate_truthy
 
 
 @attr.s(slots=True, frozen=True, auto_exc=True)
@@ -54,6 +51,31 @@ class QuotedParamValue(UserString):
             return cls(txt[1:-1])
         else:
             return txt
+
+
+def escape_param(string: Union[str, QuotedParamValue]) -> str:
+    return str(string).translate(
+        {ord("\""): "^'",
+         ord("^"): "^^",
+         ord("\n"): "^n",
+         ord("\r"): ""})
+
+
+def unescape_param(string: str) -> str:
+    def repl(match):
+        g = match.group(1)
+        if g == "n":
+            return "\n"
+        elif g == "^":
+            return "^"
+        elif g == "'":
+            return "\""
+        elif len(g) == 0:
+            raise ParseError("parameter value '%s' may not end with an escape sequence" % string)
+        else:
+            raise ParseError("invalid escape sequence ^%s in parameter value '%s'" % (g, string))
+
+    return re.sub(r"\^(.?)", repl, string)
 
 
 class Patterns:
@@ -231,125 +253,3 @@ class Container(MutableSequence[ContainerItem]):
     pop = _wrap_list_func(list.pop)
     remove = _wrap_list_func(list.remove)
     reverse = _wrap_list_func(list.reverse)
-
-
-def escape_param(string: Union[str, QuotedParamValue]) -> str:
-    return str(string).translate(
-        {ord("\""): "^'",
-         ord("^"): "^^",
-         ord("\n"): "^n",
-         ord("\r"): ""})
-
-
-@attr.s
-class Parser(object):
-    regex_impl = attr.ib()
-
-    def string_to_containers(self, txt: str) -> Iterator[ContainerItem]:
-        if self.string_to_contentlines.__func__ is not Parser.string_to_contentlines:
-            return self.contentlines_to_containers(self.string_to_contentlines(self.unfold_string(txt)))
-        else:
-            assert self.lines_to_contentlines.__func__ is not Parser.lines_to_contentlines
-            return self.lines_to_containers(self.string_to_lines(txt))
-
-    def lines_to_containers(self, lines: Iterator[str]) -> Iterator[ContainerItem]:
-        if self.lines_to_contentlines.__func__ is not Parser.lines_to_contentlines:
-            return self.contentlines_to_containers(self.lines_to_contentlines(self.unfold_lines(lines)))
-        else:
-            assert self.string_to_contentlines.__func__ is not Parser.string_to_contentlines
-            return self.string_to_containers("\r\n".join(lines))
-
-    def string_to_lines(self, txt: str) -> Iterator[str]:
-        # unicode newlines are interpreted as such by str.splitlines(), but not by the ics standard
-        # "A:abc\x85def".splitlines() => ['A:abc', 'def'] which is wrong
-        if hasattr(self.regex_impl, "splititer"):
-            return self.regex_impl.splititer(Patterns.LINEBREAK, txt)
-        else:
-            return self.regex_impl.split(Patterns.LINEBREAK, txt)
-
-    def unfold_string(self, txt: str) -> str:
-        return self.regex_impl.sub(Patterns.LINEFOLD, "", txt)
-
-    def unfold_lines(self, lines: Iterator[str]) -> Iterator[Tuple[int, str]]:
-        current_nr = -1
-        current_lines = []
-        for line_nr, line in enumerate(lines):
-            line = line.rstrip("\r\n")
-            if len(line) == 0:
-                continue  # ignore empty lines
-            nl = self.regex_impl.search("[\r\n]", line)
-            if nl:
-                raise ParseError("Line %s:%s is not properly split and contains a newline %s: %r"
-                                 % (line_nr, nl.start(), nl, line))
-            if not current_lines:
-                if line[0] in (' ', '\t'):
-                    raise ParseError("Line %s is a continuation (starts with space) without a preceding line: %r"
-                                     % (line_nr, line))
-                else:
-                    current_nr = line_nr
-                    current_lines = [line]
-            else:
-                if line[0] in (' ', '\t'):
-                    current_lines.append(line[1:])
-                else:
-                    yield current_nr, "".join(current_lines)
-                    current_nr = line_nr
-                    current_lines = [line]
-        if current_lines:
-            yield current_nr, "".join(current_lines)
-
-    def string_to_contentlines(self, txt: str) -> Iterator[ContentLine]:
-        if self.lines_to_contentlines.__func__ is not Parser.lines_to_contentlines:
-            return self.lines_to_contentlines(self.string_to_lines(txt))
-        else:
-            raise NotImplementedError()
-
-    def lines_to_contentlines(self, lines: Iterator[Union[Tuple[int, str], str]]) -> Iterator[ContentLine]:
-        if self.string_to_contentlines.__func__ is not Parser.string_to_contentlines:
-            return self.string_to_contentlines("\r\n".join(lines))
-        else:
-            raise NotImplementedError()
-
-    def contentlines_to_containers(self, tokenized_lines: Iterator[ContentLine]) -> Iterator[ContainerItem]:
-        # tokenized_lines must be an iterator, so that Container.parse can consume/steal lines
-        if not isinstance(tokenized_lines, Iterator):
-            tokenized_lines = iter(tokenized_lines)
-        for line in tokenized_lines:
-            if line.name == 'BEGIN':
-                yield self.contentlines_to_container(line.value, tokenized_lines)
-            else:
-                yield line
-
-    def contentlines_to_container(self, name, tokenized_lines) -> Container:
-        items = []
-        if not name.isupper():
-            warnings.warn("Container 'BEGIN:%s' is not all-uppercase" % name)
-        for line in tokenized_lines:
-            if line.name == 'BEGIN':
-                items.append(self.contentlines_to_container(line.value, tokenized_lines))
-            elif line.name == 'END':
-                if line.value.upper() != name.upper():
-                    raise ParseError(
-                        "Expected END:{}, got END:{}".format(name, line.value))
-                if not name.isupper():
-                    warnings.warn("Container 'END:%s' is not all-uppercase" % name)
-                break
-            else:
-                items.append(line)
-        else:  # if break was not called
-            raise ParseError("Missing END:{}".format(name))
-        return Container(name, items)
-
-    def unescape_param(self, string: str) -> str:
-        def repl(match):
-            g = match.group(1)
-            if g == "n":
-                return "\n"
-            elif g == "^":
-                return "^"
-            elif g == "'":
-                return "\""
-            else:
-                assert False
-
-        return self.regex_impl.sub(r"\^([n\^'])", repl, string)

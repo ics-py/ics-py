@@ -4,36 +4,21 @@ import pytest
 from hypothesis import assume, given, example
 from hypothesis.strategies import characters, text
 
-from ics.grammar import Container, ContentLine, ParseError, QuotedParamValue, escape_param, string_to_container, unfold_lines
+from ics.contentline import *
+from ics.contentline.container import escape_param
+from ics.contentline.parser import ContentLineParser
+from tests.contentline.examples import CONTENTLINE_EXAMPLES
 
 CONTROL = [chr(i) for i in range(ord(" ")) if i != ord("\t")] + [chr(0x7F)]
-NAME = text(alphabet=(characters(whitelist_categories=["Lu"], whitelist_characters=["-"], max_codepoint=128)), min_size=1)
+NAME = text(alphabet=(characters(whitelist_categories=["Lu"], whitelist_characters=["-"], max_codepoint=128)),
+            min_size=1)
 VALUE = text(characters(blacklist_categories=["Cs"], blacklist_characters=CONTROL))
-
-PARSERS = {
-    "Tatsu(re, pregen)": get_parser("Tatsu", False, True),
-    "Tatsu(re, dynamic)": get_parser("Tatsu", False, False),
-    "Regex(regex)": get_parser("Regex", True),
-    "Handwritten(regex)": get_parser("Handwritten", True),
-    "Handwritten(re)": get_parser("Handwritten", False),
-}
+ContentLineParser.always_check = True
 
 
-def parse_contentline(line):
-    results = {n: list(p.string_to_contentlines(line)) for n, p in PARSERS.items()}
-    (head_n, head_val), *tail = results.items()
-    for tail_n, tail_val in tail:
-        assert head_val == tail_val, "results of %s and %s differ" % (head_n, tail_n)
-    assert len(head_val) == 1
-    return head_val[0]
-
-
-def parse_containers(str):
-    results = {n: list(p.string_to_containers(str)) for n, p in PARSERS.items()}
-    (head_n, head_val), *tail = results.items()
-    for tail_n, tail_val in tail:
-        assert head_val == tail_val, "results of %s and %s differ" % (head_n, tail_n)
-    return head_val
+def parse_contentline(line: str) -> ContentLine:
+    cl, = Parser.lines_to_contentlines(Parser.string_to_lines(line))
+    return cl
 
 
 @pytest.mark.parametrize("inp, out", CONTENTLINE_EXAMPLES)
@@ -73,13 +58,15 @@ def test_param_quoting():
             assert type(o_val) == type(p_val)
 
 
-@pytest.mark.parametrize("parser", PARSERS.values(), ids=PARSERS.keys())
-def test_trailing_escape_param(parser):
-    with pytest.raises(ValueError) as excinfo:
-        list(parser.string_to_contentlines("TEST;PARAM=this ^^ is a ^'param^',with a ^trailing escape^:value"))
+def test_trailing_escape_param():
+    with pytest.raises(ParseError) as excinfo:
+        (parse_contentline("TEST;PARAM=this ^^ is a ^'param^',with a ^^trailing escape^:value"))
     assert "not end with an escape sequence" in str(excinfo.value)
-    assert list(parser.string_to_contentlines("TEST;PARAM=this ^^ is a ^'param^',without a ^trailing escape:value")) == \
-           [ContentLine("TEST", {"PARAM": ["this ^ is a \"param\"", "without a ^trailing escape"]}, "value")]
+    with pytest.raises(ParseError) as excinfo:
+        (parse_contentline("TEST;PARAM=this ^^ is a ^'param^',with an ^invalid escape:value"))
+    assert "invalid escape sequence" in str(excinfo.value)
+    assert (parse_contentline("TEST;PARAM=this ^^ is a ^'param^',without a ^^trailing escape:value")) == \
+           ContentLine("TEST", {"PARAM": ["this ^ is a \"param\"", "without a ^trailing escape"]}, "value")
 
 
 @given(name=NAME, value=VALUE)
@@ -101,6 +88,7 @@ def quote_escape_param(pval):
 
 @given(param=NAME, value=VALUE)
 def test_any_param_value_recode(param, value):
+    assume(len(value) > 0)
     raw = "TEST;%s=%s:VALUE" % (param, quote_escape_param(value))
     assert parse_contentline(raw).serialize() == raw
     cl = ContentLine("TEST", {param: [value]}, "VALUE")
@@ -113,6 +101,9 @@ def test_any_param_value_recode(param, value):
        param2=NAME, p2value1=VALUE, p2value2=VALUE)
 def test_any_name_params_value_recode(name, value, param1, p1value, param2, p2value1, p2value2):
     assume(param1 != param2)
+    assume(len(p1value) > 0)
+    assume(len(p2value1) > 0)
+    assume(len(p2value2) > 0)
     raw = "%s;%s=%s;%s=%s,%s:%s" % (name, param1, quote_escape_param(p1value),
                                     param2, quote_escape_param(p2value1), quote_escape_param(p2value2), value)
     assert parse_contentline(raw).serialize() == raw
@@ -121,12 +112,11 @@ def test_any_name_params_value_recode(name, value, param1, p1value, param2, p2va
     assert parse_contentline(raw) == cl
 
 
-@pytest.mark.parametrize("parser", PARSERS.values(), ids=PARSERS.keys())
-def test_contentline_parse_error(parser):
+def test_contentline_parse_error():
     with pytest.raises(ParseError):
-        list(parser.string_to_contentlines("haha;p1=v1"))
+        (parse_contentline("haha;p1=v1"))
     with pytest.raises(ParseError):
-        list(parser.string_to_contentlines("haha;p1:"))
+        (parse_contentline("haha;p1:"))
 
 
 def test_container():
@@ -136,15 +126,17 @@ VAL2;PARAM1=P1;PARAM2=P2A,P2B;PARAM3="P3:A","P3:B,C":The-Val2
 END:TEST"""
     out = Container('TEST', [
         ContentLine(name='VAL1', params={}, value='The-Val'),
-        ContentLine(name='VAL2', params={'PARAM1': ['P1'], 'PARAM2': ['P2A', 'P2B'], 'PARAM3': ['P3:A', 'P3:B,C']}, value='The-Val2')])
+        ContentLine(name='VAL2', params={'PARAM1': ['P1'], 'PARAM2': ['P2A', 'P2B'], 'PARAM3': ['P3:A', 'P3:B,C']},
+                    value='The-Val2')])
 
-    assert (parse_containers(inp)) == [out]
+    assert list(string_to_containers(inp)) == [out]
     assert out.serialize() == inp.replace("\n", "\r\n")
-    assert str(out) == "TEST[VAL1='The-Val', VAL2{'PARAM1': ['P1'], 'PARAM2': ['P2A', 'P2B'], 'PARAM3': ['P3:A', 'P3:B,C']}='The-Val2']"
+    assert str(
+        out) == "TEST[VAL1='The-Val', VAL2{'PARAM1': ['P1'], 'PARAM2': ['P2A', 'P2B'], 'PARAM3': ['P3:A', 'P3:B,C']}='The-Val2']"
     assert repr(out) == "Container('TEST', [" \
-                        "ContentLine(name='VAL1', params={}, value='The-Val'), " \
+                        "ContentLine(name='VAL1', params={}, value='The-Val', line_nr=-1), " \
                         "ContentLine(name='VAL2', params={'PARAM1': ['P1'], 'PARAM2': ['P2A', 'P2B'], " \
-                        "'PARAM3': ['P3:A', 'P3:B,C']}, value='The-Val2')])"
+                        "'PARAM3': ['P3:A', 'P3:B,C']}, value='The-Val2', line_nr=-1)])"
 
     out_shallow = out.clone(deep=False)
     out_deep = out.clone(deep=True)
@@ -176,10 +168,11 @@ END:TEST"""
     out_shallow.insert(1, ContentLine("CL2"))
     out_shallow += [ContentLine("CL4")]
     assert out_shallow[1:3] == Container("DIFFERENT", [ContentLine("CL2"), ContentLine("CL3")])
-    assert out_shallow == Container("DIFFERENT", [ContentLine("CL1"), ContentLine("CL2"), ContentLine("CL3"), ContentLine("CL4")])
+    assert out_shallow == Container("DIFFERENT",
+                                    [ContentLine("CL1"), ContentLine("CL2"), ContentLine("CL3"), ContentLine("CL4")])
 
     with pytest.warns(UserWarning, match="not all-uppercase"):
-        assert (parse_containers("BEGIN:test\nEND:TeSt")) == [Container("TEST", [])]
+        assert list(string_to_containers("BEGIN:test\nEND:TeSt")) == [Container("TEST", [])]
 
 
 def test_container_nested():
@@ -215,26 +208,26 @@ END:TEST1"""
             ContentLine(name='VAL5', params={}, value='The-Val')]),
         ContentLine(name='VAL6', params={}, value='The-Val')])
 
-    assert (parse_containers(inp)) == [out]
+    assert list(string_to_containers(inp)) == [out]
     assert out.serialize() == inp.replace("\n", "\r\n")
 
 
 def test_container_parse_error():
-    pytest.raises(ParseError, parse_containers, "BEGIN:TEST")
-    assert parse_containers("END:TEST") == [ContentLine(name="END", value="TEST")]
-    pytest.raises(ParseError, parse_containers, "BEGIN:TEST1\nEND:TEST2")
-    pytest.raises(ParseError, parse_containers, "BEGIN:TEST1\nEND:TEST2\nEND:TEST1")
-    assert parse_containers("BEGIN:TEST1\nEND:TEST1\nEND:TEST1") == \
+    pytest.raises(ParseError, list, string_to_containers("BEGIN:TEST"))
+    assert list(string_to_containers("END:TEST")) == [ContentLine(name="END", value="TEST")]
+    pytest.raises(ParseError, list, string_to_containers("BEGIN:TEST1\nEND:TEST2"))
+    pytest.raises(ParseError, list, string_to_containers("BEGIN:TEST1\nEND:TEST2\nEND:TEST1"))
+    assert list(string_to_containers("BEGIN:TEST1\nEND:TEST1\nEND:TEST1")) == \
            [Container("TEST1"), ContentLine(name="END", value="TEST1")]
-    pytest.raises(ParseError, parse_containers, "BEGIN:TEST1\nBEGIN:TEST1\nEND:TEST1")
+    pytest.raises(ParseError, list, string_to_containers("BEGIN:TEST1\nBEGIN:TEST1\nEND:TEST1"))
 
 
 def test_unfold():
     val1 = "DESCRIPTION:This is a long description that exists on a long line."
     val2 = "DESCRIPTION:This is a lo\n ng description\n  that exists on a long line."
-    assert "".join(PARSER.unfold_lines(val2.splitlines())) == val1
-    assert parse_containers(val1) == parse_containers(val2) == [parse_contentline(val1)]
-    pytest.raises(ValueError, parse_contentline, val2)
+    assert "".join(line for nr, line in Parser.unfold_lines(val2.splitlines())) == val1
+    assert list(string_to_containers(val1)) == list(string_to_containers(val2)) == [parse_contentline(val1)]
+    pytest.raises(ParseError, parse_contentline, val2)
 
 
 def test_value_characters():

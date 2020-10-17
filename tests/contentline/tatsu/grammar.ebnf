@@ -2,7 +2,8 @@
 @@whitespace :: None
 @@left_recursion :: False
 
-# generate with tatsu --generate-parser --outfile src/ics/contentline/grammar.py src/ics/contentline/grammar.ebnf
+# generate with:
+# tatsu --generate-parser --outfile tests/contentline/tatsu/grammar.py tests/contentline/tatsu/grammar.ebnf
 
 ALPHADIGIT_MINUS_PLUS = /[a-zA-Z0-9-]+/;
 QSAFE_CHAR_STAR       = /[^\x00-\x08\x0A-\x1F\x22\x7F]*/;
