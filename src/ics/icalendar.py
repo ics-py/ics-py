@@ -71,7 +71,10 @@ class Calendar(CalendarAttrs):
             else:
                 containers = iter(string_to_containers(imports))
                 try:
-                    self.populate(next(containers))
+                    container = next(containers)
+                    if not isinstance(container, Container):
+                        raise ValueError("can't populate from %s" % type(container))
+                    self.populate(container)
                 except StopIteration:
                     raise ValueError("string didn't contain any ics data")
                 try:

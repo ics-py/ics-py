@@ -1,8 +1,7 @@
+import attr
 import re
 import warnings
-from typing import Iterator, Tuple, Union, List, Match, ClassVar
-
-import attr
+from typing import Iterator, Tuple, Union, List, Match, ClassVar, Iterable
 
 from ics.contentline.container import Container, ContentLine, Patterns, ParseError, QuotedParamValue, unescape_param
 from ics.types import ContainerItem
@@ -13,19 +12,18 @@ class ParserClass(object):
         return self.contentlines_to_containers(self.lines_to_contentlines(
             self.unfold_lines(self.string_to_lines(txt))))
 
-    def lines_to_containers(self, lines: Iterator[str]) -> Iterator[ContainerItem]:
+    def lines_to_containers(self, lines: Iterable[str]) -> Iterator[ContainerItem]:
         return self.contentlines_to_containers(self.lines_to_contentlines(
             self.unfold_lines(lines)))
 
-
-    def string_to_lines(self, txt: str) -> Iterator[str]:
+    def string_to_lines(self, txt: str) -> Iterable[str]:
         # unicode newlines are interpreted as such by str.splitlines(), but not by the ics standard
         # "A:abc\x85def".splitlines() => ['A:abc', 'def'] which is wrong
         return re.split(Patterns.LINEBREAK, txt)
 
-    def unfold_lines(self, lines: Iterator[str]) -> Iterator[Tuple[int, str]]:
+    def unfold_lines(self, lines: Iterable[str]) -> Iterator[Tuple[int, str]]:
         current_nr = -1
-        current_lines = []
+        current_lines: List[str] = []
         for line_nr, line in enumerate(lines):
             line = line.rstrip("\r\n")
             if len(line) == 0:
@@ -51,7 +49,7 @@ class ParserClass(object):
         if current_lines:
             yield current_nr, "".join(current_lines)
 
-    def contentlines_to_containers(self, tokenized_lines: Iterator[ContentLine]) -> Iterator[ContainerItem]:
+    def contentlines_to_containers(self, tokenized_lines: Iterable[ContentLine]) -> Iterator[ContainerItem]:
         # tokenized_lines must be an iterator, so that Container.parse can consume/steal lines
         if not isinstance(tokenized_lines, Iterator):
             tokenized_lines = iter(tokenized_lines)
@@ -61,8 +59,8 @@ class ParserClass(object):
             else:
                 yield line
 
-    def contentlines_to_container(self, name, tokenized_lines) -> Container:
-        items = []
+    def contentlines_to_container(self, name: str, tokenized_lines: Iterable[ContentLine]) -> Container:
+        items: List[ContainerItem] = []
         if not name.isupper():
             warnings.warn("Container 'BEGIN:%s' is not all-uppercase" % name)
         for line in tokenized_lines:
@@ -79,9 +77,9 @@ class ParserClass(object):
                 items.append(line)
         else:  # if break was not called
             raise ParseError("Missing END:{}".format(name))
-        return Container(name, items)
+        return Container(name, items)  # type: ignore[arg-type]
 
-    def lines_to_contentlines(self, lines: Iterator[Union[Tuple[int, str], str]]) -> Iterator[ContentLine]:
+    def lines_to_contentlines(self, lines: Iterable[Union[Tuple[int, str], str]]) -> Iterator[ContentLine]:
         clp = ContentLineParser()
         for line in lines:
             if not isinstance(line, str):

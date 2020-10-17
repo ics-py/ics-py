@@ -13,6 +13,7 @@ CONTROL = [chr(i) for i in range(ord(" ")) if i != ord("\t")] + [chr(0x7F)]
 NAME = text(alphabet=(characters(whitelist_categories=["Lu"], whitelist_characters=["-"], max_codepoint=128)),
             min_size=1)
 VALUE = text(characters(blacklist_categories=["Cs"], blacklist_characters=CONTROL))
+VALUE_NONEMPTY = text(characters(blacklist_categories=["Cs"], blacklist_characters=CONTROL), min_size=1)
 ContentLineParser.always_check = True
 
 
@@ -86,9 +87,8 @@ def quote_escape_param(pval):
         return escape_param(pval)
 
 
-@given(param=NAME, value=VALUE)
+@given(param=NAME, value=VALUE_NONEMPTY)
 def test_any_param_value_recode(param, value):
-    assume(len(value) > 0)
     raw = "TEST;%s=%s:VALUE" % (param, quote_escape_param(value))
     assert parse_contentline(raw).serialize() == raw
     cl = ContentLine("TEST", {param: [value]}, "VALUE")
@@ -97,13 +97,10 @@ def test_any_param_value_recode(param, value):
 
 
 @given(name=NAME, value=VALUE,
-       param1=NAME, p1value=VALUE,
-       param2=NAME, p2value1=VALUE, p2value2=VALUE)
+       param1=NAME, p1value=VALUE_NONEMPTY,
+       param2=NAME, p2value1=VALUE_NONEMPTY, p2value2=VALUE_NONEMPTY)
 def test_any_name_params_value_recode(name, value, param1, p1value, param2, p2value1, p2value2):
     assume(param1 != param2)
-    assume(len(p1value) > 0)
-    assume(len(p2value1) > 0)
-    assume(len(p2value2) > 0)
     raw = "%s;%s=%s;%s=%s,%s:%s" % (name, param1, quote_escape_param(p1value),
                                     param2, quote_escape_param(p2value1), quote_escape_param(p2value2), value)
     assert parse_contentline(raw).serialize() == raw
