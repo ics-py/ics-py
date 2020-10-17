@@ -88,8 +88,8 @@ class ContentLine(RuntimeAttrValidation):
     params: ExtraParams = attr.ib(factory=lambda: ExtraParams(dict()))
     value: str = attr.ib(default="")
 
-    # TODO store value type for jCal and line number for error messages
-    line_nr: int = attr.ib(default=-1)
+    # TODO store value type for jCal
+    line_nr: int = attr.ib(default=-1, cmp=False)
 
     def serialize(self):
         return "".join(self.serialize_iter())
@@ -173,27 +173,6 @@ class Container(MutableSequence[ContainerItem]):
         yield self.name
         if newline:
             yield "\r\n"
-
-    @classmethod
-    def parse(cls, name, tokenized_lines):
-        items = []
-        if not name.isupper():
-            warnings.warn("Container 'BEGIN:%s' is not all-uppercase" % name)
-        for line in tokenized_lines:
-            if line.name == 'BEGIN':
-                items.append(cls.parse(line.value, tokenized_lines))
-            elif line.name == 'END':
-                if line.value.upper() != name.upper():
-                    raise ParseError(
-                        "Expected END:{}, got END:{}".format(name, line.value))
-                if not name.isupper():
-                    warnings.warn("Container 'END:%s' is not all-uppercase" % name)
-                break
-            else:
-                items.append(line)
-        else:  # if break was not called
-            raise ParseError("Missing END:{}".format(name))
-        return cls(name, items)
 
     def clone(self, items=None, deep=False):
         """Makes a copy of itself"""
@@ -320,10 +299,16 @@ class Parser(object):
             yield current_nr, "".join(current_lines)
 
     def string_to_contentlines(self, txt: str) -> Iterator[ContentLine]:
-        raise NotImplementedError()
+        if self.lines_to_contentlines.__func__ is not Parser.lines_to_contentlines:
+            return self.lines_to_contentlines(self.string_to_lines(txt))
+        else:
+            raise NotImplementedError()
 
     def lines_to_contentlines(self, lines: Iterator[Union[Tuple[int, str], str]]) -> Iterator[ContentLine]:
-        raise NotImplementedError()
+        if self.string_to_contentlines.__func__ is not Parser.string_to_contentlines:
+            return self.string_to_contentlines("\r\n".join(lines))
+        else:
+            raise NotImplementedError()
 
     def contentlines_to_containers(self, tokenized_lines: Iterator[ContentLine]) -> Iterator[ContainerItem]:
         # tokenized_lines must be an iterator, so that Container.parse can consume/steal lines
@@ -331,13 +316,33 @@ class Parser(object):
             tokenized_lines = iter(tokenized_lines)
         for line in tokenized_lines:
             if line.name == 'BEGIN':
-                yield Container.parse(line.value, tokenized_lines)
+                yield self.contentlines_to_container(line.value, tokenized_lines)
             else:
                 yield line
 
+    def contentlines_to_container(self, name, tokenized_lines) -> Container:
+        items = []
+        if not name.isupper():
+            warnings.warn("Container 'BEGIN:%s' is not all-uppercase" % name)
+        for line in tokenized_lines:
+            if line.name == 'BEGIN':
+                items.append(self.contentlines_to_container(line.value, tokenized_lines))
+            elif line.name == 'END':
+                if line.value.upper() != name.upper():
+                    raise ParseError(
+                        "Expected END:{}, got END:{}".format(name, line.value))
+                if not name.isupper():
+                    warnings.warn("Container 'END:%s' is not all-uppercase" % name)
+                break
+            else:
+                items.append(line)
+        else:  # if break was not called
+            raise ParseError("Missing END:{}".format(name))
+        return Container(name, items)
+
     def unescape_param(self, string: str) -> str:
         def repl(match):
-            g = match.group()
+            g = match.group(1)
             if g == "n":
                 return "\n"
             elif g == "^":
@@ -348,23 +353,3 @@ class Parser(object):
                 assert False
 
         return self.regex_impl.sub(r"\^([n\^'])", repl, string)
-
-        # return "".join(self.unescape_param_iter(string))
-
-    def unescape_param_iter(self, string: str) -> Iterator[str]:
-        # (unused)
-        it = iter(string)
-        for c1 in it:
-            if c1 == "^":
-                c2 = next_after_str_escape(it, full_str=string)
-                if c2 == "n":
-                    yield "\n"
-                elif c2 == "^":
-                    yield "^"
-                elif c2 == "'":
-                    yield "\""
-                else:
-                    yield c1
-                    yield c2
-            else:
-                yield c1

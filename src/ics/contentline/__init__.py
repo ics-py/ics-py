@@ -1,25 +1,62 @@
 #!/usr/bin/env python3
+from typing import Union, Type
 
 from ics.contentline.common import *
 from ics.contentline.common import __all__ as common_all
 
-__all__ = common_all + ["PARSER", "string_to_containers", "lines_to_containers"]
+__all__ = common_all + ["PARSER", "string_to_containers", "lines_to_containers", "get_parser"]
 
 try:
     import regex
     from ics.contentline.regex_capture import RegexParser
 
-    PARSER_TYPE = "regex"
     PARSER = RegexParser(regex)
 except ImportError:
     import re
     from ics.contentline.handwritten import HandwrittenParser
 
-    PARSER_TYPE = "handwritten"
     PARSER = HandwrittenParser(re)
 
 string_to_containers = PARSER.string_to_containers
 lines_to_containers = PARSER.lines_to_containers
+
+
+def get_parser_name(name: Union[str, Parser, Type[Parser]]) -> str:
+    if isinstance(name, Parser):
+        name = type(name)
+    if isinstance(name, type):
+        name = name.__name__
+    name = name.lower()
+    if name.endswith("parser"):
+        name = name[:-len("parser")]
+    return name
+
+
+def get_parser(name: Union[str, Parser, Type[Parser]], full_regex=False, tatsu_pregen=None) -> Parser:
+    if full_regex:
+        import regex as regex_impl
+    else:
+        import re as regex_impl
+
+    name = get_parser_name(name)
+    if name == "tatsu":
+        from ics.contentline.tatsu_parser import TatsuParser, GRAMMAR
+
+        if tatsu_pregen:
+            from ics.contentline.grammar import contentlineParser
+
+            return TatsuParser(regex_impl, contentlineParser())
+        else:
+            return TatsuParser(regex_impl, GRAMMAR)
+    elif name == "regex":
+        from ics.contentline.regex_parser import RegexParser
+
+        return RegexParser(regex_impl)
+    elif name == "handwritten":
+        from ics.contentline.handwritten import HandwrittenParser
+
+        return HandwrittenParser(regex_impl)
+
 
 if __name__ == "__main__":
     import argparse
@@ -33,7 +70,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--infile', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
     parser.add_argument('--outfile', nargs='?', type=argparse.FileType('w'), default=sys.stdout)
-    parser.add_argument('--parser', choices=["tatsu", "regex", "handwritten"], default=PARSER_TYPE)
+    parser.add_argument('--parser', choices=["tatsu", "regex", "handwritten"], default=get_parser_name(PARSER))
     parser.add_argument('--full-regex', action='store_true')
     parser.add_argument('--tatsu-pregen', action='store_true')
     parser.add_argument('--linewise', action='store_true')
@@ -41,30 +78,7 @@ if __name__ == "__main__":
     parser.add_argument('--no-write', action='store_true')
     args = parser.parse_args()
 
-    if args.full_regex:
-        import regex as regex_impl
-    else:
-        import re as regex_impl
-
-    if args.parser == "tatsu":
-        from ics.contentline.tatsu_parser import TatsuParser, GRAMMAR
-
-        if args.tatsu_pregen:
-            from ics.contentline.grammar import contentlineParser
-
-            parser = TatsuParser(regex_impl, contentlineParser())
-        else:
-            parser = TatsuParser(regex_impl, GRAMMAR)
-    elif args.parser == "regex":
-        from ics.contentline.regex_parser import RegexParser
-
-        parser = RegexParser(regex_impl)
-    elif args.parser == "handwritten":
-        from ics.contentline.handwritten import HandwrittenParser
-
-        parser = HandwrittenParser(regex_impl)
-    else:
-        assert False
+    parser = get_parser(args.parser, args.full_regex, args.tatsu_pregen)
 
     success = False
     lines = []

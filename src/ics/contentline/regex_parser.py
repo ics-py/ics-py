@@ -42,7 +42,7 @@ class RegexParser(Parser):
 
             else:
                 # complicated case, for each individual pval we need to find out to which param name it belongs
-                groups: Iterator[Tuple[str, int]] = zip(pname, match.end("pvals"))
+                groups: Iterator[Tuple[str, int]] = zip(pname, match.ends("pvals"))
                 # groups is an iterable of (param name, end index of params value list)
                 cur_group = next(groups)
 

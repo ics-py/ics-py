@@ -2,7 +2,7 @@
 @@whitespace :: None
 @@left_recursion :: False
 
-# generate with tatsu --generate-parser --outfile src/ics/grammar/grammar.py src/ics/grammar/grammar.ebnf
+# generate with tatsu --generate-parser --outfile src/ics/contentline/grammar.py src/ics/contentline/grammar.ebnf
 
 ALPHADIGIT_MINUS_PLUS = /[a-zA-Z0-9-]+/;
 QSAFE_CHAR_STAR       = /[^\x00-\x08\x0A-\x1F\x22\x7F]*/;
@@ -11,7 +11,7 @@ VALUE_CHAR_STAR       = /[^\x00-\x08\x0A-\x1F\x7F]*/;
 DQUOTE = '"';
 
 start = @:contentline $;
-full  = @+:contentline { /(\r?\n)+/ @+:contentline }+ /(\r?\n)*/ $;
+full  = @+:contentline { /(\r?\n)+/ @+:contentline }* /(\r?\n)*/ $;
 
 contentline = name:ALPHADIGIT_MINUS_PLUS { ";" params+:param }* ":" value:VALUE_CHAR_STAR ;
 param       = name:ALPHADIGIT_MINUS_PLUS "=" values+:param_value { "," values+:param_value }* ;

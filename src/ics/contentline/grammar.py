@@ -115,7 +115,7 @@ class contentlineParser(Parser):
             self._pattern('(\\r?\\n)+')
             self._contentline_()
             self.add_last_node_to_name('@')
-        self._positive_closure(block1)
+        self._closure(block1)
         self._pattern('(\\r?\\n)*')
         self._check_eof()
 
