@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-class BinaryConverter(ValueConverter[bytes]):
+class BinaryConverterClass(ValueConverter[bytes]):
 
     @property
     def ics_type(self) -> str:
@@ -32,10 +32,11 @@ class BinaryConverter(ValueConverter[bytes]):
         return base64.b64encode(value).decode("ascii")
 
 
+BinaryConverter = BinaryConverterClass()
 ValueConverter.BY_TYPE[bytearray] = ValueConverter.BY_TYPE[bytes]
 
 
-class BooleanConverter(ValueConverter[bool]):
+class BooleanConverterClass(ValueConverter[bool]):
 
     @property
     def ics_type(self) -> str:
@@ -70,7 +71,10 @@ class BooleanConverter(ValueConverter[bool]):
             return "FALSE"
 
 
-class IntegerConverter(ValueConverter[int]):
+BooleanConverter = BooleanConverterClass()
+
+
+class IntegerConverterClass(ValueConverter[int]):
 
     @property
     def ics_type(self) -> str:
@@ -87,7 +91,10 @@ class IntegerConverter(ValueConverter[int]):
         return str(value)
 
 
-class FloatConverter(ValueConverter[float]):
+IntegerConverter = IntegerConverterClass()
+
+
+class FloatConverterClass(ValueConverter[float]):
 
     @property
     def ics_type(self) -> str:
@@ -104,7 +111,10 @@ class FloatConverter(ValueConverter[float]):
         return str(value)
 
 
-class URIConverter(ValueConverter[URL]):
+FloatConverter = FloatConverterClass()
+
+
+class URIConverterClass(ValueConverter[URL]):
     # TODO URI PARAMs need percent escaping, preventing all illegal characters except for ", in which they also need to wrapped
     # TODO URI values also need percent escaping (escaping COMMA characters in URI Lists), but no quoting
 
@@ -126,8 +136,14 @@ class URIConverter(ValueConverter[URL]):
             return value.geturl()
 
 
-class CalendarUserAddressConverter(URIConverter):
+URIConverter = URIConverterClass()
+
+
+class CalendarUserAddressConverterClass(URIConverterClass):
 
     @property
     def ics_type(self) -> str:
         return "CAL-ADDRESS"
+
+
+CalendarUserAddressConverter = CalendarUserAddressConverterClass
