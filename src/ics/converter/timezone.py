@@ -1,14 +1,14 @@
 import datetime
-from typing import Dict, Union, Optional, List, Any
-
 from attr import Attribute
+from typing import Dict, Union, Optional, List, Any
 
 from ics.component import Component
 from ics.converter.base import AttributeConverter
 from ics.converter.component import ComponentMeta, ImmutableComponentMeta
-from ics.converter.timezone_utils import Timezone_from_builtin, Timezone_from_dateutil, Timezone_from_pytz, TimezoneResult
+from ics.converter.timezone_utils import TimezoneResult, TIMEZONE_CONVERTERS
 from ics.grammar import Container, string_to_container
-from ics.timezone import Timezone, UTC, is_utc, TimezoneDaylightObservance, TimezoneStandardObservance, TimezoneObservance
+from ics.timezone import Timezone, UTC, is_utc, TimezoneDaylightObservance, TimezoneStandardObservance, \
+    TimezoneObservance
 from ics.types import ContextDict, ContainerItem
 from ics.valuetype.datetime import DatetimeConverterMixin
 
@@ -34,7 +34,7 @@ def Timezone_from_tzid(tzid: str) -> Timezone:
     return Timezone.from_container(ics_cal[0][2])
 
 
-def Timezone_from_tzinfo(tzinfo: datetime.tzinfo, context: Optional[ContextDict]) -> Optional[Timezone]:
+def Timezone_from_tzinfo(tzinfo: datetime.tzinfo, context: Optional[ContextDict] = None) -> Optional[Timezone]:
     if isinstance(tzinfo, Timezone):
         return tzinfo
     if is_utc(tzinfo):
@@ -54,7 +54,7 @@ def Timezone_from_tzinfo(tzinfo: datetime.tzinfo, context: Optional[ContextDict]
             return cache[the_id]
 
     tz: Union[Timezone, TimezoneResult]
-    for func in (Timezone_from_builtin, Timezone_from_dateutil, Timezone_from_pytz):
+    for func in TIMEZONE_CONVERTERS:
         tz = func(tzinfo)
         if tz == TimezoneResult.CONTINUE:
             continue
