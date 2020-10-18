@@ -1,83 +1,86 @@
-from datetime import tzinfo
-from io import StringIO
+import itertools
+import operator
 from typing import List, TYPE_CHECKING
 
-from dateutil.rrule import rruleset
-from dateutil.tz import tzical
+import dateutil.rrule
+from attr import Attribute
 
+from ics import NoneAlarm, EmailAlarm, DisplayAlarm, CustomAlarm, AudioAlarm, BaseAlarm, get_type_from_action
 from ics.attendee import Attendee, Organizer, Person
+from ics.component import Component
 from ics.converter.base import AttributeConverter
-from ics.converter.component import ComponentConverter
+from ics.converter.component import ComponentMeta
 from ics.grammar import Container, ContentLine
+from ics.rrule import rrule_to_ContentLine
 from ics.types import ContainerItem, ContextDict
+from ics.valuetype.datetime import DatetimeConverterMixin, DatetimeConverter
 
-if TYPE_CHECKING:
-    from ics.component import Component
-
-
-class TimezoneConverter(AttributeConverter):
-    @property
-    def filter_ics_names(self) -> List[str]:
-        return ["VTIMEZONE"]
-
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
-        assert isinstance(item, Container)
-        self._check_component(component, context)
-
-        item = item.clone([
-            line for line in item if not line.name.startswith("X-") and not line.name == "SEQUENCE"
-        ])
-
-        fake_file = StringIO()
-        fake_file.write(item.serialize())  # Represent the block as a string
-        fake_file.seek(0)
-        timezones = tzical(fake_file)  # tzical does not like strings
-
-        # timezones is a tzical object and could contain multiple timezones
-        print("got timezone", timezones.keys(), timezones.get())
-        self.set_or_append_value(component, timezones.get())
-        return True
-
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
-        for tz in self.get_value_list(component):
-            raise NotImplementedError("Timezones can't be serialized")
+__all__ = [
+    "RecurrenceConverter",
+    "PersonConverter",
+    "AlarmMeta",
+]
 
 
-AttributeConverter.BY_TYPE[tzinfo] = TimezoneConverter
+def unique_justseen(iterable, key=None):
+    return map(next, map(operator.itemgetter(1), itertools.groupby(iterable, key)))
 
 
 class RecurrenceConverter(AttributeConverter):
-    # TODO handle extras?
-    # TODO pass and handle available_tz / tzinfos
-
     @property
     def filter_ics_names(self) -> List[str]:
         return ["RRULE", "RDATE", "EXRULE", "EXDATE", "DTSTART"]
 
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
-        self._check_component(component, context)
-        # self.lines.append(item)
-        return False
+        key = (self, "lines")
+        lines = context[key]
+        if lines is None:
+            lines = context[key] = []
+        lines.append(item)
+        return True
 
-    def finalize(self, component: "Component", context: ContextDict):
-        self._check_component(component, context)
-        # rrulestr("\r\n".join(self.lines), tzinfos={}, compatible=True)
+    def post_populate(self, component: Component, context: ContextDict):
+        lines_str = "".join(line.serialize(newline=True) for line in context.pop((self, "lines")))
+        # TODO only feed dateutil the params it likes, add the rest as extra
+        tzinfos = context.get(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
+        rrule = dateutil.rrule.rrulestr(lines_str, tzinfos=tzinfos, compatible=True)
+        rrule._rdate = list(unique_justseen(sorted(rrule._rdate)))
+        rrule._exdate = list(unique_justseen(sorted(rrule._exdate)))
+        self.set_or_append_value(component, rrule)
 
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
-        pass
-        # value = rruleset()
-        # for rrule in value._rrule:
-        #     output.append(ContentLine("RRULE", value=re.match("^RRULE:(.*)$", str(rrule)).group(1)))
-        # for exrule in value._exrule:
-        #     output.append(ContentLine("EXRULE", value=re.match("^RRULE:(.*)$", str(exrule)).group(1)))
-        # for rdate in value._rdate:
-        #     output.append(ContentLine(name="RDATE", value=DatetimeConverter.INST.serialize(rdate)))
-        # for exdate in value._exdate:
-        #     output.append(ContentLine(name="EXDATE", value=DatetimeConverter.INST.serialize(exdate)))
+    def serialize(self, component: Component, output: Container, context: ContextDict):
+        value = self.get_value(component)
+        if not TYPE_CHECKING:
+            assert isinstance(value, dateutil.rrule.rruleset)
+        for rrule in itertools.chain(value._rrule, value._exrule):
+            if rrule._dtstart is None: continue
+            # check that the rrule uses the same DTSTART as a possible Timespan(Converter)
+            dtstart = context["DTSTART"]
+            if dtstart:
+                if dtstart != rrule._dtstart:
+                    raise ValueError("differing DTSTART values")
+            else:
+                context["DTSTART"] = rrule._dtstart
+                dt_value = DatetimeConverter.serialize(rrule._dtstart, context=context)
+                output.append(ContentLine(name="DTSTART", value=dt_value))
+
+        for rrule in value._rrule:
+            output.append(rrule_to_ContentLine(rrule))
+        for exrule in value._exrule:
+            cl = rrule_to_ContentLine(exrule)
+            cl.name = "EXRULE"
+            output.append(cl)
+        for rdate in unique_justseen(sorted(value._rdate)):
+            output.append(ContentLine(name="RDATE", value=DatetimeConverter.serialize(rdate)))
+        for exdate in unique_justseen(sorted(value._exdate)):
+            output.append(ContentLine(name="EXDATE", value=DatetimeConverter.serialize(exdate)))
+
+    def post_serialize(self, component: Component, output: Container, context: ContextDict):
+        context.pop("DTSTART", None)
 
 
-AttributeConverter.BY_TYPE[rruleset] = RecurrenceConverter
+AttributeConverter.BY_TYPE[dateutil.rrule.rruleset] = RecurrenceConverter
 
 
 class PersonConverter(AttributeConverter):
@@ -87,12 +90,11 @@ class PersonConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return []
 
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
-        self._check_component(component, context)
         return False
 
-    def serialize(self, component: "Component", output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container, context: ContextDict):
         pass
 
 
@@ -101,15 +103,32 @@ AttributeConverter.BY_TYPE[Attendee] = PersonConverter
 AttributeConverter.BY_TYPE[Organizer] = PersonConverter
 
 
-class AlarmConverter(ComponentConverter):
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
-        # TODO handle trigger: Union[timedelta, datetime, None] before duration
-        assert isinstance(item, Container)
-        self._check_component(component, context)
+class AlarmMemberComponentConverter(AttributeConverter):
+    @property
+    def filter_ics_names(self) -> List[str]:
+        return [BaseAlarm.NAME]
 
-        from ics.alarm import get_type_from_action
-        alarm_type = get_type_from_action(item)
-        instance = alarm_type()
-        alarm_type.Meta.populate_instance(instance, item, context)
-        self.set_or_append_value(component, instance)
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+        assert isinstance(item, Container)
+        self.set_or_append_value(component, get_type_from_action(item).from_container(item, context))
         return True
+
+    def serialize(self, parent: Component, output: Container, context: ContextDict):
+        extras = self.get_extra_params(parent)
+        if extras:
+            raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
+        for value in self.get_value_list(parent):
+            output.append(value.to_container(context))
+
+
+class AlarmMeta(ComponentMeta):
+    def __call__(self, attribute: Attribute):
+        return AlarmMemberComponentConverter(attribute)
+
+
+ComponentMeta.BY_TYPE[BaseAlarm] = AlarmMeta(BaseAlarm)
+ComponentMeta.BY_TYPE[AudioAlarm] = ComponentMeta(AudioAlarm)
+ComponentMeta.BY_TYPE[CustomAlarm] = ComponentMeta(CustomAlarm)
+ComponentMeta.BY_TYPE[DisplayAlarm] = ComponentMeta(DisplayAlarm)
+ComponentMeta.BY_TYPE[EmailAlarm] = ComponentMeta(EmailAlarm)
+ComponentMeta.BY_TYPE[NoneAlarm] = ComponentMeta(NoneAlarm)

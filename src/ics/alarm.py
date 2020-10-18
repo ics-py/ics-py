@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
-from typing import List, Union
+from typing import List, Union, Type
 
 import attr
 from attr.converters import optional as c_optional
@@ -8,12 +8,10 @@ from attr.validators import instance_of, optional as v_optional
 
 from ics.attendee import Attendee
 from ics.component import Component
-from ics.converter.component import ComponentMeta
-from ics.converter.special import AlarmConverter
 from ics.types import URL
 from ics.utils import call_validate_on_inst, check_is_instance, ensure_timedelta
 
-__all__ = ["BaseAlarm", "AudioAlarm", "CustomAlarm", "DisplayAlarm", "EmailAlarm", "NoneAlarm"]
+__all__ = ["BaseAlarm", "AudioAlarm", "CustomAlarm", "DisplayAlarm", "EmailAlarm", "NoneAlarm", "get_type_from_action"]
 
 
 @attr.s
@@ -21,14 +19,14 @@ class BaseAlarm(Component, metaclass=ABCMeta):
     """
     A calendar event VALARM base class
     """
-    Meta = ComponentMeta("VALARM", converter_class=AlarmConverter)
+    NAME = "VALARM"
 
     trigger: Union[timedelta, datetime, None] = attr.ib(
         default=None,
         validator=v_optional(instance_of((timedelta, datetime)))
     )  # TODO is this relative to begin or end?
     repeat: int = attr.ib(default=None, validator=call_validate_on_inst)
-    duration: timedelta = attr.ib(default=None, converter=c_optional(ensure_timedelta), validator=call_validate_on_inst)  # type: ignore
+    duration: timedelta = attr.ib(default=None, converter=c_optional(ensure_timedelta), validator=call_validate_on_inst)  # type: ignore[misc]
 
     # FIXME: `attach` can be specified multiple times in a "VEVENT", "VTODO", "VJOURNAL", or "VALARM" calendar component
     #  with the exception of AUDIO alarm that only allows this property to occur once.
@@ -72,7 +70,7 @@ class CustomAlarm(BaseAlarm):
     A calendar event VALARM with custom ACTION.
     """
 
-    _action = attr.ib(default=None)
+    _action: str = attr.ib(default=None)
 
     @property
     def action(self):
@@ -122,7 +120,7 @@ class NoneAlarm(BaseAlarm):
         return "NONE"
 
 
-def get_type_from_action(action_type):
+def get_type_from_action(action_type) -> Type[BaseAlarm]:
     if action_type == "DISPLAY":
         return DisplayAlarm
     elif action_type == "AUDIO":

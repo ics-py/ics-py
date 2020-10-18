@@ -2,35 +2,19 @@
 # this is because mypy doesn't like the converter of CalendarEntryAttrs.{created,last_modified,dtstamp} and due to some
 # bug confuses the files
 
-import functools
-import warnings
 from datetime import datetime
-from typing import Optional
+from typing import Optional, ClassVar, Type
 
 import attr
-from attr.validators import in_, instance_of, optional as v_optional
+from attr.validators import in_, optional as v_optional
 
-from ics.converter.component import ComponentMeta
 from ics.event import CalendarEntryAttrs
-from ics.timespan import TodoTimespan
+from ics.timespan import TodoTimespan, Timespan
 from ics.types import DatetimeLike, TimedeltaLike
 from ics.utils import ensure_datetime, ensure_timedelta
 
 MAX_PERCENT = 100
 MAX_PRIORITY = 9
-
-
-def deprecated_due(fun):
-    @functools.wraps(fun)
-    def wrapper(*args, **kwargs):
-        msg = "Call to deprecated function {}. Use `due` instead of `end` for class Todo."
-        warnings.warn(
-            msg.format(fun.__name__),
-            category=DeprecationWarning
-        )
-        return fun(*args, **kwargs)
-
-    return wrapper
 
 
 @attr.s(eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
@@ -46,9 +30,8 @@ class Todo(TodoAttrs):
     Can have a start time and duration, or start and due time,
     or only start or due time.
     """
-    _timespan: TodoTimespan = attr.ib(validator=instance_of(TodoTimespan))
-
-    Meta = ComponentMeta("VTODO")
+    NAME = "VTODO"
+    _TIMESPAN_TYPE: ClassVar[Type[Timespan]] = TodoTimespan
 
     def __init__(
             self,
@@ -64,19 +47,13 @@ class Todo(TodoAttrs):
 
     ####################################################################################################################
 
-    def convert_due(self, representation):
+    def convert_end(self, representation):
         if representation == "due":
             representation = "end"
         super(Todo, self).convert_end(representation)
 
     due = property(TodoAttrs.end.fget, TodoAttrs.end.fset)
-    # convert_due = TodoAttrs.convert_end  # see above
+    convert_due = convert_end  # see above
     due_representation = property(TodoAttrs.end_representation.fget)
     has_explicit_due = property(TodoAttrs.has_explicit_end.fget)
     due_within = TodoAttrs.ends_within
-
-    end = property(deprecated_due(TodoAttrs.end.fget), deprecated_due(TodoAttrs.end.fset))
-    convert_end = deprecated_due(TodoAttrs.convert_end)
-    end_representation = property(deprecated_due(TodoAttrs.end_representation.fget))
-    has_explicit_end = property(deprecated_due(TodoAttrs.has_explicit_end.fget))
-    ends_within = deprecated_due(TodoAttrs.ends_within)

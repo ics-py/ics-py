@@ -1,27 +1,25 @@
-from datetime import tzinfo
-from typing import ClassVar, Iterable, Iterator, List, Optional, Union
-
 import attr
 from attr.validators import instance_of
+from typing import ClassVar, Iterable, Iterator, List, Optional, Union
 
 from ics.component import Component
-from ics.converter.component import ComponentMeta
 from ics.event import Event
-from ics.grammar import Container, string_to_container
+from ics.grammar import Container, lines_to_container, string_to_container
 from ics.timeline import Timeline
+from ics.timezone import Timezone
 from ics.todo import Todo
 
 
 @attr.s
 class CalendarAttrs(Component):
-    version: str = attr.ib(validator=instance_of(str))  # default set by Calendar.Meta.DEFAULT_VERSION
-    prodid: str = attr.ib(validator=instance_of(str))  # default set by Calendar.Meta.DEFAULT_PRODID
-    scale: Optional[str] = attr.ib(default=None)
-    method: Optional[str] = attr.ib(default=None)
+    version: str = attr.ib(validator=instance_of(str), metadata={"ics_priority": 1000})  # default set by Calendar.DEFAULT_VERSION
+    prodid: str = attr.ib(validator=instance_of(str), metadata={"ics_priority": 900})  # default set by Calendar.DEFAULT_PRODID
+    scale: Optional[str] = attr.ib(default=None, metadata={"ics_priority": 800})
+    method: Optional[str] = attr.ib(default=None, metadata={"ics_priority": 700})
+    # CalendarTimezoneConverter has priority 600
 
-    _timezones: List[tzinfo] = attr.ib(factory=list, converter=list)  # , init=False, repr=False, eq=False, order=False, hash=False)
-    events: List[Event] = attr.ib(factory=list, converter=list)
-    todos: List[Todo] = attr.ib(factory=list, converter=list)
+    events: List[Event] = attr.ib(factory=list, converter=list, metadata={"ics_priority": -100})
+    todos: List[Todo] = attr.ib(factory=list, converter=list, metadata={"ics_priority": -200})
 
 
 class Calendar(CalendarAttrs):
@@ -36,7 +34,7 @@ class Calendar(CalendarAttrs):
 
     """
 
-    Meta = ComponentMeta("VCALENDAR")
+    NAME = "VCALENDAR"
     DEFAULT_VERSION: ClassVar[str] = "2.0"
     DEFAULT_PRODID: ClassVar[str] = "ics.py - http://git.io/lLljaA"
 
@@ -62,14 +60,17 @@ class Calendar(CalendarAttrs):
             todos = tuple()
         kwargs.setdefault("version", self.DEFAULT_VERSION)
         kwargs.setdefault("prodid", creator if creator is not None else self.DEFAULT_PRODID)
-        super(Calendar, self).__init__(events=events, todos=todos, **kwargs)  # type: ignore
+        super(Calendar, self).__init__(events=events, todos=todos, **kwargs)  # type: ignore[arg-type]
         self.timeline = Timeline(self, None)
 
         if imports is not None:
             if isinstance(imports, Container):
                 self.populate(imports)
             else:
-                containers = string_to_container(imports)
+                if isinstance(imports, str):
+                    containers = string_to_container(imports)
+                else:
+                    containers = lines_to_container(imports)
                 if len(containers) != 1:
                     raise ValueError("Multiple calendars in one file are not supported by this method."
                                      "Use ics.Calendar.parse_multiple()")

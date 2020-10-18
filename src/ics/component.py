@@ -1,45 +1,52 @@
-from typing import ClassVar, Dict, List, Type, TypeVar, Union
+from typing import ClassVar, Dict, List, Type, TypeVar, Union, Optional
 
 import attr
 from attr.validators import instance_of
 
-from ics.converter.component import ComponentMeta
 from ics.grammar import Container
-from ics.types import ExtraParams, RuntimeAttrValidation
+from ics.types import ExtraParams, RuntimeAttrValidation, ContextDict
 
-PLACEHOLDER_CONTAINER = Container("PLACEHOLDER")
 ComponentType = TypeVar('ComponentType', bound='Component')
 ComponentExtraParams = Dict[str, Union[ExtraParams, List[ExtraParams]]]
 
 
 @attr.s
 class Component(RuntimeAttrValidation):
-    Meta: ClassVar[ComponentMeta] = ComponentMeta("ABSTRACT-COMPONENT")
+    NAME: ClassVar[str] = "ABSTRACT-COMPONENT"
+    SUBTYPES: ClassVar[List[Type["Component"]]] = []
 
-    extra: Container = attr.ib(init=False, default=PLACEHOLDER_CONTAINER, validator=instance_of(Container), metadata={"ics_ignore": True})
+    extra: Container = attr.ib(init=False, validator=instance_of(Container), metadata={"ics_ignore": True})
     extra_params: ComponentExtraParams = attr.ib(init=False, factory=dict, validator=instance_of(dict), metadata={"ics_ignore": True})
 
     def __attrs_post_init__(self):
         super(Component, self).__attrs_post_init__()
-        if self.extra is PLACEHOLDER_CONTAINER:
-            self.extra = Container(self.Meta.container_name)
+        object.__setattr__(self, "extra", Container(self.NAME))
 
-    def __init_subclass__(cls):
-        super().__init_subclass__()
-        cls.Meta.inflate(cls)
+    def __init_subclass__(cls, **kwargs):
+        super(Component, cls).__init_subclass__(**kwargs)
+        Component.SUBTYPES.append(cls)
 
     @classmethod
-    def from_container(cls: Type[ComponentType], container: Container) -> ComponentType:
-        return cls.Meta.load_instance(container)
+    def from_container(cls: Type[ComponentType], container: Container, context: Optional[ContextDict] = None) -> ComponentType:
+        from ics import initialize_converters
+        initialize_converters()
+        from ics.converter.component import ComponentMeta
+        return ComponentMeta.BY_TYPE[cls].load_instance(container, context)
 
-    def populate(self, container: Container):
-        self.Meta.populate_instance(self, container)
+    def populate(self, container: Container, context: Optional[ContextDict] = None):
+        from ics import initialize_converters
+        initialize_converters()
+        from ics.converter.component import ComponentMeta
+        ComponentMeta.BY_TYPE[type(self)].populate_instance(self, container, context)
 
-    def to_container(self) -> Container:
-        return self.Meta.serialize_toplevel(self)
+    def to_container(self, context: Optional[ContextDict] = None) -> Container:
+        from ics import initialize_converters
+        initialize_converters()
+        from ics.converter.component import ComponentMeta
+        return ComponentMeta.BY_TYPE[type(self)].serialize_toplevel(self, context)
 
-    def serialize(self) -> str:
-        return self.to_container().serialize()
+    def serialize(self, context: Optional[ContextDict] = None) -> str:
+        return self.to_container(context).serialize()
 
     def strip_extras(self, all_extras=False, extra_properties=None, extra_params=None, property_merging=None):
         if extra_properties is None:

@@ -1,11 +1,15 @@
+import re
+import warnings
 from typing import Iterable, Iterator, Type
 
 from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
 from ics.utils import next_after_str_escape
 from ics.valuetype.base import ValueConverter
 
+__all__ = ["TextConverter"]
 
-class TextConverter(ValueConverter[str]):
+
+class TextConverterClass(ValueConverter[str]):
 
     @property
     def ics_type(self) -> str:
@@ -28,8 +32,15 @@ class TextConverter(ValueConverter[str]):
                 val += "," + next_after_str_escape(it, full_str=values)
             yield val
 
-    # def join_value_list(self, values: Iterable[str]) -> str:
-    #     return ",".join(values) # TODO warn about missing escapes
+    def join_value_list(self, values: Iterable[str]) -> str:
+        def checked_iter():
+            for value in values:
+                m = re.search(r"\\[;,]|" + "[\n\r]", value)
+                if m:
+                    warnings.warn("TEXT value in list may not contain %s: %s" % (m, value))
+                yield value
+
+        return ",".join(checked_iter())
 
     @classmethod
     def escape_text(cls, string: str) -> str:
@@ -66,3 +77,6 @@ class TextConverter(ValueConverter[str]):
                 raise ValueError("unescaped character '%s' in TEXT value" % c1)
             else:
                 yield c1
+
+
+TextConverter = TextConverterClass()

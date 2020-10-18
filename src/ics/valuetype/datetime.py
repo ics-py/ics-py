@@ -1,14 +1,23 @@
 import re
 import warnings
 from datetime import date, datetime, time, timedelta
+from dateutil.tz import UTC as dateutil_tzutc, gettz
 from typing import List, Optional, Type, cast
 
-from dateutil.tz import UTC as dateutil_tzutc, gettz, tzoffset as UTCOffset
-
 from ics.timespan import Timespan
-from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, copy_extra_params
-from ics.utils import is_utc
+from ics.timezone import Timezone, is_utc
+from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, copy_extra_params, UTCOffset
 from ics.valuetype.base import ValueConverter
+
+__all__ = [
+    "DatetimeConverterMixin",
+    "DatetimeConverter",
+    "DateConverter",
+    "TimeConverter",
+    "UTCOffsetConverter",
+    "DurationConverter",
+    "PeriodConverter",
+]
 
 
 class DatetimeConverterMixin(object):
@@ -22,16 +31,14 @@ class DatetimeConverterMixin(object):
                       utc_fmt="%Y%m%dT%H%M%SZ", nonutc_fmt="%Y%m%dT%H%M%S") -> str:
         if is_utc(value):
             return value.strftime(utc_fmt)
-        else:
-            if value.tzinfo is not None:
-                tzname = value.tzinfo.tzname(value)
-                if not tzname:
-                    # TODO generate unique identifier as name
-                    raise ValueError("could not generate name for tzinfo %s" % value.tzinfo)
-                params["TZID"] = [tzname]
+
+        if value.tzinfo is not None:
+            tz = Timezone.from_tzinfo(value.tzinfo, context)
+            if tz is not None:
+                params["TZID"] = [tz.tzid]
                 available_tz = context.setdefault(self.CONTEXT_KEY_AVAILABLE_TZ, {})
-                available_tz.setdefault(tzname, value.tzinfo)
-            return value.strftime(nonutc_fmt)
+                available_tz.setdefault(tz.tzid, tz)
+        return value.strftime(nonutc_fmt)
 
     def _parse_dt(self, value: str, params: ExtraParams, context: ContextDict,
                   warn_no_avail_tz=True) -> datetime:
@@ -42,17 +49,21 @@ class DatetimeConverterMixin(object):
             param_tz: Optional[str] = param_tz_list[0]
         else:
             param_tz = None
-        available_tz = context.get(self.CONTEXT_KEY_AVAILABLE_TZ, None)
+        available_tz = context.setdefault(self.CONTEXT_KEY_AVAILABLE_TZ, {})
         if available_tz is None and warn_no_avail_tz:
             warnings.warn("DatetimeConverterMixin.parse called without available_tz dict in context")
         fixed_utc = (value[-1].upper() == 'Z')
 
-        value = value.translate({
+        tr_value = value.translate({
             ord("/"): "",
             ord("-"): "",
             ord("Z"): "",
             ord("z"): ""})
-        dt = datetime.strptime(value, self.FORMATS[len(value)])
+        try:
+            format = self.FORMATS[len(tr_value)]
+        except KeyError as e:
+            raise ValueError("can't parse value %s using %s" % (value, type(self).__name__)) from e
+        dt = datetime.strptime(tr_value, format)
 
         if fixed_utc:
             if param_tz:
@@ -63,13 +74,26 @@ class DatetimeConverterMixin(object):
             if available_tz:
                 selected_tz = available_tz.get(param_tz, None)
             if selected_tz is None:
-                selected_tz = gettz(param_tz)  # be lenient with missing vtimezone definitions
+                try:
+                    selected_tz = Timezone.from_tzid(param_tz)  # be lenient with missing vtimezone definitions
+                except ValueError:
+                    found_tz = gettz(param_tz)
+                    import platform
+                    import sys
+                    if not found_tz:
+                        raise ValueError("timezone %s is unknown on this system (%s on %s)" %
+                                         (param_tz, sys.version, platform.platform(terse=True)))
+                    else:
+                        warnings.warn("no ics representation available for timezone %s, but known to system (%s on %s) as %s " %
+                                      (param_tz, sys.version, platform.platform(terse=True), found_tz))
+                    selected_tz = found_tz
+                available_tz.setdefault(param_tz, selected_tz)
             return dt.replace(tzinfo=selected_tz)
         else:
             return dt
 
 
-class DatetimeConverter(DatetimeConverterMixin, ValueConverter[datetime]):
+class DatetimeConverterClass(DatetimeConverterMixin, ValueConverter[datetime]):
     FORMATS = {
         **DatetimeConverterMixin.FORMATS,
         11: "%Y%m%dT%H",
@@ -92,7 +116,10 @@ class DatetimeConverter(DatetimeConverterMixin, ValueConverter[datetime]):
         return self._parse_dt(value, params, context)
 
 
-class DateConverter(DatetimeConverterMixin, ValueConverter[date]):
+DatetimeConverter = DatetimeConverterClass()
+
+
+class DateConverterClass(DatetimeConverterMixin, ValueConverter[date]):
     @property
     def ics_type(self) -> str:
         return "DATE"
@@ -108,7 +135,10 @@ class DateConverter(DatetimeConverterMixin, ValueConverter[date]):
         return self._parse_dt(value, params, context, warn_no_avail_tz=False).date()
 
 
-class TimeConverter(DatetimeConverterMixin, ValueConverter[time]):
+DateConverter = DateConverterClass()
+
+
+class TimeConverterClass(DatetimeConverterMixin, ValueConverter[time]):
     FORMATS = {
         2: "%H",
         4: "%H%M",
@@ -130,7 +160,10 @@ class TimeConverter(DatetimeConverterMixin, ValueConverter[time]):
         return self._parse_dt(value, params, context).timetz()
 
 
-class UTCOffsetConverter(ValueConverter[UTCOffset]):
+TimeConverter = TimeConverterClass()
+
+
+class UTCOffsetConverterClass(ValueConverter[UTCOffset]):
     @property
     def ics_type(self) -> str:
         return "UTC-OFFSET"
@@ -147,14 +180,16 @@ class UTCOffsetConverter(ValueConverter[UTCOffset]):
         sign = groups.pop("sign")
         td = timedelta(**{k: int(v) for k, v in groups.items() if v})
         if sign == "-":
-            td *= -1
-        return UTCOffset(value, td)
+            return cast(UTCOffset, -td)
+        else:
+            return cast(UTCOffset, td)
 
-    def serialize(self, value: UTCOffset, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
-        offset = value.utcoffset(None)
-        assert offset is not None
-        seconds = offset.seconds
+    def serialize(self, value: UTCOffset, params: ExtraParams = EmptyParams,
+                  context: ContextDict = EmptyContext) -> str:
+        assert value is not None
+        seconds = value.total_seconds()
         if seconds < 0:
+            seconds *= -1
             res = "-"
         else:
             res = "+"
@@ -174,7 +209,10 @@ class UTCOffsetConverter(ValueConverter[UTCOffset]):
         return res
 
 
-class DurationConverter(ValueConverter[timedelta]):
+UTCOffsetConverter = UTCOffsetConverterClass()
+
+
+class DurationConverterClass(ValueConverter[timedelta]):
     @property
     def ics_type(self) -> str:
         return "DURATION"
@@ -246,7 +284,10 @@ class DurationConverter(ValueConverter[timedelta]):
             return '-P%s' % res
 
 
-class PeriodConverter(DatetimeConverterMixin, ValueConverter[Timespan]):
+DurationConverter = DurationConverterClass()
+
+
+class PeriodConverterClass(DatetimeConverterMixin, ValueConverter[Timespan]):
 
     @property
     def ics_type(self) -> str:
@@ -262,7 +303,7 @@ class PeriodConverter(DatetimeConverterMixin, ValueConverter[Timespan]):
             raise ValueError("PERIOD '%s' must contain the separator '/'")
         if end.startswith("P"):  # period-start = date-time "/" dur-value
             return Timespan(begin_time=self._parse_dt(start, params, context),
-                            duration=DurationConverter.INST.parse(end, params, context))
+                            duration=DurationConverter.parse(end, params, context))
         else:  # period-explicit = date-time "/" date-time
             end_params = copy_extra_params(params)  # ensure that the first parse doesn't remove TZID also needed by the second call
             return Timespan(begin_time=self._parse_dt(start, params, context),
@@ -277,7 +318,7 @@ class PeriodConverter(DatetimeConverterMixin, ValueConverter[Timespan]):
             duration = cast(timedelta, value.get_effective_duration())
             return "%s/%s" % (
                 self._serialize_dt(begin, params, context),
-                DurationConverter.INST.serialize(duration, params, context)
+                DurationConverter.serialize(duration, params, context)
             )
         else:
             end = value.get_effective_end()
@@ -292,3 +333,6 @@ class PeriodConverter(DatetimeConverterMixin, ValueConverter[Timespan]):
                 raise ValueError("Begin and end time of PERIOD %s must serialize to the same params! "
                                  "Got %s != %s." % (value, params, end_params))
             return res
+
+
+PeriodConverter = PeriodConverterClass()

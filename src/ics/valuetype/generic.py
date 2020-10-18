@@ -2,13 +2,20 @@ import base64
 from typing import Type
 from urllib.parse import urlparse
 
-from dateutil.rrule import rrule
-
 from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, URL
 from ics.valuetype.base import ValueConverter
 
+__all__ = [
+    "BinaryConverter",
+    "BooleanConverter",
+    "IntegerConverter",
+    "FloatConverter",
+    "URIConverter",
+    "CalendarUserAddressConverter"
+]
 
-class BinaryConverter(ValueConverter[bytes]):
+
+class BinaryConverterClass(ValueConverter[bytes]):
 
     @property
     def ics_type(self) -> str:
@@ -25,10 +32,11 @@ class BinaryConverter(ValueConverter[bytes]):
         return base64.b64encode(value).decode("ascii")
 
 
+BinaryConverter = BinaryConverterClass()
 ValueConverter.BY_TYPE[bytearray] = ValueConverter.BY_TYPE[bytes]
 
 
-class BooleanConverter(ValueConverter[bool]):
+class BooleanConverterClass(ValueConverter[bool]):
 
     @property
     def ics_type(self) -> str:
@@ -63,7 +71,10 @@ class BooleanConverter(ValueConverter[bool]):
             return "FALSE"
 
 
-class IntegerConverter(ValueConverter[int]):
+BooleanConverter = BooleanConverterClass()
+
+
+class IntegerConverterClass(ValueConverter[int]):
 
     @property
     def ics_type(self) -> str:
@@ -80,7 +91,10 @@ class IntegerConverter(ValueConverter[int]):
         return str(value)
 
 
-class FloatConverter(ValueConverter[float]):
+IntegerConverter = IntegerConverterClass()
+
+
+class FloatConverterClass(ValueConverter[float]):
 
     @property
     def ics_type(self) -> str:
@@ -97,25 +111,10 @@ class FloatConverter(ValueConverter[float]):
         return str(value)
 
 
-class RecurConverter(ValueConverter[rrule]):
-
-    @property
-    def ics_type(self) -> str:
-        return "RECUR"
-
-    @property
-    def python_type(self) -> Type[rrule]:
-        return rrule
-
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> rrule:
-        # this won't be called unless a class specifies an attribute with type: rrule
-        raise NotImplementedError("parsing 'RECUR' is not yet supported")  # TODO is this a valuetype or a composed object
-
-    def serialize(self, value: rrule, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
-        raise NotImplementedError("serializing 'RECUR' is not yet supported")
+FloatConverter = FloatConverterClass()
 
 
-class URIConverter(ValueConverter[URL]):
+class URIConverterClass(ValueConverter[URL]):
     # TODO URI PARAMs need percent escaping, preventing all illegal characters except for ", in which they also need to wrapped
     # TODO URI values also need percent escaping (escaping COMMA characters in URI Lists), but no quoting
 
@@ -137,8 +136,14 @@ class URIConverter(ValueConverter[URL]):
             return value.geturl()
 
 
-class CalendarUserAddressConverter(URIConverter):
+URIConverter = URIConverterClass()
+
+
+class CalendarUserAddressConverterClass(URIConverterClass):
 
     @property
     def ics_type(self) -> str:
         return "CAL-ADDRESS"
+
+
+CalendarUserAddressConverter = CalendarUserAddressConverterClass
