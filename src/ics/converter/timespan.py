@@ -6,6 +6,7 @@ from ics.contentline import Container, ContentLine
 from ics.timespan import EventTimespan, Timespan, TodoTimespan
 from ics.types import ContainerItem, ContextDict, ExtraParams, copy_extra_params
 from ics.utils import ensure_datetime
+from ics.valuetype.base import ValueConverter
 from ics.valuetype.datetime import DateConverter, DatetimeConverter, DurationConverter
 
 CONTEXT_BEGIN_TIME = "timespan_begin_time"
@@ -41,10 +42,10 @@ class TimespanConverter(AttributeConverter):
             value_type = params.pop("VALUE", ["DATE-TIME"])
             if value_type == ["DATE-TIME"]:
                 precision = "second"
-                value = DatetimeConverter.INST.parse(item.value, params, context)
+                value = DatetimeConverter.parse(item.value, params, context)
             elif value_type == ["DATE"]:
                 precision = "day"
-                value = DateConverter.INST.parse(item.value, params, context)
+                value = DateConverter.parse(item.value, params, context)
             else:
                 raise ValueError("can't handle %s with value type %s" % (item.name, value_type))
 
@@ -63,7 +64,7 @@ class TimespanConverter(AttributeConverter):
         else:
             assert item.name == "DURATION"
             self.set_or_append_extra_params(component, params, name="duration")
-            context[CONTEXT_DURATION] = DurationConverter.INST.parse(item.value, params, context)
+            context[CONTEXT_DURATION] = DurationConverter.parse(item.value, params, context)
 
         return True
 
@@ -83,12 +84,13 @@ class TimespanConverter(AttributeConverter):
 
     def serialize(self, component: Component, output: Container, context: ContextDict):
         value: Timespan = self.get_value(component)
+        dt_conv: ValueConverter
         if value.is_all_day():
             value_type = {"VALUE": ["DATE"]}
-            dt_conv = DateConverter.INST
+            dt_conv = DateConverter
         else:
             value_type = {}  # implicit default is {"VALUE": ["DATE-TIME"]}
-            dt_conv = DatetimeConverter.INST
+            dt_conv = DatetimeConverter
 
         if value.get_begin():
             # prevent rrule serializer from adding its own DTSTART value
@@ -109,7 +111,9 @@ class TimespanConverter(AttributeConverter):
 
         elif value.get_end_representation() == "duration":
             params = copy_extra_params(cast(ExtraParams, self.get_extra_params(component, "duration")))
-            dur_value = DurationConverter.INST.serialize(value.get_effective_duration(), params, context)
+            duration = value.get_effective_duration()
+            assert duration is not None
+            dur_value = DurationConverter.serialize(duration, params, context)
             output.append(ContentLine(name="DURATION", params=params, value=dur_value))
 
     def post_serialize(self, component: Component, output: Container, context: ContextDict):

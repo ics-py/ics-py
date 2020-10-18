@@ -9,7 +9,7 @@ from ics.valuetype.base import ValueConverter
 __all__ = ["TextConverter"]
 
 
-class TextConverter(ValueConverter[str]):
+class TextConverterClass(ValueConverter[str]):
 
     @property
     def ics_type(self) -> str:
@@ -77,3 +77,6 @@ class TextConverter(ValueConverter[str]):
                 raise ValueError("unescaped character '%s' in TEXT value" % c1)
             else:
                 yield c1
+
+
+TextConverter = TextConverterClass()

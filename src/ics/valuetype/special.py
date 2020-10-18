@@ -7,7 +7,7 @@ from ics.valuetype.base import ValueConverter
 __all__ = ["GeoConverter"]
 
 
-class GeoConverter(ValueConverter[Geo]):
+class GeoConverterClass(ValueConverter[Geo]):
 
     @property
     def ics_type(self) -> str:
@@ -25,3 +25,6 @@ class GeoConverter(ValueConverter[Geo]):
 
     def serialize(self, value: Geo, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         return "%f;%f" % value
+
+
+GeoConverter = GeoConverterClass()

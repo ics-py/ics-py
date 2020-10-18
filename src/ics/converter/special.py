@@ -62,7 +62,7 @@ class RecurrenceConverter(AttributeConverter):
                     raise ValueError("differing DTSTART values")
             else:
                 context["DTSTART"] = rrule._dtstart
-                dt_value = DatetimeConverter.INST.serialize(rrule._dtstart, context=context)
+                dt_value = DatetimeConverter.serialize(rrule._dtstart, context=context)
                 output.append(ContentLine(name="DTSTART", value=dt_value))
 
         for rrule in value._rrule:
@@ -72,9 +72,9 @@ class RecurrenceConverter(AttributeConverter):
             cl.name = "EXRULE"
             output.append(cl)
         for rdate in unique_justseen(sorted(value._rdate)):
-            output.append(ContentLine(name="RDATE", value=DatetimeConverter.INST.serialize(rdate)))
+            output.append(ContentLine(name="RDATE", value=DatetimeConverter.serialize(rdate)))
         for exdate in unique_justseen(sorted(value._exdate)):
-            output.append(ContentLine(name="EXDATE", value=DatetimeConverter.INST.serialize(exdate)))
+            output.append(ContentLine(name="EXDATE", value=DatetimeConverter.serialize(exdate)))
 
     def post_serialize(self, component: Component, output: Container, context: ContextDict):
         context.pop("DTSTART", None)
