@@ -7,7 +7,7 @@ from attr.validators import instance_of
 from ics.component import Component
 from ics.converter.component import ComponentMeta
 from ics.event import Event
-from ics.grammar import Container, string_to_container
+from ics.contentline import Container, string_to_containers
 from ics.timeline import Timeline
 from ics.todo import Todo
 
@@ -69,11 +69,20 @@ class Calendar(CalendarAttrs):
             if isinstance(imports, Container):
                 self.populate(imports)
             else:
-                containers = string_to_container(imports)
-                if len(containers) != 1:
+                containers = iter(string_to_containers(imports))
+                try:
+                    container = next(containers)
+                    if not isinstance(container, Container):
+                        raise ValueError("can't populate from %s" % type(container))
+                    self.populate(container)
+                except StopIteration:
+                    raise ValueError("string didn't contain any ics data")
+                try:
+                    next(containers)
                     raise ValueError("Multiple calendars in one file are not supported by this method."
                                      "Use ics.Calendar.parse_multiple()")
-                self.populate(containers[0])
+                except StopIteration:
+                    pass
 
     @property
     def creator(self) -> str:
@@ -89,7 +98,7 @@ class Calendar(CalendarAttrs):
         Parses an input string that may contain mutiple calendars
         and retruns a list of :class:`ics.event.Calendar`
         """
-        containers = string_to_container(string)
+        containers = string_to_containers(string)
         return [cls(imports=c) for c in containers]
 
     def __str__(self) -> str:

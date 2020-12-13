@@ -8,7 +8,7 @@ from dateutil.tz import tzical
 from ics.attendee import Attendee, Organizer, Person
 from ics.converter.base import AttributeConverter
 from ics.converter.component import ComponentConverter
-from ics.grammar import Container, ContentLine
+from ics.contentline import Container, ContentLine
 from ics.types import ContainerItem, ContextDict
 
 if TYPE_CHECKING:

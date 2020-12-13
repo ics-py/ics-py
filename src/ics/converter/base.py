@@ -5,7 +5,7 @@ from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, TYPE_CH
 
 import attr
 
-from ics.grammar import Container
+from ics.contentline import Container
 from ics.types import ContainerItem, ContextDict, ExtraParams
 
 if TYPE_CHECKING:

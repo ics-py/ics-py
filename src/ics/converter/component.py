@@ -5,7 +5,7 @@ import attr
 from attr import Attribute
 
 from ics.converter.base import AttributeConverter, GenericConverter
-from ics.grammar import Container
+from ics.contentline import Container
 from ics.types import ContainerItem, ContextDict
 
 if TYPE_CHECKING:
@@ -103,7 +103,6 @@ class ComponentConverter(AttributeConverter):
         return True
 
     def serialize(self, parent: "Component", output: Container, context: ContextDict):
-        self._check_component(parent, context)
         extras = self.get_extra_params(parent)
         if extras:
             raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))

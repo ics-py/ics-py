@@ -3,7 +3,7 @@ from typing import Any, List, TYPE_CHECKING, Tuple, cast
 import attr
 
 from ics.converter.base import AttributeConverter
-from ics.grammar import Container, ContentLine
+from ics.contentline import Container, ContentLine
 from ics.types import ContainerItem, ContextDict, ExtraParams, copy_extra_params
 from ics.valuetype.base import ValueConverter
 

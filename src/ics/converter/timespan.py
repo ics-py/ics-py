@@ -1,7 +1,7 @@
 from typing import List, TYPE_CHECKING, cast
 
 from ics.converter.base import AttributeConverter
-from ics.grammar import Container, ContentLine
+from ics.contentline import Container, ContentLine
 from ics.timespan import EventTimespan, Timespan, TodoTimespan
 from ics.types import ContainerItem, ContextDict, ExtraParams, copy_extra_params
 from ics.utils import ensure_datetime
@@ -92,7 +92,6 @@ class TimespanConverter(AttributeConverter):
             context.pop(key, None)
 
     def serialize(self, component: "Component", output: Container, context: ContextDict):
-        self._check_component(component, context)
         value: Timespan = self.get_value(component)
         if value.is_all_day():
             value_type = {"VALUE": ["DATE"]}

@@ -1,31 +1,107 @@
-import functools
-import re
-import warnings
+import platform
 from collections import UserString
-from typing import Generator, List, MutableSequence, Union
 
 import attr
-import importlib_resources  # type: ignore
-import tatsu  # type: ignore
-from tatsu.exceptions import FailedToken  # type: ignore
+import functools
+import re
+from typing import MutableSequence, Tuple, List, Union
 
 from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
-from ics.utils import limit_str_length, next_after_str_escape, validate_truthy
+from ics.utils import limit_str_length, validate_truthy
 
-__all__ = ["ParseError", "QuotedParamValue", "ContentLine", "Container", "string_to_container"]
+allow_frozen_exceptions = True
+if platform.python_implementation() == "PyPy":
+    # we can't raise frozen exceptions from an exception handler on pypy, see attrs#703:
+    # https://github.com/python-attrs/attrs/issues/703
+    allow_frozen_exceptions = False
 
-GRAMMAR = tatsu.compile(importlib_resources.read_text(__name__, "contentline.ebnf"))
 
-
+@attr.s(slots=True, frozen=allow_frozen_exceptions, auto_exc=True)  # type: ignore[misc]
 class ParseError(Exception):
-    pass
+    msg: str = attr.ib()
+    line_nr: int = attr.ib(default=-1)
+    col: Union[int, Tuple[int, int]] = attr.ib(default=-1)
+    line: str = attr.ib(default=None)
+    state: str = attr.ib(default=None)
+
+    def __str__(self):
+        strs = ["Line"]
+        if self.line_nr != -1:
+            strs.append(" %s" % self.line_nr)
+            if self.col != -1:
+                if isinstance(self.col, int):
+                    strs.append(":%s" % (self.col,))
+                else:
+                    strs.append(":%s-%s" % self.col)
+        strs.append(" ")
+        strs.append(self.msg)
+        if self.line:
+            strs.append(": ")
+            strs.append(self.line)
+        if self.state:
+            strs.append(" (")
+            strs.append(self.state)
+            strs.append(")")
+        return "".join(strs)
 
 
 class QuotedParamValue(UserString):
     pass
 
+    @classmethod
+    def maybe_unquote(cls, txt: str) -> Union["QuotedParamValue", str]:
+        if not txt:
+            return txt
+        if txt[0] == Patterns.DQUOTE:
+            assert len(txt) >= 2
+            assert txt[-1] == Patterns.DQUOTE
+            return cls(txt[1:-1])
+        else:
+            return txt
 
-@attr.s
+
+def escape_param(string: Union[str, QuotedParamValue]) -> str:
+    return str(string).translate(
+        {ord("\""): "^'",
+         ord("^"): "^^",
+         ord("\n"): "^n",
+         ord("\r"): ""})
+
+
+def unescape_param(string: str) -> str:
+    def repl(match):
+        g = match.group(1)
+        if g == "n":
+            return "\n"
+        elif g == "^":
+            return "^"
+        elif g == "'":
+            return "\""
+        elif len(g) == 0:
+            raise ParseError("parameter value '%s' may not end with an escape sequence" % string)
+        else:
+            raise ParseError("invalid escape sequence ^%s in parameter value '%s'" % (g, string))
+
+    return re.sub(r"\^(.?)", repl, string)
+
+
+class Patterns:
+    CONTROL = "\x00-\x08\x0A-\x1F\x7F"  # All the controls except HTAB
+    DQUOTE = "\""
+    LINEBREAK = "\r?\n|\r"
+    LINEFOLD = "(" + LINEBREAK + ")[ \t]"
+    QSAFE_CHARS = "[^" + CONTROL + DQUOTE + "]*"
+    SAFE_CHARS = "[^" + CONTROL + DQUOTE + ",:;]*"
+    VALUE_CHARS = "[^" + CONTROL + "]*"
+    IDENTIFIER = "[a-zA-Z0-9-]+"
+
+    PVAL = "(?P<pval>" + DQUOTE + QSAFE_CHARS + DQUOTE + "|" + SAFE_CHARS + ")"
+    PVALS = PVAL + "(," + PVAL + ")*"
+    PARAM = "(?P<pname>" + IDENTIFIER + ")=(?P<pvals>" + PVALS + ")"
+    LINE = "(?P<name>" + IDENTIFIER + ")(;" + PARAM + ")*:(?P<value>" + VALUE_CHARS + ")"
+
+
+@attr.s(slots=True)
 class ContentLine(RuntimeAttrValidation):
     """
     Represents one property line.
@@ -41,7 +117,8 @@ class ContentLine(RuntimeAttrValidation):
     params: ExtraParams = attr.ib(factory=lambda: ExtraParams(dict()))
     value: str = attr.ib(default="")
 
-    # TODO store value type for jCal and line number for error messages
+    # TODO store value type for jCal
+    line_nr: int = attr.ib(default=-1, eq=False)
 
     def serialize(self):
         return "".join(self.serialize_iter())
@@ -75,33 +152,6 @@ class ContentLine(RuntimeAttrValidation):
     def __setitem__(self, item, values):
         self.params[item] = list(values)
 
-    @classmethod
-    def parse(cls, line):
-        """Parse a single iCalendar-formatted line into a ContentLine"""
-        if "\n" in line or "\r" in line:
-            raise ValueError("ContentLine can only contain escaped newlines")
-        try:
-            ast = GRAMMAR.parse(line, whitespace="")
-        except FailedToken:
-            raise ParseError()
-        else:
-            return cls.interpret_ast(ast)
-
-    @classmethod
-    def interpret_ast(cls, ast):
-        name = ast['name']
-        value = ast['value']
-        params = ExtraParams(dict())
-        for param_ast in ast.get('params', []):
-            param_name = param_ast["name"]
-            params[param_name] = []
-            for param_value_ast in param_ast["values_"]:
-                val = unescape_param(param_value_ast["value"])
-                if param_value_ast["quoted"] == "true":
-                    val = QuotedParamValue(val)
-                params[param_name].append(val)
-        return cls(name, params, value)
-
     def clone(self):
         """Makes a copy of itself"""
         return attr.evolve(self, params=copy_extra_params(self.params))
@@ -118,7 +168,7 @@ def _wrap_list_func(list_func):
     return wrapper
 
 
-@attr.s(repr=False)
+@attr.s(slots=True, repr=False)
 class Container(MutableSequence[ContainerItem]):
     """Represents an iCalendar object.
     Contains a list of ContentLines or Containers.
@@ -153,27 +203,6 @@ class Container(MutableSequence[ContainerItem]):
         if newline:
             yield "\r\n"
 
-    @classmethod
-    def parse(cls, name, tokenized_lines):
-        items = []
-        if not name.isupper():
-            warnings.warn("Container 'BEGIN:%s' is not all-uppercase" % name)
-        for line in tokenized_lines:
-            if line.name == 'BEGIN':
-                items.append(cls.parse(line.value, tokenized_lines))
-            elif line.name == 'END':
-                if line.value.upper() != name.upper():
-                    raise ParseError(
-                        "Expected END:{}, got END:{}".format(name, line.value))
-                if not name.isupper():
-                    warnings.warn("Container 'END:%s' is not all-uppercase" % name)
-                break
-            else:
-                items.append(line)
-        else:  # if break was not called
-            raise ParseError("Missing END:{}".format(name))
-        return cls(name, items)
-
     def clone(self, items=None, deep=False):
         """Makes a copy of itself"""
         if items is None:
@@ -191,10 +220,6 @@ class Container(MutableSequence[ContainerItem]):
             for nr, item in enumerate(items):
                 check_is_instance("item %s" % nr, item, (ContentLine, Container))
 
-    def __setitem__(self, index, value):  # index might be slice and value might be iterable
-        self.data.__setitem__(index, value)
-        attr.validate(self)
-
     def insert(self, index, value):
         self.check_items(value)
         self.data.insert(index, value)
@@ -208,13 +233,24 @@ class Container(MutableSequence[ContainerItem]):
         attr.validate(self)
 
     def __getitem__(self, i):
-        if isinstance(i, slice):
+        if isinstance(i, str):
+            return tuple(cl for cl in self.data if cl.name == i)
+        elif isinstance(i, slice):
             return attr.evolve(self, data=self.data[i])
         else:
             return self.data[i]
 
+    def __delitem__(self, i):
+        if isinstance(i, str):
+            self.data = [cl for cl in self.data if cl.name != i]
+        else:
+            del self.data[i]
+
+    def __setitem__(self, index, value):  # index might be slice and value might be iterable
+        self.data.__setitem__(index, value)
+        attr.validate(self)
+
     __contains__ = _wrap_list_func(list.__contains__)
-    __delitem__ = _wrap_list_func(list.__delitem__)
     __iter__ = _wrap_list_func(list.__iter__)
     __len__ = _wrap_list_func(list.__len__)
     __reversed__ = _wrap_list_func(list.__reversed__)
@@ -224,76 +260,3 @@ class Container(MutableSequence[ContainerItem]):
     pop = _wrap_list_func(list.pop)
     remove = _wrap_list_func(list.remove)
     reverse = _wrap_list_func(list.reverse)
-
-
-def escape_param(string: Union[str, QuotedParamValue]) -> str:
-    return str(string).translate(
-        {ord("\""): "^'",
-         ord("^"): "^^",
-         ord("\n"): "^n",
-         ord("\r"): ""})
-
-
-def unescape_param(string: str) -> str:
-    return "".join(unescape_param_iter(string))
-
-
-def unescape_param_iter(string: str) -> Generator[str, None, None]:
-    it = iter(string)
-    for c1 in it:
-        if c1 == "^":
-            c2 = next_after_str_escape(it, full_str=string)
-            if c2 == "n":
-                yield "\n"
-            elif c2 == "^":
-                yield "^"
-            elif c2 == "'":
-                yield "\""
-            else:
-                yield c1
-                yield c2
-        else:
-            yield c1
-
-
-def unfold_lines(physical_lines):
-    current_line = ''
-    for line in physical_lines:
-        line = line.rstrip('\r')
-        if not current_line:
-            current_line = line
-        elif line and line[0] in (' ', '\t'):
-            current_line += line[1:]
-        else:
-            if len(current_line) > 0:
-                yield current_line
-            current_line = line
-    if current_line:
-        yield current_line
-
-
-def tokenize_line(unfolded_lines):
-    for line in unfolded_lines:
-        yield ContentLine.parse(line)
-
-
-def parse(tokenized_lines):
-    # tokenized_lines must be an iterator, so that Container.parse can consume/steal lines
-    tokenized_lines = iter(tokenized_lines)
-    res = []
-    for line in tokenized_lines:
-        if line.name == 'BEGIN':
-            res.append(Container.parse(line.value, tokenized_lines))
-        else:
-            res.append(line)
-    return res
-
-
-def lines_to_container(lines):
-    return parse(tokenize_line(unfold_lines(lines)))
-
-
-def string_to_container(txt):
-    # unicode newlines are interpreted as such by str.splitlines(), but not by the ics standard
-    # "A:abc\x85def".splitlines() => ['A:abc', 'def'] which is wrong
-    return lines_to_container(re.split("\r?\n|\r", txt))
