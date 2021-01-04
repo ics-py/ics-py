@@ -65,8 +65,8 @@ All the `documentation <http://icspy.readthedocs.org/>`_ is hosted on
 at every commit.
 
 * `Quickstart <http://icspy.readthedocs.org/>`_
-* `API <http://icspy.readthedocs.org/en/latest/api.html>`_
-* `About <http://icspy.readthedocs.org/en/latest/about.html>`_
+* `API <https://icspy.readthedocs.io/en/stable/api.html>`_
+* `About <https://icspy.readthedocs.io/en/stable/about.html>`_
 
 
 Contribute
