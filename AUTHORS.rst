@@ -40,8 +40,6 @@ Many thanks for your contributions!
 There are also a few modules or functions incorporated from other
 authors and projects:
 
-* The function ``ics.utils.iso_precision`` includes something like 10 lines of
-  Arrow's, code, which is written by Chris Smith and under Apache license.
 
 
 A big part of the code was written at `UrLab <https://urlab.be>`_, an awesome
@@ -49,8 +47,7 @@ hackerspace at `ULB <https://ulb.be>`_ in Brussels, Belgium.
 
 Thanks to:
 
-* `arrow <https://arrow.readthedocs.io/en/latest>`_ which provides a nice API for dates, times and deltas,
-* `python-dateutil <https://dateutil.readthedocs.io/en/stable>`_ for parsing timezones from VTIMEZONE blocks,
+* `python-dateutil <https://dateutil.readthedocs.io/en/stable>`_ for parsing VTIMEZONEs and RRULEs,
 * `requests <https://requests.readthedocs.io/en/master>`_ for giving me inspiration from it's beautiful and pythonic API (and its doc too),
 * `six <https://six.readthedocs.io>`_ to have made the python3 transition easier,
 * `#urlab <irc://freenode.org#urlab>`_ for help and advice.
