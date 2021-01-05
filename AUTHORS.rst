@@ -32,7 +32,6 @@ Other contributors, listed alphabetically, are:
 * `@Timic3 <https://github.com/Timic3>`_
 * `@tomschr <https://github.com/tomschr>`_
 * `@Trii <https://github.com/Trii>`_
-* `@tomschr <https://github.com/tomschr>`_
 * `@zagnut007 <https://github.com/zagnut007>`_
 * `@zuphilip <https://github.com/zuphilip>`_
 
@@ -41,18 +40,14 @@ Many thanks for your contributions!
 There are also a few modules or functions incorporated from other
 authors and projects:
 
-* ``utils.iso_precision`` includes something like 10 lines of Arrow's, code,
-  which is written by Chris Smith and under Apache license
 
 
-A big part of the code was written at `UrLab <http://urlab.be>`_, an awesome
-hackerspace in `ULB <http://ulb.ac.be>`_ in Brussels, Belgium.
-A big part of the code was written at `UrLab <http://urlab.be>`_, an awesome hackerspace in `ULB <http://ulb.ac.be>`_ in Brussels, Belgium.
+A big part of the code was written at `UrLab <https://urlab.be>`_, an awesome
+hackerspace at `ULB <https://ulb.be>`_ in Brussels, Belgium.
 
 Thanks to:
 
-* `arrow <http://crsmithdev.com/arrow/>`_ which provides a nice API for dates, times and deltas,
-* `python-dateutil <http://labix.org/python-dateutil>`_ for parsing timezones from VTIMEZONE blocks,
-* `requests <http://python-requests.org/>`_ for giving me inspiration from it's beautiful and pythonic API (and its doc too),
-* `six <http://pythonhosted.org/six/>`_ to have made the python3 transition easier,
+* `python-dateutil <https://dateutil.readthedocs.io/en/stable>`_ for parsing VTIMEZONEs and RRULEs,
+* `requests <https://requests.readthedocs.io/en/master>`_ for giving me inspiration from it's beautiful and pythonic API (and its doc too),
+* `six <https://six.readthedocs.io>`_ to have made the python3 transition easier,
 * `#urlab <irc://freenode.org#urlab>`_ for help and advice.
