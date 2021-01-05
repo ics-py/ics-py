@@ -1,0 +1,63 @@
+name: Publish package 📦 to PyPI and TestPyPI
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+      - publish-pypi # Only to test if this PR works, should be removed before merging
+  pull_request:
+    branches:
+      - main
+  # Also trigger on release created events
+  release:
+    types:
+      - created
+
+jobs:
+  build-n-publish:
+    name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+
+    - name: Setup
+       run: pip install tox poetry bump2version --user
+
+    - name: Build the package
+      run: poetry build
+
+    - name: Ensure that the version numbers are consistent
+      run: tox --recreate
+
+    - name: Build the package
+      run: poetry build
+
+    - name: Poetry configuration ⚙️
+      env:
+        TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        poetry config repositories.test_pypi https://test.pypi.org/legacy/
+        poetry config pypi-token.test_pypi $TEST_PYPI_API_TOKEN
+        poetry config pypi-token.pypi $PYPI_API_TOKEN
+        poetry publish -r testpypi
+
+    - name: Publish 📦 to Test PyPI 🧪
+        env:
+          PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          poetry publish -r testpypi
+
+    - name: Publish 📦 to PyPI 🎉
+      if: startsWith(github.ref, 'refs/tags')
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry publish -r pypi
