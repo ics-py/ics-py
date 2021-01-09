@@ -16,7 +16,7 @@ on:
       - created
 
 jobs:
-  build-n-publish:
+  build-and-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-20.04
 
@@ -28,7 +28,7 @@ jobs:
         python-version: 3.7
 
     - name: Setup
-       run: pip install tox poetry bump2version --user
+      run: pip install tox poetry bump2version --user
 
     - name: Build the package
       run: poetry build
@@ -50,14 +50,14 @@ jobs:
         poetry publish -r testpypi
 
     - name: Publish 📦 to Test PyPI 🧪
-        env:
-          PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        run: |
-          poetry publish -r testpypi
+      env:
+        PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      run: |
+        poetry publish -r testpypi
 
     - name: Publish 📦 to PyPI 🎉
       if: startsWith(github.ref, 'refs/tags')
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          poetry publish -r pypi
+      env:
+        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        poetry publish -r pypi
