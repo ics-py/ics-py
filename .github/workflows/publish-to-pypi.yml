@@ -33,12 +33,6 @@ jobs:
     - name: Build the package
       run: poetry build
 
-    - name: Ensure that the version numbers are consistent
-      run: tox --recreate
-
-    - name: Build the package
-      run: poetry build
-
     - name: Poetry configuration ⚙️
       env:
         TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
