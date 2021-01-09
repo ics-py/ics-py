@@ -45,7 +45,7 @@ jobs:
       env:
         PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
       run: |
-        poetry publish -r testpypi
+        poetry publish -r test_pypi
 
     # - name: Publish 📦 to PyPI 🎉
     #   if: startsWith(github.ref, 'refs/tags')
