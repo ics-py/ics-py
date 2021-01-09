@@ -27,8 +27,8 @@ jobs:
       with:
         python-version: 3.7
 
-    - name: Setup
-      run: pip install tox poetry bump2version --user
+    - name: Install build dependencies
+      run: pip install tox poetry bump2version
 
     - name: Build the package
       run: poetry build
