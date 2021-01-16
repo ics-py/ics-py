@@ -72,37 +72,9 @@ at every commit.
 Contribute
 ----------
 
-Contribution are welcome of course! For more information, see
+Contribution are welcome of course! For more information and how to setup, see
 `contributing <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_.
 
-
-Testing & Docs
---------------
-
-.. code-block:: bash
-
-    # setup virtual environment
-    $ sudo pip install virtualenv
-    $ virtualenv ve
-    $ source ve/bin/activate
-
-    # tests
-    $ pip install -r requirements.txt
-    $ pip install -r dev/requirements-test.txt
-    $ python setup.py test
-
-    # tests coverage
-    $ pip install -r requirements.txt
-    $ pip install -r dev/requirements-test.txt
-    $ python setup.py test
-    $ coverage html
-    $ firefox htmlcov/index.html
-
-    # docs
-    $ pip install -r requirements.txt
-    $ pip install -r dev/requirements-doc.txt
-    $ cd doc
-    $ make html
 
 
 Links
