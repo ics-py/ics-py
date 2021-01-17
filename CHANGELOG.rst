@@ -1,10 +1,15 @@
-============
+================
 Ics.py changelog
-============
+================
 
-**************
+*Major releases are named in honor of influential women who shaped modern computer technology*
+
+***************************
 0.8 (in dev) - Grace Hopper
-**************
+***************************
+
+*Grace Hopper was mathematician and rear admiral who was a pioneer in developing computer technology,
+helping to devise UNIVAC I, the first commercial electronic computer and FLOW-MATIC on which COBOL was based*
 
 This is a major release in the life of ics.py as it fixes a lot of long standing
 (design) issues with timespans, removes Arrow and introduces `attrs`.
@@ -24,11 +29,16 @@ In progress:
  - some attributes now have further validators that restrict which values they can be set to, which might further change once we have configurable levels of strictness
  - `dtstamp` and `created` have been separated, `dtstamp` is the only one set automatically (hopefully more conforming with the RFC)
  - `Event.join` is hard to do right and now gone if nobody needs it (and is able to formulate a clear behaviour faced with floating events vs events in different timezones and also all-day events)
+ - `Event.join` is hard to do right and now gone if nobody needs it (and is able to formulate a clear behavior faced with floating events vs events in different timezones and also all-day events)
  - method `has_end()` -> property `has_explicit_end` as any Event with a begin time has an end
 
-**************
+***********************
 0.7 - Katherine Johnson
-**************
+***********************
+
+*Katherine Johnson was a mathematician whose calculations of orbital mechanics at NASA
+were critical to the success of the firsts crewed spaceflights.
+She helped pioneer the use of computers to perform these tasks at NASA.*
 
 Special thanks to @N-Coder for making 0.7 happen!
 
@@ -47,9 +57,12 @@ Bug fixes:
  - Fix multiple bugs in Organizer and Attendees properties.
    (See #207, #209, #217, #218)
 
-**************
-0.6
-**************
+*******************
+0.6 - Sophie Wilson
+*******************
+
+*Sophie Wilson is an computer scientist who was instrumental in designing the
+BBC Micro, including the BBC BASIC language, and the ARM instruction set*
 
 Major changes:
  - Drop support for Python 3.5. Python 3.7 is now distributed in both Ubuntu LTS
@@ -79,9 +92,12 @@ Bug fixes:
  - Fix parsing of quoted values as well as escaped semi-columns (#185 and #193)
 
 
-**************
-0.5
-**************
+********************
+0.5 - Adele Goldberg
+********************
+
+*Adele Goldberg is a computer scientist who participated in developing Smalltalk-80 and
+various concepts related to object-oriented programming while working as a researcher at Xerox.*
 
 This is the first version to be Python 3 only.
 
@@ -120,9 +136,12 @@ Misc:
 
 Thanks also to @t00n, @aureooms, @chauffer, @seants, @davidjb, @xaratustrah, @Philiptpp
 
-**************
-0.4
-**************
+**************************
+0.4 - Elizabeth J. Feinler
+**************************
+
+*Elizabeth J. Feinler is an information scientist. She led the NIC for the ARPANET
+as it evolved into the Defense Data Network (DDN) and then the Internet.*
 
 Last version to support Python 2.7 and 3.3.
 
@@ -160,7 +179,7 @@ Thank you also to @davidjb, @etnarek, @jammon
  - Events in an `EventList()` are now always sorted
  - Freeze the version of Arrow (they made backwards-incompatible changes)
  - Add a lot of tests
- - Lots of small bugfixes
+ - Lots of small bug fixes
 
 *******
 0.1.3
