@@ -1,13 +1,13 @@
 ics.py `0.8.0-dev` : iCalendar for Humans
 =========================================
 
-`Original repository <https://github.com/C4ptainCrunch/ics.py>`_ (GitHub) -
-`Bugtracker and issues <https://github.com/C4ptainCrunch/ics.py/issues>`_ (GitHub) -
+`Original repository <https://github.com/ics-py/ics-py>`_ (GitHub) -
+`Bugtracker and issues <https://github.com/ics-py/ics-py/issues>`_ (GitHub) -
 `PyPi package <https://pypi.python.org/pypi/ics/>`_ (ics) -
 `Documentation <http://icspy.readthedocs.org/>`_ (Read The Docs).
 
 
-.. image:: https://img.shields.io/github/license/c4ptaincrunch/ics.py.svg
+.. image:: https://img.shields.io/github/license/ics-py/ics-py.svg
     :target: https://pypi.python.org/pypi/ics/
     :alt: Apache 2 License
 
@@ -73,7 +73,7 @@ Contribute
 ----------
 
 Contribution are welcome of course! For more information and how to setup, see
-`contributing <https://github.com/C4ptainCrunch/ics.py/blob/master/CONTRIBUTING.rst>`_.
+`contributing <https://github.com/ics-py/ics-py/blob/master/CONTRIBUTING.rst>`_.
 
 
 
@@ -83,6 +83,6 @@ Links
 * `Vulgarised RFC <http://www.kanzaki.com/docs/ical/>`_
 
 .. image:: http://i.imgur.com/KnSQg48.jpg
-    :target: https://github.com/C4ptainCrunch/ics.py
+    :target: https://github.com/ics-py/ics-py
     :alt: Parse ALL the calendars!
     :align: center

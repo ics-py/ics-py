@@ -23,7 +23,7 @@ In progress:
  - `extra` can now only contain nested `Container`s and `ContentLine`s, no plain strings
  - some attributes now have further validators that restrict which values they can be set to, which might further change once we have configurable levels of strictness
  - `dtstamp` and `created` have been separated, `dtstamp` is the only one set automatically (hopefully more conforming with the RFC)
- - `Event.join` is hard to do right and now gone if nobody needs it (and is able to formulate a clear behaviour faced with floating events vs events in different timezones and also all-day events)   
+ - `Event.join` is hard to do right and now gone if nobody needs it (and is able to formulate a clear behaviour faced with floating events vs events in different timezones and also all-day events)
  - method `has_end()` -> property `has_explicit_end` as any Event with a begin time has an end
 
 **************
@@ -110,7 +110,7 @@ Bug fixes:
 
 Known issues:
  - There are known problems with all-day events. This GitHub issue summarizes them
-   well: https://github.com/C4ptainCrunch/ics.py/issues/155. You can expect them to
+   well: https://github.com/ics-py/ics-py/issues/155. You can expect them to
    be fixed in 0.6 but not before.
 
 Misc:

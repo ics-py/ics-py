@@ -4,7 +4,7 @@ Contributing to ics.py
 Do you want to contribute? We would love your help 🤗
 
 Feel free to submit patches, issues, feature requests, pull requests on the
-`GitHub repo <http://github.com/C4ptainCrunch/ics.py>`_.
+`GitHub repo <http://github.com/ics-py/ics-py>`_.
 
 Please note that ics.py is maintained by volunteers (mostly one volunteer)
 on their free time. It might take some time for us to have a look at your
@@ -27,7 +27,7 @@ How to submit a pull request
 ----------------------------
 
 First, before writing your PR, please
-`open an issue <http://github.com/C4ptainCrunch/ics.py/issues/new>`_,
+`open an issue <http://github.com/ics-py/ics-py/issues/new>`_,
 on GitHub to discuss the problem you want to solve and debate on the way
 you are solving it. This might save you a lot of time if the maintainers
 are already working on it or have a specific idea on how the problem should
@@ -145,7 +145,7 @@ If you want to publish a new release, use the following steps
 .. code-block:: bash
 
     # Grab the sources and install the dev tools
-    git clone https://github.com/C4ptainCrunch/ics.py.git && cd ics.py
+    git clone https://github.com/ics-py/ics-py.git && cd ics-py
     pip install tox poetry bump2version --user
 
     # Make sure all the test run

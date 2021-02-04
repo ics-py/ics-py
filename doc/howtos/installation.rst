@@ -90,7 +90,7 @@ virtual Python environment:
 
    #. Install the package::
 
-      $ pip install ics.py
+      $ pip install ics
 
    #. If you do not need the virtual Python environment anymore, run
       the command :command:`deactivate`.
@@ -104,7 +104,7 @@ virtual Python environment:
 
    However, if you really want to, run::
 
-   $ pip install ics.py
+   $ pip install ics
 
 
 Regardless which method you use, the command :command:`pip list` shows you a

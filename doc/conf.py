@@ -105,8 +105,8 @@ html_theme = 'alabaster'
 
 html_theme_options = {
     'logo': 'logo.png',
-    'github_user': 'C4ptainCrunch',
-    'github_repo': 'ics.py',
+    'github_user': 'ics-py',
+    'github_repo': 'ics-py',
     'description': 'ics.py is an elegant and simple iCalendar library for Python, built for human beings.',
     'logo_name': True,
     'github_type': 'star',

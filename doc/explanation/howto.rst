@@ -42,7 +42,7 @@ Issues with all-day events
 The semantics of all-day events in the pyton API were badly defined
 in the early versions of ics.py and this led to incoherence and
 bugs. See this
-`GitHub thread <https://github.com/C4ptainCrunch/ics.py/issues/155>`_
+`GitHub thread <https://github.com/ics-py/ics-py/issues/155>`_
 for more info.
 
 Datetimes are converted to UTC at parsing time
@@ -50,7 +50,7 @@ Datetimes are converted to UTC at parsing time
 
 ics.py always uses UTC for internal representation of dates.
 This is wrong and leads to many problems. See this
-`GitHub thread <https://github.com/C4ptainCrunch/ics.py/issues/188>`_
+`GitHub thread <https://github.com/ics-py/ics-py/issues/188>`_
 for more info.
 
 .. rubric:: Footnotes
