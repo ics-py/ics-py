@@ -1,11 +1,12 @@
-from enum import Enum
-
 import datetime
-import dateutil
-from typing import Union, cast
+from enum import Enum
+from typing import Union, cast, Optional, Dict, Any
 
-from ics.timezone import Timezone, UTC, TimezoneStandardObservance, RRULE_EPOCH_START
-from ics.types import UTCOffset
+import dateutil
+
+from ics.contentline import string_to_containers
+from ics.timezone import Timezone, UTC, TimezoneStandardObservance, RRULE_EPOCH_START, is_utc
+from ics.types import UTCOffset, ContextDict
 from ics.utils import TIMEDELTA_ZERO
 
 __all__ = [
@@ -23,6 +24,60 @@ class TimezoneResult(Enum):
     LOCAL = 2
     UNSERIALIZABLE = 3
     NOT_IMPLEMENTED = 4
+
+
+def Timezone_from_tzid(tzid: str) -> Timezone:
+    import ics_vtimezones  # type: ignore
+    tz_ics = ics_vtimezones.find_vtimezone_ics_file(tzid)
+    if not tz_ics:
+        olson_tzid = ics_vtimezones.windows_to_olson(tzid)
+        if olson_tzid:
+            tz_ics = ics_vtimezones.find_vtimezone_ics_file(olson_tzid)
+    if not tz_ics:
+        raise ValueError("no vTimezone.ics file found for %s" % tzid)
+    ics_cal = string_to_containers(tz_ics.read_text())
+    if not (len(ics_cal) == 1 and len(ics_cal[0]) == 3 and ics_cal[0][2].name == "VTIMEZONE"):
+        raise ValueError("vTimezone.ics file %s has invalid content" % tz_ics)
+    return Timezone.from_container(ics_cal[0][2])
+
+
+def Timezone_from_tzinfo(tzinfo: datetime.tzinfo, context: Optional[ContextDict] = None) -> Optional[Timezone]:
+    if isinstance(tzinfo, Timezone):
+        return tzinfo
+    if is_utc(tzinfo):
+        return UTC
+
+    cache: Dict[Union[int, datetime.tzinfo], Optional[Timezone]] = {}
+    the_id: Any = 0
+    if context is not None:
+        context.setdefault("tzinfo_CACHE", cache)
+        try:
+            hash(tzinfo)
+        except TypeError:
+            the_id = id(tzinfo)
+        else:
+            the_id = tzinfo
+        if the_id in cache:
+            return cache[the_id]
+
+    tz: Union[Timezone, TimezoneResult]
+    for func in TIMEZONE_CONVERTERS:
+        tz = func(tzinfo)
+        if tz == TimezoneResult.CONTINUE:
+            continue
+        elif tz == TimezoneResult.LOCAL:
+            if context is not None:
+                cache[the_id] = None
+            return None
+        elif tz in [TimezoneResult.UNSERIALIZABLE, TimezoneResult.NOT_IMPLEMENTED]:
+            break
+        else:
+            assert isinstance(tz, Timezone)
+            if context is not None:
+                cache[the_id] = tz
+            return tz
+
+    raise ValueError("can't produce Timezone from %s %r (%s)" % (type(tzinfo).__qualname__, tzinfo, tz))
 
 
 def Timezone_from_offset(name: str, offset: datetime.timedelta) -> Timezone:
@@ -73,7 +128,8 @@ def Timezone_from_dateutil(tzinfo: datetime.tzinfo) -> Union[Timezone, TimezoneR
 
 
 def Timezone_from_pytz(tzinfo: datetime.tzinfo) -> Union[Timezone, TimezoneResult]:
-    if not (type(tzinfo).__module__ == "pytz" or type(tzinfo).__module__.startswith("pytz.")):
+    module = type(tzinfo).__module__
+    if not (module == "pytz" or module.startswith("pytz.")):
         return TimezoneResult.CONTINUE
 
     try:
