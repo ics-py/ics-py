@@ -1,12 +1,12 @@
-import attr
-from attr.validators import instance_of
 from typing import ClassVar, Iterable, Iterator, List, Optional, Union
 
+import attr
+from attr.validators import instance_of
+
 from ics.component import Component
+from ics.contentline import Container, string_to_containers, lines_to_containers
 from ics.event import Event
-from ics.contentline import Container, string_to_containers
 from ics.timeline import Timeline
-from ics.timezone import Timezone
 from ics.todo import Todo
 
 
@@ -68,9 +68,9 @@ class Calendar(CalendarAttrs):
                 self.populate(imports)
             else:
                 if isinstance(imports, str):
-                    containers = iter(string_to_container(imports))
+                    containers = iter(string_to_containers(imports))
                 else:
-                    containers = iter(lines_to_container(imports))
+                    containers = iter(lines_to_containers(imports))
                 try:
                     container = next(containers)
                     if not isinstance(container, Container):

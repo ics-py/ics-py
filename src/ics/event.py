@@ -25,7 +25,7 @@ class CalendarEntryAttrs(Component):
 
     description: Optional[str] = attr.ib(default=None)
     location: Optional[str] = attr.ib(default=None)
-    url: Optional[str] = attr.ib(default=None)
+    url: Union[None, str, URL] = attr.ib(default=None)
     status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=in_(STATUS_VALUES))  # type: ignore[misc]
 
     created: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore[misc]
