@@ -9,14 +9,8 @@ from typing import MutableSequence, Tuple, List, Union
 from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
 from ics.utils import limit_str_length, validate_truthy
 
-allow_frozen_exceptions = True
-if platform.python_implementation() == "PyPy":
-    # we can't raise frozen exceptions from an exception handler on pypy, see attrs#703:
-    # https://github.com/python-attrs/attrs/issues/703
-    allow_frozen_exceptions = False
 
-
-@attr.s(slots=True, frozen=allow_frozen_exceptions, auto_exc=True)  # type: ignore[misc]
+@attr.s(slots=True, frozen=True, auto_exc=True)  # type: ignore[misc]
 class ParseError(Exception):
     msg: str = attr.ib()
     line_nr: int = attr.ib(default=-1)
