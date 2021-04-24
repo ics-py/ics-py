@@ -1,6 +1,6 @@
 import dateutil.rrule
 
-from ics.grammar import ContentLine
+from ics.contentline.parser import ContentLineParser
 
 __all__ = ["rrule_to_dict", "rrule_to_ContentLine", "rrule_eq", "rrule_hash", "rrule_repr", "rruleset_eq", "rruleset_str", "rruleset_repr", "rruleset_hash"]
 
@@ -20,7 +20,7 @@ def rrule_to_ContentLine(self: dateutil.rrule.rrule):
     while val[0].startswith("DTSTART"):
         val = val[1:]
     assert len(val) == 1
-    return ContentLine.parse(val[0])
+    return ContentLineParser().parse(val[0])
 
 
 def rrule_eq(self: dateutil.rrule.rrule, other: dateutil.rrule.rrule):
@@ -33,7 +33,7 @@ def rrule_hash(self: dateutil.rrule.rrule):
 
 
 def rrule_repr(self: dateutil.rrule.rrule):
-    return "rrule(%s)" % ", ".join("%r=%r" % (k, v) for k, v in rrule_to_dict(self).items())
+    return "rrule(%s)" % ", ".join("%s=%r" % (k, v) for k, v in rrule_to_dict(self).items())
 
 
 def rruleset_eq(self: dateutil.rrule.rruleset, other: dateutil.rrule.rruleset):
