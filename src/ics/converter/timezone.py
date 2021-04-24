@@ -1,76 +1,17 @@
-import datetime
+from typing import Optional, List
+
 from attr import Attribute
-from typing import Dict, Union, Optional, List, Any
 
 from ics.component import Component
+from ics.contentline import Container
 from ics.converter.base import AttributeConverter
 from ics.converter.component import ComponentMeta, ImmutableComponentMeta
-from ics.converter.timezone_utils import TimezoneResult, TIMEZONE_CONVERTERS
-from ics.grammar import Container, string_to_container
-from ics.timezone import Timezone, UTC, is_utc, TimezoneDaylightObservance, TimezoneStandardObservance, \
+from ics.timezone import Timezone, TimezoneDaylightObservance, TimezoneStandardObservance, \
     TimezoneObservance
 from ics.types import ContextDict, ContainerItem
 from ics.valuetype.datetime import DatetimeConverterMixin
 
-__all__ = [
-    "Timezone_from_tzid",
-    "Timezone_from_tzinfo",
-    "TimezoneMeta",
-]
-
-
-def Timezone_from_tzid(tzid: str) -> Timezone:
-    import ics_vtimezones  # type: ignore
-    tz_ics = ics_vtimezones.find_vtimezone_ics_file(tzid)
-    if not tz_ics:
-        olson_tzid = ics_vtimezones.windows_to_olson(tzid)
-        if olson_tzid:
-            tz_ics = ics_vtimezones.find_vtimezone_ics_file(olson_tzid)
-    if not tz_ics:
-        raise ValueError("no vTimezone.ics file found for %s" % tzid)
-    ics_cal = string_to_container(tz_ics.read_text())
-    if not (len(ics_cal) == 1 and len(ics_cal[0]) == 3 and ics_cal[0][2].name == "VTIMEZONE"):
-        raise ValueError("vTimezone.ics file %s has invalid content" % tz_ics)
-    return Timezone.from_container(ics_cal[0][2])
-
-
-def Timezone_from_tzinfo(tzinfo: datetime.tzinfo, context: Optional[ContextDict] = None) -> Optional[Timezone]:
-    if isinstance(tzinfo, Timezone):
-        return tzinfo
-    if is_utc(tzinfo):
-        return UTC
-
-    cache: Dict[Union[int, datetime.tzinfo], Optional[Timezone]] = {}
-    the_id: Any = 0
-    if context is not None:
-        context.setdefault("tzinfo_CACHE", cache)
-        try:
-            hash(tzinfo)
-        except TypeError:
-            the_id = id(tzinfo)
-        else:
-            the_id = tzinfo
-        if the_id in cache:
-            return cache[the_id]
-
-    tz: Union[Timezone, TimezoneResult]
-    for func in TIMEZONE_CONVERTERS:
-        tz = func(tzinfo)
-        if tz == TimezoneResult.CONTINUE:
-            continue
-        elif tz == TimezoneResult.LOCAL:
-            if context is not None:
-                cache[the_id] = None
-            return None
-        elif tz in [TimezoneResult.UNSERIALIZABLE, TimezoneResult.NOT_IMPLEMENTED]:
-            break
-        else:
-            assert isinstance(tz, Timezone)
-            if context is not None:
-                cache[the_id] = tz
-            return tz
-
-    raise ValueError("can't produce Timezone from %s %r" % (type(tzinfo).__qualname__, tzinfo))
+__all__ = ["TimezoneMeta"]
 
 
 class TimezoneMeta(ImmutableComponentMeta):
