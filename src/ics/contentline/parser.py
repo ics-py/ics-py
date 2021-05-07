@@ -1,7 +1,8 @@
-import attr
 import re
 import warnings
 from typing import Iterator, Tuple, Union, List, Match, ClassVar, Iterable
+
+import attr
 
 from ics.contentline.container import Container, ContentLine, Patterns, ParseError, QuotedParamValue, unescape_param
 from ics.types import ContainerItem

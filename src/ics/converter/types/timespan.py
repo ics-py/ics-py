@@ -18,8 +18,6 @@ CONTEXT_ITEMS = "timespan_items"
 CONTEXT_KEYS = [CONTEXT_BEGIN_TIME, CONTEXT_END_TIME, CONTEXT_DURATION,
                 CONTEXT_PRECISION, CONTEXT_END_NAME, CONTEXT_ITEMS]
 
-__all__ = ["TimespanConverter"]
-
 
 class TimespanConverter(AttributeConverter):
     @property

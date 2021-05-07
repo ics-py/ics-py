@@ -8,11 +8,16 @@ from ics.contentline import Container, ContentLine
 from ics.types import ContainerItem, ContextDict, ExtraParams, copy_extra_params
 from ics.valuetype.base import ValueConverter
 
-__all__ = ["AttributeValueConverter"]
-
 
 @attr.s(frozen=True)
 class AttributeValueConverter(AttributeConverter):
+    """
+    An `AttributeConverter` that simply use one or more `ValueConverter`s to handle their (single) attribute.
+    Transparently handles single-value and multi-value attributes.
+    See `GenericConverter` for more information.
+    """
+
+    # Cached information for parsing and serialization.
     value_converters: List[ValueConverter]
 
     def __attrs_post_init__(self):
@@ -21,12 +26,9 @@ class AttributeValueConverter(AttributeConverter):
         for value_type in self.value_types:
             converter = ValueConverter.BY_TYPE.get(value_type, None)
             if converter is None:
-                raise ValueError("can't convert attribute %s type %s with ValueConverter" % (self.attribute, value_type))
+                raise ValueError(
+                    "can't convert attribute %s type %s with ValueConverter" % (self.attribute, value_type))
             self.value_converters.append(converter)
-
-    @property
-    def filter_ics_names(self) -> List[str]:
-        return [self.ics_name]
 
     @property
     def ics_name(self) -> str:
@@ -35,23 +37,9 @@ class AttributeValueConverter(AttributeConverter):
             name = self.attribute.name.upper().replace("_", "-").strip("-")
         return name
 
-    def __prepare_params(self, line: ContentLine) -> Tuple[ExtraParams, ValueConverter]:
-        params = copy_extra_params(line.params)
-        value_type = params.pop("VALUE", None)
-        if value_type:
-            if len(value_type) != 1:
-                raise ValueError("multiple VALUE type definitions in %s" % line)
-            for converter in self.value_converters:
-                if converter.ics_type == value_type[0]:
-                    break
-            else:
-                raise ValueError("can't convert %s with %s" % (line, self))
-        else:
-            converter = self.value_converters[0]
-        return params, converter
-
-    # TODO make storing/writing extra values/params configurably optional, but warn when information is lost
-    # TODO better handling of multi-type attributes, maybe try all available converters if no direct candidate was found / worked
+    @property
+    def filter_ics_names(self) -> List[str]:
+        return [self.ics_name]
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         assert isinstance(item, ContentLine)
@@ -72,6 +60,7 @@ class AttributeValueConverter(AttributeConverter):
                 self.set_or_append_extra_params(component, params)
                 self.set_or_append_value(component, parsed)
             if params is not None:
+                # note that this value was the last value in a list stored in a single ContentLine
                 params["__merge_next"] = ["FALSE"]
         else:
             if context[(self, "current_value_count")] > 0:
@@ -83,20 +72,29 @@ class AttributeValueConverter(AttributeConverter):
             self.set_or_append_value(component, parsed)
         return True
 
+    # TODO make storing/writing extra values/params configurably optional, but warn when information is lost
+    # TODO better handling of multi-type attributes, maybe try all available converters if no direct candidate was found / worked
+
+    def __prepare_params(self, line: ContentLine) -> Tuple[ExtraParams, ValueConverter]:
+        params = copy_extra_params(line.params)
+        value_type = params.pop("VALUE", None)
+        if value_type:
+            if len(value_type) != 1:
+                raise ValueError("multiple VALUE type definitions in %s" % line)
+            for converter in self.value_converters:
+                if converter.ics_type == value_type[0]:
+                    break
+            else:
+                raise ValueError("can't convert %s with %s" % (line, self))
+        else:
+            converter = self.value_converters[0]
+        return params, converter
+
     def post_populate(self, component: Component, context: ContextDict):
         if self.is_required and not context[(self, "current_value_count")]:
             raise ValueError("attribute %s is required but got no value" % self.ics_name)
         context[(self, "current_component")] = None
         context[(self, "current_value_count")] = 0
-
-    def __find_value_converter(self, params: ExtraParams, value: Any) -> ValueConverter:
-        for nr, converter in enumerate(self.value_converters):
-            if not isinstance(value, converter.python_type): continue
-            if nr > 0:
-                params["VALUE"] = [converter.ics_type]
-            return converter
-        else:
-            raise ValueError("can't convert %s %r with %s" % (type(value), value, self))
 
     def serialize(self, component: Component, output: Container, context: ContextDict):
         if self.is_multi_value:
@@ -144,3 +142,12 @@ class AttributeValueConverter(AttributeConverter):
 
         if merge_next:
             raise ValueError("last value in value list may not have merge_next set")
+
+    def __find_value_converter(self, params: ExtraParams, value: Any) -> ValueConverter:
+        for nr, converter in enumerate(self.value_converters):
+            if not isinstance(value, converter.python_type): continue
+            if nr > 0:
+                params["VALUE"] = [converter.ics_type]
+            return converter
+        else:
+            raise ValueError("can't convert %s %r with %s" % (type(value), value, self))

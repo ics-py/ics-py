@@ -143,7 +143,7 @@ class EmptyDictType(MutableMapping[Any, None]):
 EmptyDict = EmptyDictType()
 ExtraParams = NewType("ExtraParams", Dict[str, List[str]])
 EmptyParams = cast("ExtraParams", EmptyDict)
-ContextDict = NewType("ContextDict", Dict[Any, Any])
+ContextDict = NewType("ContextDict", Dict[Any, Any])  # defaultdict(lambda: None)
 EmptyContext = cast("ContextDict", EmptyDict)
 
 

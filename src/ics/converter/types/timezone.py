@@ -11,8 +11,6 @@ from ics.timezone import Timezone, TimezoneDaylightObservance, TimezoneStandardO
 from ics.types import ContextDict, ContainerItem
 from ics.valuetype.datetime import DatetimeConverterMixin
 
-__all__ = ["TimezoneMeta"]
-
 
 class TimezoneMeta(ImmutableComponentMeta):
     def load_instance(self, container: Container, context: Optional[ContextDict] = None):

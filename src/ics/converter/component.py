@@ -10,14 +10,18 @@ from ics.contentline import Container
 from ics.types import ContainerItem, ContextDict
 from ics.utils import check_is_instance
 
-__all__ = [
-    "MemberComponentConverter",
-    "ComponentMeta",
-]
-
 
 @attr.s(frozen=True)
 class MemberComponentConverter(AttributeConverter):
+    """
+    An `AttributeConverter` that converts between a single attribute whose type is a subclass of `Component`
+      and a `Container` of `ContentLines`, using the information stored in the `ComponentMeta` of the subclass.
+    Uses `ComponentMeta.load_instance` and `ComponentMeta.serialize_toplevel` to inflate
+      and serialize `Component` instances.
+    Transparently handles single-value and multi-value attributes.
+    See `GenericConverter` for more information.
+    """
+
     meta: "ComponentMeta" = attr.ib()
 
     @property
@@ -40,10 +44,17 @@ class MemberComponentConverter(AttributeConverter):
 
 @attr.s(frozen=True)
 class ComponentMeta(object):
+    """
+    Meta information on how a subclass of `Component`, the `component_type`, needs to be parsed and serialized.
+    All needed information if generated upon instantiation of this class and cached for later use.
+    Existing instances can be looked up `BY_TYPE`.
+    """
+
     BY_TYPE: ClassVar[Dict[Type, "ComponentMeta"]] = {}
 
     component_type: Type[Component] = attr.ib()
 
+    # Cached information for parsing and serialization.
     converters: Tuple[GenericConverter, ...]
     converter_lookup: Dict[str, Tuple[GenericConverter]]
     post_populate_hooks: Tuple[Callable]
@@ -57,21 +68,36 @@ class ComponentMeta(object):
         for converter in self.converters:
             for name in converter.filter_ics_names:
                 converter_lookup[name].append(converter)
-            if GenericConverter.post_populate not in (converter.post_populate, getattr(converter.post_populate, "__func__", None)):
+            # ignore the hooks if they're the still the base-class no-ops
+            if GenericConverter.post_populate not in (
+                    converter.post_populate, getattr(converter.post_populate, "__func__", None)
+            ):
                 post_populate_hooks.append(converter.post_populate)
-            if GenericConverter.post_serialize not in (converter.post_serialize, getattr(converter.post_serialize, "__func__", None)):
+            if GenericConverter.post_serialize not in (
+                    converter.post_serialize, getattr(converter.post_serialize, "__func__", None)
+            ):
                 post_serialize_hooks.append(converter.post_serialize)
         object.__setattr__(self, "converter_lookup", {k: tuple(vs) for k, vs in converter_lookup.items()})
         object.__setattr__(self, "post_populate_hooks", tuple(post_populate_hooks))
         object.__setattr__(self, "post_serialize_hooks", tuple(post_serialize_hooks))
 
     def find_converters(self) -> Iterable[GenericConverter]:
+        """
+        Get a sorted list of all converters needed for instances of `component_type`.
+        Override this method to modify the auto-discovered list of converters.
+        """
         return sort_converters(AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type))
 
     def __call__(self, attribute: Attribute) -> AttributeConverter:
+        """
+        Create a `AttributeConverter` for an `attribute` of type `component_type`.
+        """
         return MemberComponentConverter(attribute, self)
 
     def load_instance(self, container: Container, context: Optional[ContextDict] = None):
+        """
+        Create and populate an instance of `component_type` from `container`.
+        """
         instance = self.component_type()
         self.populate_instance(instance, container, context)
         return instance
@@ -101,7 +127,7 @@ class ComponentMeta(object):
         check_is_instance("instance", component, self.component_type)
         if not context:
             context = ContextDict(defaultdict(lambda: None))
-        container = Container(self.component_type.NAME)
+        container = Container(component.extra.name)  # allow overwriting the name by setting the name of the extras
         self._serialize_attrs(component, context, container)
         return container
 
@@ -113,29 +139,31 @@ class ComponentMeta(object):
             hook(component, container, context)
 
 
-@attr.s(frozen=True)
-class ComponentConverter(AttributeConverter):
-    meta: InflatedComponentMeta = attr.ib()
+class ImmutableComponentMeta(ComponentMeta):
+    """
+    `ComponentMeta` for sublasses of `Component` that are should be immutable, i.e. with `@attr.s(frozen=True)`.
+    To still allows easily populating these classes, a `MutablePseudoComponent` is populated instead of an instance.
+    The constructor of the instance is then called with all attribute values collected by the `MutablePseudoComponent`.
+    """
 
-    @property
-    def filter_ics_names(self) -> List[str]:
-        return [self.meta.container_name]
-
-    def populate(self, component: "Component", item: ContainerItem, context: ContextDict) -> bool:
-        assert isinstance(item, Container)
-        self._check_component(component, context)
-        self.set_or_append_value(component, self.meta.load_instance(item, context))
-        return True
-
-    def serialize(self, parent: "Component", output: Container, context: ContextDict):
-        extras = self.get_extra_params(parent)
-        if extras:
-            raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
-        for value in self.get_value_list(parent):
-            output.append(self.meta.serialize_toplevel(value, context))
+    def load_instance(self, container: Container, context: Optional[ContextDict] = None):
+        pseudo_instance = cast(Component, MutablePseudoComponent(self.component_type))
+        self.populate_instance(pseudo_instance, container, context)
+        instance = self.component_type(**{
+            k.lstrip("_"): v for k, v in pseudo_instance._MutablePseudoComponent__data.items()
+        })  # type: ignore[call-arg,attr-defined]
+        instance.extra.extend(pseudo_instance.extra)
+        instance.extra_params.update(pseudo_instance.extra_params)
+        return instance
 
 
 class MutablePseudoComponent(object):
+    """
+    A drop-in class that can be used for populating immutable `Component`s.
+    Once all attributes are populated, the stored values can be used to create the instance in one go.
+    Takes default values from the respective `Component` subclass.
+    """
+
     def __init__(self, comp: Type[Component]):
         object.__setattr__(self, "NAME", comp.NAME)
         object.__setattr__(self, "extra", Container(comp.NAME))
@@ -187,13 +215,3 @@ class MutablePseudoComponent(object):
     @staticmethod
     def clone(*args, **kwargs):
         raise NotImplementedError()
-
-
-class ImmutableComponentMeta(ComponentMeta):
-    def load_instance(self, container: Container, context: Optional[ContextDict] = None):
-        pseudo_instance = cast(Component, MutablePseudoComponent(self.component_type))
-        self.populate_instance(pseudo_instance, container, context)
-        instance = self.component_type(**{k.lstrip("_"): v for k, v in pseudo_instance._MutablePseudoComponent__data.items()})  # type: ignore[call-arg,attr-defined]
-        instance.extra.extend(pseudo_instance.extra)
-        instance.extra_params.update(pseudo_instance.extra_params)
-        return instance
