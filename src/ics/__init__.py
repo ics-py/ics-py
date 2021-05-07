@@ -24,9 +24,9 @@ def initialize_converters():
     # 2) all relatively simple attribute converters and advanced component converters
     import ics.converter.base
     import ics.converter.value
-    import ics.converter.special
-    import ics.converter.timespan
-    import ics.converter.timezone
+    import ics.converter.types.timespan
+    import ics.converter.types.timezone
+    import ics.converter.types.various
 
     # 3) converters for all remaining component subclasses
     from ics.converter.component import ComponentMeta
@@ -34,7 +34,7 @@ def initialize_converters():
     ComponentMeta.BY_TYPE[Todo] = ComponentMeta(Todo)
 
     # 4) the converter for the calendar
-    import ics.converter.calendar
+    import ics.converter.types.calendar
 
     global initialize_converters
     initialize_converters = lambda: None

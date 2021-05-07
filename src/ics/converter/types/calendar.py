@@ -5,36 +5,22 @@ from ics import Calendar
 from ics.component import Component
 from ics.converter.base import GenericConverter, sort_converters
 from ics.converter.component import ComponentMeta
-from ics.grammar import Container
+from ics.contentline import Container
 from ics.timezone import Timezone
 from ics.types import ContainerItem, ContextDict
 from ics.valuetype.datetime import DatetimeConverterMixin
 
-__all__ = [
-    "CalendarTimezoneConverter",
-    "CalendarMeta",
-]
-
-
-class CalendarTimezoneConverter(GenericConverter):
-    @property
-    def priority(self) -> int:
-        return 600
-
-    @property
-    def filter_ics_names(self) -> List[str]:
-        return [Timezone.NAME]
-
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
-        return item.name == Timezone.NAME and isinstance(item, Container)
-
-    def serialize(self, component: Component, output: Container, context: ContextDict):
-        context["VTIMEZONES_AFTER"] = len(output)
-
 
 class CalendarMeta(ComponentMeta):
+    """
+    Slightly modified meta class for Calendars that makes sure that `Timezone`s are always loaded first
+      and that all contained timezones are serialized.
+    """
+
     def find_converters(self):
-        return sort_converters(itertools.chain(super(CalendarMeta, self).find_converters(), (CalendarTimezoneConverter(),)))
+        return sort_converters(itertools.chain(
+            super(CalendarMeta, self).find_converters(), (CalendarTimezoneConverter(),)
+        ))
 
     def _populate_attrs(self, instance: Component, container: Container, context: ContextDict):
         assert isinstance(instance, Calendar)
@@ -51,9 +37,29 @@ class CalendarMeta(ComponentMeta):
         context.setdefault(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
         super()._serialize_attrs(component, context, container)
 
+        # serialize all used timezones
         timezones = [tz.to_container() for tz in context[DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ].values()]
+        # insert them at the place where they usually would have been serialized
         split = context["VTIMEZONES_AFTER"]
         container.data = container.data[:split] + timezones + container.data[split:]
+
+
+class CalendarTimezoneConverter(GenericConverter):
+    @property
+    def priority(self) -> int:
+        return 600
+
+    @property
+    def filter_ics_names(self) -> List[str]:
+        return [Timezone.NAME]
+
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+        # don't actually load anything, as that has already been done before all other deserialization in `CalendarMeta`
+        return item.name == Timezone.NAME and isinstance(item, Container)
+
+    def serialize(self, component: Component, output: Container, context: ContextDict):
+        # store the place where we should insert all the timezones
+        context["VTIMEZONES_AFTER"] = len(output)
 
 
 ComponentMeta.BY_TYPE[Calendar] = CalendarMeta(Calendar)

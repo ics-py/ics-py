@@ -183,3 +183,17 @@ def check_is_instance(name, value, clazz):
 
 def call_validate_on_inst(inst, attr, value):
     inst.validate(attr, value)
+
+
+def one(iterable, too_short='Too few items in iterable, expected one but got zero!',
+        too_long='Expected exactly one item in iterable, but got {first!r}, {second!r}, and possibly more!'):
+    it = iter(iterable)
+    try:
+        first = next(it)
+    except StopIteration as e:
+        raise ValueError(too_short.format(iter=it)) from e
+    try:
+        second = next(it)
+    except StopIteration:
+        return first
+    raise ValueError(too_long.format(first=first, second=second, iter=it))

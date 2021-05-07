@@ -1,10 +1,9 @@
-import platform
-from collections import UserString
-
-import attr
 import functools
 import re
+from collections import UserString
 from typing import MutableSequence, Tuple, List, Union
+
+import attr
 
 from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
 from ics.utils import limit_str_length, validate_truthy
