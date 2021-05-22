@@ -30,8 +30,6 @@ classifiers = [
 python =                     "^3.6"
 python-dateutil =            "^2.8"
 attrs =                      ">=20.3"
-tatsu =                      ">4.2"
-importlib_resources =        "^1.4"
 
 # extra: test
 pytest =                     { version = "^5.2",       optional = true }
