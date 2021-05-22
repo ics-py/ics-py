@@ -177,8 +177,8 @@ This is especially useful if you are merging ics files from multiple different s
     ... END:STANDARD
     ... END:VTIMEZONE
     ... """.strip()
-    >>> from ics.grammar import string_to_container
-    >>> tz = Timezone.from_container(string_to_container(citadel)[0])
+    >>> from ics.contentline import string_to_container
+    >>> tz = Timezone.from_container(string_to_container(citadel))
     >>> tz  # doctest: +SKIP
     Timezone('/citadel.org/20190914_1/America/New_York', observances=[
         TimezoneDaylightObservance(extra=Container('DAYLIGHT', []), extra_params={},
