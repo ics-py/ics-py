@@ -104,7 +104,7 @@ class ComponentMeta(object):
 
     def populate_instance(self, instance: Component, container: Container, context: Optional[ContextDict] = None):
         if container.name != self.component_type.NAME:
-            raise ValueError("container isn't an {}".format(self.component_type.NAME))
+            raise ValueError("container {} is no {}".format(container.name, self.component_type.NAME))
         check_is_instance("instance", instance, (self.component_type, MutablePseudoComponent))
         if not context:
             context = ContextDict(defaultdict(lambda: None))

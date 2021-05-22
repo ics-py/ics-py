@@ -2,9 +2,9 @@ from .alarm import *
 from .alarm import __all__ as all_alarms
 from .attendee import Attendee, Organizer
 from .component import Component
+from .contentline import Container, ContentLine
 from .event import Event
 from .geo import Geo
-from .contentline import Container, ContentLine
 from .icalendar import Calendar
 from .rrule import rrule_eq  # ensure the monkey-patching is done
 from .timespan import EventTimespan, Timespan, TodoTimespan
@@ -25,11 +25,11 @@ def initialize_converters():
     import ics.converter.base
     import ics.converter.value
     import ics.converter.types.timespan
-    import ics.converter.types.timezone
     import ics.converter.types.various
 
     # 3) converters for all remaining component subclasses
     from ics.converter.component import ComponentMeta
+    import ics.converter.types.timezone  # vTimezone is a Component
     ComponentMeta.BY_TYPE[Event] = ComponentMeta(Event)
     ComponentMeta.BY_TYPE[Todo] = ComponentMeta(Todo)
 

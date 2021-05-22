@@ -153,6 +153,20 @@ redis = ["redis (>=3.0.0)"]
 zoneinfo = ["importlib-resources (>=3.3.0)", "backports.zoneinfo (>=0.2.1)", "tzdata (>=2020.4)"]
 
 [[package]]
+name = "ics-vtimezones"
+version = "2020.1"
+description = "iCalendar vTimezone Data"
+category = "main"
+optional = false
+python-versions = ">=3.6,<4.0"
+
+[package.dependencies]
+importlib_resources = ">=1.4,<2.0"
+
+[package.extras]
+update = ["ics (>=0.8.0,<0.9.0)"]
+
+[[package]]
 name = "idna"
 version = "3.2"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -173,7 +187,7 @@ name = "importlib-metadata"
 version = "4.6.4"
 description = "Read metadata from Python packages"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -190,7 +204,7 @@ name = "importlib-resources"
 version = "1.5.0"
 description = "Read resources from Python packages"
 category = "main"
-optional = true
+optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
 [package.dependencies]
@@ -539,7 +553,7 @@ name = "typing-extensions"
 version = "3.10.0.0"
 description = "Backported and Experimental Type Hints for Python 3.5+"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -589,7 +603,7 @@ name = "zipp"
 version = "3.5.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.extras]
@@ -604,7 +618,7 @@ test = ["pytest", "pytest-cov", "hypothesis", "tatsu", "importlib_resources"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "1f5c47d9e5d5135c1f19485782fdcc379fa1002a1de4dec103f9bde026f36b02"
+content-hash = "fcadd8f8abe0e804d5c6a27ab9730b51174f3a51d2cef9db49866f6476afdabd"
 
 [metadata.files]
 alabaster = [
@@ -712,6 +726,10 @@ filelock = [
 hypothesis = [
     {file = "hypothesis-5.49.0-py3-none-any.whl", hash = "sha256:e91111f2f01abf2566041c4c86366aa7f08bfd5b3d858cc77a545fcf67df335e"},
     {file = "hypothesis-5.49.0.tar.gz", hash = "sha256:36a4d5587c34193125d654b61bf9284e24a227d1edd339c49143378658a10c7d"},
+]
+ics-vtimezones = [
+    {file = "ics_vtimezones-2020.1-py3-none-any.whl", hash = "sha256:775f0c3a9a417a9466e511bc1068e239036f4ea405a55d0cec0ba95e551717c4"},
+    {file = "ics_vtimezones-2020.1.tar.gz", hash = "sha256:04ab770ceb68a304de65be12257340c74e811cc925e771c10aab166de05768c6"},
 ]
 idna = [
     {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},

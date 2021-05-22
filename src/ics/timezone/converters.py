@@ -7,7 +7,7 @@ import dateutil
 from ics.contentline import string_to_containers
 from ics.timezone import Timezone, UTC, TimezoneStandardObservance, RRULE_EPOCH_START, is_utc
 from ics.types import UTCOffset, ContextDict
-from ics.utils import TIMEDELTA_ZERO
+from ics.utils import TIMEDELTA_ZERO, one
 
 __all__ = [
     "TimezoneResult",
@@ -35,10 +35,10 @@ def Timezone_from_tzid(tzid: str) -> Timezone:
             tz_ics = ics_vtimezones.find_vtimezone_ics_file(olson_tzid)
     if not tz_ics:
         raise ValueError("no vTimezone.ics file found for %s" % tzid)
-    ics_cal = string_to_containers(tz_ics.read_text())
-    if not (len(ics_cal) == 1 and len(ics_cal[0]) == 3 and ics_cal[0][2].name == "VTIMEZONE"):
+    ics_cal = one(string_to_containers(tz_ics.read_text()))
+    if not (len(ics_cal) == 3 and ics_cal[2].name == "VTIMEZONE"):
         raise ValueError("vTimezone.ics file %s has invalid content" % tz_ics)
-    return Timezone.from_container(ics_cal[0][2])
+    return Timezone.from_container(ics_cal[2])
 
 
 def Timezone_from_tzinfo(tzinfo: datetime.tzinfo, context: Optional[ContextDict] = None) -> Optional[Timezone]:
