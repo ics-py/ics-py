@@ -29,8 +29,19 @@ In progress:
  - some attributes now have further validators that restrict which values they can be set to, which might further change once we have configurable levels of strictness
  - `dtstamp` and `created` have been separated, `dtstamp` is the only one set automatically (hopefully more conforming with the RFC)
  - `Event.join` is hard to do right and now gone if nobody needs it (and is able to formulate a clear behaviour faced with floating events vs events in different timezones and also all-day events)
- - `Event.join` is hard to do right and now gone if nobody needs it (and is able to formulate a clear behavior faced with floating events vs events in different timezones and also all-day events)
  - method `has_end()` -> property `has_explicit_end` as any Event with a begin time has an end
+ - renamed `Event.name` to `Event.summary`
+ - `ics.grammar.parse` has been shortened to `ics.grammar`.
+ - The inner `Meta` classes were replaced by a single `NAME` class attribute
+ - The `Component` conversion methods are now called `from_container` and `to_container`.
+ - For `ContentLine`/`Container` there's now a `serialize` method to convert them to ics strings.
+ - new to string / serialization behaviour:
+    - `__repr__` returns a full, valid python representation, is fast and can't throw exceptions
+    - `__str__` returns a short human-readable description, is fast and can't throw exceptions
+    - `serialize` returns the full ics representation, is still pretty fast and usually shouldn't throw exceptions (except for when you pass in data that can't be serialized, this potentially includes old `Arrow` instances)
+ - new Calendar constructor / parse methods
+ - remove the `Calendar._timezones` attribute
+ - added support for parsing and serializing Timezones
 
 ***********************
 0.7 - Katherine Johnson

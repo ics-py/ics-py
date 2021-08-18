@@ -43,8 +43,8 @@ As we used a naïve datetime object, the ``tzinfo`` is ``None`` and we consider 
 This means that it will be interpreted as local time, but see the section on comparing datetime for more details on this.
 Every event has an additional ``dtstamp`` field, which represents the time its ics representation was created.
 The RFC standard requires that this property is always an UTC timestamp, which ics.py happily ensures.
-The example also shows the recommended way for checking wheter a datetime objects is in UTC using the ``is_utc()`` function,
-which unlike simple equality comparision also checks for the UTC implementations of other libraries (like datetime, dateutil and pytz).
+The example also shows the recommended way for checking whether a datetime objects is in UTC using the ``is_utc()`` function,
+which unlike simple equality comparison also checks for the UTC implementations of other libraries (like datetime, dateutil and pytz).
 
 Now let's see what happens when we use a real timezone, e.g. the Olson timezone for New York, accessed through dateutil's ``gettz``:
 
