@@ -151,7 +151,7 @@ class AttributeConverter(GenericConverter, abc.ABC):
             return [self.get_value(component)]
 
     def set_or_append_extra_params(self, component: Component, value: ExtraParams, name: Optional[str] = None):
-        name = name or self.attribute.name
+        name = (name or self.attribute.name).upper()
         if self.is_multi_value:
             extras = component.extra_params.setdefault(name, [])
             cast(List[ExtraParams], extras).append(value)
@@ -164,7 +164,7 @@ class AttributeConverter(GenericConverter, abc.ABC):
             default: Union[ExtraParams, List[ExtraParams]] = cast(List[ExtraParams], list())
         else:
             default = ExtraParams(dict())
-        name = name or self.attribute.name
+        name = (name or self.attribute.name).upper()
         return component.extra_params.get(name, default)
 
     @property
