@@ -36,8 +36,8 @@ Event, the order is important…
 ::
 
    >>> from datetime import datetime as dt, timedelta as td
-   >>> e1.alarms.append(ics.DisplayAlarm(trigger=td(days=-1), display_text="Alarm 1"))
-   >>> e1.alarms.append(ics.DisplayAlarm(trigger=td(hours=-1), display_text="Alarm 2"))
+   >>> e1.alarms.append(ics.DisplayAlarm(trigger=td(days=-1), description="Alarm 1"))
+   >>> e1.alarms.append(ics.DisplayAlarm(trigger=td(hours=-1), description="Alarm 2"))
    >>> e2.alarms = list(reversed(e1.alarms))
    >>> e1 == e2
    False

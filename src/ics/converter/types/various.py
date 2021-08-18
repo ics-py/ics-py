@@ -4,7 +4,7 @@ import itertools
 import operator
 from typing import List, TYPE_CHECKING, Iterable, Optional
 
-from ics.alarm import *
+from ics import get_type_from_action, BaseAlarm, AudioAlarm, CustomAlarm, DisplayAlarm, EmailAlarm, NoneAlarm
 from ics.component import Component
 from ics.contentline import Container, ContentLine
 from ics.converter.base import AttributeConverter, GenericConverter, sort_converters

@@ -104,3 +104,4 @@ class TextConverterClass(ValueConverter[str]):
 
 
 TextConverter = TextConverterClass()
+ValueConverter.BY_TYPE[str] = TextConverter
