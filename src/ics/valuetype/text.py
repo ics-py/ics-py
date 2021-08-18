@@ -28,8 +28,13 @@ class TextConverterClass(ValueConverter[str]):
     def split_value_list(self, values: str) -> Iterable[str]:
         it = iter(values.split(","))
         for val in it:
-            while val.endswith("\\") and not val.endswith("\\\\"):
-                val += "," + next_after_str_escape(it, full_str=values)
+            while True:
+                m = re.search(r"\\+$", val)  # find any trailing backslash
+                if m and (m.end() - m.start()) % 2 == 1:
+                    # odd number of trailing backslashes => comma was escaped, include next segment
+                    val += "," + next_after_str_escape(it, full_str=values)
+                else:
+                    break
             yield val
 
     def join_value_list(self, values: Iterable[str]) -> str:
