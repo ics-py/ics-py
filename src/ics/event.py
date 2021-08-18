@@ -213,7 +213,7 @@ class EventAttrs(CalendarEntryAttrs):
     organizer: Optional[Organizer] = attr.ib(default=None, validator=v_optional(instance_of(Organizer)))
     geo: Optional[Geo] = attr.ib(default=None, converter=make_geo)
 
-    attendees: List[Attendee] = attr.ib(factory=list, converter=list)
+    attendees: List[Attendee] = attr.ib(factory=list, converter=list, metadata={"ics_name": "ATTENDEE"})
     categories: List[str] = attr.ib(factory=list, converter=list)
 
     def add_attendee(self, attendee: Attendee):
