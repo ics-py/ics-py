@@ -1,18 +1,17 @@
+import attr
+import dateutil.rrule
 import itertools
 import operator
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Iterable, Optional
 
-import dateutil.rrule
-from attr import Attribute
-
-from ics import NoneAlarm, EmailAlarm, DisplayAlarm, CustomAlarm, AudioAlarm, BaseAlarm, get_type_from_action
-from ics.attendee import Attendee, Organizer, Person
+from ics.alarm import *
 from ics.component import Component
-from ics.converter.base import AttributeConverter
-from ics.converter.component import ComponentMeta
 from ics.contentline import Container, ContentLine
+from ics.converter.base import AttributeConverter, GenericConverter, sort_converters
+from ics.converter.component import ComponentMeta
 from ics.rrule import rrule_to_ContentLine
-from ics.types import ContainerItem, ContextDict
+from ics.types import ContainerItem, ContextDict, copy_extra_params
+from ics.utils import one
 from ics.valuetype.datetime import DatetimeConverterMixin, DatetimeConverter
 
 
@@ -77,52 +76,51 @@ class RecurrenceConverter(AttributeConverter):
 AttributeConverter.BY_TYPE[dateutil.rrule.rruleset] = RecurrenceConverter
 
 
-class PersonConverter(AttributeConverter):
-    # TODO handle lists
+class AlarmActionConverter(GenericConverter):
+    CONTEXT_FIELD = "ALARM_ACTION"
+
+    @property
+    def priority(self) -> int:
+        return 1000
 
     @property
     def filter_ics_names(self) -> List[str]:
-        return []
+        return ["ACTION"]
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
-        assert isinstance(item, ContentLine)
-        return False
-
-    def serialize(self, component: Component, output: Container, context: ContextDict):
-        pass
-
-
-AttributeConverter.BY_TYPE[Person] = PersonConverter
-AttributeConverter.BY_TYPE[Attendee] = PersonConverter
-AttributeConverter.BY_TYPE[Organizer] = PersonConverter
-
-
-class AlarmMemberComponentConverter(AttributeConverter):
-    @property
-    def filter_ics_names(self) -> List[str]:
-        return [BaseAlarm.NAME]
-
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
-        assert isinstance(item, Container)
-        self.set_or_append_value(component, get_type_from_action(item).from_container(item, context))
+        assert issubclass(type(component), get_type_from_action(item.value))
+        if item.params:
+            component.extra_params["ACTION"] = copy_extra_params(item.params)
         return True
 
-    def serialize(self, parent: Component, output: Container, context: ContextDict):
-        extras = self.get_extra_params(parent)
-        if extras:
-            raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
-        for value in self.get_value_list(parent):
-            output.append(value.to_container(context))
+    def serialize(self, component: Component, output: Container, context: ContextDict):
+        output.append(ContentLine(
+            name="ACTION",
+            params=component.extra_params.get("ACTION", {}),
+            value=component.action))
 
 
 class AlarmMeta(ComponentMeta):
-    def __call__(self, attribute: Attribute):
-        return AlarmMemberComponentConverter(attribute)
+    def find_converters(self) -> Iterable[GenericConverter]:
+        convs: List[GenericConverter] \
+            = [AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type)]
+        convs.append(AlarmActionConverter())
+        return sort_converters(convs)
+
+    def load_instance(self, container: Container, context: Optional[ContextDict] = None):
+        clazz = get_type_from_action(one(
+            container["ACTION"],
+            too_short='VALARM must have exactly one ACTION!',
+            too_long='VALARM must have exactly one ACTION, but got {first!r}, {second!r}, and possibly more!'
+        ).value)
+        instance = clazz()
+        ComponentMeta.BY_TYPE[clazz].populate_instance(instance, container, context)
+        return instance
 
 
 ComponentMeta.BY_TYPE[BaseAlarm] = AlarmMeta(BaseAlarm)
-ComponentMeta.BY_TYPE[AudioAlarm] = ComponentMeta(AudioAlarm)
-ComponentMeta.BY_TYPE[CustomAlarm] = ComponentMeta(CustomAlarm)
-ComponentMeta.BY_TYPE[DisplayAlarm] = ComponentMeta(DisplayAlarm)
-ComponentMeta.BY_TYPE[EmailAlarm] = ComponentMeta(EmailAlarm)
-ComponentMeta.BY_TYPE[NoneAlarm] = ComponentMeta(NoneAlarm)
+ComponentMeta.BY_TYPE[AudioAlarm] = AlarmMeta(AudioAlarm)
+ComponentMeta.BY_TYPE[CustomAlarm] = AlarmMeta(CustomAlarm)
+ComponentMeta.BY_TYPE[DisplayAlarm] = AlarmMeta(DisplayAlarm)
+ComponentMeta.BY_TYPE[EmailAlarm] = AlarmMeta(EmailAlarm)
+ComponentMeta.BY_TYPE[NoneAlarm] = AlarmMeta(NoneAlarm)
