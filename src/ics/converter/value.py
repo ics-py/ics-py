@@ -101,7 +101,7 @@ class AttributeValueConverter(AttributeConverter):
             self.__serialize_multi(component, output, context)
         else:
             value = self.get_value(component)
-            if value:
+            if value is not None:
                 params = copy_extra_params(cast(ExtraParams, self.get_extra_params(component)))
                 converter = self.__find_value_converter(params, value)
                 serialized = converter.serialize(value, params, context)
