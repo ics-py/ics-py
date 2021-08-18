@@ -1,11 +1,10 @@
-import warnings
-
 import attr
 import datetime
 import dateutil
 import dateutil.rrule
 import dateutil.tz
 import functools
+import warnings
 from attr.validators import instance_of
 from dateutil.tz._common import _tzinfo
 from typing import Optional, overload, List, ClassVar, cast
@@ -166,11 +165,14 @@ class Timezone(Component, _tzinfo):
         return self._find_observance_cachable(dt.replace(tzinfo=None))
 
     def _find_observance_cachable(self, dt):
+        # adapted from dateutil.tz.tz._tzicalvtz._find_comp
+
         lastcompdt = lastcomp = None
         for comp in self.observances:
-            if comp.tzoffsetdiff < TIMEDELTA_ZERO and getattr(dt, 'fold', 0):  # TODO ???
-                dt -= comp.tzoffsetdiff
-            compdt = comp.rrule.before(dt, inc=True)
+            if comp.tzoffsetdiff < TIMEDELTA_ZERO and getattr(dt, 'fold', 0):
+                compdt = comp.rrule.before(dt - comp.tzoffsetdiff, inc=True)
+            else:
+                compdt = comp.rrule.before(dt, inc=True)
             if compdt and (not lastcompdt or lastcompdt < compdt):
                 lastcompdt = compdt
                 lastcomp = comp
@@ -178,7 +180,6 @@ class Timezone(Component, _tzinfo):
         if lastcomp:
             return lastcomp
         else:
-            # TODO what if past the last until date?
             # RFC says nothing about what to do when a given time is before the first onset date.
             # We'll look for the first standard component,
             # or the first component, if none is found.

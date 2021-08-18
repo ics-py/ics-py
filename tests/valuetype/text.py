@@ -1,6 +1,6 @@
 import attr
 import pytest
-from hypothesis import given
+from hypothesis import given, example
 
 from ics.contentline import ContentLine, string_to_containers, Parser
 from ics.valuetype.text import TextConverter
@@ -73,6 +73,8 @@ def test_trailing_escape_value_list():
 
 
 @given(value=VALUE)
+@example(value='\\,')
+@example(value='\\\\\\\\,\\\\\\,')
 def test_any_text_value_recode(value):
     esc = TextConverter.serialize(value)
     assert TextConverter.parse(esc) == value
