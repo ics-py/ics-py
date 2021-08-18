@@ -6,7 +6,26 @@ from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
 from ics.utils import next_after_str_escape
 from ics.valuetype.base import ValueConverter
 
-__all__ = ["TextConverter"]
+__all__ = ["TextConverter", "RawTextConverter"]
+
+
+class RawTextConverterClass(ValueConverter[str]):
+    @property
+    def ics_type(self) -> str:
+        return "RAWTEXT"
+
+    @property
+    def python_type(self) -> Type[str]:
+        return str
+
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+        return value
+
+    def serialize(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+        return value
+
+
+RawTextConverter = RawTextConverterClass()
 
 
 class TextConverterClass(ValueConverter[str]):
