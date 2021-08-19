@@ -123,7 +123,7 @@ class Timeline(object):
         :param strict: if True events will be returned only if they are strictly *included* in `day`
         """
         begin = floor_datetime_to_midnight(ensure_datetime(instant))
-        end = ceil_datetime_to_midnight(ensure_datetime(instant)) - timedelta(seconds=1)
+        end = ceil_datetime_to_midnight(ensure_datetime(instant) + timedelta(seconds=1))
         query = self.__normalize_timespan(begin, end)
         if strict:
             return self.included(query)
