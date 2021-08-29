@@ -1,4 +1,6 @@
+import warnings
 from datetime import datetime, timedelta, tzinfo as TZInfo
+from enum import IntEnum
 from typing import Any, Callable, NamedTuple, Optional, TYPE_CHECKING, TypeVar, Union, cast, overload
 
 import attr
@@ -14,12 +16,20 @@ if TYPE_CHECKING:
     # we don't need typing_extensions as actual (dev-)dependency as mypy has builtin support
     from typing_extensions import Literal
 
+CalendarEntryT = TypeVar('CalendarEntryT', bound='CalendarEntryAttrs')
+
+
+class NormalizationAction(IntEnum):
+    IGNORE = 0  # == False
+    REPLACE = 1  # == True
+    CONVERT = 2  # == True
+
 
 @attr.s
 class Normalization(object):
-    normalize_floating: bool = attr.ib()
-    normalize_with_tz: bool = attr.ib()
     replacement: Union[TZInfo, Callable[[], TZInfo], None] = attr.ib()
+    normalize_floating: NormalizationAction = attr.ib(NormalizationAction.CONVERT)
+    normalize_with_tz: NormalizationAction = attr.ib(NormalizationAction.CONVERT)
 
     @overload
     def normalize(self, value: "Timespan") -> "Timespan":
@@ -28,6 +38,10 @@ class Normalization(object):
     # pyflakes < 2.2 reports 'redefinition of unused' for overloaded class members
     @overload
     def normalize(self, value: DatetimeLike) -> datetime:
+        ...
+
+    @overload
+    def normalize(self, value: CalendarEntryT) -> CalendarEntryT:
         ...
 
     @overload
@@ -43,23 +57,42 @@ class Normalization(object):
         """
         if value is None:
             return None
-        elif not isinstance(value, Timespan):
+        elif isinstance(value, Timespan):
+            floating = value.is_floating()
+            replace_timezone = Timespan.replace_timezone
+            convert_timezone = Timespan.convert_timezone
+        elif (hasattr(value, "is_floating") or hasattr(value, "floating")) \
+                and hasattr(value, "replace_timezone") and hasattr(value, "convert_timezone"):
+            if hasattr(value, "is_floating"):
+                floating = value.is_floating()
+            else:
+                floating = value.floating
+
+            def replace_timezone(value, tzinfo):
+                value.replace_timezone(tzinfo=tzinfo)
+                return value
+
+            def convert_timezone(value, tzinfo):
+                value.convert_timezone(tzinfo=tzinfo)
+                return value
+
+        else:
             value = ensure_datetime(value)
             floating = (value.tzinfo is None)
             replace_timezone = lambda value, tzinfo: value.replace(tzinfo=tzinfo)
-        else:
-            floating = value.is_floating()
-            replace_timezone = Timespan.replace_timezone
+            convert_timezone = lambda value, tzinfo: value.astimezone(tz=tzinfo)
 
-        normalize = (floating and self.normalize_floating) or (not floating and self.normalize_with_tz)
-
-        if normalize:
-            replacement = self.replacement
-            if callable(replacement):
-                replacement = replacement()
-            return replace_timezone(value, replacement)
+        if floating and self.normalize_floating:
+            action = replace_timezone if self.normalize_floating is NormalizationAction.REPLACE else convert_timezone
+        elif not floating and self.normalize_with_tz:
+            action = replace_timezone if self.normalize_with_tz is NormalizationAction.REPLACE else convert_timezone
         else:
             return value
+
+        replacement = self.replacement
+        if callable(replacement):
+            replacement = replacement()
+        return action(value, replacement)
 
 
 # using datetime.min might lead to problems when doing timezone conversions / comparisions (e.g. by subtracting an 1 hour offset)
@@ -120,7 +153,9 @@ class Timespan(object):
         if self.is_all_day():
             raise ValueError("can't convert timezone of all-day timespan")
         if self.is_floating():
-            raise ValueError("can't convert timezone of timezone-naive floating timespan, use replace_timezone")
+            warnings.warn(
+                "interpreting missing timezone of timezone-naive floating timespan as local time for conversion, "
+                "use replace_timezone for deterministic results")
         begin = self.get_begin()
         if begin is not None:
             begin = begin.astimezone(tzinfo)

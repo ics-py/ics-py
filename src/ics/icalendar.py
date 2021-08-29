@@ -1,4 +1,5 @@
-from typing import ClassVar, Iterable, Iterator, List, Optional, Union
+from datetime import tzinfo
+from typing import ClassVar, Iterable, Iterator, List, Optional, Union, overload
 
 import attr
 from attr.validators import instance_of
@@ -7,6 +8,7 @@ from ics.component import Component
 from ics.contentline import Container, string_to_containers, lines_to_containers
 from ics.event import Event
 from ics.timeline import Timeline
+from ics.timespan import Normalization, NormalizationAction
 from ics.todo import Todo
 
 
@@ -101,6 +103,23 @@ class Calendar(CalendarAttrs):
         """
         containers = string_to_containers(string)
         return [cls(imports=c) for c in containers]
+
+    @overload
+    def normalize(self, normalization: Normalization):
+        ...
+
+    @overload
+    def normalize(self, value: tzinfo, normalize_floating: NormalizationAction, normalize_with_tz: NormalizationAction):
+        ...
+
+    def normalize(self, normalization, *args, **kwargs):
+        if isinstance(normalization, Normalization):
+            if args or kwargs:
+                raise ValueError("can't pass args or kwargs when a complete Normalization is given")
+        else:
+            normalization = Normalization(normalization, *args, **kwargs)
+        self.events = [normalization.normalize(e) for e in self.events]
+        self.todos = [normalization.normalize(e) for e in self.todos]
 
     def __str__(self) -> str:
         return "<Calendar with {} event{} and {} todo{}>".format(
