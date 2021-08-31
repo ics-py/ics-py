@@ -1,6 +1,7 @@
 from datetime import *
-from dateutil.parser import isoparse
 from urllib.parse import urlparse
+
+from dateutil.parser import isoparse
 
 from ics import *
 
@@ -40,6 +41,3 @@ def test_issue_269_missing_alarms():
         assert a1 == a2
     assert deser == c
     assert deser.serialize() == ser
-
-
-test_issue_269_missing_alarms()
