@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import datetime, timedelta
 from typing import Any, List, Optional, Tuple, Union, ClassVar, Type
 
@@ -10,27 +12,43 @@ from ics.attendee import Attendee, Organizer
 from ics.component import Component
 from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
-from ics.timezone import ensure_utc, now_in_utc
-from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, URL, get_timespan_if_calendar_entry
+from ics.timezone import ensure_utc, now_in_utc, UTC
+from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, URL, \
+    get_timespan_if_calendar_entry
 from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, uid_gen, validate_not_none
 
 STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
+default_uid_factory = ContextVar('ics.event.default_uid_factory', default=uid_gen)
+default_dtstamp_factory = ContextVar('ics.event.default_dtstamp_factory', default=now_in_utc)
+
+
+@contextmanager
+def deterministic_event_data(uid="deterministic_uid@example.org", dtstamp=datetime(2000, 1, 1, 12, 0, 0, tzinfo=UTC)):
+    uid_token = default_uid_factory.set(lambda: uid)
+    dtstamp_token = default_dtstamp_factory.set(lambda: dtstamp)
+    try:
+        yield
+    finally:
+        default_uid_factory.reset(uid_token)
+        default_dtstamp_factory.reset(dtstamp_token)
 
 
 @attr.s(eq=True, order=False)
 class CalendarEntryAttrs(Component):
     timespan: Timespan = attr.ib()
     summary: Optional[str] = attr.ib(default=None)
-    uid: str = attr.ib(factory=uid_gen)
+    uid: str = attr.ib(factory=lambda: default_uid_factory.get()())
 
     description: Optional[str] = attr.ib(default=None)
     location: Optional[str] = attr.ib(default=None)
     url: Union[None, str, URL] = attr.ib(default=None)
-    status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=in_(STATUS_VALUES))  # type: ignore[misc]
+    status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper),
+                                    validator=in_(STATUS_VALUES))  # type: ignore[misc]
 
     created: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore[misc]
     last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore[misc]
-    dtstamp: datetime = attr.ib(factory=now_in_utc, converter=ensure_utc, validator=validate_not_none)  # type: ignore[misc]
+    dtstamp: datetime = attr.ib(factory=lambda: default_dtstamp_factory.get()(),
+                                converter=ensure_utc, validator=validate_not_none)  # type: ignore[misc]
 
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
     attach: List[Union[URL, bytes]] = attr.ib(factory=list, converter=list)
