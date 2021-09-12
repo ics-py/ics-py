@@ -1,11 +1,15 @@
 import re
+from datetime import timedelta
 
+import lipsum
 import pytest
-from hypothesis import assume, given, example
+import sys
+from hypothesis import assume, given, example, settings
+from hypothesis.core import Example
 from hypothesis.strategies import characters, text
 
 from ics.contentline import *
-from ics.contentline.container import escape_param
+from ics.contentline.container import escape_param, DEFAULT_LINE_WRAP, Patterns
 from ics.contentline.parser import ContentLineParser
 from tests.contentline.examples import CONTENTLINE_EXAMPLES
 
@@ -17,26 +21,60 @@ VALUE_NONEMPTY = text(characters(blacklist_categories=["Cs"], blacklist_characte
 ContentLineParser.always_check = True
 
 
+@pytest.fixture(params=[5, 10, 13, 70, 74, 75, 76, 80, 100, sys.maxsize])
+def contentline_any_wrap(request):
+    oldwidth = DEFAULT_LINE_WRAP.width
+    DEFAULT_LINE_WRAP.width = request.param
+    try:
+        yield
+    finally:
+        DEFAULT_LINE_WRAP.width = oldwidth
+
+
 def parse_contentline(line: str) -> ContentLine:
-    cl, = Parser.lines_to_contentlines(Parser.string_to_lines(line))
+    cl, = Parser.lines_to_contentlines(Parser.unfold_lines(Parser.string_to_lines(line)))
     return cl
+
+
+def unfold_str(lines: str) -> str:
+    return "".join(line for nr, line in Parser.unfold_lines(Parser.string_to_lines(lines)))
 
 
 @pytest.mark.parametrize("inp, out", CONTENTLINE_EXAMPLES)
 def test_example_recode(inp, out):
     par = parse_contentline(inp)
     assert par == out
-    ser = out.serialize()
+
+    ser = out.serialize(wrap=None)
     if inp[0].isupper():
         assert inp == ser
     else:
         assert inp.upper() == ser.upper()
-    par_ser = par.serialize()
+
+    par_ser = par.serialize(wrap=None)
     if inp[0].isupper():
         assert inp == par_ser
     else:
         assert inp.upper() == par_ser.upper()
-    assert parse_contentline(inp) == out
+
+    ser_par = parse_contentline(ser)
+    assert ser_par == out
+
+
+@pytest.mark.parametrize("inp, out", CONTENTLINE_EXAMPLES)
+@pytest.mark.usefixtures("contentline_any_wrap")
+def test_example_linewrap(inp, out):
+    ser = out.serialize()
+    if inp[0].isupper():
+        assert inp == unfold_str(ser)
+    else:
+        assert inp.upper() == unfold_str(ser).upper()
+
+    for line in Parser.string_to_lines(ser):
+        assert len(line) <= DEFAULT_LINE_WRAP.width
+
+    ser_par = parse_contentline(ser)
+    assert ser_par == out
 
 
 def test_param_quoting():
@@ -48,9 +86,9 @@ def test_param_quoting():
     }, '"VAL"')
     par = parse_contentline(inp)
     assert par == out
-    ser = out.serialize()
+    ser = out.serialize(wrap=None)
     assert inp == ser
-    par_ser = par.serialize()
+    par_ser = par.serialize(wrap=None)
     assert inp == par_ser
     assert parse_contentline(inp) == out
 
@@ -70,14 +108,28 @@ def test_trailing_escape_param():
            ContentLine("TEST", {"PARAM": ["this ^ is a \"param\"", "without a ^trailing escape"]}, "value")
 
 
+def assert_parses_to(raw, cl):
+    assert parse_contentline(raw).serialize(wrap=None) == raw
+    assert unfold_str(parse_contentline(raw).serialize()) == raw
+    assert parse_contentline(raw).serialize() == "\r\n".join(DEFAULT_LINE_WRAP.wrap(raw))
+
+    assert parse_contentline(cl.serialize(wrap=None)) == cl
+    assert parse_contentline(cl.serialize()) == cl
+
+    assert parse_contentline(raw) == cl
+    assert cl.serialize(wrap=None) == raw
+
+    for line in Parser.string_to_lines(cl.serialize()):
+        assert len(line) <= DEFAULT_LINE_WRAP.width
+
+
 @given(name=NAME, value=VALUE)
 @example(name='A', value='abc\x85abc')
+@pytest.mark.usefixtures("contentline_any_wrap")
 def test_any_name_value_recode(name, value):
     raw = "%s:%s" % (name, value)
-    assert parse_contentline(raw).serialize() == raw
     cl = ContentLine(name, value=value)
-    assert parse_contentline(cl.serialize()) == cl
-    assert parse_contentline(raw) == cl
+    assert_parses_to(raw, cl)
 
 
 def quote_escape_param(pval):
@@ -88,25 +140,23 @@ def quote_escape_param(pval):
 
 
 @given(param=NAME, value=VALUE_NONEMPTY)
+@pytest.mark.usefixtures("contentline_any_wrap")
 def test_any_param_value_recode(param, value):
     raw = "TEST;%s=%s:VALUE" % (param, quote_escape_param(value))
-    assert parse_contentline(raw).serialize() == raw
     cl = ContentLine("TEST", {param: [value]}, "VALUE")
-    assert parse_contentline(cl.serialize()) == cl
-    assert parse_contentline(raw) == cl
+    assert_parses_to(raw, cl)
 
 
 @given(name=NAME, value=VALUE,
        param1=NAME, p1value=VALUE_NONEMPTY,
        param2=NAME, p2value1=VALUE_NONEMPTY, p2value2=VALUE_NONEMPTY)
+@pytest.mark.usefixtures("contentline_any_wrap")
 def test_any_name_params_value_recode(name, value, param1, p1value, param2, p2value1, p2value2):
     assume(param1 != param2)
     raw = "%s;%s=%s;%s=%s,%s:%s" % (name, param1, quote_escape_param(p1value),
                                     param2, quote_escape_param(p2value1), quote_escape_param(p2value2), value)
-    assert parse_contentline(raw).serialize() == raw
     cl = ContentLine(name, {param1: [p1value], param2: [p2value1, p2value2]}, value)
-    assert parse_contentline(cl.serialize()) == cl
-    assert parse_contentline(raw) == cl
+    assert_parses_to(raw, cl)
 
 
 def test_contentline_parse_error():
@@ -127,7 +177,7 @@ END:TEST"""
                     value='The-Val2')])
 
     assert list(string_to_containers(inp)) == [out]
-    assert out.serialize() == inp.replace("\n", "\r\n")
+    assert out.serialize(wrap=None) == inp.replace("\n", "\r\n")
     assert str(
         out) == "TEST[VAL1='The-Val', VAL2{'PARAM1': ['P1'], 'PARAM2': ['P2A', 'P2B'], 'PARAM3': ['P3:A', 'P3:B,C']}='The-Val2']"
     assert repr(out) == "Container('TEST', [" \
@@ -206,7 +256,7 @@ END:TEST1"""
         ContentLine(name='VAL6', params={}, value='The-Val')])
 
     assert list(string_to_containers(inp)) == [out]
-    assert out.serialize() == inp.replace("\n", "\r\n")
+    assert out.serialize(wrap=None) == inp.replace("\n", "\r\n")
 
 
 def test_container_parse_error():
@@ -222,11 +272,11 @@ def test_container_parse_error():
 def test_unfold():
     val1 = "DESCRIPTION:This is a long description that exists on a long line."
     val2 = "DESCRIPTION:This is a lo\n ng description\n  that exists on a long line."
-    assert "".join(line for nr, line in Parser.unfold_lines(val2.splitlines())) == val1
-    assert list(string_to_containers(val1)) == list(string_to_containers(val2)) == [parse_contentline(val1)]
-    pytest.raises(ParseError, parse_contentline, val2)
+    assert unfold_str(val2) == val1
+    assert parse_contentline(val1) == parse_contentline(val2)
 
 
+@pytest.mark.usefixtures("contentline_any_wrap")
 def test_value_characters():
     chars = "abcABC0123456789"  "-=_+!$%&*()[]{}<>'@#~/?|`¬€¨ÄÄää´ÁÁááßæÆ \t\\n😜🇪🇺👩🏾‍💻👨🏻‍👩🏻‍👧🏻‍👦🏻xyzXYZ"
     special_chars = ";:,\"^"
@@ -234,13 +284,7 @@ def test_value_characters():
         chars=chars, special=special_chars)
     out = ContentLine("TEST", {"P1": [chars], "P2": [chars, chars, QuotedParamValue(chars), chars]},
                       chars + ":" + chars + special_chars)
-    par = parse_contentline(inp)
-    assert par == out
-    ser = out.serialize()
-    assert inp == ser
-    par_ser = par.serialize()
-    assert inp == par_ser
-    assert parse_contentline(inp) == out
+    assert_parses_to(inp, out)
 
 
 def test_contentline_funcs():
@@ -256,3 +300,26 @@ def test_contentline_funcs():
     assert cl != cl_clone
     assert str(cl) == "TEST{'PARAM': ['VAL'], 'PARAM2': ['VALA', 'VALB']}='VALUE'"
     assert str(cl_clone) == "TEST{'PARAM': ['VAL'], 'PARAM2': ['VALA', 'VALB', 'VALC']}='VALUE'"
+
+
+# https://emojipedia.org/couple-with-heart-woman-man-light-skin-tone-dark-skin-tone/
+EMOJI = '\U0001f469\U0001f3fb\u200d\u2764\ufe0f\u200d\U0001f468\U0001f3ff'
+
+
+@given(inp=VALUE)
+@example(inp=lipsum.generate_sentences(2))
+@example(inp=lipsum.generate_paragraphs(1))
+@example(inp=lipsum.generate_paragraphs(2))
+@example(inp=lipsum.generate_paragraphs(10))
+@example(inp=lipsum.generate_paragraphs(100))
+@pytest.mark.usefixtures("contentline_any_wrap")
+@settings(deadline=timedelta(seconds=10))  # the long lipsum texts take some time
+def test_linefold(inp):
+    inp = re.sub(Patterns.LINEBREAK, "\\\\n", inp)
+    raw = "TEST:%s" % inp
+    cl = ContentLine("TEST", value=inp)
+    assert_parses_to(raw, cl)
+
+
+for i in range(20):
+    test_linefold.hypothesis_explicit_examples.append(Example(tuple(), dict(inp=EMOJI + " " * i + EMOJI * 100)))

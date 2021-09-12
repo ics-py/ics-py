@@ -1,12 +1,33 @@
 import functools
 import re
 from collections import UserString
+from contextlib import contextmanager
+from textwrap import TextWrapper
 from typing import MutableSequence, Tuple, List, Union
 
 import attr
+import sys
 
 from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
 from ics.utils import limit_str_length, validate_truthy
+
+DEFAULT_LINE_WRAP = TextWrapper(
+    width=75, initial_indent="", subsequent_indent=" ", break_long_words=True, break_on_hyphens=True,
+    expand_tabs=False, replace_whitespace=False, fix_sentence_endings=False, drop_whitespace=False
+)
+
+
+@contextmanager
+def contentline_set_wrap(width):
+    oldwidth = DEFAULT_LINE_WRAP.width
+    if not width or width <= 0:
+        DEFAULT_LINE_WRAP.width = sys.maxsize
+    else:
+        DEFAULT_LINE_WRAP.width = width
+    try:
+        yield
+    finally:
+        DEFAULT_LINE_WRAP.width = oldwidth
 
 
 @attr.s(slots=True, frozen=True, auto_exc=True)  # type: ignore[misc]
@@ -113,10 +134,23 @@ class ContentLine(RuntimeAttrValidation):
     # TODO store value type for jCal
     line_nr: int = attr.ib(default=-1, eq=False)
 
-    def serialize(self, newline=False):
-        return "".join(self.serialize_iter(newline))
+    def serialize(self, newline=False, wrap=DEFAULT_LINE_WRAP):
+        if wrap is None:
+            return self._serialize_unwrapped(newline)
+        return "\r\n".join(wrap.wrap(self._serialize_unwrapped(newline)))
 
-    def serialize_iter(self, newline=False):
+    def serialize_iter(self, newline=False, wrap=DEFAULT_LINE_WRAP):
+        if wrap is None:
+            return self._serialize_iter_unwrapped(newline)
+        lines = [elem for line in wrap.wrap(self._serialize_unwrapped(False)) for elem in [line, "\r\n"]]
+        if not newline:
+            lines.pop()
+        return lines
+
+    def _serialize_unwrapped(self, newline=False):
+        return "".join(self._serialize_iter_unwrapped(newline))
+
+    def _serialize_iter_unwrapped(self, newline=False):
         yield self.name
         for pname in self.params:
             yield ";"
@@ -182,15 +216,21 @@ class Container(MutableSequence[ContainerItem]):
     def __repr__(self):
         return "%s(%r, %s)" % (type(self).__name__, self.name, repr(self.data))
 
-    def serialize(self, newline=False):
-        return "".join(self.serialize_iter(newline))
+    @property
+    def line_nr(self):
+        if self.data:
+            return self.data[0].line_nr
+        return -1
 
-    def serialize_iter(self, newline=False):
+    def serialize(self, newline=False, wrap=DEFAULT_LINE_WRAP):
+        return "".join(self.serialize_iter(newline, wrap))
+
+    def serialize_iter(self, newline=False, wrap=DEFAULT_LINE_WRAP):
         yield "BEGIN:"
         yield self.name
         yield "\r\n"
         for line in self:
-            yield from line.serialize_iter(newline=True)
+            yield from line.serialize_iter(newline=True, wrap=wrap)
         yield "END:"
         yield self.name
         if newline:
