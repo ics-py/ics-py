@@ -124,9 +124,9 @@ class Calendar(CalendarAttrs):
     def __str__(self) -> str:
         return "<Calendar with {} event{} and {} todo{}>".format(
             len(self.events),
-            "s" if len(self.events) > 1 else "",
+            "" if len(self.events) == 1 else "s",
             len(self.todos),
-            "s" if len(self.todos) > 1 else "")
+            "" if len(self.todos) == 1 else "s")
 
     def __iter__(self) -> Iterator[str]:
         """Returns:
