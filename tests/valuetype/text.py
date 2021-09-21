@@ -33,7 +33,7 @@ def test_example_text_recode(inp_esc, out_uesc):
     par_uesc = attr.evolve(par_esc, value=TextConverter.parse(par_esc.value))
     out_esc = attr.evolve(out_uesc, value=TextConverter.serialize(out_uesc.value))
     assert par_uesc == out_uesc
-    ser_esc = out_esc.serialize()
+    ser_esc = out_esc.serialize(wrap=None)
     assert inp_esc == ser_esc
     assert list(string_to_containers(inp_esc)) == [par_esc]
 
