@@ -118,8 +118,8 @@ class Calendar(CalendarAttrs):
                 raise ValueError("can't pass args or kwargs when a complete Normalization is given")
         else:
             normalization = Normalization(normalization, *args, **kwargs)
-        self.events = [normalization.normalize(e) for e in self.events]
-        self.todos = [normalization.normalize(e) for e in self.todos]
+        self.events = [e if e.all_day else normalization.normalize(e) for e in self.events]
+        self.todos = [e if e.all_day else normalization.normalize(e) for e in self.todos]
 
     def __str__(self) -> str:
         return "<Calendar with {} event{} and {} todo{}>".format(
