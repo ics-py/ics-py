@@ -27,7 +27,7 @@ iCalendar (file extension `.ics`) is used by Google Calendar,
 Apple Calendar, Android and many more.
 
 
-Ics.py is available for Python>=3.6 and is Apache2 Licensed.
+Ics.py is available for Python 3.7, 3.8, 3.9 and 3.10 and is Apache2 Licensed.
 
 
 
