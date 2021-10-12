@@ -621,7 +621,7 @@ test = ["pytest", "pytest-cov", "hypothesis", "tatsu", "importlib_resources", "l
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "620b4eb02378ac949721d5c683330bf328c07ef15fd16c2e7c2def1fc1a9c5d4"
+content-hash = "db25110d9f1a932b70ad3fa6dd1ff914679fdc38ada7515c8a734a67d11bb978"
 
 [metadata.files]
 alabaster = [
