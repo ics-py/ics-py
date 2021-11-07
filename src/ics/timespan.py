@@ -7,6 +7,7 @@ import attr
 from attr.validators import instance_of, optional as v_optional
 from dateutil.tz import tzlocal
 
+from ics.event import CalendarEntryAttrs
 from ics.types import DatetimeLike
 from ics.utils import TIMEDELTA_CACHE, TIMEDELTA_DAY, TIMEDELTA_ZERO, ceil_datetime_to_midnight, ensure_datetime, \
     floor_datetime_to_midnight, timedelta_nearly_zero
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
     # we don't need typing_extensions as actual (dev-)dependency as mypy has builtin support
     from typing_extensions import Literal
 
-CalendarEntryT = TypeVar('CalendarEntryT', bound='CalendarEntryAttrs')
+CalendarEntryT = TypeVar('CalendarEntryT', bound=CalendarEntryAttrs)
 
 
 class NormalizationAction(IntEnum):

@@ -46,7 +46,7 @@ class MemberComponentConverter(AttributeConverter):
 class ComponentMeta(object):
     """
     Meta information on how a subclass of `Component`, the `component_type`, needs to be parsed and serialized.
-    All needed information if generated upon instantiation of this class and cached for later use.
+    All needed information is generated upon instantiation of this class and cached for later use.
     Existing instances can be looked up `BY_TYPE`.
     """
 

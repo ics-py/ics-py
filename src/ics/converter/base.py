@@ -83,6 +83,7 @@ class AttributeConverter(GenericConverter, abc.ABC):
     A mapping which describes which attribute types can be handled by which AttributeConverter subclasses.
     To obtain a Converter instance, use `AttributeConverter.BY_TYPE[value_type](attribute)`.
     See `extract_attr_type` for how to extract the value type.
+    Used by `ComponentMeta.find_converters` to find all converters for a Components' attributes.
     """
     BY_TYPE: ClassVar[Dict[Type, Type["AttributeConverter"]]] = {}
 
@@ -158,8 +159,7 @@ class AttributeConverter(GenericConverter, abc.ABC):
         elif value:
             component.extra_params[name] = value
 
-    def get_extra_params(self, component: Component, name: Optional[str] = None) -> Union[
-        ExtraParams, List[ExtraParams]]:
+    def get_extra_params(self, component: Component, name: Optional[str] = None) -> Union[ExtraParams, List[ExtraParams]]:
         if self.multi_value_type:
             default: Union[ExtraParams, List[ExtraParams]] = cast(List[ExtraParams], list())
         else:

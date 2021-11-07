@@ -60,8 +60,6 @@ class ParseError(Exception):
 
 
 class QuotedParamValue(UserString):
-    pass
-
     @classmethod
     def maybe_unquote(cls, txt: str) -> Union["QuotedParamValue", str]:
         if not txt:
