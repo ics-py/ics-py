@@ -7,7 +7,6 @@ import attr
 from attr.validators import instance_of, optional as v_optional
 from dateutil.tz import tzlocal
 
-from ics.event import CalendarEntryAttrs
 from ics.types import DatetimeLike
 from ics.utils import TIMEDELTA_CACHE, TIMEDELTA_DAY, TIMEDELTA_ZERO, ceil_datetime_to_midnight, ensure_datetime, \
     floor_datetime_to_midnight, timedelta_nearly_zero
@@ -16,21 +15,23 @@ if TYPE_CHECKING:
     # Literal is new in python 3.8, but backported via typing_extensions
     # we don't need typing_extensions as actual (dev-)dependency as mypy has builtin support
     from typing_extensions import Literal
+    # noinspection PyUnresolvedReferences
+    from ics.event import CalendarEntryAttrs
 
-CalendarEntryT = TypeVar('CalendarEntryT', bound=CalendarEntryAttrs)
+CalendarEntryT = TypeVar('CalendarEntryT', bound='CalendarEntryAttrs')
 
 
 class NormalizationAction(IntEnum):
     IGNORE = 0  # == False
     REPLACE = 1  # == True
-    CONVERT = 2  # == True
+    CONVERT = 2  # == True, default if True is passed
 
 
 @attr.s
 class Normalization(object):
     replacement: Union[TZInfo, Callable[[], TZInfo], None] = attr.ib()
-    normalize_floating: NormalizationAction = attr.ib(NormalizationAction.CONVERT)
-    normalize_with_tz: NormalizationAction = attr.ib(NormalizationAction.CONVERT)
+    normalize_floating: Union[NormalizationAction, bool] = attr.ib(NormalizationAction.CONVERT)
+    normalize_with_tz: Union[NormalizationAction, bool] = attr.ib(NormalizationAction.CONVERT)
 
     @overload
     def normalize(self, value: "Timespan") -> "Timespan":

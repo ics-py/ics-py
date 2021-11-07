@@ -1,8 +1,9 @@
-import attr
-import dateutil.rrule
 import itertools
 import operator
-from typing import List, TYPE_CHECKING, Iterable, Optional
+from typing import List, TYPE_CHECKING, Iterable, Optional, cast
+
+import attr
+import dateutil.rrule
 
 from ics import get_type_from_action, BaseAlarm, AudioAlarm, CustomAlarm, DisplayAlarm, EmailAlarm, NoneAlarm
 from ics.component import Component
@@ -10,7 +11,7 @@ from ics.contentline import Container, ContentLine
 from ics.converter.base import AttributeConverter, GenericConverter, sort_converters
 from ics.converter.component import ComponentMeta
 from ics.rrule import rrule_to_ContentLine
-from ics.types import ContainerItem, ContextDict, copy_extra_params
+from ics.types import ContainerItem, ContextDict, copy_extra_params, ExtraParams
 from ics.utils import one
 from ics.valuetype.datetime import DatetimeConverterMixin, DatetimeConverter
 
@@ -88,22 +89,25 @@ class AlarmActionConverter(GenericConverter):
         return ["ACTION"]
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+        assert isinstance(item, ContentLine)
         assert issubclass(type(component), get_type_from_action(item.value))
         if item.params:
             component.extra_params["ACTION"] = copy_extra_params(item.params)
         return True
 
     def serialize(self, component: Component, output: Container, context: ContextDict):
+        assert isinstance(component, BaseAlarm)
         output.append(ContentLine(
             name="ACTION",
-            params=component.extra_params.get("ACTION", {}),
+            params=cast(ExtraParams, component.extra_params.get("ACTION", {})),
             value=component.action))
 
 
 class AlarmMeta(ComponentMeta):
     def find_converters(self) -> Iterable[GenericConverter]:
-        convs: List[GenericConverter] \
-            = [AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type)]
+        convs: List[GenericConverter] = [c for c in (
+            AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type)
+        ) if c is not None]
         convs.append(AlarmActionConverter())
         return sort_converters(convs)
 

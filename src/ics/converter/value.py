@@ -1,6 +1,7 @@
-import attr
-from itertools import repeat
+from itertools import zip_longest
 from typing import Any, List, Tuple, cast
+
+import attr
 
 from ics.component import Component
 from ics.contentline import Container, ContentLine
@@ -110,9 +111,7 @@ class AttributeValueConverter(AttributeConverter):
     def __serialize_multi(self, component: Component, output: Container, context: ContextDict):
         extra_params = cast(List[ExtraParams], self.get_extra_params(component))
         values = self.get_value_list(component)
-        if not extra_params:
-            extra_params = repeat(None)
-        elif len(extra_params) != len(values):
+        if extra_params and len(extra_params) != len(values):
             raise ValueError("length of extra params doesn't match length of parameters"
                              " for attribute %s of %r" % (self.attribute.name, component))
 
@@ -120,7 +119,7 @@ class AttributeValueConverter(AttributeConverter):
         current_params = None
         current_values = []
 
-        for value, params in zip(values, extra_params):
+        for value, params in zip_longest(values, extra_params):
             merge_next = False
             params = copy_extra_params(params)
             if params.pop("__merge_next", None) == ["TRUE"]:

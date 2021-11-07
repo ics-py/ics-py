@@ -90,7 +90,12 @@ def Timezone_from_offset(name: str, offset: datetime.timedelta) -> Timezone:
 
 def Timezone_from_builtin(tzinfo: datetime.tzinfo) -> Union[Timezone, TimezoneResult]:
     if isinstance(tzinfo, datetime.timezone):
-        return Timezone_from_offset(tzinfo.tzname(None), tzinfo.utcoffset(None))
+        tzname = tzinfo.tzname(None)
+        utcoffset = tzinfo.utcoffset(None)
+        if tzname is None or utcoffset is None:
+            return TimezoneResult.UNSERIALIZABLE
+        else:
+            return Timezone_from_offset(tzname, utcoffset)
     elif type(tzinfo).__qualname__ == "ZoneInfo":
         from zoneinfo import ZoneInfo
         assert isinstance(tzinfo, ZoneInfo)

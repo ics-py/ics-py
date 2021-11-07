@@ -1,5 +1,5 @@
 import base64
-from typing import Type
+from typing import Type, Union
 from urllib.parse import urlparse
 
 from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, URL
@@ -64,7 +64,9 @@ class BooleanConverterClass(ValueConverter[bool]):
             else:
                 raise ValueError("can't interpret '%s' as boolean" % value)
 
-    def serialize(self, value: bool, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: Union[bool, str], params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+        if isinstance(value, str):
+            value = self.parse(value, params, context)
         if value:
             return "TRUE"
         else:
