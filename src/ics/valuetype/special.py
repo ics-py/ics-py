@@ -1,12 +1,12 @@
 import abc
-from typing import Type, Generic
+from typing import Type, Generic, TypeVar, Union, cast
 from urllib.parse import urlparse
 
 from ics import Attendee, Organizer
 from ics.attendee import Person
 from ics.geo import Geo
-from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, copy_extra_params
-from ics.valuetype.base import ValueConverter, T
+from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, URL
+from ics.valuetype.base import ValueConverter
 
 __all__ = ["GeoConverter"]
 
@@ -33,21 +33,24 @@ class GeoConverterClass(ValueConverter[Geo]):
 
 GeoConverter = GeoConverterClass()
 
+P = TypeVar('P', bound=Person)
 
-class PersonConverter(Generic[T], ValueConverter[T], abc.ABC):
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> T:
+
+class PersonConverter(Generic[P], ValueConverter[P], abc.ABC):
+    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> P:
         val = self.python_type(email=urlparse(value), extra=dict(params))
         params.clear()
         return val
 
-    def serialize(self, value: T, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: Union[P, str], params: ExtraParams = EmptyParams,
+                  context: ContextDict = EmptyContext) -> str:
         if isinstance(value, Person):
             params.update(value.extra)
             value = value.email
         if isinstance(value, str):
             return value
         else:
-            return value.geturl()
+            return cast(URL, value).geturl()
 
 
 class OrganizerConverterClass(PersonConverter[Organizer]):

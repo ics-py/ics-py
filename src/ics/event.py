@@ -42,13 +42,11 @@ class CalendarEntryAttrs(Component):
     description: Optional[str] = attr.ib(default=None)
     location: Optional[str] = attr.ib(default=None)
     url: Union[None, str, URL] = attr.ib(default=None)
-    status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper),
-                                    validator=in_(STATUS_VALUES))  # type: ignore[misc]
+    status: Optional[str] = attr.ib(default=None, converter=c_optional(str.upper), validator=in_(STATUS_VALUES))  # type: ignore[misc]
 
     created: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore[misc]
     last_modified: Optional[datetime] = attr.ib(default=None, converter=ensure_utc)  # type: ignore[misc]
-    dtstamp: datetime = attr.ib(factory=lambda: default_dtstamp_factory.get()(),
-                                converter=ensure_utc, validator=validate_not_none)  # type: ignore[misc]
+    dtstamp: datetime = attr.ib(factory=lambda: default_dtstamp_factory.get()(), converter=ensure_utc, validator=validate_not_none)  # type: ignore[misc]
 
     alarms: List[BaseAlarm] = attr.ib(factory=list, converter=list)
     attach: List[Union[URL, bytes]] = attr.ib(factory=list, converter=list)

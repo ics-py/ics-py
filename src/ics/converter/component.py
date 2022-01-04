@@ -1,12 +1,12 @@
 from collections import defaultdict
+from typing import Dict, Iterable, List, Optional, Tuple, Type, cast, ClassVar, Any, Callable
 
 import attr
 from attr import Attribute
-from typing import Dict, Iterable, List, Optional, Tuple, Type, cast, ClassVar, Any, Callable
 
 from ics.component import Component
-from ics.converter.base import AttributeConverter, GenericConverter, sort_converters
 from ics.contentline import Container
+from ics.converter.base import AttributeConverter, GenericConverter, sort_converters
 from ics.types import ContainerItem, ContextDict
 from ics.utils import check_is_instance
 
@@ -46,7 +46,7 @@ class MemberComponentConverter(AttributeConverter):
 class ComponentMeta(object):
     """
     Meta information on how a subclass of `Component`, the `component_type`, needs to be parsed and serialized.
-    All needed information if generated upon instantiation of this class and cached for later use.
+    All needed information is generated upon instantiation of this class and cached for later use.
     Existing instances can be looked up `BY_TYPE`.
     """
 
@@ -147,13 +147,14 @@ class ImmutableComponentMeta(ComponentMeta):
     """
 
     def load_instance(self, container: Container, context: Optional[ContextDict] = None):
-        pseudo_instance = cast(Component, MutablePseudoComponent(self.component_type))
-        self.populate_instance(pseudo_instance, container, context)
+        mpcomp = MutablePseudoComponent(self.component_type)
+        comp = cast(Component, mpcomp)
+        self.populate_instance(comp, container, context)
         instance = self.component_type(**{
-            k.lstrip("_"): v for k, v in pseudo_instance._MutablePseudoComponent__data.items()
+            k.lstrip("_"): v for k, v in mpcomp._MutablePseudoComponent__data.items()
         })  # type: ignore[call-arg,attr-defined]
-        instance.extra.extend(pseudo_instance.extra)
-        instance.extra_params.update(pseudo_instance.extra_params)
+        instance.extra.extend(comp.extra)
+        instance.extra_params.update(comp.extra_params)
         return instance
 
 
