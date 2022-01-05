@@ -38,7 +38,7 @@ class Calendar(CalendarAttrs):
 
     NAME = "VCALENDAR"
     DEFAULT_VERSION: ClassVar[str] = "2.0"
-    DEFAULT_PRODID: ClassVar[str] = "ics.py - http://git.io/lLljaA"
+    DEFAULT_PRODID: ClassVar[str] = "ics.py 0.8.0-dev - http://git.io/lLljaA"
 
     def __init__(
             self,

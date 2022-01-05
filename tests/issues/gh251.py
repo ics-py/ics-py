@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 
-from ics import Calendar, Event
+from ics import Calendar, Event, __version__
 from ics.event import deterministic_event_data, default_uid_factory, default_dtstamp_factory
 from ics.timezone import UTC
 
 CALENDAR = """
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:ics.py - http://git.io/lLljaA
+PRODID:ics.py {version} - http://git.io/lLljaA
 BEGIN:VEVENT
 DTSTART:20000201T120000
 SUMMARY:second
@@ -61,7 +61,7 @@ def test_deterministic_events_deco():
     cal = make_calendar()
     uid = default_uid_factory.get()()
     dtstamp = default_dtstamp_factory.get()().strftime("%Y%m%dT%H%M%SZ")
-    assert cal.serialize().strip() == CALENDAR.format(uid=uid, dtstamp=dtstamp)
+    assert cal.serialize().strip() == CALENDAR.format(uid=uid, dtstamp=dtstamp, version=__version__)
 
     assert cal == make_calendar()
     assert cal.serialize() == make_calendar().serialize()
@@ -80,7 +80,7 @@ def test_deterministic_events_cm():
 
     cal3 = make_calendar()
 
-    assert cal1.serialize().strip() == CALENDAR.format(uid=uid, dtstamp=dtstamp)
+    assert cal1.serialize().strip() == CALENDAR.format(uid=uid, dtstamp=dtstamp, version=__version__)
 
     assert cal1.serialize() == cal2.serialize()
     assert cal1 == cal2
@@ -102,6 +102,6 @@ def test_deterministic_events_cm_params():
         assert uid == default_uid_factory.get()()
         assert dtstamp == default_dtstamp_factory.get()().strftime("%Y%m%dT%H%M%SZ")
 
-    assert cal.serialize().strip() == CALENDAR.format(uid=uid, dtstamp=dtstamp)
+    assert cal.serialize().strip() == CALENDAR.format(uid=uid, dtstamp=dtstamp, version=__version__)
     assert uid != default_uid_factory.get()()
     assert dtstamp != default_dtstamp_factory.get()().strftime("%Y%m%dT%H%M%SZ")

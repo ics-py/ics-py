@@ -56,7 +56,7 @@ Now let's see what happens when we use a real timezone, e.g. the Olson timezone 
     >>> print(Calendar(events=[e]).serialize())  # doctest: +ELLIPSIS,+NORMALIZE_WHITESPACE
     BEGIN:VCALENDAR
     VERSION:2.0
-    PRODID:ics.py - http://git.io/lLljaA
+    PRODID:ics.py 0.8.0-dev - http://git.io/lLljaA
     BEGIN:VTIMEZONE
     TZID:/ics.py/2020.1/America/New_York
     ...
