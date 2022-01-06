@@ -1,10 +1,10 @@
 name: Publish package 📦
 
 on:
-  # Only to test if this PR works, should be removed before merging
   push:
     branches:
-      - publish-pypi
+      - main # Publish to test pypi for every commit on main
+      - publish-pypi # Only to test if this PR works, should be removed before merging
   # Trigger on release created events
   release:
     types:
@@ -35,11 +35,19 @@ jobs:
       run: |
         poetry config repositories.test_pypi https://test.pypi.org/legacy/
         poetry config pypi-token.test_pypi $TEST_PYPI_API_TOKEN
+        if [[ "$BRANCH_NAME" == *main ]]
+        then
+          poetry version --short
+        else
+          poetry version $(poetry version --short).${GITHUB_SHA::7}
+          poetry version --short
+        fi
 
     - name: Publish 📦 to Test PyPI 🧪
       env:
         PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
       run: |
+        echo -e "\nPublishing to version ref '$(poetry version --short)'...\n\n"
         poetry publish -r test_pypi
 
     # - name: Publish 📦 to PyPI 🎉
