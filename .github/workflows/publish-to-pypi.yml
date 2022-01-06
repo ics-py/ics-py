@@ -39,7 +39,7 @@ jobs:
         then
           poetry version --short
         else
-          poetry version $(poetry version --short).${GITHUB_SHA::7}
+          poetry version $(poetry version --short)+${GITHUB_SHA::7}
           poetry version --short
         fi
 
