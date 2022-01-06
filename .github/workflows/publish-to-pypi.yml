@@ -1,16 +1,11 @@
 name: Publish package 📦
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
+  # Only to test if this PR works, should be removed before merging
   push:
     branches:
-      - main
-      - publish-pypi # Only to test if this PR works, should be removed before merging
-  pull_request:
-    branches:
-      - main
-  # Also trigger on release created events
+      - publish-pypi
+  # Trigger on release created events
   release:
     types:
       - created
@@ -18,7 +13,7 @@ on:
 jobs:
   build-and-publish:
     name: Build and publish Python 🐍 distributions 📦
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@master

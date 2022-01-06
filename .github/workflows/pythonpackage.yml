@@ -7,7 +7,7 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 5
+      max-parallel: 7
       matrix:
         python-version: ["3.7", "3.8", "3.9", "3.10", "pypy-3.7", "pypy-3.8"]
 
