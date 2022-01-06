@@ -25,9 +25,6 @@ jobs:
     - name: Install build dependencies
       run: pip install tox poetry bump2version
 
-    - name: Build the package
-      run: poetry build
-
     - name: Poetry configuration ⚙️
       env:
         TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
@@ -42,6 +39,9 @@ jobs:
           poetry version $(poetry version --short)+${GITHUB_SHA::7}
           poetry version --short
         fi
+      
+    - name: Build the package
+      run: poetry build
 
     - name: Publish 📦 to Test PyPI 🧪
       env:
