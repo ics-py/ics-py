@@ -6,9 +6,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
-      max-parallel: 5
       matrix:
+        experimental: [false]
         python-version:
           - "3.7"
           - "3.8"
@@ -16,8 +17,9 @@ jobs:
           - "3.10"
           - "pypy-3.7"
           - "pypy-3.8"
-          # Test future versions to detect bugs early
-          - "3.11.0-alpha.3"
+        include:
+        - python-version: "3.11.0-alpha.3"
+          experimental: true
 
     steps:
     - uses: actions/checkout@master
