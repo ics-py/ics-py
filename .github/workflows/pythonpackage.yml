@@ -20,6 +20,9 @@ jobs:
         include:
         - python-version: "3.11.0-alpha.3"
           experimental: true
+          experimental-format: (🧪)
+
+    name: Python ${{ matrix.python-version }} ${{ matrix.experimental-format }}
 
     steps:
     - uses: actions/checkout@master
