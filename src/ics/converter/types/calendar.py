@@ -19,7 +19,8 @@ class CalendarMeta(ComponentMeta):
 
     def find_converters(self):
         return sort_converters(itertools.chain(
-            super(CalendarMeta, self).find_converters(), (CalendarTimezoneConverter(),)
+            super(CalendarMeta, self).find_converters(),
+                (CalendarTimezoneConverter(), CalendarNameConverter())
         ))
 
     def _populate_attrs(self, instance: Component, container: Container, context: ContextDict):
@@ -60,6 +61,26 @@ class CalendarTimezoneConverter(GenericConverter):
     def serialize(self, component: Component, output: Container, context: ContextDict):
         # store the place where we should insert all the timezones
         context["VTIMEZONES_AFTER"] = len(output)
+
+
+class CalendarNameConverter(GenericConverter):
+    @property
+    def priority(self) -> int:
+        return 1100
+
+    @property
+    def filter_ics_names(self) -> List[str]:
+        return ["NAME", "X-WR-CALNAME"]
+
+    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+        if item.name == "NAME":
+            return True
+        if item.name == "X-WR-CALNAME":
+            component.name = item.value
+            return False
+
+    def serialize(self, component: Component, output: Container, context: ContextDict):
+        pass
 
 
 ComponentMeta.BY_TYPE[Calendar] = CalendarMeta(Calendar)

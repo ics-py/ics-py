@@ -14,6 +14,7 @@ from ics.todo import Todo
 
 @attr.s
 class CalendarAttrs(Component):
+    name: str = attr.ib(validator=instance_of(str), metadata={"ics_priority": 1100})
     version: str = attr.ib(validator=instance_of(str), metadata={"ics_priority": 1000})  # default set by Calendar.DEFAULT_VERSION
     prodid: str = attr.ib(validator=instance_of(str), metadata={"ics_priority": 900})  # default set by Calendar.DEFAULT_PRODID
     scale: Optional[str] = attr.ib(default=None, metadata={"ics_priority": 800})
@@ -37,6 +38,7 @@ class Calendar(CalendarAttrs):
     """
 
     NAME = "VCALENDAR"
+    DEFAULT_CALNAME = "Calendar"
     DEFAULT_VERSION: ClassVar[str] = "2.0"
     DEFAULT_PRODID: ClassVar[str] = "ics.py 0.8.0-dev - http://git.io/lLljaA"
 
@@ -60,6 +62,7 @@ class Calendar(CalendarAttrs):
             events = tuple()
         if todos is None:
             todos = tuple()
+        kwargs.setdefault("name", self.DEFAULT_CALNAME)
         kwargs.setdefault("version", self.DEFAULT_VERSION)
         kwargs.setdefault("prodid", creator if creator is not None else self.DEFAULT_PRODID)
         super(Calendar, self).__init__(events=events, todos=todos, **kwargs)  # type: ignore[arg-type]
