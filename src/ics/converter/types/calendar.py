@@ -20,7 +20,7 @@ class CalendarMeta(ComponentMeta):
     def find_converters(self):
         return sort_converters(itertools.chain(
             super(CalendarMeta, self).find_converters(),
-                (CalendarTimezoneConverter(), CalendarNameConverter())
+                (CalendarTimezoneConverter(),)
         ))
 
     def _populate_attrs(self, instance: Component, container: Container, context: ContextDict):
