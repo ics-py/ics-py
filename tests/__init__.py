@@ -3,8 +3,12 @@ import sys
 import pkg_resources
 
 import ics
+import pytest
+
+ics_path = ics.__path__[0]
 
 
+@pytest.mark.skipif("/site-packages/" not in ics_path or "/src" in ics_path, reason="ics should be imported from package not from sources for testing")
 def test_version_matches():
     dist = pkg_resources.get_distribution('ics')
     print(repr(dist), dist.__dict__, sys.path, ics.__path__)

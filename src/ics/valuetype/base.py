@@ -40,7 +40,7 @@ class ValueConverter(Generic[T], abc.ABC):
     def serialize(self, value: T, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
         ...
 
-    def __str__(self):
+    def __repr__(self):
         return "<" + self.__class__.__name__ + ">"
 
     def __hash__(self):

@@ -63,10 +63,8 @@ attributes.
 ::
 
    >>> e = ics.Event()
-   >>> e # doctest: +ELLIPSIS
-   Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=None, end_time=None, duration=None, precision='second'), summary=None, uid='...@....org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(..., tzinfo=Timezone.from_tzid('UTC')), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])
-   >>> str(e)
-   '<floating Event>'
+   >>> e
+   <floating Event>
    >>> print(e.serialize())  # doctest: +ELLIPSIS,+NORMALIZE_WHITESPACE
    BEGIN:VEVENT
    UID:...@...org

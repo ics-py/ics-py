@@ -121,12 +121,15 @@ class Calendar(CalendarAttrs):
         self.events = [e if e.all_day else normalization.normalize(e) for e in self.events]
         self.todos = [e if e.all_day else normalization.normalize(e) for e in self.todos]
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return "<Calendar with {} event{} and {} todo{}>".format(
             len(self.events),
             "" if len(self.events) == 1 else "s",
             len(self.todos),
             "" if len(self.todos) == 1 else "s")
+
+    def __str__(self):
+        return self.serialize()
 
     def __iter__(self) -> Iterator[str]:
         """Returns:
@@ -139,4 +142,4 @@ class Calendar(CalendarAttrs):
             >>> c = Calendar(); c.events.append(Event(summary="My cool event"))
             >>> open('my.ics', 'w').writelines(c)
         """
-        return iter(self.serialize().splitlines(keepends=True))
+        return iter(str(self).splitlines(keepends=True))

@@ -249,7 +249,7 @@ class Timespan(object):
 
         return prefix, [self.__class__.__name__], suffix
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         prefix, name, suffix = self.get_str_segments()
         return "<%s>" % (" ".join(prefix + name + suffix))
 
