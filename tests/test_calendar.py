@@ -24,6 +24,7 @@ cal3 = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Apple Inc.//Mac OS X 10.13.5//EN",
+    "NAME:a name",
     "X-WR-CALNAME:a xname",
     "END:VCALENDAR",
 ]
@@ -38,7 +39,7 @@ def test_cal_x_name():
     assert calendar.name == "a xname"
 
 def test_cal_both_names():
-    calendar = Calendar(cal2)
+    calendar = Calendar(cal3)
     # FIXME: what behavior should we expect here?
     # FIXME: In both cases, we need a test and we need to document it.
     assert calendar.name == "a name"
