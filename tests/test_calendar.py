@@ -1,6 +1,19 @@
 from ics import Calendar
 
-cal = [
+
+cal_no_name = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Apple Inc.//Mac OS X 10.13.5//EN",
+    "CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT",
+    r"DESCRIPTION:Title: My event",
+    "END:VEVENT",
+    "END:VCALENDAR",
+]
+
+
+cal_name = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Apple Inc.//Mac OS X 10.13.5//EN",
@@ -12,7 +25,7 @@ cal = [
     "END:VCALENDAR",
 ]
 
-cal2 = [
+cal_xname = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Apple Inc.//Mac OS X 10.13.5//EN",
@@ -20,7 +33,7 @@ cal2 = [
     "END:VCALENDAR",
 ]
 
-cal3 = [
+cal_name_xname = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Apple Inc.//Mac OS X 10.13.5//EN",
@@ -31,19 +44,23 @@ cal3 = [
 
 
 def test_cal_name():
-    calendar = Calendar(cal)
+    calendar = Calendar(cal_name)
     assert calendar.name == "a name"
+
 
 def test_cal_x_name():
-    calendar = Calendar(cal2)
+    calendar = Calendar(cal_xname)
     assert calendar.name == "a xname"
 
+
 def test_cal_both_names():
-    calendar = Calendar(cal3)
-    # FIXME: what behavior should we expect here?
-    # FIXME: In both cases, we need a test and we need to document it.
+    calendar = Calendar(cal_name_xname)
     assert calendar.name == "a name"
+
 
 def test_no_default_cal_name():
     calendar = Calendar()
+    assert calendar.name is None
+
+    calendar = Calendar(cal_no_name)
     assert calendar.name is None
