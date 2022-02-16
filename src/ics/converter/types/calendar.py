@@ -12,9 +12,14 @@ from ics.valuetype.datetime import DatetimeConverterMixin
 
 
 class CalendarMeta(ComponentMeta):
-    """
-    Slightly modified meta class for Calendars that makes sure that `Timezone`s are always loaded first
-      and that all contained timezones are serialized.
+    """Slightly modified meta class for Calendars.
+
+    * makes sure that `Timezone`s are always loaded first and that all
+      contained timezones are serialized.
+    * when present, X-WR-CALNAME is being written to NAME. In case both
+      X-WR-CALNAME and NAME are present, NAME takes precedence as it's the
+      only property defined in the RFC-7986.
+
     """
 
     def find_converters(self):
