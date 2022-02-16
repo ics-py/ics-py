@@ -42,6 +42,7 @@ In progress:
  - new Calendar constructor / parse methods
  - remove the `Calendar._timezones` attribute
  - added support for parsing and serializing Timezones
+ - added support for calendar NAME and X-WR-CALNAME. NAME is taking precedence in all cases.
 
 ***********************
 0.7 - Katherine Johnson
