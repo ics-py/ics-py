@@ -1,4 +1,5 @@
 import copy
+import warnings
 from typing import Dict, Iterable, Optional, Set, Union
 
 from six import text_type
@@ -100,8 +101,10 @@ class Calendar(Component):
             >>> c = Calendar(); c.events.add(Event(name="My cool event"))
             >>> open('my.ics', 'w').writelines(c)
         """
-        for line in str(self).split('\n'):
-            yield line + '\n'
+        warnings.warn(
+            "Using Calendar as Iterable is deprecated and will be removed in version 0.8. "
+            "Use the explicit calendar.serialize_iter() instead.", DeprecationWarning)
+        return self.serialize_iter()
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Calendar):
