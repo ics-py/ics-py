@@ -53,7 +53,7 @@ class CalendarMeta(ComponentMeta):
 class CalendarTimezoneConverter(GenericConverter):
     @property
     def priority(self) -> int:
-        return 600
+        return 500
 
     @property
     def filter_ics_names(self) -> List[str]:
@@ -71,7 +71,7 @@ class CalendarTimezoneConverter(GenericConverter):
 class CalendarNameConverter(GenericConverter):
     @property
     def priority(self) -> int:
-        return 1100
+        return 600
 
     @property
     def filter_ics_names(self) -> List[str]:

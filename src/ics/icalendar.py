@@ -19,7 +19,7 @@ class CalendarAttrs(Component):
     scale: Optional[str] = attr.ib(default=None, metadata={"ics_priority": 800})
     method: Optional[str] = attr.ib(default=None, metadata={"ics_priority": 700})
     name: Optional[str] = attr.ib(default=None, validator=v_optional(instance_of(str)), metadata={"ics_priority": 600})
-    # CalendarTimezoneConverter has priority 600
+    # CalendarTimezoneConverter has priority 500
 
     events: List[Event] = attr.ib(factory=list, converter=list, metadata={"ics_priority": -100})
     todos: List[Todo] = attr.ib(factory=list, converter=list, metadata={"ics_priority": -200})
