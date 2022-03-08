@@ -79,11 +79,13 @@ class CalendarNameConverter(GenericConverter):
 
     def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
         if item.name == "NAME":
+            component.extra_params["X-WR-CALNAME"] = item.value
             return True
         if item.name == "X-WR-CALNAME":
             if component.name is not None:
                 return False
 
+            component.extra_params["X-WR-CALNAME"] = item.value
             component.name = item.value
             return False
 

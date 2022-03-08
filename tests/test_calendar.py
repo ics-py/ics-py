@@ -46,11 +46,13 @@ cal_name_xname = [
 def test_cal_name():
     calendar = Calendar(cal_name)
     assert calendar.name == "a name"
+    assert calendar.extra_params["X-WR-CALNAME"] == "a name"
 
 
 def test_cal_x_name():
     calendar = Calendar(cal_xname)
     assert calendar.name == "a xname"
+    assert calendar.extra_params["X-WR-CALNAME"] == "a xname"
 
 
 def test_cal_both_names():
