@@ -45,7 +45,8 @@ bump2version =               { version = "^1.0.0",     optional = true }
 tox =                        { version = "^3.15.0",    optional = true }
 
 # extra: docs
-sphinx =                     { version =  "<3",        optional = true }
+sphinx =                     { version =  ">=5,<6",        optional = true }
+Sphinx = "^5.0.0"
 
 [tool.poetry.extras]
 test = ["pytest", "pytest-cov", "hypothesis", "tatsu", "importlib_resources", "lipsum"]
