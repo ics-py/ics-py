@@ -45,11 +45,11 @@ ics.py too is strict when parsing input
 ics.py was made to output rfc-compliant iCalendar files
 and to when possible parse only valid files.
 This means that ics.py will throw exceptions when fed malformed
-input [#malformed]_ because we trust that failing silently is
+input because we trust that failing silently is
 not a good practice.
 
 However, we noticed that some widely used clients create some malformed
-files. We are planning to add options to ignore those errors [#errors]_ or
+files. We are planning to add options to ignore those errors or
 transforming them into warnings but at the moment, you will have to
 fix those before giving inputting them in ics.py.
 
