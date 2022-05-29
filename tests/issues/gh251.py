@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+import pytest
+
 from ics import Calendar, Event, __version__
 from ics.event import deterministic_event_data, default_uid_factory, default_dtstamp_factory
 from ics.timezone import UTC
@@ -36,7 +38,7 @@ END:VCALENDAR
 """.strip().replace("\n", "\r\n")
 
 
-def make_calendar():
+def make_calendar() -> Calendar:
     cal = Calendar()
     cal.events.append(Event("second", datetime(2000, 2, 1, 12, 0)))
     cal.events.append(Event("fourth", datetime(2000, 4, 1, 12, 0)))
@@ -45,8 +47,13 @@ def make_calendar():
     return cal
 
 
-def test_chronological_order():
-    cal = make_calendar()
+@pytest.fixture(name="cal")
+def calendar() -> Calendar:
+    """Fixture Calendar for tests."""
+    return make_calendar()
+
+
+def test_chronological_order(cal: Calendar) -> None:
     assert [e.summary for e in cal.events] == ["second", "fourth", "third", "first"]
 
     cal.events = sorted(cal.events)
@@ -57,8 +64,7 @@ def test_chronological_order():
 
 
 @deterministic_event_data
-def test_deterministic_events_deco():
-    cal = make_calendar()
+def test_deterministic_events_deco(cal: Calendar) -> None:
     uid = default_uid_factory.get()()
     dtstamp = default_dtstamp_factory.get()().strftime("%Y%m%dT%H%M%SZ")
     assert cal.serialize().strip() == CALENDAR.format(uid=uid, dtstamp=dtstamp, version=__version__)
