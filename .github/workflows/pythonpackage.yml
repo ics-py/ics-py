@@ -6,10 +6,24 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
-      max-parallel: 5
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "pypy-3.7", "pypy-3.8"]
+        experimental: [false]
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "pypy-3.7"
+          - "pypy-3.8"
+          - "pypy-3.9"
+        include:
+        - python-version: "3.11.0-alpha - 3.11"
+          experimental: true
+          experimental-format: (🧪)
+
+    name: Python ${{ matrix.python-version }} ${{ matrix.experimental-format }}
 
     steps:
     - uses: actions/checkout@master
