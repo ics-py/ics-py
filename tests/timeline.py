@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, date
 
+from freezegun import freeze_time
 import pytest
 
 from ics import Calendar, Event
@@ -7,14 +8,36 @@ from ics.timezone import UTC
 
 
 @pytest.fixture
-def calendar() -> Calendar():
-    """Create a test calendar for use in tests."""
+def calendar() -> Calendar:
+    """Fixture calendar with all day events to use in tests."""
     cal = Calendar()
     cal.events.extend([
         Event("second", datetime(2000, 2, 1, 12, 0)),
         Event("fourth", datetime(2000, 4, 1, 12, 0)),
         Event("third", datetime(2000, 3, 1, 12, 0)),
         Event("first", datetime(2000, 1, 1, 12, 0)),
+    ])
+    return cal
+
+
+@pytest.fixture
+def calendar_datetime_events() -> Calendar:
+    """Fixture calendar with events to use in tests."""
+    cal = Calendar()
+    cal.events.extend([
+        Event(
+            "first",
+            begin=datetime(2000, 1, 1, 11, 0),
+            end=datetime(2000, 1, 1, 11, 30)
+        ),
+        Event("second",
+            begin=datetime(2000, 1, 1, 12, 0),
+            end=datetime(2000, 1, 1, 13, 0),
+        ),
+        Event("third",
+            begin=datetime(2000, 1, 2, 12, 0),
+            end=datetime(2000, 1, 2, 13, 0),
+        )
     ])
     return cal
 
@@ -41,105 +64,49 @@ def test_start_after(calendar: Calendar) -> None:
     ]
 
 
-def test_at():
+@pytest.mark.parametrize(
+    "at_datetime,expected_events",
+    [
+        (datetime(2000, 1, 1, 11, 15), ["first"]),
+        (datetime(2000, 1, 1, 11, 59), []),
+        (datetime(2000, 1, 1, 12, 0), ["second"]),
+        (datetime(2000, 1, 1, 12, 30), ["second"]),
+        (datetime(2000, 1, 1, 12, 59), ["second"]),
+        (datetime(2000, 1, 1, 13, 0), []),
+    ],
+)
+def test_at(calendar_datetime_events: Calendar, at_datetime: datetime, expected_events: list[str]) -> None:
     """Test returning events at a specific time."""
-    cal = Calendar()
-    cal.events.extend([
-        Event(
-            "earlier",
-            begin=datetime(2000, 1, 1, 11, 0),
-            end=datetime(2000, 1, 1, 11, 30)
-        ),
-        Event("event",
-            begin=datetime(2000, 1, 1, 12, 0),
-            end=datetime(2000, 1, 1, 13, 0),
-        ),
-        Event("later",
-            begin=datetime(2000, 1, 2, 12, 0),
-            end=datetime(2000, 1, 2, 13, 0),
-        )
-    ])
     assert [
-        e.summary for e in cal.timeline.at(datetime(2000, 1, 1, 11, 59))
-    ] == []
-    assert [
-        e.summary for e in cal.timeline.at(datetime(2000, 1, 1, 12, 0))
-    ] == ["event"]
-    assert [
-        e.summary for e in cal.timeline.at(datetime(2000, 1, 1, 12, 30))
-    ] == ["event"]
-    assert [
-        e.summary for e in cal.timeline.at(datetime(2000, 1, 1, 12, 59))
-    ] == ["event"]
-    assert [
-        e.summary for e in cal.timeline.at(datetime(2000, 1, 1, 13, 0))
-    ] == []
+        e.summary for e in calendar_datetime_events.timeline.at(at_datetime)
+    ] == expected_events
 
 
-def test_now():
-    now = datetime.now()
-
-    cal = Calendar()
-    cal.events.extend([
-        Event(
-            "before",
-            begin=(now - timedelta(days=3)),
-            end=(now - timedelta(days=2)),
-        ),
-        Event(
-            "after",
-            begin=(now + timedelta(days=2)),
-            end=(now + timedelta(days=2)),
-        ),
-        Event(
-            "now",
-            begin=(now - timedelta(days=1)),
-            end=(now + timedelta(days=1)),
-        ),
-    ])
-    assert [e.summary for e in cal.timeline.now()] == ["now"]
+@freeze_time("2000-01-01 12:30:00")
+def test_now(calendar_datetime_events: Calendar) -> None:
+    assert [e.summary for e in calendar_datetime_events.timeline.now()] == ["second"]
 
 
-def test_included():
-    cal = Calendar()
-    cal.events.extend([
-        Event(
-            "first",
-            begin=datetime(2000, 1, 1, 11, 0),
-            end=datetime(2000, 1, 1, 11, 30)
-        ),
-        Event(
-            "second",
-            begin=datetime(2000, 1, 1, 12, 0),
-            end=datetime(2000, 1, 1, 13, 0),
-        ),
-        Event(
-            "third",
-            begin=datetime(2000, 1, 2, 12, 0),
-            end=datetime(2000, 1, 2, 13, 0),
-        ),
-    ])
+@freeze_time("2000-01-01 13:00:00")
+def test_now_no_match(calendar_datetime_events: Calendar) -> None:
+    assert [e.summary for e in calendar_datetime_events.timeline.now()] == []
+
+
+@freeze_time("2000-01-01 12:30:00")
+def test_today(calendar_datetime_events: Calendar) -> None:
+    assert [e.summary for e in calendar_datetime_events.timeline.today()] == ["first", "second"]
+
+
+@pytest.mark.parametrize(
+    "start,end,expected_events",
+    [
+        (datetime(2000, 1, 1, 10, 00), datetime(2000, 1, 2, 14, 00), ["first", "second", "third"]),
+        (datetime(2000, 1, 1, 10, 00), datetime(2000, 1, 1, 14, 00), ["first", "second"]),
+        (datetime(2000, 1, 1, 12, 00), datetime(2000, 1, 2, 14, 00), ["second", "third"]),
+        (datetime(2000, 1, 1, 12, 00), datetime(2000, 1, 1, 14, 00), ["second"]),
+    ],
+)
+def test_included(calendar_datetime_events: Calendar, start: datetime, end: datetime, expected_events: list[str]) -> None:
     assert [
-        e.summary for e in cal.timeline.included(
-            datetime(2000, 1, 1, 10, 00),
-            datetime(2000, 1, 2, 14, 00),
-        )
-    ] == ["first", "second", "third"]
-    assert [
-        e.summary for e in cal.timeline.included(
-            datetime(2000, 1, 1, 10, 00),
-            datetime(2000, 1, 1, 14, 00),
-        )
-    ] == ["first", "second"]
-    assert [
-        e.summary for e in cal.timeline.included(
-            datetime(2000, 1, 1, 12, 00),
-            datetime(2000, 1, 2, 14, 00),
-        )
-    ] == ["second", "third"]
-    assert [
-        e.summary for e in cal.timeline.included(
-            datetime(2000, 1, 1, 12, 00),
-            datetime(2000, 1, 1, 14, 00),
-        )
-    ] == ["second"]
+        e.summary for e in calendar_datetime_events.timeline.included(start, end)
+    ] == expected_events
