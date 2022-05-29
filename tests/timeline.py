@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta, date
 
+import pytest
+
 from ics import Calendar, Event
 from ics.timezone import UTC
 
 
-def make_calendar():
+@pytest.fixture
+def calendar() -> Calendar():
     """Create a test calendar for use in tests."""
     cal = Calendar()
     cal.events.extend([
@@ -16,30 +19,24 @@ def make_calendar():
     return cal
 
 
-def test_iteration():
+def test_iteration(calendar: Calendar) -> None:
     """Test chronological iteration of a timeline.""" 
-    cal = make_calendar()
-    assert [e.summary for e in cal.timeline] == [
+    assert [e.summary for e in calendar.timeline] == [
         "first", "second", "third", "fourth"
     ]
 
-def test_on():
+def test_on(calendar: Calendar) -> None:
     """Test returning events on a particualr day."""
-    cal = make_calendar()
-    timeline = cal.timeline
-    assert [e.summary for e in cal.timeline.on(date(2000, 1, 1))] == ["first"]
-    assert [e.summary for e in cal.timeline.on(date(2000, 2, 1))] == ["second"]
-    assert [e.summary for e in cal.timeline.on(datetime(2000, 3, 1, 6, 0))] == [
+    assert [e.summary for e in calendar.timeline.on(date(2000, 1, 1))] == ["first"]
+    assert [e.summary for e in calendar.timeline.on(date(2000, 2, 1))] == ["second"]
+    assert [e.summary for e in calendar.timeline.on(datetime(2000, 3, 1, 6, 0))] == [
         "third"
     ]
 
 
-def test_start_after():
+def test_start_after(calendar: Calendar) -> None:
     """Test chronological iteration starting at a specific time."""
-    cal = make_calendar()
-    timeline = cal.timeline
-
-    assert [e.summary for e in cal.timeline.start_after(date(2000, 2, 1))] == [
+    assert [e.summary for e in calendar.timeline.start_after(date(2000, 2, 1))] == [
         "second", "third", "fourth"
     ]
 
