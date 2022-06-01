@@ -1,6 +1,8 @@
-================
-Ics.py changelog
-================
+=========
+Changelog
+=========
+
+Contains all notable changes to the code base.
 
 *Major releases are named in honor of influential women who shaped modern computer technology*
 
@@ -9,7 +11,7 @@ Ics.py changelog
 ***************************
 
 *Grace Hopper was mathematician and rear admiral who was a pioneer in developing computer technology,
-helping to devise UNIVAC I, the first commercial electronic computer and FLOW-MATIC on which COBOL was based*
+helping to devise UNIVAC I, the first commercial electronic computer and FLOW-MATIC on which COBOL was based*.
 
 This is a major release in the life of ics.py as it fixes a lot of long standing
 (design) issues with timespans, removes Arrow and introduces `attrs`.
