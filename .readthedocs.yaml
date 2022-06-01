@@ -1,4 +1,3 @@
-# .readthedocs.yaml
 # Read the Docs configuration file
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
@@ -9,8 +8,6 @@ build:
   tools:
     python: "3.10"
   jobs:
-    pre_create_environment:
-      - pip install -U pip
     post_install:
       - pip install .[docs]
 
