@@ -14,10 +14,10 @@ def calendar() -> Calendar:
     """Fixture calendar with all day events to use in tests."""
     cal = Calendar()
     cal.events.extend([
-        Event("second", datetime(2000, 2, 1, 12, 0)),
-        Event("fourth", datetime(2000, 4, 1, 12, 0)),
-        Event("third", datetime(2000, 3, 1, 12, 0)),
-        Event("first", datetime(2000, 1, 1, 12, 0)),
+        Event("second", date(2000, 2, 1), date(2000, 2, 2)),
+        Event("fourth", date(2000, 4, 1), date(2000, 4, 2)),
+        Event("third", date(2000, 3, 1), date(2000, 3, 2)),
+        Event("first", date(2000, 1, 1), date(2000, 1, 2))
     ])
     return cal
 
@@ -67,7 +67,7 @@ def test_start_after(calendar: Calendar) -> None:
     """Test chronological iteration starting at a specific time."""
     assert [
         e.summary
-        for e in calendar.timeline.start_after(date(2000, 2, 1))
+        for e in calendar.timeline.start_after(date(2000, 1, 1))
     ] == [ "second", "third", "fourth" ]
 
 
