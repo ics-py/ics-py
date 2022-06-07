@@ -17,8 +17,10 @@ def calendar() -> Calendar:
         Event("second", date(2000, 2, 1), date(2000, 2, 2)),
         Event("fourth", date(2000, 4, 1), date(2000, 4, 2)),
         Event("third", date(2000, 3, 1), date(2000, 3, 2)),
-        Event("first", date(2000, 1, 1), date(2000, 1, 2))
+        Event("first", date(2000, 1, 1), date(2000, 1, 2)),
     ])
+    for e in cal.events:
+        e.make_all_day()
     return cal
 
 
