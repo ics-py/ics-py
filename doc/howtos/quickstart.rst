@@ -68,6 +68,19 @@ Get event datetime object details
    e.cmp_tuple()
    # (datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), datetime.datetime(2022, 6, 6, 13, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), 'My cool event')
 
+Converting to all-day event
+---------------------------
+
+| Transforms event to a rounded-up all-day event.
+
+.. code-block:: python
+    e.cmp_tuple()
+    # (datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), datetime.datetime(2022, 6, 6, 13, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), 'My cool event')
+    e.make_all_day()
+    e.cmp_tuple()
+    # (datetime.datetime(2022, 6, 6, 0, 0, tzinfo=tzlocal()), datetime.datetime(2022, 6, 7, 0, 0, tzinfo=tzlocal()), 'My cool event')
+
+
 Exporting a calendar to a file
 ------------------------------
 
