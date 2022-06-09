@@ -17,6 +17,7 @@ Conventions
 
 c = ics.Calendar()
 e = ics.Event()
+a = ics.Attendee()
 
 Importing a Calendar from a File
 --------------------------------
@@ -88,3 +89,37 @@ Exporting a calendar to a file
 
     with open('my.ics', 'w') as f:
         f.write(c.serialize())
+
+Managing attendees
+----------------
+
+| Adding attendees
+
+.. code-block:: python
+
+    from ics import Attendee
+    a = Attendee('all@organization.com')
+    e.add_attendee(a)
+    e.attendees
+    # [Attendee(email='all@organization.com', extra={})]
+
+| Modifying attendees, find all possible attributes and values in `help(ics.Attendee)`
+
+.. code-block:: python
+
+    e.attendees
+    # [Attendee(email='all@organization.com', extra={})]
+    e.attendees[0].common_name = 'ALL'
+    e.attendees
+    # [Attendee(email='all@organization.com', extra={'CN': ['ALL']})]
+
+
+| Removing attendees
+
+.. code-block:: python
+
+    e.attendees
+    # [Attendee(email='all@organization.com', extra={'CN': ['ALL']})]
+    del e.attendees[0]
+    e.attendees
+    # []
