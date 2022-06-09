@@ -12,6 +12,11 @@ Quickstart
    :local:
 
 
+Conventions
+-----------
+
+c = ics.Calendar()
+e = ics.Event()
 
 Importing a Calendar from a File
 --------------------------------
