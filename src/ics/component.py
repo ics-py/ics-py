@@ -46,6 +46,12 @@ class Component(RuntimeAttrValidation):
         return ComponentMeta.BY_TYPE[type(self)].serialize_toplevel(self, context)
 
     def serialize(self, context: Optional[ContextDict] = None) -> str:
+        """Returns
+        -------
+            Component content as a serialized string fit for file write
+
+        """
+
         return self.to_container(context).serialize()
 
     def strip_extras(self, all_extras=False, extra_properties=None, extra_params=None, property_merging=None):

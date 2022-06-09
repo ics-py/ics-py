@@ -62,15 +62,10 @@ Get event datetime object details
    e.cmp_tuple()
    # (datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), datetime.datetime(2022, 6, 6, 13, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), 'My cool event')
 
-Exporting a Calendar to a File
+Exporting a calendar to a file
 ------------------------------
 
 .. code-block:: python
 
     with open('my.ics', 'w') as f:
-        f.write(c)
-    # And it's done !
-
-    # iCalendar-formatted data is also available in a string
-    str(c)
-    # 'BEGIN:VCALENDAR\nPRODID:...
+        f.write(c.serialize())
