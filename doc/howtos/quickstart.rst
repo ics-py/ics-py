@@ -54,6 +54,13 @@ Creating a new Calendar and Add Events
     c.events
     # {<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>}
 
+Get event datetime object details
+---------------------------------
+
+.. code-block:: python
+
+   e.cmp_tuple()
+   # (datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), datetime.datetime(2022, 6, 6, 13, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), 'My cool event')
 
 Exporting a Calendar to a File
 ------------------------------
