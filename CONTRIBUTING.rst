@@ -122,6 +122,15 @@ We will ask you to provide:
 * Think about where and how this will affect documentation and amend
   the respective section
 
+If you are working on the documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ensure correct rendering by generating the HTML pages locally with
+
+:command:`$ tox -e docs`
+
+You can then view the pages at ``ics-py/.tox/docs_out/index.html``
+
 Last thing
 ^^^^^^^^^^
 
