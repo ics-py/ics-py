@@ -11,6 +11,9 @@ ics.py `0.8.0-dev` : iCalendar for Humans
     :target: https://pypi.python.org/pypi/ics/
     :alt: Apache 2 License
 
+.. image:: ./badges/interrogate_badge.svg
+    :target: https://pypi.org/project/interrogate/
+    :alt: Interrogate coverage
 
 Ics.py is a pythonic and easy iCalendar library.
 Its goals are to read and write ics data in a developer friendly way.
