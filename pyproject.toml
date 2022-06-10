@@ -56,26 +56,3 @@ docs = ["sphinx"]
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.interrogate]
-ignore-init-method = true
-ignore-init-module = false
-ignore-magic = false
-ignore-semiprivate = false
-ignore-private = false
-ignore-property-decorators = false
-ignore-module = false
-ignore-nested-functions = false
-ignore-nested-classes = true
-ignore-setters = false
-fail-under = 5
-exclude = ["setup.py", "docs", "build"]
-ignore-regex = ["^get$", "^mock_.*", ".*BaseClass.*"]
-# possible values: 0 (minimal output), 1 (-v), 2 (-vv)
-verbose = 0
-quiet = false
-whitelist-regex = []
-color = true
-omit-covered-files = false
-generate-badge = "./badges/."
-badge-format = "svg"
