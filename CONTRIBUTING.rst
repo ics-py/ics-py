@@ -11,6 +11,12 @@ on their free time. It might take some time for us to have a look at your
 work.
 
 
+Style guide
+-----------
+
+* Code formatting: TBD, possibly `Black <https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html>`_
+* Docstrings: `Google Python Style Guide <https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings>`_
+
 How to submit an issue
 ----------------------
 
