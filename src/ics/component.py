@@ -47,7 +47,7 @@ class Component(RuntimeAttrValidation):
 
     def serialize(self, context: Optional[ContextDict] = None) -> str:
         """Will return a :class:`str` object
-        |  Component content as a serialized string fit for file write.
+        Component content as a serialized string fit for file write.
         """
 
         return self.to_container(context).serialize()
