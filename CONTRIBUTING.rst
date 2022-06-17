@@ -14,7 +14,7 @@ work.
 Style guide
 -----------
 
-* Code formatting: TBD, possibly `Black <https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html>`_
+* Code formatting: `TBD <https://github.com/ics-py/ics-py/issues/344>`_
 * Docstrings: `Google Python Style Guide <https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings>`_
 
 How to submit an issue
