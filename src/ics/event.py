@@ -172,6 +172,14 @@ class CalendarEntryAttrs(Component):
     ####################################################################################################################
 
     def cmp_tuple(self) -> Tuple[datetime, datetime, str]:
+        """Private helper method used for operator overloading.
+
+        Returns a tuple with begin, end and summary of self.
+
+        Implementation and usage details:
+            https://github.com/ics-py/ics-py/blob/main/doc/event-cmp.rst#ordering
+            https://icspy.readthedocs.io/en/main/event-cmp.html
+        """
         return (*self.timespan.cmp_tuple(), self.summary or "")
 
     def __lt__(self, other: Any) -> bool:
