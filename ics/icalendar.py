@@ -92,7 +92,7 @@ class Calendar(Component):
 
     def __iter__(self) -> Iterable[str]:
         """Returns:
-        iterable: an iterable version of __str__, line per line
+        iterable: an iterable version of seralize(), line per line
         (with line-endings).
 
         Example:
@@ -104,7 +104,7 @@ class Calendar(Component):
         warnings.warn(
             "Using Calendar as Iterable is deprecated and will be removed in version 0.8. "
             "Use the explicit calendar.serialize_iter() instead.", DeprecationWarning)
-        return self.serialize_iter()
+        yield from self.serialize_iter()
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Calendar):
