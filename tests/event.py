@@ -45,7 +45,7 @@ def test_comparisons() -> None:
 
 
 @deterministic_event_data()
-def test_within() -> None:
+def test_within_and_includes() -> None:
     event1 = Event(SUMMARY, date(2022, 9, 6), date(2022, 9, 10))
     event2 = Event(SUMMARY, date(2022, 9, 7), date(2022, 9, 8))
     event3 = Event(SUMMARY, date(2022, 9, 9), date(2022, 9, 11))
@@ -76,8 +76,8 @@ def test_within() -> None:
     assert not event1.is_included_in(event3)
     assert event2.is_included_in(event1)
     assert not event2.is_included_in(event3)
-    assert event3.is_included_in(event1)
-    assert event3.is_included_in(event2)
+    assert not event3.is_included_in(event1)
+    assert not event3.is_included_in(event2)
 
 
 @deterministic_event_data()
