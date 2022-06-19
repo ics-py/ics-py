@@ -1,6 +1,6 @@
 import warnings
 from collections import namedtuple
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, Iterable
 
 from ics.grammar.parse import Container
 from .utils import get_lines
@@ -65,9 +65,25 @@ class Component(object):
 
         self.extra = container  # Store unused lines
 
-    def __str__(self) -> str:
+    def serialize(self) -> str:
         """Returns the component in an iCalendar format."""
         container = self.extra.clone()
         for output in self.Meta.serializer.get_serializers():
             output(self, container)
         return str(container)
+
+    def serialize_iter(self) -> Iterable[str]:
+        """Returns the component in an iCalendar format.
+
+        This returns an Iterable of multiple string chunks which should be concatenated to form the actual ics representation.
+        Note that individual items of the returned Iterable not necessarily correspond to individual lines,
+        linebreaks are contained at the right places within the items."""
+        return self.serialize().splitlines(keepends=True)
+
+    def __str__(self) -> str:
+        """Starting from version 0.9, returns a short description of the Component."""
+        warnings.warn(
+            "Behaviour of str(Component) will change in version 0.9 to only return a short description, NOT the ics representation. "
+            "Use the explicit Component.serialize() to get the ics representation.", FutureWarning
+        )
+        return self.serialize()

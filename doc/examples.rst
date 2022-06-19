@@ -42,9 +42,9 @@ Export a Calendar to a file
 .. code-block:: python
 
     with open('my.ics', 'w') as f:
-        f.writelines(c)
+        f.writelines(c.serialize_iter())
     # And it's done !
 
     # iCalendar-formatted data is also available in a string
-    str(c)
+    c.serialize()
     # 'BEGIN:VCALENDAR\nPRODID:...
