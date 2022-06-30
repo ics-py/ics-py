@@ -109,7 +109,7 @@ To get a list of all available tasks, run :command:`tox -av`.
 
     This also works without having poetry installed.
 
-If you are fixing a bug
+Fixing a bug
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 Please add a test and add a link to it in the PR description
@@ -117,7 +117,7 @@ proving that the bug is fixed.
 This will help us merge your PR quickly and above all, this will make
 sure that we won't re-introduce the bug later by mistake.
 
-If you are adding a feature
+Adding a feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We will ask you to provide:
@@ -128,7 +128,7 @@ We will ask you to provide:
 * Think about where and how this will affect documentation and amend
   the respective section
 
-If you are working on the documentation
+Working on the documentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Ensure correct rendering by generating the HTML pages locally with
