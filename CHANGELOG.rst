@@ -10,14 +10,14 @@ Contains all notable changes to the code base.
 0.7.1
 *****
 
-This release contains a few minor changes and introduces depreciations for
+This release contains a few minor changes and introduces deprecations for
 features that will be removed in 0.8.
 
-Depreciation:
+Deprecation:
  - Add warnings about breaking changes in v0.8 to `Calendar.str()` and `.iter()`.
 
 Minor changes:
- - Add a depedency on `attrs <https://pypi.org/project/attrs/>`_.
+ - Add a dependency on `attrs <https://pypi.org/project/attrs/>`_.
  - Remove the upper bound on the version of `arrow <https://pypi.org/project/arrow/>`_.
  - Backport optimizations for TatSu parser from 0.8
 
