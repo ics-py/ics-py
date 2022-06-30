@@ -97,7 +97,7 @@ Exporting a calendar to a file
 Managing attendees
 ------------------
 
-Adding attendees
+* Adding attendees
 
 .. code-block:: python
 
@@ -107,7 +107,7 @@ Adding attendees
  e.attendees
  # [Attendee(email='all@organization.com', extra={})]
 
-Modifying attendees, find all possible attributes and values in :class:`Attendee`
+* Modifying attendees, find all possible attributes and values in :class:`Attendee`
 
 .. code-block:: python
 
@@ -117,7 +117,7 @@ Modifying attendees, find all possible attributes and values in :class:`Attendee
  e.attendees
  # [Attendee(email='all@organization.com', extra={'CN': ['ALL']})]
 
-Removing attendees
+* Removing attendees
 
 .. code-block:: python
 
