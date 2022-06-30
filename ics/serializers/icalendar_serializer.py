@@ -24,8 +24,8 @@ class CalendarSerializer(Serializer):
 
     def serialize_event(calendar, container):
         for event in calendar.events:
-            container.append(str(event))
+            container.append(event.serialize())
 
     def serialize_todo(calendar, container):
         for todo in calendar.todos:
-            container.append(str(todo))
+            container.append(todo.serialize())

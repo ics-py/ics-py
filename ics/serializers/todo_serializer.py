@@ -81,7 +81,7 @@ class TodoSerializer(Serializer):
 
     def serialize_alarm(todo: "Todo", container: Container):
         for alarm in todo.alarms:
-            container.append(str(alarm))
+            container.append(alarm.serialize())
 
     def serialize_status(todo: "Todo", container: Container):
         if todo.status:
