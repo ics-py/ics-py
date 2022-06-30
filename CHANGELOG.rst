@@ -1,11 +1,36 @@
-============
-Ics.py changelog
-============
+=========
+Changelog
+=========
 
+Contains all notable changes to the code base.
 
-**************
-0.7
-**************
+*Major releases are named in honor of influential women who shaped modern computer technology*
+
+*****
+0.7.1
+*****
+
+This release contains a few minor changes and introduces depreciations for
+features that will be removed in 0.8.
+
+Depreciation:
+ - Add warnings about breaking changes in v0.8 to `Calendar.str()` and `.iter()`.
+
+Minor changes:
+ - Add a depedency on `attrs <https://pypi.org/project/attrs/>`_.
+ - Remove the upper bound on the version of `arrow <https://pypi.org/project/arrow/>`_.
+ - Backport optimizations for TatSu parser from 0.8
+
+Bug fix:
+ - Fix "falsey" (`bool(x) is False`) alarm trigger (i.e. `timedelta(0)`) not being serialized `#269 <https://github.com/ics-py/ics-py/issues/269>`_
+
+***********************
+0.7 - Katherine Johnson
+***********************
+
+*Katherine Johnson was a mathematician whose calculations of orbital mechanics at NASA
+were critical to the success of the firsts crewed spaceflights.
+She helped pioneer the use of computers to perform these tasks at NASA.*
 
 Special thanks to @N-Coder for making 0.7 happen!
 
@@ -24,9 +49,12 @@ Bug fixes:
  - Fix multiple bugs in Organizer and Attendees properties.
    (See #207, #209, #217, #218)
 
-**************
-0.6
-**************
+*******************
+0.6 - Sophie Wilson
+*******************
+
+*Sophie Wilson is an computer scientist who was instrumental in designing the
+BBC Micro, including the BBC BASIC language, and the ARM instruction set*
 
 Major changes:
  - Drop support for Python 3.5. Python 3.7 is now distributed in both Ubuntu LTS
@@ -56,9 +84,12 @@ Bug fixes:
  - Fix parsing of quoted values as well as escaped semi-columns (#185 and #193)
 
 
-**************
-0.5
-**************
+********************
+0.5 - Adele Goldberg
+********************
+
+*Adele Goldberg is a computer scientist who participated in developing Smalltalk-80 and
+various concepts related to object-oriented programming while working as a researcher at Xerox.*
 
 This is the first version to be Python 3 only.
 
@@ -97,9 +128,12 @@ Misc:
 
 Thanks also to @t00n, @aureooms, @chauffer, @seants, @davidjb, @xaratustrah, @Philiptpp
 
-**************
-0.4
-**************
+**************************
+0.4 - Elizabeth J. Feinler
+**************************
+
+*Elizabeth J. Feinler is an information scientist. She led the NIC for the ARPANET
+as it evolved into the Defense Data Network (DDN) and then the Internet.*
 
 Last version to support Python 2.7 and 3.3.
 

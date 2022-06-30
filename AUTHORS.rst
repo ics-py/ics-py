@@ -25,6 +25,7 @@ Other contributors, listed alphabetically, are:
 * `@PascalBru <https://github.com/pascalbru>`_
 * `@perette <https://github.com/perette>`_
 * `@Philiptpp <https://github.com/Philiptpp>`_
+* `@pokoli <https://github.com/pokoli>`_
 * `@prashnts <https://github.com/prashnts>`_
 * `@rkeilty <https://github.com/rkeilty>`_
 * `@seants <https://github.com/seants>`_
