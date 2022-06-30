@@ -48,21 +48,21 @@ Creating a new Calendar and Add Events
 
 :class:`Calendar` objects each represent an unique RFC 5545 iCalendar. They contain :class:`Event`, :class:`Todo` and :class:`Timeline` iterators.
 
-Time and date are represented as :class:`datetime` objects.
+Time and date are represented as :class:`datetime` objects and can be expressed as ISO 8601 srings or with the class constructor.
 
 .. code-block:: python
 
- from datetime import datetime
+ from datetime import datetime, timezone, timedelta
  from ics import Calendar, Event
  c = Calendar()
  e = Event()
  e.summary = "My cool event"
  e.description = "A meaningful description"
  e.begin = datetime.fromisoformat('2022-06-06T12:05:23+02:00')
- e.end = datetime.fromisoformat('2022-06-06T13:05:23+02:00')
+ e.end = datetime(year=2022, month=6, day=6, hour=12, minute=5, second=23, tzinfo=timezone(timedelta(seconds=7200)))
  c.events.append(e)
  c
- # Calendar(extra=Container('VCALENDAR', []), extra_params={}, version='2.0', prodid='ics.py 0.8.0-dev - http://git.io/lLljaA', scale=None, method=None, events=[Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), end_time=None, duration=None, precision='second'), summary=None, uid='ed7975c7-01f1-42eb-bfc4-435afd76b33d@ed79.org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2022, 6, 6, 19, 28, 14, 575558, tzinfo=Timezone.from_tzid('UTC')), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])], todos=[])
+ # Calendar(extra=Container('VCALENDAR', []), extra_params={}, version='2.0', prodid='ics.py 0.8.0-dev - http://git.io/lLljaA', scale=None, method=None, events=[Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), end_time=datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), duration=None, precision='second'), summary='My cool event', uid='e10e6921-5838-4dab-9467-fffcb8091cc3@e10e.org', description='A meaningful description', location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2022, 6, 30, 12, 41, 24, 624188, tzinfo=Timezone.from_tzid('UTC')), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])], todos=[])
 
 Get event datetime object details
 ---------------------------------
