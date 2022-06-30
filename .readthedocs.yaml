@@ -9,7 +9,7 @@ build:
     python: "3.8"
   jobs:
     post_install:
-      - pip install -r docs/requirements.txt
+      - pip install -r dev/requirements-doc.txt
 
 sphinx:
    configuration: doc/conf.py
