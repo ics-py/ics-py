@@ -21,7 +21,7 @@ Conventions
  e = ics.Event()
  a = ics.Attendee()
 
-Importing a Calendar from a File
+Importing a Calendar from a URL
 --------------------------------
 
 .. code-block:: python
