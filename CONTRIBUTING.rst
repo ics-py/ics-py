@@ -135,7 +135,7 @@ Ensure correct rendering by generating the HTML pages locally with
 
 :command:`$ tox -e docs`
 
-You can then view the pages at ``ics-py/.tox/docs_out/index.html``
+View the pages at ``.tox/docs_out/index.html``
 
 Last thing
 ^^^^^^^^^^
