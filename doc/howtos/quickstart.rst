@@ -24,24 +24,27 @@ Conventions
 Importing a Calendar from a URL
 --------------------------------
 
+Download the calender file through requests or any other library.
+Error handling is recommended.
+
 .. code-block:: python
 
  from ics import Calendar
  import requests
 
  url = "https://urlab.be/events/urlab.ics"
- c = Calendar(requests.get(url).text)
-
- c
+ try:
+     c = Calendar(requests.get(url).text)
+ except Exception as e:
+     print(e)
+ 
+ print(c)
  # <Calendar with 118 events and 0 todo>
- c.events
- # {<Event 'Visite de "Fab Bike"' begin:2016-06-21T15:00:00+00:00 end:2016-06-21T17:00:00+00:00>,
- # <Event 'Le lundi de l'embarqué: Adventure in Espressif Non OS SDK edition' begin:2018-02-19T17:00:00+00:00 end:2018-02-19T22:00:00+00:00>,
- #  ...}
+ print(c.events[2])
+ # <Event 'TechMardi 20/2015' begin: 2015-12-08 17:30:00+00:00 fixed end: 2015-12-08 22:00:00+00:00 duration: 4:30:00>
  e = list(c.timeline)[0]
- "Event '{}' started {}".format(e.name, e.begin.humanize())
- # "Event 'Workshop Git' started 2 years ago"
-
+ print("Event '{}' started {}".format(e.summary, e.begin))
+ # Event 'Workshop Git' started 2015-11-16 17:30:00+00:00
 
 Creating a new Calendar and Add Events
 --------------------------------------
