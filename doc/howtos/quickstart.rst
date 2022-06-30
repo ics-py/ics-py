@@ -51,7 +51,7 @@ Creating a new Calendar and Add Events
 
 :class:`Calendar` objects each represent an unique RFC 5545 iCalendar. They contain :class:`Event`, :class:`Todo` and :class:`Timeline` iterators.
 
-Time and date are represented as :class:`datetime` objects and can be expressed as ISO 8601 srings or with the class constructor.
+Time and date are represented as :class:`datetime` objects and can be expressed as ISO 8601 strings or with the class constructor.
 
 .. code-block:: python
 
