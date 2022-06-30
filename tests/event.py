@@ -22,8 +22,8 @@ class TestEvent(unittest.TestCase):
 
     def test_event(self):
         e = Event(begin=0, end=20)
-        self.assertEqual(e.begin.timestamp, 0)
-        self.assertEqual(e.end.timestamp, 20)
+        self.assertEqual(e.begin.int_timestamp, 0)
+        self.assertEqual(e.end.int_timestamp, 20)
         self.assertTrue(e.has_end())
         self.assertFalse(e.all_day)
 
