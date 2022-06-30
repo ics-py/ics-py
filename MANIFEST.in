@@ -6,6 +6,9 @@ recursive-include logo *.png
 
 include mypy.ini
 include meta.py
+include requirements.txt
+include dev/requirements-test.txt
+include README.rst
 
 recursive-include tests *.py
 recursive-include tests *.ics
