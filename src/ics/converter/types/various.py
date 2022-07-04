@@ -39,8 +39,8 @@ class RecurrenceConverter(AttributeConverter):
         # TODO only feed dateutil the params it likes, add the rest as extra
         tzinfos = context.get(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
         rrule = dateutil.rrule.rrulestr(lines_str, tzinfos=tzinfos, compatible=True)
-        rrule._rdate = list(unique_justseen(sorted(rrule._rdate)))
-        rrule._exdate = list(unique_justseen(sorted(rrule._exdate)))
+        rrule._rdate = list(unique_justseen(sorted(rrule._rdate)))  # type: ignore
+        rrule._exdate = list(unique_justseen(sorted(rrule._exdate)))  # type: ignore
         self.set_or_append_value(component, rrule)
 
     def serialize(self, component: Component, output: Container, context: ContextDict):
