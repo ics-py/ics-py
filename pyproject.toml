@@ -1,8 +1,11 @@
-[tool.poetry]
+[project]
 name = "ics"
 version = "0.8.0-dev"
 description = "Pythonic iCalendar (RFC 5545) Parser"
-authors = ["Nikita Marchant <nikita.marchant@gmail.com>", "Niko Fink <icspy@niko.fink.bayern>"]
+authors = [
+    { name = "Nikita Marchant", email = "nikita.marchant@gmail.com" },
+    { name = "Niko Fink", email = "icspy@niko.fink.bayern" },
+]
 license = "Apache-2.0"
 readme = "README.rst"
 homepage = "https://pypi.org/project/ics/"
@@ -25,35 +28,36 @@ classifiers = [
     'Programming Language :: Python :: 3.10',
     'Typing :: Typed',
 ]
+requires-python = ">=3.7"
+dependencies = [
+    "python-dateutil >= 2.8",
+    "attrs >= 20.3",
+    "ics-vtimezones >= 2020.1",
+]
 
-[tool.poetry.dependencies]
-python =                     ">=3.7,<4"
-python-dateutil =            "^2.8"
-attrs =                      ">=20.3"
-ics-vtimezones =             ">=2020.1"
-
-# extra: test
-pytest =                     { version = "^7",       optional = true }
-pytest-cov =                 { version = "^3",     optional = true }
-hypothesis =                 { version = "^6",     optional = true }
-tatsu =                      { version = ">4.2",       optional = true }
-importlib_resources =        { version = ">=1.4",      optional = true }
-lipsum =                     { version = "^0.1.2",     optional = true }
-freezegun =                  { version = ">=1.2.1", optional = true }
-
-# extra: dev
-bump2version =               { version = "^1.0.0",     optional = true }
-tox =                        { version = "^3.25",    optional = true }
-
-# extra: docs
-sphinx =                     { version =  "^5",        optional = true }
-
-[tool.poetry.extras]
-test = ["pytest", "pytest-cov", "hypothesis", "tatsu", "importlib_resources", "lipsum", "freezegun"]
-dev = ["bump2version", "tox"]
-docs = ["sphinx"]
-
+[project.optional-dependencies]
+test = [
+    "pytest >= 7",
+    "pytest-cov >= 3",
+    "hypothesis >= 6",
+    "tatsu > 4.2",
+    "importlib_resources >= 1.4",
+    "lipsum >= 0.1.2",
+    "freezegun >= 1.2.1",
+]
+dev = [
+    "bump2version >= 1.0.0",
+    "tox >= 3.25",
+]
+docs = [
+    "sphinx >= 5",
+    "sphinx-autodoc-typehints",
+]
+checks = [
+    "flake8>=3.8.1",
+    "mypy==0.960",
+]
 
 [build-system]
-requires = ["poetry_core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
