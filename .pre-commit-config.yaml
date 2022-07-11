@@ -4,6 +4,8 @@ repos:
     hooks:
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
+    -   id: check-case-conflict
+    -   id: mixed-line-ending
 -   repo: https://github.com/asottile/pyupgrade
     rev: v2.34.0
     hooks:
