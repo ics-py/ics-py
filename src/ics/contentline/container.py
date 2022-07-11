@@ -1,19 +1,31 @@
 import functools
 import re
+import sys
 from collections import UserString
 from contextlib import contextmanager
 from textwrap import TextWrapper
-from typing import MutableSequence, Tuple, List, Union
+from typing import List, MutableSequence, Tuple, Union
 
 import attr
-import sys
 
-from ics.types import ContainerItem, ExtraParams, RuntimeAttrValidation, copy_extra_params
+from ics.types import (
+    ContainerItem,
+    ExtraParams,
+    RuntimeAttrValidation,
+    copy_extra_params,
+)
 from ics.utils import limit_str_length, validate_truthy
 
 DEFAULT_LINE_WRAP = TextWrapper(
-    width=75, initial_indent="", subsequent_indent=" ", break_long_words=True, break_on_hyphens=True,
-    expand_tabs=False, replace_whitespace=False, fix_sentence_endings=False, drop_whitespace=False
+    width=75,
+    initial_indent="",
+    subsequent_indent=" ",
+    break_long_words=True,
+    break_on_hyphens=True,
+    expand_tabs=False,
+    replace_whitespace=False,
+    fix_sentence_endings=False,
+    drop_whitespace=False,
 )
 
 
@@ -44,7 +56,7 @@ class ParseError(Exception):
             strs.append(" %s" % self.line_nr)
             if self.col != -1:
                 if isinstance(self.col, int):
-                    strs.append(":%s" % (self.col,))
+                    strs.append(f":{self.col}")
                 else:
                     strs.append(":%s-%s" % self.col)
         strs.append(" ")
@@ -74,10 +86,8 @@ class QuotedParamValue(UserString):
 
 def escape_param(string: Union[str, QuotedParamValue]) -> str:
     return str(string).translate(
-        {ord("\""): "^'",
-         ord("^"): "^^",
-         ord("\n"): "^n",
-         ord("\r"): ""})
+        {ord('"'): "^'", ord("^"): "^^", ord("\n"): "^n", ord("\r"): ""}
+    )
 
 
 def unescape_param(string: str) -> str:
@@ -88,18 +98,22 @@ def unescape_param(string: str) -> str:
         elif g == "^":
             return "^"
         elif g == "'":
-            return "\""
+            return '"'
         elif len(g) == 0:
-            raise ParseError("parameter value '%s' may not end with an escape sequence" % string)
+            raise ParseError(
+                "parameter value '%s' may not end with an escape sequence" % string
+            )
         else:
-            raise ParseError("invalid escape sequence ^%s in parameter value '%s'" % (g, string))
+            raise ParseError(
+                f"invalid escape sequence ^{g} in parameter value '{string}'"
+            )
 
     return re.sub(r"\^(.?)", repl, string)
 
 
 class Patterns:
     CONTROL = "\x00-\x08\x0A-\x1F\x7F"  # All the controls except HTAB
-    DQUOTE = "\""
+    DQUOTE = '"'
     LINEBREAK = "\r?\n|\r"
     LINEFOLD = "(" + LINEBREAK + ")[ \t]"
     QSAFE_CHARS = "[^" + CONTROL + DQUOTE + "]*"
@@ -110,7 +124,9 @@ class Patterns:
     PVAL = "(?P<pval>" + DQUOTE + QSAFE_CHARS + DQUOTE + "|" + SAFE_CHARS + ")"
     PVALS = PVAL + "(," + PVAL + ")*"
     PARAM = "(?P<pname>" + IDENTIFIER + ")=(?P<pvals>" + PVALS + ")"
-    LINE = "(?P<name>" + IDENTIFIER + ")(;" + PARAM + ")*:(?P<value>" + VALUE_CHARS + ")"
+    LINE = (
+        "(?P<name>" + IDENTIFIER + ")(;" + PARAM + ")*:(?P<value>" + VALUE_CHARS + ")"
+    )
 
 
 @attr.s(slots=True)
@@ -140,7 +156,11 @@ class ContentLine(RuntimeAttrValidation):
     def serialize_iter(self, newline=False, wrap=DEFAULT_LINE_WRAP):
         if wrap is None:
             return self._serialize_iter_unwrapped(newline)
-        lines = [elem for line in wrap.wrap(self._serialize_unwrapped(False)) for elem in [line, "\r\n"]]
+        lines = [
+            elem
+            for line in wrap.wrap(self._serialize_unwrapped(False))
+            for elem in [line, "\r\n"]
+        ]
         if not newline:
             lines.pop()
         return lines
@@ -182,7 +202,9 @@ class ContentLine(RuntimeAttrValidation):
         return attr.evolve(self, params=copy_extra_params(self.params))
 
     def __str__(self):
-        return "%s%s='%s'" % (self.name, self.params or "", limit_str_length(self.value))
+        return "{}{}='{}'".format(
+            self.name, self.params or "", limit_str_length(self.value)
+        )
 
 
 def _wrap_list_func(list_func):
@@ -205,14 +227,17 @@ class Container(MutableSequence[ContainerItem]):
     """
 
     name: str = attr.ib(converter=str.upper, validator=validate_truthy)  # type:ignore
-    data: List[ContainerItem] = attr.ib(converter=list, default=[],
-                                        validator=lambda inst, attr, value: inst.check_items(*value))
+    data: List[ContainerItem] = attr.ib(
+        converter=list,
+        default=[],
+        validator=lambda inst, attr, value: inst.check_items(*value),
+    )
 
     def __str__(self):
-        return "%s[%s]" % (self.name, ", ".join(str(cl) for cl in self.data))
+        return "{}[{}]".format(self.name, ", ".join(str(cl) for cl in self.data))
 
     def __repr__(self):
-        return "%s(%r, %s)" % (type(self).__name__, self.name, repr(self.data))
+        return f"{type(self).__name__}({self.name!r}, {repr(self.data)})"
 
     @property
     def line_nr(self):
@@ -245,6 +270,7 @@ class Container(MutableSequence[ContainerItem]):
     @staticmethod
     def check_items(*items):
         from ics.utils import check_is_instance
+
         if len(items) == 1:
             check_is_instance("item", items[0], (ContentLine, Container))
         else:
@@ -277,7 +303,9 @@ class Container(MutableSequence[ContainerItem]):
         else:
             del self.data[i]
 
-    def __setitem__(self, index, value):  # index might be slice and value might be iterable
+    def __setitem__(
+        self, index, value
+    ):  # index might be slice and value might be iterable
         self.data.__setitem__(index, value)
         attr.validate(self)
 

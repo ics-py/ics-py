@@ -10,20 +10,18 @@ MIDNIGHT = time()
 TIMEDELTA_ZERO = timedelta()
 TIMEDELTA_DAY = timedelta(days=1)
 TIMEDELTA_SECOND = timedelta(seconds=1)
-TIMEDELTA_CACHE = {
-    0: TIMEDELTA_ZERO,
-    "day": TIMEDELTA_DAY,
-    "second": TIMEDELTA_SECOND
-}
+TIMEDELTA_CACHE = {0: TIMEDELTA_ZERO, "day": TIMEDELTA_DAY, "second": TIMEDELTA_SECOND}
 MAX_TIMEDELTA_NEARLY_ZERO = timedelta(seconds=1) / 2
 
 
 @overload
-def ensure_datetime(value: None) -> None: ...
+def ensure_datetime(value: None) -> None:
+    ...
 
 
 @overload
-def ensure_datetime(value: DatetimeLike) -> datetime: ...
+def ensure_datetime(value: DatetimeLike) -> datetime:
+    ...
 
 
 def ensure_datetime(value):
@@ -42,11 +40,13 @@ def ensure_datetime(value):
 
 
 @overload
-def ensure_timedelta(value: None) -> None: ...
+def ensure_timedelta(value: None) -> None:
+    ...
 
 
 @overload
-def ensure_timedelta(value: TimedeltaLike) -> timedelta: ...
+def ensure_timedelta(value: TimedeltaLike) -> timedelta:
+    ...
 
 
 def ensure_timedelta(value):
@@ -65,20 +65,24 @@ def ensure_timedelta(value):
 ###############################################################################
 # Rounding Utils
 
+
 def timedelta_nearly_zero(td: timedelta) -> bool:
     return -MAX_TIMEDELTA_NEARLY_ZERO <= td <= MAX_TIMEDELTA_NEARLY_ZERO
 
 
 @overload
-def floor_datetime_to_midnight(value: datetime) -> datetime: ...
+def floor_datetime_to_midnight(value: datetime) -> datetime:
+    ...
 
 
 @overload
-def floor_datetime_to_midnight(value: date) -> date: ...
+def floor_datetime_to_midnight(value: date) -> date:
+    ...
 
 
 @overload
-def floor_datetime_to_midnight(value: None) -> None: ...
+def floor_datetime_to_midnight(value: None) -> None:
+    ...
 
 
 def floor_datetime_to_midnight(value):
@@ -86,19 +90,24 @@ def floor_datetime_to_midnight(value):
         return None
     if isinstance(value, date) and not isinstance(value, datetime):
         return value
-    return datetime.combine(ensure_datetime(value).date(), MIDNIGHT, tzinfo=value.tzinfo)
+    return datetime.combine(
+        ensure_datetime(value).date(), MIDNIGHT, tzinfo=value.tzinfo
+    )
 
 
 @overload
-def ceil_datetime_to_midnight(value: datetime) -> datetime: ...
+def ceil_datetime_to_midnight(value: datetime) -> datetime:
+    ...
 
 
 @overload
-def ceil_datetime_to_midnight(value: date) -> date: ...
+def ceil_datetime_to_midnight(value: date) -> date:
+    ...
 
 
 @overload
-def ceil_datetime_to_midnight(value: None) -> None: ...
+def ceil_datetime_to_midnight(value: None) -> None:
+    ...
 
 
 def ceil_datetime_to_midnight(value):
@@ -137,23 +146,22 @@ def next_after_str_escape(it, full_str):
     try:
         return next(it)
     except StopIteration as e:
-        raise ValueError("value '%s' may not end with an escape sequence" % full_str) from e
+        raise ValueError(
+            "value '%s' may not end with an escape sequence" % full_str
+        ) from e
 
 
 def uid_gen() -> str:
     uid = str(uuid4())
-    return "{}@{}.org".format(uid, uid[:4])
+    return f"{uid}@{uid[:4]}.org"
 
 
 ###############################################################################
 
+
 def validate_not_none(inst, attr, value):
     if value is None:
-        raise ValueError(
-            "'{name}' may not be None".format(
-                name=attr.name
-            )
-        )
+        raise ValueError(f"'{attr.name}' may not be None")
 
 
 def validate_truthy(inst, attr, value):
@@ -185,8 +193,11 @@ def call_validate_on_inst(inst, attr, value):
     inst.validate(attr, value)
 
 
-def one(iterable, too_short='Too few items in iterable, expected one but got zero!',
-        too_long='Expected exactly one item in iterable, but got {first!r}, {second!r}, and possibly more!'):
+def one(
+    iterable,
+    too_short="Too few items in iterable, expected one but got zero!",
+    too_long="Expected exactly one item in iterable, but got {first!r}, {second!r}, and possibly more!",
+):
     it = iter(iterable)
     try:
         first = next(it)

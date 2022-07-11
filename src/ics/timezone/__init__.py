@@ -1,28 +1,41 @@
-import attr
 import datetime
+import functools
+import warnings
+from typing import ClassVar, List, Optional, cast, overload
+
+import attr
 import dateutil
 import dateutil.rrule
 import dateutil.tz
-import functools
-import warnings
 from attr.validators import instance_of
 from dateutil.tz._common import _tzinfo
-from typing import Optional, overload, List, ClassVar, cast
 
 from ics.component import Component
-from ics.types import ContextDict, DatetimeLike, URL, UTCOffset
-from ics.utils import check_is_instance, ensure_datetime, TIMEDELTA_ZERO
+from ics.types import URL, ContextDict, DatetimeLike, UTCOffset
+from ics.utils import TIMEDELTA_ZERO, check_is_instance, ensure_datetime
 
-__all__ = ["ensure_utc", "now_in_utc", "is_utc", "validate_utc", "TimezoneObservance", "TimezoneStandardObservance",
-           "TimezoneDaylightObservance", "Timezone", "RRULE_EPOCH_START", "UTC"]
+__all__ = [
+    "ensure_utc",
+    "now_in_utc",
+    "is_utc",
+    "validate_utc",
+    "TimezoneObservance",
+    "TimezoneStandardObservance",
+    "TimezoneDaylightObservance",
+    "Timezone",
+    "RRULE_EPOCH_START",
+    "UTC",
+]
 
 
 @overload
-def ensure_utc(value: None) -> None: ...
+def ensure_utc(value: None) -> None:
+    ...
 
 
 @overload
-def ensure_utc(value: DatetimeLike) -> datetime.datetime: ...
+def ensure_utc(value: DatetimeLike) -> datetime.datetime:
+    ...
 
 
 def ensure_utc(value):
@@ -37,11 +50,13 @@ def now_in_utc() -> datetime.datetime:
 
 
 @overload
-def is_utc(value: datetime.datetime) -> bool: ...
+def is_utc(value: datetime.datetime) -> bool:
+    ...
 
 
 @overload
-def is_utc(value: datetime.tzinfo) -> bool: ...
+def is_utc(value: datetime.tzinfo) -> bool:
+    ...
 
 
 def is_utc(value):
@@ -121,16 +136,21 @@ class Timezone(Component, _tzinfo):
     @classmethod
     def from_tzid(cls, tzid: str) -> "Timezone":
         from ics.timezone.converters import Timezone_from_tzid
+
         return Timezone_from_tzid(tzid)
 
     @classmethod
-    def from_tzinfo(cls, tzinfo: datetime.tzinfo, context: Optional[ContextDict] = None) -> Optional["Timezone"]:
+    def from_tzinfo(
+        cls, tzinfo: datetime.tzinfo, context: Optional[ContextDict] = None
+    ) -> Optional["Timezone"]:
         from ics.timezone.converters import Timezone_from_tzinfo
+
         return Timezone_from_tzinfo(tzinfo, context)
 
     @property
     def is_builtin(self):
         import ics_vtimezones  # type: ignore
+
         return is_utc(self) or self.tzid.startswith(ics_vtimezones.BUILTIN_TZID_PREFIX)
 
     def to_builtin(self) -> "Timezone":
@@ -139,11 +159,15 @@ class Timezone(Component, _tzinfo):
         else:
             builtin = Timezone.from_tzid(self.tzid)
             if builtin.observances != self.observances:
-                warnings.warn("Converting %s to built-in Timezone %s might change interpretation of some timestamps." % (self, builtin))
+                warnings.warn(
+                    "Converting {} to built-in Timezone {} might change interpretation of some timestamps.".format(
+                        self, builtin
+                    )
+                )
             return builtin
 
     def __attrs_post_init__(self):
-        super(Timezone, self).__attrs_post_init__()
+        super().__attrs_post_init__()
         if len(self.observances) >= 2:
             # one lru cache per Timezone instance, so no Timezone hashing is needed
             func = functools.lru_cache(10)(self._find_observance_cachable)
@@ -156,7 +180,9 @@ class Timezone(Component, _tzinfo):
         if self.is_builtin:
             return "Timezone.from_tzid(%r)" % self.tzid
         else:
-            return "Timezone(%r, observances=%r)" % (self.tzid, self.observances)
+            return "Timezone({!r}, observances={!r})".format(
+                self.tzid, self.observances
+            )
 
     def _find_observance(self, dt):
         if len(self.observances) < 2:
@@ -169,7 +195,7 @@ class Timezone(Component, _tzinfo):
 
         lastcompdt = lastcomp = None
         for comp in self.observances:
-            if comp.tzoffsetdiff < TIMEDELTA_ZERO and getattr(dt, 'fold', 0):
+            if comp.tzoffsetdiff < TIMEDELTA_ZERO and getattr(dt, "fold", 0):
                 compdt = comp.rrule.before(dt - comp.tzoffsetdiff, inc=True)
             else:
                 compdt = comp.rrule.before(dt, inc=True)
@@ -206,5 +232,17 @@ class Timezone(Component, _tzinfo):
         return self._find_observance(dt).tzname
 
 
-RRULE_EPOCH_START = dateutil.rrule.rrule(freq=dateutil.rrule.YEARLY, dtstart=datetime.datetime(1970, 1, 1), count=1)
-UTC = Timezone("UTC", [TimezoneStandardObservance(cast(UTCOffset, TIMEDELTA_ZERO), cast(UTCOffset, TIMEDELTA_ZERO), RRULE_EPOCH_START, "UTC")])
+RRULE_EPOCH_START = dateutil.rrule.rrule(
+    freq=dateutil.rrule.YEARLY, dtstart=datetime.datetime(1970, 1, 1), count=1
+)
+UTC = Timezone(
+    "UTC",
+    [
+        TimezoneStandardObservance(
+            cast(UTCOffset, TIMEDELTA_ZERO),
+            cast(UTCOffset, TIMEDELTA_ZERO),
+            RRULE_EPOCH_START,
+            "UTC",
+        )
+    ],
+)

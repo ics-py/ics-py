@@ -2,17 +2,29 @@ import dateutil.rrule
 
 from ics.contentline.parser import ContentLineParser
 
-__all__ = ["rrule_to_dict", "rrule_to_ContentLine", "rrule_eq", "rrule_hash", "rrule_repr", "rruleset_eq", "rruleset_str", "rruleset_repr", "rruleset_hash"]
+__all__ = [
+    "rrule_to_dict",
+    "rrule_to_ContentLine",
+    "rrule_eq",
+    "rrule_hash",
+    "rrule_repr",
+    "rruleset_eq",
+    "rruleset_str",
+    "rruleset_repr",
+    "rruleset_hash",
+]
 
 
 def rrule_to_dict(self: dateutil.rrule.rrule):
-    return {"interval": self._interval,  # type: ignore[attr-defined]
-            "count": self._count,  # type: ignore[attr-defined]
-            "dtstart": self._dtstart,  # type: ignore[attr-defined]
-            "freq": self._freq,  # type: ignore[attr-defined]
-            "until": self._until,  # type: ignore[attr-defined]
-            "wkst": self._wkst,  # type: ignore[attr-defined]
-            **self._original_rule}  # type: ignore[attr-defined]
+    return {
+        "interval": self._interval,  # type: ignore[attr-defined]
+        "count": self._count,  # type: ignore[attr-defined]
+        "dtstart": self._dtstart,  # type: ignore[attr-defined]
+        "freq": self._freq,  # type: ignore[attr-defined]
+        "until": self._until,  # type: ignore[attr-defined]
+        "wkst": self._wkst,  # type: ignore[attr-defined]
+        **self._original_rule,
+    }  # type: ignore[attr-defined]
 
 
 def rrule_to_ContentLine(self: dateutil.rrule.rrule):
@@ -24,7 +36,8 @@ def rrule_to_ContentLine(self: dateutil.rrule.rrule):
 
 
 def rrule_eq(self: dateutil.rrule.rrule, other: dateutil.rrule.rrule):
-    if not isinstance(other, dateutil.rrule.rrule): return False
+    if not isinstance(other, dateutil.rrule.rrule):
+        return False
     return rrule_to_dict(self) == rrule_to_dict(other)
 
 
@@ -33,11 +46,12 @@ def rrule_hash(self: dateutil.rrule.rrule):
 
 
 def rrule_repr(self: dateutil.rrule.rrule):
-    return "rrule(%s)" % ", ".join("%s=%r" % (k, v) for k, v in rrule_to_dict(self).items())
+    return "rrule(%s)" % ", ".join(f"{k}={v!r}" for k, v in rrule_to_dict(self).items())
 
 
 def rruleset_eq(self: dateutil.rrule.rruleset, other: dateutil.rrule.rruleset):
-    if not isinstance(other, dateutil.rrule.rruleset): return False
+    if not isinstance(other, dateutil.rrule.rruleset):
+        return False
     return self._rrule == other._rrule and self._rdate == other._rdate and self._exrule == other._exrule and self._exdate == other._exdate  # type: ignore[attr-defined]
 
 
@@ -55,17 +69,23 @@ def rruleset_str(self: dateutil.rrule.rruleset):
 
 
 def rruleset_repr(self: dateutil.rrule.rruleset):
-    return "rruleset(rrule=%s, exrule=%s, rdate=%r, exdate=%r)" \
-           % (self._rrule, self._exrule, self._rdate, self._exdate)  # type: ignore[attr-defined]
+    return "rruleset(rrule={}, exrule={}, rdate={!r}, exdate={!r})".format(
+        self._rrule,
+        self._exrule,
+        self._rdate,
+        self._exdate,
+    )  # type: ignore[attr-defined]
 
 
 def rruleset_hash(self: dateutil.rrule.rruleset):
-    return hash((
-        tuple(self._rrule),  # type: ignore[attr-defined]
-        tuple(self._rdate),  # type: ignore[attr-defined]
-        tuple(self._exrule),  # type: ignore[attr-defined]
-        tuple(self._exdate),  # type: ignore[attr-defined]
-    ))
+    return hash(
+        (
+            tuple(self._rrule),  # type: ignore[attr-defined]
+            tuple(self._rdate),  # type: ignore[attr-defined]
+            tuple(self._exrule),  # type: ignore[attr-defined]
+            tuple(self._exdate),  # type: ignore[attr-defined]
+        )
+    )
 
 
 dateutil.rrule.rrule.__eq__ = rrule_eq  # type: ignore[assignment]

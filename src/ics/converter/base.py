@@ -1,9 +1,21 @@
-import warnings
-
 import abc
-import attr
+import warnings
 from types import SimpleNamespace
-from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, Tuple, Type, Union, cast, Iterable
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    Iterable,
+    List,
+    MutableSequence,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
+
+import attr
 
 from ics.component import Component
 from ics.contentline import Container
@@ -14,6 +26,7 @@ NoneTypes = [type(None), None]
 
 # TODO make validation / ValueError / warnings configurable
 # TODO use repr for warning messages and ensure that they don't get to long
+
 
 class GenericConverter(abc.ABC):
     """
@@ -37,7 +50,9 @@ class GenericConverter(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+    def populate(
+        self, component: Component, item: ContainerItem, context: ContextDict
+    ) -> bool:
         """
         Parse the `ContentLine` or `Container` `item` (which matches one of the name returned by `filter_ics_names`)
         and add the information extracted from it to `component`.
@@ -65,7 +80,9 @@ class GenericConverter(abc.ABC):
         """
         raise NotImplementedError()
 
-    def post_serialize(self, component: Component, output: Container, context: ContextDict):
+    def post_serialize(
+        self, component: Component, output: Container, context: ContextDict
+    ):
         """
         Called once a `component` is fully serialized to `output`.
         """
@@ -110,7 +127,9 @@ class AttributeConverter(GenericConverter, abc.ABC):
 
     def __attrs_post_init__(self):
         v = SimpleNamespace()
-        v.multi_value_type, v.value_type, v.value_types = extract_attr_type(self.attribute)
+        v.multi_value_type, v.value_type, v.value_types = extract_attr_type(
+            self.attribute
+        )
         v._priority = self.attribute.metadata.get("ics_priority", self.default_priority)
         v.is_required = self.attribute.metadata.get("ics_required", None)
         if v.is_required is None:
@@ -151,7 +170,9 @@ class AttributeConverter(GenericConverter, abc.ABC):
         else:
             return [self.get_value(component)]
 
-    def set_or_append_extra_params(self, component: Component, value: ExtraParams, name: Optional[str] = None):
+    def set_or_append_extra_params(
+        self, component: Component, value: ExtraParams, name: Optional[str] = None
+    ):
         name = (name or self.attribute.name).upper()
         if self.is_multi_value:
             extras = component.extra_params.setdefault(name, [])
@@ -159,9 +180,13 @@ class AttributeConverter(GenericConverter, abc.ABC):
         elif value:
             component.extra_params[name] = value
 
-    def get_extra_params(self, component: Component, name: Optional[str] = None) -> Union[ExtraParams, List[ExtraParams]]:
+    def get_extra_params(
+        self, component: Component, name: Optional[str] = None
+    ) -> Union[ExtraParams, List[ExtraParams]]:
         if self.multi_value_type:
-            default: Union[ExtraParams, List[ExtraParams]] = cast(List[ExtraParams], list())
+            default: Union[ExtraParams, List[ExtraParams]] = cast(
+                List[ExtraParams], list()
+            )
         else:
             default = ExtraParams(dict())
         name = (name or self.attribute.name).upper()
@@ -204,16 +229,20 @@ class AttributeConverter(GenericConverter, abc.ABC):
         if len(value_types) == 1:
             assert [value_type] == value_types
             from ics.converter.component import ComponentMeta
+
             if value_type in ComponentMeta.BY_TYPE:
                 return ComponentMeta.BY_TYPE[value_type](attribute)
             if value_type in AttributeConverter.BY_TYPE:
                 return AttributeConverter.BY_TYPE[value_type](attribute)
 
         from ics.converter.value import AttributeValueConverter
+
         return AttributeValueConverter(attribute)
 
 
-def extract_attr_type(attribute: attr.Attribute) -> Tuple[Optional[Type[MutableSequence]], Type, List[Type]]:
+def extract_attr_type(
+    attribute: attr.Attribute,
+) -> Tuple[Optional[Type[MutableSequence]], Type, List[Type]]:
     """
     Extract type information on an `attribute` from its metadata.
 
@@ -222,12 +251,16 @@ def extract_attr_type(attribute: attr.Attribute) -> Tuple[Optional[Type[MutableS
     """
     attr_type = attribute.metadata.get("ics_type", attribute.type)
     if attr_type is None:
-        raise ValueError("can't convert attribute %s with AttributeConverter, "
-                         "as it has no type information" % attribute)
+        raise ValueError(
+            "can't convert attribute %s with AttributeConverter, "
+            "as it has no type information" % attribute
+        )
     return unwrap_type(attr_type)
 
 
-def unwrap_type(attr_type: Type) -> Tuple[Optional[Type[MutableSequence]], Type, List[Type]]:
+def unwrap_type(
+    attr_type: Type,
+) -> Tuple[Optional[Type[MutableSequence]], Type, List[Type]]:
     """
     Unwrap types wrapped by a generic `Union`, `Optional` or `Container` type.
 
@@ -255,7 +288,9 @@ def unwrap_type(attr_type: Type) -> Tuple[Optional[Type[MutableSequence]], Type,
         return None, attr_type, [attr_type]
 
 
-def sort_converters(converters: Iterable[Optional[GenericConverter]]) -> List[GenericConverter]:
+def sort_converters(
+    converters: Iterable[Optional[GenericConverter]],
+) -> List[GenericConverter]:
     """
     Sort a list of converters according to their priority.
     """

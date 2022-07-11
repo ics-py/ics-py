@@ -1,20 +1,24 @@
 import heapq
 from datetime import date, datetime, timedelta
-from typing import Iterable, Iterator, Optional, TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Iterable, Iterator, Optional, Tuple
 
 import attr
 
 from ics.event import Event
 from ics.timespan import Normalization, Timespan
 from ics.types import DatetimeLike, OptionalDatetimeLike, TimespanOrBegin
-from ics.utils import ceil_datetime_to_midnight, ensure_datetime, floor_datetime_to_midnight
+from ics.utils import (
+    ceil_datetime_to_midnight,
+    ensure_datetime,
+    floor_datetime_to_midnight,
+)
 
 if TYPE_CHECKING:
     from ics.icalendar import Calendar
 
 
 @attr.s
-class Timeline(object):
+class Timeline:
     """
     `Timeline`s allow iterating all event from a `Calendar` in chronological order, optionally also filtering events
     according to their timestamps.
@@ -32,7 +36,9 @@ class Timeline(object):
             instant = self._normalization.normalize(instant)
         return instant
 
-    def __normalize_timespan(self, start: TimespanOrBegin, stop: OptionalDatetimeLike = None) -> Timespan:
+    def __normalize_timespan(
+        self, start: TimespanOrBegin, stop: OptionalDatetimeLike = None
+    ) -> Timespan:
         """
         Create a normalized timespan between `start` and `stop`.
         Alternatively, this method can be called directly with a single timespan as parameter.
@@ -59,8 +65,8 @@ class Timeline(object):
         # much bigger than the number of events we extract from the iterator (k).
         # Complexity: O(n + k log n).
         heap: Iterable[Tuple[Timespan, Event]] = (
-            (self.__normalize_timespan(e.timespan), e)
-            for e in self._calendar.events)
+            (self.__normalize_timespan(e.timespan), e) for e in self._calendar.events
+        )
         heap = [t for t in heap if t[0]]
         heapq.heapify(heap)
         while heap:
@@ -77,7 +83,9 @@ class Timeline(object):
         for _, e in self.iterator():
             yield e
 
-    def included(self, start: TimespanOrBegin, stop: OptionalDatetimeLike = None) -> Iterator[Event]:
+    def included(
+        self, start: TimespanOrBegin, stop: OptionalDatetimeLike = None
+    ) -> Iterator[Event]:
         """
         Iterates (in chronological order) over every event that is included in the timespan between `start` and `stop`.
         Alternatively, this method can be called directly with a single timespan as parameter.
@@ -87,7 +95,9 @@ class Timeline(object):
             if timespan.is_included_in(query):
                 yield event
 
-    def overlapping(self, start: TimespanOrBegin, stop: OptionalDatetimeLike = None) -> Iterator[Event]:
+    def overlapping(
+        self, start: TimespanOrBegin, stop: OptionalDatetimeLike = None
+    ) -> Iterator[Event]:
         """
         Iterates (in chronological order) over every event that has an intersection with the timespan between `start` and `stop`.
         Alternatively, this method can be called directly with a single timespan as parameter.
