@@ -1,15 +1,17 @@
-import warnings
-
 import abc
-import attr
-from types import SimpleNamespace
-from typing import Any, ClassVar, Dict, List, MutableSequence, Optional, Tuple, Type, Union, cast, Iterable
+import warnings
+from typing import Any, List, MutableSequence, Optional, Type, Union, cast, Tuple
+
+from attr import define, field, Attribute, NOTHING
 
 from ics.component import Component
 from ics.contentline import Container
-from ics.types import ContainerItem, ContextDict, ExtraParams
+from ics.types import ContainerItem, ExtraParams
 
-NoneTypes = [type(None), None]
+try:
+    from functools import cached_property
+except ImportError:
+    cached_property = property
 
 
 # TODO make validation / ValueError / warnings configurable
@@ -20,11 +22,15 @@ class GenericConverter(abc.ABC):
     A Converter is responsible for serializing and parsing a certain aspect (usually a member variable) of a Component.
     See `AttributeConverter` for Converters that can handle exactly one member variable, i.e. one attribute.
     See `AttributeValueConverter` for Converters that simply use one or more `ValueConverter`s to handle their attribute.
-    See `MemberComponentConverter` which converts between a single attribute whose type is a subclass of `Component`
-      and a `Container` of `ContentLines`, using the information stored in the `ComponentMeta` of the subclass.
-    `MemberComponentConverter` then uses `ComponentMeta.load_instance` and `ComponentMeta.serialize_toplevel` to inflate
+    See also `SubcomponentConverter`, which converts between a single attribute whose type is a subclass of `Component`
+      and a `Container` of `ContentLines`, using the `ComponentMeta` information of the subclass stored in the `ConverterContext`.
+    `SubcomponentConverter` then uses `ComponentMeta.load_instance` and `ComponentMeta.serialize_instance` to inflate
       and serialize `Component` instances.
     """
+
+    @classmethod
+    def copy(cls):
+        return cls
 
     @property
     @abc.abstractmethod
@@ -37,93 +43,72 @@ class GenericConverter(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem) -> bool:
         """
-        Parse the `ContentLine` or `Container` `item` (which matches one of the name returned by `filter_ics_names`)
+        Parse the `ContentLine` or `Container` `item` (which matches one of the names returned by `filter_ics_names`)
         and add the information extracted from it to `component`.
 
-        :param context:
         :param component:
         :param item:
         :return: True, if the line was consumed and shouldn't be stored as extra (but might still be passed on)
         """
         raise NotImplementedError()
 
-    def post_populate(self, component: Component, context: ContextDict):
+    def post_populate(self, component: Component):
         """
         Called once a `component` is fully populated.
         """
         pass
 
     @abc.abstractmethod
-    def serialize(self, component: Component, output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container):
         """
         Serialize the aspect handled by this Converter.
-        Take all the relevant information from `component` (and possibly `context`),
+        Take all the relevant information from `component` (and possibly the current context),
         somehow (possibly using a `ValueConverter`) convert it to ContentLine(s) or Container(s)
         and append all of them to `output`.
         """
         raise NotImplementedError()
 
-    def post_serialize(self, component: Component, output: Container, context: ContextDict):
+    def post_serialize(self, component: Component, output: Container):
         """
         Called once a `component` is fully serialized to `output`.
         """
         pass
 
 
-@attr.s(frozen=True)
+@define
 class AttributeConverter(GenericConverter, abc.ABC):
     """
-    A Converter that can serialize and populate a single of attribute of some Component.
+    An abstract Converter that can serialize and populate a single of attribute of some Component.
     See `GenericConverter` for more information.
     """
 
     """
-    A mapping which describes which attribute types can be handled by which AttributeConverter subclasses.
-    To obtain a Converter instance, use `AttributeConverter.BY_TYPE[value_type](attribute)`.
-    See `extract_attr_type` for how to extract the value type.
-    Used by `ComponentMeta.find_converters` to find all converters for a Components' attributes.
-    """
-    BY_TYPE: ClassVar[Dict[Type, Type["AttributeConverter"]]] = {}
-
-    """
     The attribute (and thus also the Component class) this AttributeConverter instance can handle.
     """
-    attribute: attr.Attribute = attr.ib()
+    attribute: Attribute
 
     """
     If this attribute can have multiple values, the type of the container to store these values in,
     e.g. `List` or `Set`. `None` if only a single value is allowed.
     """
-    multi_value_type: Optional[Type[MutableSequence]]
+    multi_value_type: Optional[Type[MutableSequence]] = field(default=None)
     """
     A type matching all allowed values of the `attribute`, e.g. `str` or `Union[int, float]`.
+    If the attribute can have multiple values, the `multi_value_type` was stripped.
     """
-    value_type: Type
+    value_type: Type = field(default=None)
     """
     All concrete types a value of this attribute might have, e.g. `[str]` or `[int, float]`.
+    This value contains all types obtained by unwrapping the Sequence type for `multi_value_type`s
+    and also unwrapping any `Union`s and `Optional`s, stripping any `None` values.
     """
-    value_types: List[Type]
-    _priority: int
-    is_required: bool
+    value_types: List[Type] = field(default=None)
 
     def __attrs_post_init__(self):
-        v = SimpleNamespace()
-        v.multi_value_type, v.value_type, v.value_types = extract_attr_type(self.attribute)
-        v._priority = self.attribute.metadata.get("ics_priority", self.default_priority)
-        v.is_required = self.attribute.metadata.get("ics_required", None)
-        if v.is_required is None:
-            if not self.attribute.init:
-                v.is_required = False
-            elif self.attribute.default is not attr.NOTHING:
-                v.is_required = False
-            else:
-                v.is_required = True
-                # we ignore if value_type is Optional and only focus on the presence of a default value
-        for key, value in v.__dict__.items():
-            # all variables created in __attrs_post_init__.v will be set on self
-            object.__setattr__(self, key, value)
+        if not self.value_types:
+            self.multi_value_type, self.value_type, self.value_types = extract_attr_type(self.attribute)
 
     def set_or_append_value(self, component: Component, value: Any):
         """
@@ -171,49 +156,21 @@ class AttributeConverter(GenericConverter, abc.ABC):
     def default_priority(self) -> int:
         return 0
 
-    @property
+    @cached_property
     def priority(self) -> int:
-        return self._priority
+        return self.attribute.metadata.get("ics_priority", self.default_priority)
+
+    @cached_property
+    def is_required(self) -> bool:
+        # XXX we ignore if value_type is Optional and only focus on the presence of a default value
+        return self.attribute.metadata.get("ics_required", self.attribute.init and (self.attribute.default is NOTHING))
 
     @property
     def is_multi_value(self) -> bool:
         return self.multi_value_type is not None
 
-    @staticmethod
-    def get_converter_for(attribute: attr.Attribute) -> Optional["AttributeConverter"]:
-        """
-        Create a Converter instance for field `attribute` of some class.
-        First check whether the `value_type` (see `extract_attr_type`) is a subclass of `Component`
-          and use a `MemberComponentConverter` from the registered `ComponentMeta.BY_TYPE` if that was the case.
-        Then, see if an explicit `AttributeConverter.BY_TYPE` was registered
-          and create an appropriate instance for the `attribute` if that was the case.
-        As last resort, create a `AttributeValueConverter` and hope that `ValueConverter.BY_TYPE` contains
-          `ValueConverter`s for all possible types.
 
-        Whether multi-value attributes are correctly handled depends on the `Converter` used,
-          `AttributeValueConverter` and `MemberComponentConverter` correctly handle multi-value attributes.
-        Note that `Union`s can only by handled by `AttributeValueConverter`.
-        """
-        if attribute.metadata.get("ics_ignore", not attribute.init):
-            return None
-        converter = attribute.metadata.get("ics_converter", None)
-        if converter:
-            return converter(attribute)
-
-        multi_value_type, value_type, value_types = extract_attr_type(attribute)
-        if len(value_types) == 1:
-            assert [value_type] == value_types
-            from ics.converter.component import ComponentMeta
-            if value_type in ComponentMeta.BY_TYPE:
-                return ComponentMeta.BY_TYPE[value_type](attribute)
-            if value_type in AttributeConverter.BY_TYPE:
-                return AttributeConverter.BY_TYPE[value_type](attribute)
-
-        from ics.converter.value import AttributeValueConverter
-        return AttributeValueConverter(attribute)
-
-
-def extract_attr_type(attribute: attr.Attribute) -> Tuple[Optional[Type[MutableSequence]], Type, List[Type]]:
+def extract_attr_type(attribute: Attribute) -> Tuple[Optional[Type[MutableSequence]], Type, List[Type]]:
     """
     Extract type information on an `attribute` from its metadata.
 
@@ -229,7 +186,7 @@ def extract_attr_type(attribute: attr.Attribute) -> Tuple[Optional[Type[MutableS
 
 def unwrap_type(attr_type: Type) -> Tuple[Optional[Type[MutableSequence]], Type, List[Type]]:
     """
-    Unwrap types wrapped by a generic `Union`, `Optional` or `Container` type.
+    Unwrap types wrapped by a generic `Union`, `Optional` or `Sequence` type.
 
     :return: a tuple of `multi_value_type, value_type, value_types`
         See the respective attributes of `AttributeConverter` for their meaning.
@@ -238,7 +195,7 @@ def unwrap_type(attr_type: Type) -> Tuple[Optional[Type[MutableSequence]], Type,
     generic_vars: Tuple[Type, ...] = getattr(attr_type, "__args__", tuple())
 
     if generic_origin == Union:
-        generic_vars = tuple(v for v in generic_vars if v not in NoneTypes)
+        generic_vars = tuple(v for v in generic_vars if v not in (None, type(None)))
         if len(generic_vars) > 1:
             return None, generic_origin[tuple(generic_vars)], list(generic_vars)
         else:
@@ -255,9 +212,28 @@ def unwrap_type(attr_type: Type) -> Tuple[Optional[Type[MutableSequence]], Type,
         return None, attr_type, [attr_type]
 
 
-def sort_converters(converters: Iterable[Optional[GenericConverter]]) -> List[GenericConverter]:
+class SubcomponentConverter(AttributeConverter):
     """
-    Sort a list of converters according to their priority.
+    An `AttributeConverter` that converts between a single attribute whose type is a subclass of `Component`
+      and a `Container` of `ContentLines`, using the context-provided `ComponentMeta` for the subclass.
+    Uses `ComponentMeta.load_instance` and `ComponentMeta.serialize_instance` to inflate
+      and serialize `Component` instances.
+    Transparently handles single-value and multi-value attributes.
+    See `GenericConverter` for more information.
     """
-    converters = cast(Iterable[GenericConverter], filter(bool, converters))
-    return sorted(converters, key=lambda c: c.priority, reverse=True)
+
+    @property
+    def filter_ics_names(self) -> List[str]:
+        return [self.value_type.NAME]
+
+    def populate(self, component: Component, item: ContainerItem) -> bool:
+        assert isinstance(item, Container)
+        self.set_or_append_value(component, self.value_type.from_container(self.value_type, item))
+        return True
+
+    def serialize(self, parent: Component, output: Container):
+        extras = self.get_extra_params(parent)
+        if extras:
+            raise ValueError("ComponentConverter %s can't serialize extra params %s", (self, extras))
+        for value in self.get_value_list(parent):
+            output.append(value.to_container())

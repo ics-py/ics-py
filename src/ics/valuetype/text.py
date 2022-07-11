@@ -2,14 +2,16 @@ import re
 import warnings
 from typing import Iterable, Iterator, Type
 
-from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
+from ics.types import EmptyParams, ExtraParams, singleton
 from ics.utils import next_after_str_escape
 from ics.valuetype.base import ValueConverter
 
 __all__ = ["TextConverter", "RawTextConverter"]
 
 
-class RawTextConverterClass(ValueConverter[str]):
+# must come before TextConverter so that the latter mapping from str wins
+@singleton
+class RawTextConverter(ValueConverter[str]):
     @property
     def ics_type(self) -> str:
         return "RAWTEXT"
@@ -18,18 +20,15 @@ class RawTextConverterClass(ValueConverter[str]):
     def python_type(self) -> Type[str]:
         return str
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def parse(self, value: str, params: ExtraParams = EmptyParams) -> str:
         return value
 
-    def serialize(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: str, params: ExtraParams = EmptyParams) -> str:
         return value
 
 
-RawTextConverter = RawTextConverterClass()
-
-
-class TextConverterClass(ValueConverter[str]):
-
+@singleton
+class TextConverter(ValueConverter[str]):
     @property
     def ics_type(self) -> str:
         return "TEXT"
@@ -38,10 +37,10 @@ class TextConverterClass(ValueConverter[str]):
     def python_type(self) -> Type[str]:
         return str
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def parse(self, value: str, params: ExtraParams = EmptyParams) -> str:
         return self.unescape_text(value)
 
-    def serialize(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: str, params: ExtraParams = EmptyParams) -> str:
         return self.escape_text(value)
 
     def split_value_list(self, values: str) -> Iterable[str]:
@@ -101,7 +100,3 @@ class TextConverterClass(ValueConverter[str]):
                 raise ValueError("unescaped character '%s' in TEXT value" % c1)
             else:
                 yield c1
-
-
-TextConverter = TextConverterClass()
-ValueConverter.BY_TYPE[str] = TextConverter

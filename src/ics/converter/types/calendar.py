@@ -22,7 +22,7 @@ class CalendarMeta(ComponentMeta):
             super(CalendarMeta, self).find_converters(), (CalendarTimezoneConverter(),)
         ))
 
-    def _populate_attrs(self, instance: Component, container: Container, context: ContextDict):
+    def _populate_attrs(self, instance: Component, container: Container):
         assert isinstance(instance, Calendar)
         avail_tz: Dict[str, Timezone] = context.setdefault(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
         for child in container:
@@ -32,7 +32,7 @@ class CalendarMeta(ComponentMeta):
 
         super()._populate_attrs(instance, container, context)
 
-    def _serialize_attrs(self, component: Component, context: ContextDict, container: Container):
+    def _serialize_attrs(self, component: Component, container: Container):
         assert isinstance(component, Calendar)
         context.setdefault(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
         super()._serialize_attrs(component, context, container)
@@ -53,11 +53,11 @@ class CalendarTimezoneConverter(GenericConverter):
     def filter_ics_names(self) -> List[str]:
         return [Timezone.NAME]
 
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem) -> bool:
         # don't actually load anything, as that has already been done before all other deserialization in `CalendarMeta`
         return item.name == Timezone.NAME and isinstance(item, Container)
 
-    def serialize(self, component: Component, output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container):
         # store the place where we should insert all the timezones
         context["VTIMEZONES_AFTER"] = len(output)
 

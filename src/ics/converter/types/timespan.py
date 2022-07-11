@@ -28,7 +28,7 @@ class TimespanConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return ["DTSTART", "DTEND", "DUE", "DURATION"]
 
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem) -> bool:
         assert isinstance(item, ContentLine)
         seen_items = context.setdefault(CONTEXT_ITEMS, set())
         if item.name in seen_items:
@@ -66,7 +66,7 @@ class TimespanConverter(AttributeConverter):
 
         return True
 
-    def post_populate(self, component: Component, context: ContextDict):
+    def post_populate(self, component: Component):
         timespan_type = getattr(component, "_TIMESPAN_TYPE", self.value_type)
         timespan = timespan_type(
             ensure_datetime(context[CONTEXT_BEGIN_TIME]), ensure_datetime(context[CONTEXT_END_TIME]),
@@ -80,7 +80,7 @@ class TimespanConverter(AttributeConverter):
         for key in CONTEXT_KEYS:
             context.pop(key, None)
 
-    def serialize(self, component: Component, output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container):
         value: Timespan = self.get_value(component)
         dt_conv: ValueConverter
         if value.is_all_day():
@@ -114,10 +114,7 @@ class TimespanConverter(AttributeConverter):
             dur_value = DurationConverter.serialize(duration, params, context)
             output.append(ContentLine(name="DURATION", params=params, value=dur_value))
 
-    def post_serialize(self, component: Component, output: Container, context: ContextDict):
+    def post_serialize(self, component: Component, output: Container):
         context.pop("DTSTART", None)
 
 
-AttributeConverter.BY_TYPE[Timespan] = TimespanConverter
-AttributeConverter.BY_TYPE[EventTimespan] = TimespanConverter
-AttributeConverter.BY_TYPE[TodoTimespan] = TimespanConverter

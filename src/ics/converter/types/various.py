@@ -25,7 +25,7 @@ class RecurrenceConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return ["RRULE", "RDATE", "EXRULE", "EXDATE", "DTSTART"]
 
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem) -> bool:
         assert isinstance(item, ContentLine)
         key = (self, "lines")
         lines = context[key]
@@ -34,7 +34,7 @@ class RecurrenceConverter(AttributeConverter):
         lines.append(item)
         return True
 
-    def post_populate(self, component: Component, context: ContextDict):
+    def post_populate(self, component: Component):
         lines_str = "".join(line.serialize(newline=True) for line in context.pop((self, "lines")))
         # TODO only feed dateutil the params it likes, add the rest as extra
         tzinfos = context.get(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
@@ -43,7 +43,7 @@ class RecurrenceConverter(AttributeConverter):
         rrule._exdate = list(unique_justseen(sorted(rrule._exdate)))
         self.set_or_append_value(component, rrule)
 
-    def serialize(self, component: Component, output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container):
         value = self.get_value(component)
         if not TYPE_CHECKING:
             assert isinstance(value, dateutil.rrule.rruleset)
@@ -70,11 +70,10 @@ class RecurrenceConverter(AttributeConverter):
         for exdate in unique_justseen(sorted(value._exdate)):
             output.append(ContentLine(name="EXDATE", value=DatetimeConverter.serialize(exdate)))
 
-    def post_serialize(self, component: Component, output: Container, context: ContextDict):
+    def post_serialize(self, component: Component, output: Container):
         context.pop("DTSTART", None)
 
 
-AttributeConverter.BY_TYPE[dateutil.rrule.rruleset] = RecurrenceConverter
 
 
 class AlarmActionConverter(GenericConverter):
@@ -88,14 +87,14 @@ class AlarmActionConverter(GenericConverter):
     def filter_ics_names(self) -> List[str]:
         return ["ACTION"]
 
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+    def populate(self, component: Component, item: ContainerItem) -> bool:
         assert isinstance(item, ContentLine)
         assert issubclass(type(component), get_type_from_action(item.value))
         if item.params:
             component.extra_params["ACTION"] = copy_extra_params(item.params)
         return True
 
-    def serialize(self, component: Component, output: Container, context: ContextDict):
+    def serialize(self, component: Component, output: Container):
         assert isinstance(component, BaseAlarm)
         output.append(ContentLine(
             name="ACTION",
@@ -111,7 +110,7 @@ class AlarmMeta(ComponentMeta):
         convs.append(AlarmActionConverter())
         return sort_converters(convs)
 
-    def load_instance(self, container: Container, context: Optional[ContextDict] = None):
+    def load_instance(self, container: Container):
         clazz = get_type_from_action(one(
             container["ACTION"],
             too_short='VALARM must have exactly one ACTION!',
@@ -121,10 +120,3 @@ class AlarmMeta(ComponentMeta):
         ComponentMeta.BY_TYPE[clazz].populate_instance(instance, container, context)
         return instance
 
-
-ComponentMeta.BY_TYPE[BaseAlarm] = AlarmMeta(BaseAlarm)
-ComponentMeta.BY_TYPE[AudioAlarm] = AlarmMeta(AudioAlarm)
-ComponentMeta.BY_TYPE[CustomAlarm] = AlarmMeta(CustomAlarm)
-ComponentMeta.BY_TYPE[DisplayAlarm] = AlarmMeta(DisplayAlarm)
-ComponentMeta.BY_TYPE[EmailAlarm] = AlarmMeta(EmailAlarm)
-ComponentMeta.BY_TYPE[NoneAlarm] = AlarmMeta(NoneAlarm)
