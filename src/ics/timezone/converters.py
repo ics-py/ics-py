@@ -6,7 +6,7 @@ import dateutil
 
 from ics.contentline import string_to_containers
 from ics.timezone import Timezone, UTC, TimezoneStandardObservance, RRULE_EPOCH_START, is_utc
-from ics.types import UTCOffset, ContextDict
+from ics.types import UTCOffset
 from ics.utils import TIMEDELTA_ZERO, one
 
 __all__ = [
@@ -41,7 +41,7 @@ def Timezone_from_tzid(tzid: str) -> Timezone:
     return Timezone.from_container(ics_cal[2])
 
 
-def Timezone_from_tzinfo(tzinfo: datetime.tzinfo, context: Optional[ContextDict] = None) -> Optional[Timezone]:
+def Timezone_from_tzinfo(tzinfo: datetime.tzinfo) -> Optional[Timezone]:
     if isinstance(tzinfo, Timezone):
         return tzinfo
     if is_utc(tzinfo):

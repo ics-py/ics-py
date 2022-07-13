@@ -1,12 +1,15 @@
 import base64
-from typing import Type, Union
+from typing import Type, Union, Generic
 from urllib.parse import urlparse
 
-from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, URL
-from ics.valuetype.base import ValueConverter
+from attr import frozen
+
+from ics.types import EmptyParams, ExtraParams, URL, singleton
+from ics.valuetype.base import ValueConverter, T
 
 __all__ = [
-    "BinaryConverter",
+    "BytesConverter",
+    "BytearrayConverter",
     "BooleanConverter",
     "IntegerConverter",
     "FloatConverter",
@@ -15,29 +18,31 @@ __all__ = [
 ]
 
 
-class BinaryConverterClass(ValueConverter[bytes]):
+@frozen
+class BinaryConverter(ValueConverter[T], Generic[T]):
+    value_type: Type[T]
 
     @property
     def ics_type(self) -> str:
         return "BINARY"
 
     @property
-    def python_type(self) -> Type[bytes]:
-        return bytes
+    def python_type(self) -> Type[T]:
+        return self.value_type
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> bytes:
-        return base64.b64decode(value)
+    def parse(self, value: str, params: ExtraParams = EmptyParams) -> T:
+        return self.value_type(base64.b64decode(value))
 
-    def serialize(self, value: bytes, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: T, params: ExtraParams = EmptyParams) -> str:
         return base64.b64encode(value).decode("ascii")
 
 
-BinaryConverter = BinaryConverterClass()
-ValueConverter.BY_TYPE[bytearray] = ValueConverter.BY_TYPE[bytes]
+BytesConverter = BinaryConverter[bytes](bytes)
+BytearrayConverter = BinaryConverter[bytearray](bytearray)
 
 
-class BooleanConverterClass(ValueConverter[bool]):
-
+@singleton
+class BooleanConverter(ValueConverter[bool]):
     @property
     def ics_type(self) -> str:
         return "BOOLEAN"
@@ -46,7 +51,7 @@ class BooleanConverterClass(ValueConverter[bool]):
     def python_type(self) -> Type[bool]:
         return bool
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> bool:
+    def parse(self, value: str, params: ExtraParams = EmptyParams) -> bool:
         if value == "TRUE":
             return True
         elif value == "FALSE":
@@ -64,20 +69,17 @@ class BooleanConverterClass(ValueConverter[bool]):
             else:
                 raise ValueError("can't interpret '%s' as boolean" % value)
 
-    def serialize(self, value: Union[bool, str], params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: Union[bool, str], params: ExtraParams = EmptyParams) -> str:
         if isinstance(value, str):
-            value = self.parse(value, params, context)
+            value = self.parse(value, params)
         if value:
             return "TRUE"
         else:
             return "FALSE"
 
 
-BooleanConverter = BooleanConverterClass()
-
-
-class IntegerConverterClass(ValueConverter[int]):
-
+@singleton
+class IntegerConverter(ValueConverter[int]):
     @property
     def ics_type(self) -> str:
         return "INTEGER"
@@ -86,18 +88,15 @@ class IntegerConverterClass(ValueConverter[int]):
     def python_type(self) -> Type[int]:
         return int
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> int:
+    def parse(self, value: str, params: ExtraParams = EmptyParams) -> int:
         return int(value)
 
-    def serialize(self, value: int, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: int, params: ExtraParams = EmptyParams) -> str:
         return str(value)
 
 
-IntegerConverter = IntegerConverterClass()
-
-
-class FloatConverterClass(ValueConverter[float]):
-
+@singleton
+class FloatConverter(ValueConverter[float]):
     @property
     def ics_type(self) -> str:
         return "FLOAT"
@@ -106,19 +105,18 @@ class FloatConverterClass(ValueConverter[float]):
     def python_type(self) -> Type[float]:
         return float
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> float:
+    def parse(self, value: str, params: ExtraParams = EmptyParams) -> float:
         return float(value)
 
-    def serialize(self, value: float, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: float, params: ExtraParams = EmptyParams) -> str:
         return str(value)
 
 
-FloatConverter = FloatConverterClass()
-
-
-class URIConverterClass(ValueConverter[URL]):
+@singleton
+class URIConverter(ValueConverter[URL]):
     # TODO URI PARAMs need percent escaping, preventing all illegal characters except for ", in which they also need to wrapped
     # TODO URI values also need percent escaping (escaping COMMA characters in URI Lists), but no quoting
+    # TODO do not parse URIs?
 
     @property
     def ics_type(self) -> str:
@@ -128,24 +126,18 @@ class URIConverterClass(ValueConverter[URL]):
     def python_type(self) -> Type[URL]:
         return URL
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> URL:
+    def parse(self, value: str, params: ExtraParams = EmptyParams) -> URL:
         return urlparse(value)
 
-    def serialize(self, value: URL, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: URL, params: ExtraParams = EmptyParams) -> str:
         if isinstance(value, str):
             return value
         else:
             return value.geturl()
 
 
-URIConverter = URIConverterClass()
-
-
-class CalendarUserAddressConverterClass(URIConverterClass):
-
+@singleton
+class CalendarUserAddressConverter(type(URIConverter)):
     @property
     def ics_type(self) -> str:
         return "CAL-ADDRESS"
-
-
-CalendarUserAddressConverter = CalendarUserAddressConverterClass

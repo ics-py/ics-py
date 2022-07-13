@@ -4,7 +4,7 @@ import attr
 from attr.validators import instance_of
 
 from ics.contentline import Container
-from ics.types import ExtraParams, RuntimeAttrValidation, ContextDict
+from ics.types import ExtraParams, RuntimeAttrValidation
 
 ComponentType = TypeVar('ComponentType', bound='Component')
 ComponentExtraParams = Dict[str, Union[ExtraParams, List[ExtraParams]]]
@@ -27,26 +27,20 @@ class Component(RuntimeAttrValidation):
         Component.SUBTYPES.append(cls)
 
     @classmethod
-    def from_container(cls: Type[ComponentType], container: Container, context: Optional[ContextDict] = None) -> ComponentType:
-        from ics import initialize_converters
-        initialize_converters()
-        from ics.converter.component import ComponentMeta
-        return ComponentMeta.BY_TYPE[cls].load_instance(container, context)
+    def from_container(cls: Type[ComponentType], container: Container) -> ComponentType:
+        from ics.converter.context import ConverterContext
+        return ConverterContext.CURRENT().from_container(cls, container)
 
-    def populate(self, container: Container, context: Optional[ContextDict] = None):
-        from ics import initialize_converters
-        initialize_converters()
-        from ics.converter.component import ComponentMeta
-        ComponentMeta.BY_TYPE[type(self)].populate_instance(self, container, context)
+    def populate(self, container: Container):
+        from ics.converter.context import ConverterContext
+        return ConverterContext.CURRENT().populate_instance(self, container)
 
-    def to_container(self, context: Optional[ContextDict] = None) -> Container:
-        from ics import initialize_converters
-        initialize_converters()
-        from ics.converter.component import ComponentMeta
-        return ComponentMeta.BY_TYPE[type(self)].serialize_toplevel(self, context)
+    def to_container(self) -> Container:
+        from ics.converter.context import ConverterContext
+        return ConverterContext.CURRENT().serialize_instance(self)
 
-    def serialize(self, context: Optional[ContextDict] = None) -> str:
-        return self.to_container(context).serialize()
+    def serialize(self) -> str:
+        return self.to_container().serialize()
 
     def strip_extras(self, all_extras=False, extra_properties=None, extra_params=None, property_merging=None):
         if extra_properties is None:

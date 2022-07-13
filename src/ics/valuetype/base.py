@@ -1,7 +1,7 @@
 import abc
-from typing import Dict, Generic, Iterable, Type, TypeVar
+from typing import Generic, Iterable, Type, TypeVar, ClassVar, List
 
-from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
+from ics.types import EmptyParams, ExtraParams
 
 T = TypeVar('T')
 
@@ -9,12 +9,10 @@ __all__ = ["ValueConverter"]
 
 
 class ValueConverter(Generic[T], abc.ABC):
-    BY_NAME: Dict[str, "ValueConverter"] = {}
-    BY_TYPE: Dict[Type, "ValueConverter"] = {}
+    INSTANCES: ClassVar[List["ValueConverter"]] = []
 
     def __init__(self):
-        ValueConverter.BY_NAME[self.ics_type] = self
-        ValueConverter.BY_TYPE.setdefault(self.python_type, self)
+        ValueConverter.INSTANCES.append(self)
 
     @property
     @abc.abstractmethod
@@ -33,15 +31,21 @@ class ValueConverter(Generic[T], abc.ABC):
         return ",".join(values)
 
     @abc.abstractmethod
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> T:
+    def parse(self, value: str, params: ExtraParams = EmptyParams) -> T:
         ...
 
     @abc.abstractmethod
-    def serialize(self, value: T, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(self, value: T, params: ExtraParams = EmptyParams) -> str:
         ...
 
     def __str__(self):
-        return "<" + self.__class__.__name__ + ">"
+        return "<%s (%s -> %s)>" % (type(self).__name__, self.ics_type, self.python_type.__name__)
+
+    def __repr__(self):
+        return type(self).__qualname__
 
     def __hash__(self):
         return hash(type(self))
+
+    def copy(self):
+        return self  # state-less singleton

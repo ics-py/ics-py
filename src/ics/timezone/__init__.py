@@ -1,16 +1,17 @@
-import attr
 import datetime
+import functools
+import warnings
+from typing import Optional, overload, List, ClassVar, cast
+
+import attr
 import dateutil
 import dateutil.rrule
 import dateutil.tz
-import functools
-import warnings
 from attr.validators import instance_of
 from dateutil.tz._common import _tzinfo
-from typing import Optional, overload, List, ClassVar, cast
 
 from ics.component import Component
-from ics.types import ContextDict, DatetimeLike, URL, UTCOffset
+from ics.types import DatetimeLike, URL, UTCOffset
 from ics.utils import check_is_instance, ensure_datetime, TIMEDELTA_ZERO
 
 __all__ = ["ensure_utc", "now_in_utc", "is_utc", "validate_utc", "TimezoneObservance", "TimezoneStandardObservance",
@@ -124,9 +125,9 @@ class Timezone(Component, _tzinfo):
         return Timezone_from_tzid(tzid)
 
     @classmethod
-    def from_tzinfo(cls, tzinfo: datetime.tzinfo, context: Optional[ContextDict] = None) -> Optional["Timezone"]:
+    def from_tzinfo(cls, tzinfo: datetime.tzinfo) -> Optional["Timezone"]:
         from ics.timezone.converters import Timezone_from_tzinfo
-        return Timezone_from_tzinfo(tzinfo, context)
+        return Timezone_from_tzinfo(tzinfo)
 
     @property
     def is_builtin(self):

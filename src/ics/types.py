@@ -1,6 +1,6 @@
 import warnings
 from datetime import date, datetime, timedelta
-from typing import Any, Dict, Iterator, List, MutableMapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, cast, overload
+from typing import Any, Dict, Iterator, List, MutableMapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, cast, overload, Type
 from urllib.parse import ParseResult
 
 import attr
@@ -33,7 +33,7 @@ __all__ = [
 
     "RuntimeAttrValidation",
 
-    "EmptyDict", "ExtraParams", "EmptyParams", "ContextDict", "EmptyContext", "copy_extra_params",
+    "EmptyDict", "ExtraParams", "EmptyParams", "copy_extra_params", "singleton",
 ]
 
 ContainerItem = Union["ContentLine", "Container"]
@@ -143,8 +143,6 @@ class EmptyDictType(MutableMapping[Any, None]):
 EmptyDict = EmptyDictType()
 ExtraParams = NewType("ExtraParams", Dict[str, List[str]])
 EmptyParams = cast("ExtraParams", EmptyDict)
-ContextDict = NewType("ContextDict", Dict[Any, Any])  # defaultdict(lambda: None)
-EmptyContext = cast("ContextDict", EmptyDict)
 
 
 def copy_extra_params(old: Optional[ExtraParams]) -> ExtraParams:
@@ -159,3 +157,16 @@ def copy_extra_params(old: Optional[ExtraParams]) -> ExtraParams:
         else:
             raise ValueError("can't convert extra param %s with value of type %s: %s" % (key, type(value), value))
     return new
+
+
+def singleton(cls: Type):
+    inst = cls()
+
+    def no_init(self, *args, **kwargs):
+        if type(self) == cls:
+            raise TypeError("Can't make a new instance of singleton %s!" % cls)
+        else:
+            super(cls, self).__init__(*args, **kwargs)
+
+    cls.__init__ = no_init
+    return inst
