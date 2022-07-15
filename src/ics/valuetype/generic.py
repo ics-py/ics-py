@@ -75,7 +75,7 @@ class BooleanConverterClass(ValueConverter[bool]):
             elif value in ["F", "N", "NO", "OFF", "0"]:
                 return False
             else:
-                raise ValueError("can't interpret '%s' as boolean" % value)
+                raise ValueError(f"can't interpret '{value}' as boolean")
 
     def serialize(
         self,

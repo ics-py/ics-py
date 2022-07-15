@@ -26,9 +26,7 @@ class PersonProperty(Generic[T]):
             return self.converter.parse(value[0])
         else:
             raise ValueError(
-                "Expected at most one value for property {!r}, got {!r}!".format(
-                    self.name, value
-                )
+                f"Expected at most one value for property {self.name!r}, got {value!r}!"
             )
 
     def __set__(self, instance: "Person", value: T):

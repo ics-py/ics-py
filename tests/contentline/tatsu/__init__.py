@@ -25,7 +25,7 @@ class TatsuParserClass(ParserClass):
             filename = None
             if not isinstance(line, str):
                 nr, line = line
-                filename = "Line %s" % nr
+                filename = f"Line {nr}"
             try:
                 ast = self.grammar.__parse_line(
                     line, rule_name="start", filename=filename

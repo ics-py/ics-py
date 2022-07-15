@@ -235,9 +235,7 @@ class Timespan:
                     )
                 if value.tzinfo is not None:
                     raise ValueError(
-                        "all-day timespan {} time {} can't have a timezone".format(
-                            name, value
-                        )
+                        f"all-day timespan {name} time {value} can't have a timezone"
                     )
 
         if self.begin_time is not None:
@@ -341,7 +339,7 @@ class Timespan:
 
     def __str__(self) -> str:
         prefix, name, suffix = self.get_str_segments()
-        return "<%s>" % (" ".join(prefix + name + suffix))
+        return f"<{' '.join(prefix + name + suffix)}>"
 
     def __bool__(self):
         return self.begin_time is not None or self.end_time is not None

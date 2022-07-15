@@ -36,7 +36,7 @@ def ensure_datetime(value):
     elif isinstance(value, dict):
         return datetime(**value)
     else:
-        raise ValueError("can't construct datetime from %s" % repr(value))
+        raise ValueError(f"can't construct datetime from {repr(value)}")
 
 
 @overload
@@ -59,7 +59,7 @@ def ensure_timedelta(value):
     elif isinstance(value, dict):
         return timedelta(**value)
     else:
-        raise ValueError("can't construct timedelta from %s" % repr(value))
+        raise ValueError(f"can't construct timedelta from {repr(value)}")
 
 
 ###############################################################################
@@ -147,7 +147,7 @@ def next_after_str_escape(it, full_str):
         return next(it)
     except StopIteration as e:
         raise ValueError(
-            "value '%s' may not end with an escape sequence" % full_str
+            f"value '{full_str}' may not end with an escape sequence"
         ) from e
 
 
@@ -166,11 +166,7 @@ def validate_not_none(inst, attr, value):
 
 def validate_truthy(inst, attr, value):
     if not bool(value):
-        raise ValueError(
-            "'{name}' must be truthy (got {value!r})".format(
-                name=attr.name, value=value
-            )
-        )
+        raise ValueError(f"'{attr.name}' must be truthy (got {value!r})")
 
 
 def check_is_instance(name, value, clazz):

@@ -167,7 +167,7 @@ def test_any_name_value_recode(name, value):
 
 def quote_escape_param(pval):
     if re.search("[:;,]", pval):
-        return '"%s"' % escape_param(pval)
+        return f'"{escape_param(pval)}"'
     else:
         return escape_param(pval)
 
@@ -416,7 +416,7 @@ EMOJI = "\U0001f469\U0001f3fb\u200d\u2764\ufe0f\u200d\U0001f468\U0001f3ff"
 @settings(deadline=timedelta(seconds=10))  # the long lipsum texts take some time
 def test_linefold(inp):
     inp = re.sub(Patterns.LINEBREAK, "\\\\n", inp)
-    raw = "TEST:%s" % inp
+    raw = f"TEST:{inp}"
     cl = ContentLine("TEST", value=inp)
     assert_parses_to(raw, cl)
 

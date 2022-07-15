@@ -80,7 +80,7 @@ class ParserClass:
     ) -> Container:
         items: List[ContainerItem] = []
         if not name.isupper():
-            warnings.warn("Container 'BEGIN:%s' is not all-uppercase" % name)
+            warnings.warn(f"Container 'BEGIN:{name}' is not all-uppercase")
         for line in tokenized_lines:
             if line.name == "BEGIN":
                 items.append(
@@ -90,7 +90,7 @@ class ParserClass:
                 if line.value.upper() != name.upper():
                     raise ParseError(f"Expected END:{name}, got END:{line.value}")
                 if not name.isupper():
-                    warnings.warn("Container 'END:%s' is not all-uppercase" % name)
+                    warnings.warn(f"Container 'END:{name}' is not all-uppercase")
                 break
             else:
                 items.append(line)

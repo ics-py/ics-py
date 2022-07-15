@@ -90,7 +90,7 @@ class DatetimeConverterMixin:
         if fixed_utc:
             if param_tz:
                 raise ValueError(
-                    "can't specify UTC via appended 'Z' and TZID param '%s'" % param_tz
+                    f"can't specify UTC via appended 'Z' and TZID param '{param_tz}'"
                 )
             return dt.replace(tzinfo=dateutil_tzutc)
         elif param_tz:
@@ -312,7 +312,7 @@ class DurationConverterClass(ValueConverter[timedelta]):
                 sign = -1
             i += 1
         if value[i] != "P":
-            raise ValueError("Error while parsing %s" % value)
+            raise ValueError(f"Error while parsing {value}")
         i += 1
         days, secs = 0, 0
         while i < len(value):
@@ -324,7 +324,7 @@ class DurationConverterClass(ValueConverter[timedelta]):
             while value[j].isdigit():
                 j += 1
             if i == j:
-                raise ValueError("Error while parsing %s" % value)
+                raise ValueError(f"Error while parsing {value}")
             val = int(value[i:j])
             if value[j] in DAYS:
                 days += val * DAYS[value[j]]
@@ -333,7 +333,7 @@ class DurationConverterClass(ValueConverter[timedelta]):
                 secs += val * SECS[value[j]]
                 SECS.pop(value[j])
             else:
-                raise ValueError("Error while parsing %s" % value)
+                raise ValueError(f"Error while parsing {value}")
             i = j + 1
         return timedelta(sign * days, sign * secs)
 
@@ -367,7 +367,7 @@ class DurationConverterClass(ValueConverter[timedelta]):
         if value.total_seconds() >= 0:
             return "P" + res
         else:
-            return "-P%s" % res
+            return f"-P{res}"
 
 
 DurationConverter = DurationConverterClass()

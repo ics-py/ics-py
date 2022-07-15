@@ -54,7 +54,7 @@ class Calendar(CalendarAttrs):
         events: Optional[Iterable[Event]] = None,
         todos: Optional[Iterable[Todo]] = None,
         creator: str = None,
-        **kwargs
+        **kwargs,
     ):
         """Initializes a new Calendar.
 
@@ -86,7 +86,7 @@ class Calendar(CalendarAttrs):
                 try:
                     container = next(containers)
                     if not isinstance(container, Container):
-                        raise ValueError("can't populate from %s" % type(container))
+                        raise ValueError(f"can't populate from {type(container)}")
                     self.populate(container)
                 except StopIteration:
                     raise ValueError("string didn't contain any ics data")

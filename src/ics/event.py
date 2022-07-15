@@ -190,9 +190,9 @@ class CalendarEntryAttrs(Component):
     def __str__(self) -> str:
         name = [self.__class__.__name__]
         if self.summary:
-            name.append("'%s'" % self.summary)
+            name.append(f"'{self.summary}'")
         prefix, _, suffix = self.timespan.get_str_segments()
-        return "<%s>" % (" ".join(prefix + name + suffix))
+        return f"<{' '.join(prefix + name + suffix)}>"
 
     ####################################################################################################################
 

@@ -46,7 +46,7 @@ def rrule_hash(self: dateutil.rrule.rrule):
 
 
 def rrule_repr(self: dateutil.rrule.rrule):
-    return "rrule(%s)" % ", ".join(f"{k}={v!r}" for k, v in rrule_to_dict(self).items())
+    return f"rrule({', '.join(f'{k}={v!r}' for k, v in rrule_to_dict(self).items())})"
 
 
 def rruleset_eq(self: dateutil.rrule.rruleset, other: dateutil.rrule.rruleset):
