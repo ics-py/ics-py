@@ -1,6 +1,8 @@
-================
-Ics.py changelog
-================
+=========
+Changelog
+=========
+
+Contains all notable changes to the code base.
 
 *Major releases are named in honor of influential women who shaped modern computer technology*
 
@@ -9,7 +11,7 @@ Ics.py changelog
 ***************************
 
 *Grace Hopper was mathematician and rear admiral who was a pioneer in developing computer technology,
-helping to devise UNIVAC I, the first commercial electronic computer and FLOW-MATIC on which COBOL was based*
+helping to devise UNIVAC I, the first commercial electronic computer and FLOW-MATIC on which COBOL was based*.
 
 This is a major release in the life of ics.py as it fixes a lot of long standing
 (design) issues with timespans, removes Arrow and introduces `attrs`.
@@ -42,6 +44,37 @@ In progress:
  - new Calendar constructor / parse methods
  - remove the `Calendar._timezones` attribute
  - added support for parsing and serializing Timezones
+
+*****
+0.7.2
+*****
+
+This is a bugfix release.
+
+Bug fix:
+ - Add a lower bound (`>=19.1.0`) on the required version of `attrs` `#353 <https://github.com/ics-py/ics-py/issues/353>`_ (bug introduced in 0.7.1)
+
+
+*****
+0.7.1
+*****
+
+This release contains a few minor changes and introduces deprecations for
+features that will be removed in 0.8.
+
+Deprecation:
+ - Add warnings about breaking changes in v0.8 to `Calendar.str()` and `.iter()`.
+
+Minor changes:
+ - Add a dependency on `attrs <https://pypi.org/project/attrs/>`_.
+ - Remove the upper bound on the version of `arrow <https://pypi.org/project/arrow/>`_.
+ - Backport optimizations for TatSu parser from 0.8
+
+Bug fix:
+ - Fix "falsey" (`bool(x) is False`) alarm trigger (i.e. `timedelta(0)`) not being serialized `#269 <https://github.com/ics-py/ics-py/issues/269>`_
+
+Known bugs:
+ - Missing lower bound on the required version of `attrs` (`>=19.1.0`) `#353 <https://github.com/ics-py/ics-py/issues/353>`_
 
 ***********************
 0.7 - Katherine Johnson

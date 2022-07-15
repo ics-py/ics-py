@@ -11,6 +11,12 @@ on their free time. It might take some time for us to have a look at your
 work.
 
 
+Style guide
+-----------
+
+* Code formatting: `TBD <https://github.com/ics-py/ics-py/issues/344>`_
+* Docstrings: `Google Python Style Guide <https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings>`_
+
 How to submit an issue
 ----------------------
 
@@ -103,7 +109,7 @@ To get a list of all available tasks, run :command:`tox -av`.
 
     This also works without having poetry installed.
 
-If you are fixing a bug
+Fixing a bug
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 Please add a test and add a link to it in the PR description
@@ -111,7 +117,7 @@ proving that the bug is fixed.
 This will help us merge your PR quickly and above all, this will make
 sure that we won't re-introduce the bug later by mistake.
 
-If you are adding a feature
+Adding a feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We will ask you to provide:
@@ -121,6 +127,15 @@ We will ask you to provide:
 * Add type annotations where possible
 * Think about where and how this will affect documentation and amend
   the respective section
+
+Working on the documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ensure correct rendering by generating the HTML pages locally with
+
+:command:`$ tox -e docs`
+
+View the pages at ``.tox/docs_out/index.html``
 
 Last thing
 ^^^^^^^^^^

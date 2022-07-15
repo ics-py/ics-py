@@ -366,6 +366,11 @@ class Timespan(object):
             )
 
     def cmp_tuple(self) -> TimespanTuple:
+        """Get event timespan details
+
+        Will  return a :class:`TimespanTuple` object.
+        A nested tuple containing e.begin, e.end and e.name.
+        """
         return self.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT, normalization=CMP_NORMALIZATION)
 
     def __require_tuple_components(self, values, *required):

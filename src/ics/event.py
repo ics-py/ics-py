@@ -72,11 +72,11 @@ class CalendarEntryAttrs(Component):
     def begin(self) -> Optional[datetime]:
         """Get or set the beginning of the event.
 
-        |  Will return a :class:`datetime` object.
-        |  May be set to anything that :func:`datetime.__init__` understands.
-        |  If an end is defined (not a duration), .begin must not
-            be set to a superior value.
-        |  For all-day events, the time is truncated to midnight when set.
+        Will return a :class:`datetime` object.
+        May be set to anything that :func:`datetime.__init__` understands.
+        If an end is defined (not a duration), .begin must not
+         be set to a superior value.
+        For all-day events, the time is truncated to midnight when set.
         """
         return self.timespan.get_begin()
 
@@ -88,17 +88,15 @@ class CalendarEntryAttrs(Component):
     def end(self) -> Optional[datetime]:
         """Get or set the end of the event.
 
-        |  Will return a :class:`datetime` object.
-        |  May be set to anything that :func:`datetime.__init__` understands.
-        |  If set to a non null value, removes any already
-            existing duration.
-        |  Setting to None will have unexpected behavior if
-            begin is not None.
-        |  Must not be set to an inferior value than self.begin.
-        |  When setting end time for for all-day events, if the end time
-            is midnight, that day is not included.  Otherwise, the end is
-            rounded up to midnight the next day, including the full day.
-            Note that rounding is different from :func:`make_all_day`.
+        Will return a :class:`datetime` object.
+        May be set to anything that :func:`datetime.__init__` understands.
+        If set to a non null value, removes any already existing duration.
+        Setting to None will have unexpected behavior if begin is not None.
+        Must not be set to an inferior value than self.begin.
+        When setting end time for for all-day events, if the end time
+         is midnight, that day is not included.  Otherwise, the end is
+         rounded up to midnight the next day, including the full day.
+         Note that rounding is different from :func:`make_all_day`.
         """
         return self.timespan.get_effective_end()
 
@@ -110,12 +108,11 @@ class CalendarEntryAttrs(Component):
     def duration(self) -> Optional[timedelta]:
         """Get or set the duration of the event.
 
-        |  Will return a timedelta object.
-        |  May be set to anything that timedelta() understands.
-        |  May be set with a dict ({"days":2, "hours":6}).
-        |  If set to a non null value, removes any already
-            existing end time.
-        |  Duration of an all-day event is rounded up to a full day.
+        Will return a timedelta object.
+        May be set to anything that timedelta() understands.
+        May be set with a dict ({"days":2, "hours":6}).
+        If set to a non null value, removes any already existing end time.
+        Duration of an all-day event is rounded up to a full day.
         """
         return self.timespan.get_effective_duration()
 
@@ -141,14 +138,14 @@ class CalendarEntryAttrs(Component):
     def make_all_day(self):
         """Transforms self to an all-day event or a time-based event.
 
-        |  The event will span all the days from the begin to *and including*
-            the end day.  For example, assume begin = 2018-01-01 10:37,
-            end = 2018-01-02 14:44.  After make_all_day, begin = 2018-01-01
-            [00:00], end = 2018-01-03 [00:00], and duration = 2 days.
-        |  If duration is used instead of the end time, it is rounded up to an
-            even day.  2 days remains 2 days, but 2 days and one second becomes 3 days.
-        |  If neither duration not end are set, a duration of one day is implied.
-        |  If self is already all-day, it is unchanged.
+        The event will span all the days from the begin to *and including*
+         the end day.  For example, assume begin = 2018-01-01 10:37,
+         end = 2018-01-02 14:44.  After make_all_day, begin = 2018-01-01
+         [00:00], end = 2018-01-03 [00:00], and duration = 2 days.
+        If duration is used instead of the end time, it is rounded up to an
+         even day.  2 days remains 2 days, but 2 days and one second becomes 3 days.
+        If neither duration not end are set, a duration of one day is implied.
+        If self is already all-day, it is unchanged.
         """
         self.timespan = self.timespan.make_all_day()
 
@@ -175,6 +172,14 @@ class CalendarEntryAttrs(Component):
     ####################################################################################################################
 
     def cmp_tuple(self) -> Tuple[datetime, datetime, str]:
+        """Private helper method used for operator overloading.
+
+        Returns a tuple with begin, end and summary of self.
+
+        Implementation and usage details:
+            https://github.com/ics-py/ics-py/blob/main/doc/event-cmp.rst#ordering
+            https://icspy.readthedocs.io/en/main/event-cmp.html
+        """
         return (*self.timespan.cmp_tuple(), self.summary or "")
 
     def __lt__(self, other: Any) -> bool:

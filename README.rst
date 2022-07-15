@@ -27,7 +27,7 @@ iCalendar (file extension `.ics`) is used by Google Calendar,
 Apple Calendar, Android and many more.
 
 
-Ics.py is available for Python 3.7, 3.8, 3.9 and 3.10 and is Apache2 Licensed.
+Ics.py is available for Python 3.7, 3.8, 3.9, 3.10, 3.11 and is Apache2 Licensed.
 
 
 
@@ -38,21 +38,21 @@ Quickstart
 
     $ pip install ics
 
-
-
 .. code-block:: python
 
-    from ics import Calendar, Event
-    c = Calendar()
-    e = Event()
-    e.name = "My cool event"
-    e.begin = '2014-01-01 00:00:00'
-    c.events.add(e)
-    c.events
-    # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
-    with open('my.ics', 'w') as my_file:
-        my_file.writelines(c)
-    # and it's done !
+ from datetime import datetime
+ from ics import Calendar, Event
+ c = Calendar()
+ e = Event()
+ e.summary = "My cool event"
+ e.description = "A meaningful description"
+ e.begin = datetime.fromisoformat('2022-06-06T12:05:23+02:00')
+ e.end = datetime.fromisoformat('2022-06-06T13:05:23+02:00')
+ c.events.append(e)
+ c
+ # Calendar(extra=Container('VCALENDAR', []), extra_params={}, version='2.0', prodid='ics.py 0.8.0-dev - http://git.io/lLljaA', scale=None, method=None, events=[Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), end_time=None, duration=None, precision='second'), summary=None, uid='ed7975c7-01f1-42eb-bfc4-435afd76b33d@ed79.org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2022, 6, 6, 19, 28, 14, 575558, tzinfo=Timezone.from_tzid('UTC')), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])], todos=[])
+ with open('my.ics', 'w') as f:
+  f.write(c.serialize())
 
 More examples are available in the
 `documentation <http://icspy.readthedocs.org/>`_.
