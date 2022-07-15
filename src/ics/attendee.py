@@ -59,6 +59,8 @@ class PersonAttrs(object):
 
 
 class Person(PersonAttrs):
+    """Abstract class for Attendee and Organizer."""
+
     NAME = "ABSTRACT-PERSON"
 
     def __init__(self, email, extra=None, **kwargs):
@@ -76,24 +78,35 @@ class Person(PersonAttrs):
 
 
 class Organizer(Person):
+    """Organizer of an event or todo."""
+
     NAME = "ORGANIZER"
 
 
 class Attendee(Person):
+    """Attendee of an event or todo.
+
+    Possible values according to iCalendar standard, first value is default:
+        user_type = INDIVIDUAL | GROUP | RESOURCE | ROOM | UNKNOWN
+        member = Person
+        role = REQ-PARTICIPANT | CHAIR | OPT-PARTICIPANT | NON-PARTICIPANT
+        rsvp = False | True
+        delegated_to = Person
+        delegated_from = Person
+
+        Depending on the Component, different status are possible.
+        Event:
+        status = NEEDS-ACTION | ACCEPTED | DECLINED | TENTATIVE | DELEGATED
+        Todo:
+        status = NEEDS-ACTION | ACCEPTED | DECLINED | TENTATIVE | DELEGATED | COMPLETED | IN-PROCESS
+    """
+
     NAME = "ATTENDEE"
 
     user_type = PersonProperty[str]("CUTYPE", default="INDIVIDUAL")
-    """Calendar User Type: INDIVIDUAL, GROUP, RESOURCE, ROOM, UNKNOWN, ..."""
     member = PersonMultiProperty("MEMBER", converter=URIConverter)
-    """group or list membership"""
     role = PersonProperty[str]("ROLE", default="REQ-PARTICIPANT")
-    """Role: CHAIR, REQ-PARTICIPANT, OPT-PARTICIPANT, NON-PARTICIPANT"""
     status = PersonProperty[str]("PARTSTAT", default="NEEDS-ACTION")
-    """Participation Status, possible values differ:
-      Event, ToDo, Journal: NEEDS-ACTION, ACCEPTED, DECLINED
-      Event, ToDo:          TENTATIVE, DELEGATED
-             ToDo:          COMPLETED, IN-PROCESS"""
     rsvp = PersonProperty("RSVP", converter=BooleanConverter, default=False)
-    """expectation of a favor of a reply?"""
     delegated_to = PersonMultiProperty("DELEGATED-TO", converter=URIConverter)
     delegated_from = PersonMultiProperty("DELEGATED-FROM", converter=URIConverter)
