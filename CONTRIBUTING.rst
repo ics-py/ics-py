@@ -42,47 +42,53 @@ be solved.
 Setting up the Development Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* Clone latest development release
+
+.. code-block:: bash
+
+   git clone git@github.com:ics-py/ics-py.git
+
 * Install `Hatch <https://hatch.pypa.io/latest/>`_
 
 .. code-block:: bash
 
-    $ pip install hatch
+   pip install hatch
 
 * Open shell
 
 .. code-block:: bash
 
-    $ hatch shell
+   hatch shell
 
 * Run python
 
 .. code-block:: bash
 
-    $ hatch run python
+   hatch run python
 
 * Lint, run the testsuite or build the documentation
 
 .. code-block:: bash
 
-    $ hatch run tox
+   hatch run tox
 
 * List available einvironments
 
 .. code-block:: bash
 
-    $ hatch run tox -av
+   hatch run tox -av
 
 * Run a single environment
 
 .. code-block:: bash
 
-    $ hatch run tox -e docs
+   hatch run tox -e docs
 
 * Build
 
 .. code-block:: bash
 
-    $ hatch build
+   hatch build
 
 Fixing a bug
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -110,7 +116,7 @@ Working on the documentation
 
 .. code-block:: bash
 
-    $ hatch run tox -e docs
+   hatch run tox -e docs
 
 * View the pages at ``.tox/docs_out/index.html``
 
@@ -135,16 +141,15 @@ How to make a new release
 * Prepare environment
 
 .. code-block:: bash
-
-    git clone https://github.com/ics-py/ics-py.git
-    cd ics-py
-    pip install hatch
+   git clone https://github.com/ics-py/ics-py.git
+   cd ics-py
+   pip install hatch
 
 * Run tests
 
 .. code-block:: bash
 
-    hatch run tox && echo "Ready to make a new release" || echo "Please fix all the tests first"
+   hatch run tox && echo "Ready to make a new release" || echo "Please fix all the tests first"
 
 * Set tag with v*
 
@@ -156,32 +161,32 @@ How to make a new release
 
 .. code-block:: bash
 
-    hatch build
+   hatch build
 
 * Check changelog and amend if necessary
 
 .. code-block:: bash
 
-    vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
+   vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
 
 * Publish
 
 .. code-block:: bash
 
-    git push && git push --tags
-    hatch publish
+   git push && git push --tags
+   hatch publish
 
 * Start new changelog
 
 .. code-block:: bash
 
-    vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
+   vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
 
 * Publish
 
 .. code-block:: bash
 
-    git push
+   git push
 
 * Check GitHub and PyPi release pages for obvious errors
 * Build documentation for the tag v{version} on rtfd.org
