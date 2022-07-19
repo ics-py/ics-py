@@ -52,7 +52,7 @@ Setting up the Development Environment
 
 .. code-block:: bash
 
-   pip install hatch
+   pip install hatch tox
 
 * Open shell
 
