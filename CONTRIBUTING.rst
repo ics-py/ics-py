@@ -155,7 +155,7 @@ How to make a new release
 
 .. code-block:: bash
 
-   git tag -a v8.0 -m "new release"
+   git tag -a v8.0 -m "Version 0.8"
 
 * Build the package
 
