@@ -174,7 +174,6 @@ How to make a new release
 .. code-block:: bash
 
    git push && git push --tags
-   hatch publish
 
 * Start new changelog
 
