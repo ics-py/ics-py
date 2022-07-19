@@ -157,17 +157,17 @@ How to make a new release
 
    git tag -a v0.8 -m "Version 0.8"
 
+* Finalize changelog for current release
+
+.. code-block:: bash
+
+   vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
+
 * Build the package
 
 .. code-block:: bash
 
    hatch build
-
-* Check changelog and amend if necessary
-
-.. code-block:: bash
-
-   vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
 
 * Publish
 
