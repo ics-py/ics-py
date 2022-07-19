@@ -138,12 +138,7 @@ Last thing
 How to make a new release
 -------------------------
 
-* Prepare environment
-
-.. code-block:: bash
-   git clone https://github.com/ics-py/ics-py.git
-   cd ics-py
-   pip install hatch
+* `Prepare environment <#setting-up-the-development-environment>`_
 
 * Run tests
 
