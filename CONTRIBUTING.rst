@@ -189,5 +189,9 @@ How to make a new release
    git push
 
 * Check GitHub and PyPi release pages for obvious errors
+ * https://github.com/ics-py/ics-py/releases
+ * https://pypi.org/project/ics/
+
 * Build documentation for the tag v{version} on rtfd.org
+
 * Set the default rtfd version to {version}
