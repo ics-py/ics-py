@@ -182,7 +182,7 @@ How to make a new release
 
    vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
 
-* Publish
+* Push
 
 .. code-block:: bash
 
