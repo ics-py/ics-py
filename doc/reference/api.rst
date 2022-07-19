@@ -42,9 +42,15 @@ Alarms
     :members:
     :special-members:
 
+Attendee
+--------
+
+.. autoclass:: ics.Attendee
+    :members:
+    :special-members:
+
 Timeline
 ---------
-
 
 .. autoclass:: ics.timeline.Timeline
     :members:
