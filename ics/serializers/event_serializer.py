@@ -101,7 +101,7 @@ class EventSerializer(Serializer):
 
     def serialize_alarm(event, container):
         for alarm in event.alarms:
-            container.append(str(alarm))
+            container.append(alarm.serialize())
 
     def serialize_status(event, container):
         if event.status:
