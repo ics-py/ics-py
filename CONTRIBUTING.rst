@@ -42,72 +42,53 @@ be solved.
 Setting up the Development Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-There are three Python tools required to develop, test, and release ics.py:
-
-* `poetry <https://python-poetry.org/>`_ for managing virtualenvs, dependencies,  building, and publishing the package.
-* `tox <https://tox.readthedocs.io/>`_ for running the testsuite and building the documentation.
-* `bump2version <https://pypi.org/project/bump2version/>`_ to help with making a release.
-
-Their respective configuration files are :file:`pyproject.toml`, :file:`tox.ini` and :file:`.bumpversion.cfg`.
-Install the tools via pip:
+* Clone latest development release
 
 .. code-block:: bash
 
-    $ pip install tox poetry bump2version --user
+   git clone git@github.com:ics-py/ics-py.git
 
-.. note::
-    If you want to develop using multiple different Python versions, you might want to consider the
-    `poetry installer <https://python-poetry.org/docs/#installation>`_.
-
-    Poetry will automatically manage a virtualenv that you can use for developing.
-    By default, it will be located centrally in your home directory (e.g. in :file:`/home/user/.cache/pypoetry/virtualenvs/`).
-    To make poetry use a :file:`./.venv/` directory within the ics.py folder, use the following config:
-
-    .. code-block:: bash
-
-        $ poetry config virtualenvs.in-project true
-
-Now you are ready to setup your development environment using the following command:
+* Install `Hatch <https://hatch.pypa.io/latest/>`_
 
 .. code-block:: bash
 
-    $ poetry install
+   pip install hatch tox
 
-This will create a new virtualenv and install the dependencies for using ics.py.
-Furthermore, the current source of the ics.py package will be available similar to running :command:`./setup.py develop`.
-To access the virtualenv, use :command:`poetry run python` or :command:`poetry shell`.
-The :file:`poetry.lock` file locks the versions of dependencies in the development environment set up by poetry. This ensures that such an environment is the same for everyone.
-The file :file:`poetry.lock` is only read by poetry and not included in any distributions. These restrictions don't apply when running :command:`pip install ics`.
-As tox manages its own environments and doesn't read the lock file, it installs the latest versions of dependencies for testing.
-More details on the poetry side can be found in the `poetry documentation <https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control>`_.
-
-If you made some changes and now want to lint your code, run the testsuite, or build the documentation, run tox.
-You don't have to worry about which versions in which venvs are installed and whether you're directly testing against the sources or against a built package, tox handles all that for you:
+* Open shell
 
 .. code-block:: bash
 
-    $ tox
+   hatch shell
 
-To run a single task and not the whole testsuite, use the ``-e`` flag:
+* Run python
 
 .. code-block:: bash
 
-    $ tox -e docs
+   hatch run python
 
-To get a list of all available tasks, run :command:`tox -av`.
+* Lint, run the testsuite or build the documentation
 
-.. note::
-    If you want to run any tasks of tox manually, make sure you have all the dependencies of the task listed in :file:`tox.ini`.
-    For testing with pytest, this can be done through poetry by installing the ``test`` extra: :command:`poetry install -E test`.
-    Alternatively, you can also let tox `set up <https://tox.readthedocs.io/en/latest/example/devenv.html#creating-development-environments-using-the-devenv-option>`_ your development environment or re-use one of its test environments:
+.. code-block:: bash
 
-    .. code-block:: bash
+   hatch run tox
 
-        $ tox -e py38
-        $ source .tox/py38/bin/activate
-        (py38) $ pytest
+* List available einvironments
 
-    This also works without having poetry installed.
+.. code-block:: bash
+
+   hatch run tox -av
+
+* Run a single environment
+
+.. code-block:: bash
+
+   hatch run tox -e docs
+
+* Build
+
+.. code-block:: bash
+
+   hatch build
 
 Fixing a bug
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -131,11 +112,13 @@ We will ask you to provide:
 Working on the documentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Ensure correct rendering by generating the HTML pages locally with
+* Run tox for the docs environment
 
-:command:`$ tox -e docs`
+.. code-block:: bash
 
-View the pages at ``.tox/docs_out/index.html``
+   hatch run tox -e docs
+
+* View the pages at ``.tox/docs_out/index.html``
 
 Last thing
 ^^^^^^^^^^
@@ -155,43 +138,54 @@ Last thing
 How to make a new release
 -------------------------
 
-If you want to publish a new release, use the following steps
+* `Prepare environment <#setting-up-the-development-environment>`_
+
+* Run tests
 
 .. code-block:: bash
 
-    # Grab the sources and install the dev tools
-    git clone https://github.com/ics-py/ics-py.git && cd ics-py
-    pip install tox poetry bump2version --user
+   hatch run tox && echo "Ready to make a new release" || echo "Please fix all the tests first"
 
-    # Make sure all the test run
-    tox && echo "Ready to make a new release" \
-        || echo "Please fix all the tests first"
+* Set tag with v*
 
-    # Bump the version and make a "0.8.0-dev -> 0.8.0 (release)" commit
-    bump2version --verbose release
-    # Build the package
-    poetry build
-    # Ensure that the version numbers are consistent
-    tox --recreate
-    # Check changelog and amend if necessary
-    vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
-    # Publish to GitHub
-    git push && git push --tags
-    # Publish to PyPi
-    poetry publish
+.. code-block:: bash
 
-    # Bump the version again to start development of next version
-    bump2version --verbose minor # 0.8.0 (release) -> 0.9.0-dev
-    # Start new changelog
-    vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
-    # Publish to GitHub
-    git push && git push --tags
+   git tag -a v0.8 -m "Version 0.8"
 
-Please note that bump2version directly makes a commit with the new version if you don't
-pass ``--no-commit`` or ``--dry-run``,
-but that's no problem as you can easily amend any changes you want to make.
-Further things to check:
+* Finalize changelog for current release
+
+.. code-block:: bash
+
+   vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
+
+* Build the package
+
+.. code-block:: bash
+
+   hatch build
+
+* Publish
+
+.. code-block:: bash
+
+   hatch publish
+
+* Start new changelog
+
+.. code-block:: bash
+
+   vi CHANGELOG.rst && git commit -i CHANGELOG.rst --amend
+
+* Push
+
+.. code-block:: bash
+
+   git push
 
 * Check GitHub and PyPi release pages for obvious errors
+ * https://github.com/ics-py/ics-py/releases
+ * https://pypi.org/project/ics/
+
 * Build documentation for the tag v{version} on rtfd.org
+
 * Set the default rtfd version to {version}
