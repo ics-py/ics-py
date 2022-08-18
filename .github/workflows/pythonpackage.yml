@@ -1,14 +1,15 @@
-name: Test
+name: ⚙️
 
 on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
   pull_request:
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     strategy:
@@ -27,7 +28,7 @@ jobs:
           experimental: true
           experimental-format: (🧪)
 
-    name: Python ${{ matrix.python-version }} ${{ matrix.experimental-format }}
+    name: Test with Python ${{ matrix.python-version }} ${{ matrix.experimental-format }}
 
     steps:
     - uses: actions/checkout@master
@@ -43,3 +44,36 @@ jobs:
       run:
         rm -rf ./.mypy_cache/;
         bash <(curl https://codecov.io/bash)
+  build:
+    needs: [test]
+
+    name: Build package
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install build dependencies
+      run: pip install build
+
+    - name: Build the package
+      run: python -m build
+
+  publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    needs: [build]
+
+    name: Publish package to PyPI
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Publish package 📦 to PyPI 🎉 (POC, using dev pypi for now)
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository_url: https://test.pypi.org/legacy/
