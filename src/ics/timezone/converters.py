@@ -41,10 +41,10 @@ def Timezone_from_tzid(tzid: str) -> Timezone:
         if olson_tzid:
             tz_ics = ics_vtimezones.find_vtimezone_ics_file(olson_tzid)
     if not tz_ics:
-        raise ValueError("no vTimezone.ics file found for %s" % tzid)
+        raise ValueError(f"no vTimezone.ics file found for {tzid}")
     ics_cal = one(string_to_containers(tz_ics.read_text()))
     if not (len(ics_cal) == 3 and ics_cal[2].name == "VTIMEZONE"):
-        raise ValueError("vTimezone.ics file %s has invalid content" % tz_ics)
+        raise ValueError(f"vTimezone.ics file {tz_ics} has invalid content")
     return Timezone.from_container(ics_cal[2])
 
 
@@ -87,9 +87,7 @@ def Timezone_from_tzinfo(
             return tz
 
     raise ValueError(
-        "can't produce Timezone from {} {!r} ({})".format(
-            type(tzinfo).__qualname__, tzinfo, tz
-        )
+        f"can't produce Timezone from {type(tzinfo).__qualname__} {tzinfo!r} ({tz})"
     )
 
 

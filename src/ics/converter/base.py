@@ -279,7 +279,7 @@ def unwrap_type(
 
     elif issubclass(generic_origin, MutableSequence):
         if len(generic_vars) > 1:
-            warnings.warn("using first parameter for List type %s" % attr_type)
+            warnings.warn(f"using first parameter for List type {attr_type}")
         res = unwrap_type(generic_vars[0])
         assert res[0] is None
         return generic_origin, res[1], res[2]

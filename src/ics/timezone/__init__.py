@@ -178,11 +178,9 @@ class Timezone(Component, _tzinfo):
 
     def __repr__(self):
         if self.is_builtin:
-            return "Timezone.from_tzid(%r)" % self.tzid
+            return f"Timezone.from_tzid({self.tzid!r})"
         else:
-            return "Timezone({!r}, observances={!r})".format(
-                self.tzid, self.observances
-            )
+            return f"Timezone({self.tzid!r}, observances={self.observances!r})"
 
     def _find_observance(self, dt):
         if len(self.observances) < 2:

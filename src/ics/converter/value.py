@@ -94,7 +94,7 @@ class AttributeValueConverter(AttributeConverter):
         value_type = params.pop("VALUE", None)
         if value_type:
             if len(value_type) != 1:
-                raise ValueError("multiple VALUE type definitions in %s" % line)
+                raise ValueError(f"multiple VALUE type definitions in {line}")
             for converter in self.value_converters:
                 if converter.ics_type == value_type[0]:
                     break
@@ -106,9 +106,7 @@ class AttributeValueConverter(AttributeConverter):
 
     def post_populate(self, component: Component, context: ContextDict):
         if self.is_required and not context[(self, "current_value_count")]:
-            raise ValueError(
-                "attribute %s is required but got no value" % self.ics_name
-            )
+            raise ValueError(f"attribute {self.ics_name} is required but got no value")
         context[(self, "current_component")] = None
         context[(self, "current_value_count")] = 0
 

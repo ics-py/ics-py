@@ -53,7 +53,7 @@ class ParseError(Exception):
     def __str__(self):
         strs = ["Line"]
         if self.line_nr != -1:
-            strs.append(" %s" % self.line_nr)
+            strs.append(f" {self.line_nr}")
             if self.col != -1:
                 if isinstance(self.col, int):
                     strs.append(f":{self.col}")
@@ -101,7 +101,7 @@ def unescape_param(string: str) -> str:
             return '"'
         elif len(g) == 0:
             raise ParseError(
-                "parameter value '%s' may not end with an escape sequence" % string
+                f"parameter value '{string}' may not end with an escape sequence"
             )
         else:
             raise ParseError(
@@ -183,7 +183,7 @@ class ContentLine(RuntimeAttrValidation):
                     # TODO The DQUOTE character is used as a delimiter for parameter values that contain
                     #  restricted characters or URI text.
                     # TODO Property parameter values that are not in quoted-strings are case-insensitive.
-                    yield '"%s"' % escape_param(pval)
+                    yield f'"{escape_param(pval)}"'
                 else:
                     yield escape_param(pval)
         yield ":"
@@ -202,9 +202,7 @@ class ContentLine(RuntimeAttrValidation):
         return attr.evolve(self, params=copy_extra_params(self.params))
 
     def __str__(self):
-        return "{}{}='{}'".format(
-            self.name, self.params or "", limit_str_length(self.value)
-        )
+        return f"{self.name}{self.params or ''}='{limit_str_length(self.value)}'"
 
 
 def _wrap_list_func(list_func):
@@ -234,7 +232,7 @@ class Container(MutableSequence[ContainerItem]):
     )
 
     def __str__(self):
-        return "{}[{}]".format(self.name, ", ".join(str(cl) for cl in self.data))
+        return f"{self.name}[{', '.join(str(cl) for cl in self.data)}]"
 
     def __repr__(self):
         return f"{type(self).__name__}({self.name!r}, {repr(self.data)})"
@@ -275,7 +273,7 @@ class Container(MutableSequence[ContainerItem]):
             check_is_instance("item", items[0], (ContentLine, Container))
         else:
             for nr, item in enumerate(items):
-                check_is_instance("item %s" % nr, item, (ContentLine, Container))
+                check_is_instance(f"item {nr}", item, (ContentLine, Container))
 
     def insert(self, index, value):
         self.check_items(value)
