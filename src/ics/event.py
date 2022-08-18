@@ -1,29 +1,47 @@
 from contextlib import contextmanager
 from contextvars import ContextVar
 from datetime import datetime, timedelta
-from typing import Any, List, Optional, Tuple, Union, ClassVar, Type
+from typing import Any, ClassVar, List, Optional, Tuple, Type, Union
 
 import attr
 from attr.converters import optional as c_optional
-from attr.validators import in_, instance_of, optional as v_optional
+from attr.validators import in_, instance_of
+from attr.validators import optional as v_optional
 
 from ics.alarm import BaseAlarm
 from ics.attendee import Attendee, Organizer
 from ics.component import Component
 from ics.geo import Geo, make_geo
 from ics.timespan import EventTimespan, Timespan
-from ics.timezone import ensure_utc, now_in_utc, UTC
-from ics.types import DatetimeLike, EventOrTimespan, EventOrTimespanOrInstant, TimedeltaLike, URL, \
-    get_timespan_if_calendar_entry
-from ics.utils import check_is_instance, ensure_datetime, ensure_timedelta, uid_gen, validate_not_none
+from ics.timezone import UTC, ensure_utc, now_in_utc
+from ics.types import (
+    URL,
+    DatetimeLike,
+    EventOrTimespan,
+    EventOrTimespanOrInstant,
+    TimedeltaLike,
+    get_timespan_if_calendar_entry,
+)
+from ics.utils import (
+    check_is_instance,
+    ensure_datetime,
+    ensure_timedelta,
+    uid_gen,
+    validate_not_none,
+)
 
-STATUS_VALUES = (None, 'TENTATIVE', 'CONFIRMED', 'CANCELLED')
-default_uid_factory = ContextVar('ics.event.default_uid_factory', default=uid_gen)
-default_dtstamp_factory = ContextVar('ics.event.default_dtstamp_factory', default=now_in_utc)
+STATUS_VALUES = (None, "TENTATIVE", "CONFIRMED", "CANCELLED")
+default_uid_factory = ContextVar("ics.event.default_uid_factory", default=uid_gen)
+default_dtstamp_factory = ContextVar(
+    "ics.event.default_dtstamp_factory", default=now_in_utc
+)
 
 
 @contextmanager
-def deterministic_event_data(uid="deterministic_uid@example.org", dtstamp=datetime(2000, 1, 1, 12, 0, 0, tzinfo=UTC)):
+def deterministic_event_data(
+    uid="deterministic_uid@example.org",
+    dtstamp=datetime(2000, 1, 1, 12, 0, 0, tzinfo=UTC),
+):
     uid_token = default_uid_factory.set(lambda: uid)
     dtstamp_token = default_dtstamp_factory.set(lambda: dtstamp)
     try:
@@ -59,7 +77,7 @@ class CalendarEntryAttrs(Component):
         for cmp in ("__lt__", "__gt__", "__le__", "__ge__"):
             child_cmp, parent_cmp = getattr(cls, cmp), getattr(CalendarEntryAttrs, cmp)
             if child_cmp != parent_cmp:
-                raise TypeError("%s may not overwrite %s" % (child_cmp, parent_cmp))
+                raise TypeError(f"{child_cmp} may not overwrite {parent_cmp}")
 
     @timespan.validator
     def validate_timespan(self, attr, value):
@@ -102,7 +120,9 @@ class CalendarEntryAttrs(Component):
 
     @end.setter
     def end(self, value: DatetimeLike):
-        self.timespan = self.timespan.replace(end_time=ensure_datetime(value), duration=None)
+        self.timespan = self.timespan.replace(
+            end_time=ensure_datetime(value), duration=None
+        )
 
     @property
     def duration(self) -> Optional[timedelta]:
@@ -118,7 +138,9 @@ class CalendarEntryAttrs(Component):
 
     @duration.setter
     def duration(self, value: timedelta):
-        self.timespan = self.timespan.replace(duration=ensure_timedelta(value), end_time=None)
+        self.timespan = self.timespan.replace(
+            duration=ensure_timedelta(value), end_time=None
+        )
 
     def convert_end(self, representation):
         self.timespan = self.timespan.convert_end(representation)
@@ -228,17 +250,23 @@ class CalendarEntryAttrs(Component):
 
 @attr.s(eq=True, order=False)  # order methods are provided by CalendarEntryAttrs
 class EventAttrs(CalendarEntryAttrs):
-    classification: Optional[str] = attr.ib(default=None, validator=v_optional(instance_of(str)))
+    classification: Optional[str] = attr.ib(
+        default=None, validator=v_optional(instance_of(str))
+    )
 
     transparent: Optional[bool] = attr.ib(default=None)
-    organizer: Optional[Organizer] = attr.ib(default=None, validator=v_optional(instance_of(Organizer)))
+    organizer: Optional[Organizer] = attr.ib(
+        default=None, validator=v_optional(instance_of(Organizer))
+    )
     geo: Optional[Geo] = attr.ib(default=None, converter=make_geo)
 
-    attendees: List[Attendee] = attr.ib(factory=list, converter=list, metadata={"ics_name": "ATTENDEE"})
+    attendees: List[Attendee] = attr.ib(
+        factory=list, converter=list, metadata={"ics_name": "ATTENDEE"}
+    )
     categories: List[str] = attr.ib(factory=list, converter=list)
 
     def add_attendee(self, attendee: Attendee):
-        """ Add an attendee to the attendees set """
+        """Add an attendee to the attendees set"""
         check_is_instance("attendee", attendee, Attendee)
         self.attendees.append(attendee)
 
@@ -259,12 +287,13 @@ class Event(EventAttrs):
     _TIMESPAN_TYPE: ClassVar[Type[Timespan]] = EventTimespan
 
     def __init__(
-            self,
-            summary: str = None,
-            begin: DatetimeLike = None,
-            end: DatetimeLike = None,
-            duration: TimedeltaLike = None,
-            *args, **kwargs
+        self,
+        summary: str = None,
+        begin: DatetimeLike = None,
+        end: DatetimeLike = None,
+        duration: TimedeltaLike = None,
+        *args,
+        **kwargs,
     ):
         """Initializes a new :class:`ics.event.Event`.
 
@@ -273,7 +302,16 @@ class Event(EventAttrs):
              are specified at the same time,
              or if validation of the timespan fails (see :method:`ics.timespan.Timespan.validate`).
         """
-        if (begin is not None or end is not None or duration is not None) and "timespan" in kwargs:
-            raise ValueError("can't specify explicit timespan together with any of begin, end or duration")
-        kwargs.setdefault("timespan", EventTimespan(ensure_datetime(begin), ensure_datetime(end), ensure_timedelta(duration)))
-        super(Event, self).__init__(kwargs.pop("timespan"), summary, *args, **kwargs)
+        if (
+            begin is not None or end is not None or duration is not None
+        ) and "timespan" in kwargs:
+            raise ValueError(
+                "can't specify explicit timespan together with any of begin, end or duration"
+            )
+        kwargs.setdefault(
+            "timespan",
+            EventTimespan(
+                ensure_datetime(begin), ensure_datetime(end), ensure_timedelta(duration)
+            ),
+        )
+        super().__init__(kwargs.pop("timespan"), summary, *args, **kwargs)

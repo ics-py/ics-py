@@ -1,18 +1,17 @@
 import abc
-from typing import Type, Generic, TypeVar, Union, cast
+from typing import Generic, Type, TypeVar, Union, cast
 from urllib.parse import urlparse
 
 from ics import Attendee, Organizer
 from ics.attendee import Person
 from ics.geo import Geo
-from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, URL
+from ics.types import URL, ContextDict, EmptyContext, EmptyParams, ExtraParams
 from ics.valuetype.base import ValueConverter
 
 __all__ = ["GeoConverter"]
 
 
 class GeoConverterClass(ValueConverter[Geo]):
-
     @property
     def ics_type(self) -> str:
         return "X-GEO"
@@ -21,29 +20,48 @@ class GeoConverterClass(ValueConverter[Geo]):
     def python_type(self) -> Type[Geo]:
         return Geo
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> Geo:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> Geo:
         latitude, sep, longitude = value.partition(";")
         if not sep:
             raise ValueError("geo must have two float values")
         return Geo(float(latitude), float(longitude))
 
-    def serialize(self, value: Geo, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: Geo,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         return "%f;%f" % value
 
 
 GeoConverter = GeoConverterClass()
 
-P = TypeVar('P', bound=Person)
+P = TypeVar("P", bound=Person)
 
 
 class PersonConverter(Generic[P], ValueConverter[P], abc.ABC):
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> P:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> P:
         val = self.python_type(email=urlparse(value), extra=dict(params))
         params.clear()
         return val
 
-    def serialize(self, value: Union[P, str], params: ExtraParams = EmptyParams,
-                  context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: Union[P, str],
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         if isinstance(value, Person):
             params.update(value.extra)
             value = value.email

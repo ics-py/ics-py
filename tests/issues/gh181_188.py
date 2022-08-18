@@ -53,7 +53,9 @@ fixture1 = [
     *fmt(vevent, tzid="Europe/Berlin"),
     "END:VCALENDAR",
 ]
-fixture2_tz = fmt(vtimezone, tzid="W. Europe Standard Time", offbig="+0200", offsmall="+0100")
+fixture2_tz = fmt(
+    vtimezone, tzid="W. Europe Standard Time", offbig="+0200", offsmall="+0100"
+)
 fixture2 = [
     "BEGIN:VCALENDAR",
     "PRODID:Tom",
@@ -101,9 +103,20 @@ def test_issue_181_timezone_ignored():
 
 
 def test_issue_188_timezone_dropped():
-    assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid=Timezone.from_tzid("Europe/Berlin").tzid) in Calendar(fixture1).serialize()
-    assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid="W. Europe Standard Time") in Calendar(fixture2).serialize()
-    assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid="Europe/Berlin") in Calendar(fixture3).serialize()
+    assert (
+        "DTSTART;TZID={tzid}:20200121T070000".format(
+            tzid=Timezone.from_tzid("Europe/Berlin").tzid
+        )
+        in Calendar(fixture1).serialize()
+    )
+    assert (
+        "DTSTART;TZID={tzid}:20200121T070000".format(tzid="W. Europe Standard Time")
+        in Calendar(fixture2).serialize()
+    )
+    assert (
+        "DTSTART;TZID={tzid}:20200121T070000".format(tzid="Europe/Berlin")
+        in Calendar(fixture3).serialize()
+    )
 
     pacific = Timezone.from_tzid("US/Pacific")
     assert pacific.tzid.endswith("America/Los_Angeles")

@@ -15,21 +15,21 @@ from .todo import Todo
 def initialize_converters():
     # order is very important here:
     # 1) all simple value type converters
-    import ics.valuetype.base
-    import ics.valuetype.generic
-    import ics.valuetype.text
-    import ics.valuetype.datetime
-    import ics.valuetype.special
-
     # 2) all relatively simple attribute converters and advanced component converters
     import ics.converter.base
-    import ics.converter.value
     import ics.converter.types.timespan
+    import ics.converter.types.timezone  # vTimezone is a Component
     import ics.converter.types.various
+    import ics.converter.value
+    import ics.valuetype.base
+    import ics.valuetype.datetime
+    import ics.valuetype.generic
+    import ics.valuetype.special
+    import ics.valuetype.text
 
     # 3) converters for all remaining component subclasses
     from ics.converter.component import ComponentMeta
-    import ics.converter.types.timezone  # vTimezone is a Component
+
     ComponentMeta.BY_TYPE[Event] = ComponentMeta(Event)
     ComponentMeta.BY_TYPE[Todo] = ComponentMeta(Todo)
 
@@ -42,15 +42,19 @@ def initialize_converters():
 
 def dump_converters():
     from pprint import pprint
+
     from ics.valuetype.base import ValueConverter
+
     print("ValueConverter.BY_TYPE:")
     pprint(ValueConverter.BY_TYPE)
     print("ValueConverter.BY_NAME:")
     pprint(ValueConverter.BY_NAME)
     from ics.converter.base import AttributeConverter
+
     print("AttributeConverter.BY_TYPE:")
     pprint(AttributeConverter.BY_TYPE)
     from ics.converter.component import ComponentMeta
+
     print("ComponentMeta.BY_TYPE:")
     pprint(ComponentMeta.BY_TYPE)
     print("Component.SUBTYPES:")

@@ -1,26 +1,43 @@
 import warnings
 from datetime import date, datetime, timedelta
-from typing import Any, Dict, Iterator, List, MutableMapping, NewType, Optional, TYPE_CHECKING, Tuple, Union, cast, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Iterator,
+    List,
+    MutableMapping,
+    NewType,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+    overload,
+)
 from urllib.parse import ParseResult
 
 import attr
 
 if TYPE_CHECKING:
     # noinspection PyUnresolvedReferences
-    from ics.event import Event, CalendarEntryAttrs
     # noinspection PyUnresolvedReferences
-    from ics.todo import Todo
+    from ics.contentline import Container, ContentLine
+    from ics.event import CalendarEntryAttrs, Event
+
     # noinspection PyUnresolvedReferences
     from ics.timespan import Timespan
+
     # noinspection PyUnresolvedReferences
-    from ics.contentline import ContentLine, Container
+    from ics.todo import Todo
 
 __all__ = [
-    "ContainerItem", "ContainerList", "URL",
-
-    "DatetimeLike", "OptionalDatetimeLike",
-    "TimedeltaLike", "OptionalTimedeltaLike",
-
+    "ContainerItem",
+    "ContainerList",
+    "URL",
+    "DatetimeLike",
+    "OptionalDatetimeLike",
+    "TimedeltaLike",
+    "OptionalTimedeltaLike",
     "TimespanOrBegin",
     "EventOrTimespan",
     "EventOrTimespanOrInstant",
@@ -28,12 +45,14 @@ __all__ = [
     "TodoOrTimespanOrInstant",
     "CalendarEntryOrTimespan",
     "CalendarEntryOrTimespanOrInstant",
-
     "get_timespan_if_calendar_entry",
-
     "RuntimeAttrValidation",
-
-    "EmptyDict", "ExtraParams", "EmptyParams", "ContextDict", "EmptyContext", "copy_extra_params",
+    "EmptyDict",
+    "ExtraParams",
+    "EmptyParams",
+    "ContextDict",
+    "EmptyContext",
+    "copy_extra_params",
 ]
 
 ContainerItem = Union["ContentLine", "Container"]
@@ -80,7 +99,9 @@ def get_timespan_if_calendar_entry(value: None) -> None:
 
 
 def get_timespan_if_calendar_entry(value):
-    from ics.event import CalendarEntryAttrs  # noqa: F811 # pyflakes considers this a redef of the unused if TYPE_CHECKING import above
+    from ics.event import (  # noqa: F811 # pyflakes considers this a redef of the unused if TYPE_CHECKING import above
+        CalendarEntryAttrs,
+    )
 
     if isinstance(value, CalendarEntryAttrs):
         return value.timespan
@@ -89,7 +110,7 @@ def get_timespan_if_calendar_entry(value):
 
 
 @attr.s
-class RuntimeAttrValidation(object):
+class RuntimeAttrValidation:
     """
     Mixin that automatically calls the converters and validators of `attr` attributes.
     The library itself only calls these in the generated `__init__` method, with
@@ -116,7 +137,7 @@ class RuntimeAttrValidation(object):
                     value = field.converter(value)
                 if field.validator is not None:
                     field.validator(self, field, value)
-        super(RuntimeAttrValidation, self).__setattr__(key, value)
+        super().__setattr__(key, value)
 
 
 class EmptyDictType(MutableMapping[Any, None]):
@@ -126,11 +147,11 @@ class EmptyDictType(MutableMapping[Any, None]):
         return None
 
     def __setitem__(self, k: Any, v: None) -> None:
-        warnings.warn("%s[%r] = %s ignored" % (self.__class__.__name__, k, v))
+        warnings.warn(f"{self.__class__.__name__}[{k!r}] = {v} ignored")
         return
 
     def __delitem__(self, v: Any) -> None:
-        warnings.warn("del %s[%r] ignored" % (self.__class__.__name__, v))
+        warnings.warn(f"del {self.__class__.__name__}[{v!r}] ignored")
         return
 
     def __len__(self) -> int:
@@ -157,5 +178,9 @@ def copy_extra_params(old: Optional[ExtraParams]) -> ExtraParams:
         elif isinstance(value, list):
             new[key] = list(value)
         else:
-            raise ValueError("can't convert extra param %s with value of type %s: %s" % (key, type(value), value))
+            raise ValueError(
+                "can't convert extra param {} with value of type {}: {}".format(
+                    key, type(value), value
+                )
+            )
     return new
