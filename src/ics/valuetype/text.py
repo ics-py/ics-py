@@ -18,10 +18,20 @@ class RawTextConverterClass(ValueConverter[str]):
     def python_type(self) -> Type[str]:
         return str
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         return value
 
-    def serialize(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         return value
 
 
@@ -29,7 +39,6 @@ RawTextConverter = RawTextConverterClass()
 
 
 class TextConverterClass(ValueConverter[str]):
-
     @property
     def ics_type(self) -> str:
         return "TEXT"
@@ -38,10 +47,20 @@ class TextConverterClass(ValueConverter[str]):
     def python_type(self) -> Type[str]:
         return str
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         return self.unescape_text(value)
 
-    def serialize(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         return self.escape_text(value)
 
     def split_value_list(self, values: str) -> Iterable[str]:
@@ -61,7 +80,7 @@ class TextConverterClass(ValueConverter[str]):
             for value in values:
                 m = re.search(r"\\[;,]|" + "[\n\r]", value)
                 if m:
-                    warnings.warn("TEXT value in list may not contain %s: %s" % (m, value))
+                    warnings.warn(f"TEXT value in list may not contain {m}: {value}")
                 yield value
 
         return ",".join(checked_iter())
@@ -69,11 +88,14 @@ class TextConverterClass(ValueConverter[str]):
     @classmethod
     def escape_text(cls, string: str) -> str:
         return string.translate(
-            {ord("\\"): "\\\\",
-             ord(";"): "\\;",
-             ord(","): "\\,",
-             ord("\n"): "\\n",
-             ord("\r"): "\\r"})
+            {
+                ord("\\"): "\\\\",
+                ord(";"): "\\;",
+                ord(","): "\\,",
+                ord("\n"): "\\n",
+                ord("\r"): "\\r",
+            }
+        )
 
     @classmethod
     def unescape_text(cls, string: str) -> str:
@@ -96,9 +118,9 @@ class TextConverterClass(ValueConverter[str]):
                 elif c2 == "\\":
                     yield "\\"
                 else:
-                    raise ValueError("can't handle escaped character '%s'" % c2)
+                    raise ValueError(f"can't handle escaped character '{c2}'")
             elif c1 in ";,\n\r":
-                raise ValueError("unescaped character '%s' in TEXT value" % c1)
+                raise ValueError(f"unescaped character '{c1}' in TEXT value")
             else:
                 yield c1
 

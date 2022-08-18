@@ -85,12 +85,12 @@ URLS = [
     "/media/caldata/USHolidays.ics",
     "/media/caldata/UkraineHolidays.ics",
     "/media/caldata/UruguayHolidays.ics",
-    "/media/caldata/VietnamHolidays.ics"
+    "/media/caldata/VietnamHolidays.ics",
 ]
 
 if __name__ == "__main__":
-    import sh
     import requests
+    import sh
 
     cal = ics.Calendar()
 
@@ -99,9 +99,9 @@ if __name__ == "__main__":
         cal.events.extend(ics.Calendar(requests.get(PREFIX + url).text).events)
 
     print(cal)
-    p = os.path.abspath('../../holidays.ics')
+    p = os.path.abspath("../../holidays.ics")
     print(p)
-    with open(p, 'w') as f:
+    with open(p, "w") as f:
         f.writelines(cal)
     print(sh.ls("-la", p))
     print(sh.wc("-l", p))

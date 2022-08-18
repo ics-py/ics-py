@@ -1,3 +1,6 @@
+"""
+   isort:skip_file
+"""
 from .alarm import *
 from .alarm import __all__ as all_alarms
 from .attendee import Attendee, Organizer
@@ -29,7 +32,10 @@ def initialize_converters():
 
     # 3) converters for all remaining component subclasses
     from ics.converter.component import ComponentMeta
-    import ics.converter.types.timezone  # vTimezone is a Component
+
+    # vTimezone is a Component
+    import ics.converter.types.timezone
+
     ComponentMeta.BY_TYPE[Event] = ComponentMeta(Event)
     ComponentMeta.BY_TYPE[Todo] = ComponentMeta(Todo)
 
@@ -42,15 +48,19 @@ def initialize_converters():
 
 def dump_converters():
     from pprint import pprint
+
     from ics.valuetype.base import ValueConverter
+
     print("ValueConverter.BY_TYPE:")
     pprint(ValueConverter.BY_TYPE)
     print("ValueConverter.BY_NAME:")
     pprint(ValueConverter.BY_NAME)
     from ics.converter.base import AttributeConverter
+
     print("AttributeConverter.BY_TYPE:")
     pprint(AttributeConverter.BY_TYPE)
     from ics.converter.component import ComponentMeta
+
     print("ComponentMeta.BY_TYPE:")
     pprint(ComponentMeta.BY_TYPE)
     print("Component.SUBTYPES:")

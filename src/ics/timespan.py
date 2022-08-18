@@ -1,24 +1,44 @@
 import warnings
-from datetime import datetime, timedelta, tzinfo as TZInfo
+from datetime import datetime, timedelta
+from datetime import tzinfo as TZInfo
 from enum import IntEnum
-from typing import Any, Callable, NamedTuple, Optional, TYPE_CHECKING, TypeVar, Union, cast, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    NamedTuple,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+    overload,
+)
 
 import attr
-from attr.validators import instance_of, optional as v_optional
+from attr.validators import instance_of
+from attr.validators import optional as v_optional
 from dateutil.tz import tzlocal
 
 from ics.types import DatetimeLike
-from ics.utils import TIMEDELTA_CACHE, TIMEDELTA_DAY, TIMEDELTA_ZERO, ceil_datetime_to_midnight, ensure_datetime, \
-    floor_datetime_to_midnight, timedelta_nearly_zero
+from ics.utils import (
+    TIMEDELTA_CACHE,
+    TIMEDELTA_DAY,
+    TIMEDELTA_ZERO,
+    ceil_datetime_to_midnight,
+    ensure_datetime,
+    floor_datetime_to_midnight,
+    timedelta_nearly_zero,
+)
 
 if TYPE_CHECKING:
     # Literal is new in python 3.8, but backported via typing_extensions
     # we don't need typing_extensions as actual (dev-)dependency as mypy has builtin support
     from typing_extensions import Literal
+
     # noinspection PyUnresolvedReferences
     from ics.event import CalendarEntryAttrs
 
-CalendarEntryT = TypeVar('CalendarEntryT', bound='CalendarEntryAttrs')
+CalendarEntryT = TypeVar("CalendarEntryT", bound="CalendarEntryAttrs")
 
 
 class NormalizationAction(IntEnum):
@@ -28,10 +48,14 @@ class NormalizationAction(IntEnum):
 
 
 @attr.s
-class Normalization(object):
+class Normalization:
     replacement: Union[TZInfo, Callable[[], TZInfo], None] = attr.ib()
-    normalize_floating: Union[NormalizationAction, bool] = attr.ib(NormalizationAction.CONVERT)
-    normalize_with_tz: Union[NormalizationAction, bool] = attr.ib(NormalizationAction.CONVERT)
+    normalize_floating: Union[NormalizationAction, bool] = attr.ib(
+        NormalizationAction.CONVERT
+    )
+    normalize_with_tz: Union[NormalizationAction, bool] = attr.ib(
+        NormalizationAction.CONVERT
+    )
 
     @overload
     def normalize(self, value: "Timespan") -> "Timespan":
@@ -63,8 +87,11 @@ class Normalization(object):
             floating = value.is_floating()
             replace_timezone = Timespan.replace_timezone
             convert_timezone = Timespan.convert_timezone
-        elif (hasattr(value, "is_floating") or hasattr(value, "floating")) \
-                and hasattr(value, "replace_timezone") and hasattr(value, "convert_timezone"):
+        elif (
+            (hasattr(value, "is_floating") or hasattr(value, "floating"))
+            and hasattr(value, "replace_timezone")
+            and hasattr(value, "convert_timezone")
+        ):
             if hasattr(value, "is_floating"):
                 floating = value.is_floating()
             else:
@@ -80,14 +107,22 @@ class Normalization(object):
 
         else:
             value = ensure_datetime(value)
-            floating = (value.tzinfo is None)
+            floating = value.tzinfo is None
             replace_timezone = lambda value, tzinfo: value.replace(tzinfo=tzinfo)
             convert_timezone = lambda value, tzinfo: value.astimezone(tz=tzinfo)
 
         if floating and self.normalize_floating:
-            action = replace_timezone if self.normalize_floating is NormalizationAction.REPLACE else convert_timezone
+            action = (
+                replace_timezone
+                if self.normalize_floating is NormalizationAction.REPLACE
+                else convert_timezone
+            )
         elif not floating and self.normalize_with_tz:
-            action = replace_timezone if self.normalize_with_tz is NormalizationAction.REPLACE else convert_timezone
+            action = (
+                replace_timezone
+                if self.normalize_with_tz is NormalizationAction.REPLACE
+                else convert_timezone
+            )
         else:
             return value
 
@@ -99,19 +134,35 @@ class Normalization(object):
 
 # using datetime.min might lead to problems when doing timezone conversions / comparisions (e.g. by subtracting an 1 hour offset)
 CMP_DATETIME_NONE_DEFAULT = datetime(1900, 1, 1, 0, 0)
-CMP_NORMALIZATION = Normalization(normalize_floating=True, normalize_with_tz=False, replacement=tzlocal)
+CMP_NORMALIZATION = Normalization(
+    normalize_floating=True, normalize_with_tz=False, replacement=tzlocal
+)
 
-TimespanTuple = NamedTuple("TimespanTuple", [("begin", datetime), ("end", datetime)])
-NullableTimespanTuple = NamedTuple("NullableTimespanTuple", [("begin", Optional[datetime]), ("end", Optional[datetime])])
 
-TimespanT = TypeVar('TimespanT', bound='Timespan')
+class TimespanTuple(NamedTuple):
+    begin: datetime
+    end: datetime
+
+
+class NullableTimespanTuple(NamedTuple):
+    begin: Optional[datetime]
+    end: Optional[datetime]
+
+
+TimespanT = TypeVar("TimespanT", bound="Timespan")
 
 
 @attr.s(slots=True, frozen=True, eq=True, order=False)
-class Timespan(object):
-    begin_time: Optional[datetime] = attr.ib(validator=v_optional(instance_of(datetime)), default=None)
-    end_time: Optional[datetime] = attr.ib(validator=v_optional(instance_of(datetime)), default=None)
-    duration: Optional[timedelta] = attr.ib(validator=v_optional(instance_of(timedelta)), default=None)
+class Timespan:
+    begin_time: Optional[datetime] = attr.ib(
+        validator=v_optional(instance_of(datetime)), default=None
+    )
+    end_time: Optional[datetime] = attr.ib(
+        validator=v_optional(instance_of(datetime)), default=None
+    )
+    duration: Optional[timedelta] = attr.ib(
+        validator=v_optional(instance_of(timedelta)), default=None
+    )
     precision: str = attr.ib(default="second")
 
     def _end_name(self) -> str:
@@ -121,11 +172,11 @@ class Timespan(object):
         self.validate()
 
     def replace(
-            self: TimespanT,
-            begin_time: Union[datetime, None, "Literal[False]"] = False,
-            end_time: Union[datetime, None, "Literal[False]"] = False,
-            duration: Union[timedelta, None, "Literal[False]"] = False,
-            precision: Union[str, "Literal[False]"] = False
+        self: TimespanT,
+        begin_time: Union[datetime, None, "Literal[False]"] = False,
+        end_time: Union[datetime, None, "Literal[False]"] = False,
+        duration: Union[timedelta, None, "Literal[False]"] = False,
+        precision: Union[str, "Literal[False]"] = False,
     ) -> TimespanT:
         if begin_time is False:
             begin_time = self.begin_time
@@ -135,10 +186,12 @@ class Timespan(object):
             duration = self.duration
         if precision is False:
             precision = self.precision
-        return type(self)(begin_time=cast(Optional[datetime], begin_time),
-                          end_time=cast(Optional[datetime], end_time),
-                          duration=cast(Optional[timedelta], duration),
-                          precision=cast(str, precision))
+        return type(self)(
+            begin_time=cast(Optional[datetime], begin_time),
+            end_time=cast(Optional[datetime], end_time),
+            duration=cast(Optional[timedelta], duration),
+            precision=cast(str, precision),
+        )
 
     def replace_timezone(self: TimespanT, tzinfo: Optional[TZInfo]) -> TimespanT:
         if self.is_all_day():
@@ -147,7 +200,9 @@ class Timespan(object):
         if begin is not None:
             begin = begin.replace(tzinfo=tzinfo)
         if self.end_time is not None:
-            return self.replace(begin_time=begin, end_time=self.end_time.replace(tzinfo=tzinfo))
+            return self.replace(
+                begin_time=begin, end_time=self.end_time.replace(tzinfo=tzinfo)
+            )
         else:
             return self.replace(begin_time=begin)
 
@@ -157,12 +212,15 @@ class Timespan(object):
         if self.is_floating():
             warnings.warn(
                 "interpreting missing timezone of timezone-naive floating timespan as local time for conversion, "
-                "use replace_timezone for deterministic results")
+                "use replace_timezone for deterministic results"
+            )
         begin = self.get_begin()
         if begin is not None:
             begin = begin.astimezone(tzinfo)
         if self.end_time is not None:
-            return self.replace(begin_time=begin, end_time=self.end_time.astimezone(tzinfo))
+            return self.replace(
+                begin_time=begin, end_time=self.end_time.astimezone(tzinfo)
+            )
         else:
             return self.replace(begin_time=begin)
 
@@ -170,9 +228,15 @@ class Timespan(object):
         def validate_timeprecision(value, name):
             if self.precision == "day":
                 if floor_datetime_to_midnight(value) != value:
-                    raise ValueError("%s time value %s has higher precision than set precision %s" % (name, value, self.precision))
+                    raise ValueError(
+                        "{} time value {} has higher precision than set precision {}".format(
+                            name, value, self.precision
+                        )
+                    )
                 if value.tzinfo is not None:
-                    raise ValueError("all-day timespan %s time %s can't have a timezone" % (name, value))
+                    raise ValueError(
+                        f"all-day timespan {name} time {value} can't have a timezone"
+                    )
 
         if self.begin_time is not None:
             validate_timeprecision(self.begin_time, "begin")
@@ -180,28 +244,52 @@ class Timespan(object):
             if self.end_time is not None:
                 validate_timeprecision(self.end_time, self._end_name())
                 if self.begin_time > self.end_time:
-                    raise ValueError("begin time must be before " + self._end_name() + " time")
-                if self.precision == "day" and self.end_time < (self.begin_time + TIMEDELTA_DAY):
-                    raise ValueError("all-day timespan duration must be at least one day")
+                    raise ValueError(
+                        "begin time must be before " + self._end_name() + " time"
+                    )
+                if self.precision == "day" and self.end_time < (
+                    self.begin_time + TIMEDELTA_DAY
+                ):
+                    raise ValueError(
+                        "all-day timespan duration must be at least one day"
+                    )
                 if self.duration is not None:
-                    raise ValueError("can't set duration together with " + self._end_name() + " time")
+                    raise ValueError(
+                        "can't set duration together with " + self._end_name() + " time"
+                    )
                 if self.begin_time.tzinfo is None and self.end_time.tzinfo is not None:
-                    raise ValueError(self._end_name() + " time may not have a timezone as the begin time doesn't either")
+                    raise ValueError(
+                        self._end_name()
+                        + " time may not have a timezone as the begin time doesn't either"
+                    )
                 if self.begin_time.tzinfo is not None and self.end_time.tzinfo is None:
-                    raise ValueError(self._end_name() + " time must have a timezone as the begin time also does")
+                    raise ValueError(
+                        self._end_name()
+                        + " time must have a timezone as the begin time also does"
+                    )
                 duration = self.get_effective_duration()
-                if duration and not timedelta_nearly_zero(duration % TIMEDELTA_CACHE[self.precision]):
-                    raise ValueError("effective duration value %s has higher precision than set precision %s" %
-                                     (self.get_effective_duration(), self.precision))
+                if duration and not timedelta_nearly_zero(
+                    duration % TIMEDELTA_CACHE[self.precision]
+                ):
+                    raise ValueError(
+                        "effective duration value %s has higher precision than set precision %s"
+                        % (self.get_effective_duration(), self.precision)
+                    )
 
             if self.duration is not None:
                 if self.duration < TIMEDELTA_ZERO:
                     raise ValueError("timespan duration must be positive")
                 if self.precision == "day" and self.duration < TIMEDELTA_DAY:
-                    raise ValueError("all-day timespan duration must be at least one day")
-                if not timedelta_nearly_zero(self.duration % TIMEDELTA_CACHE[self.precision]):
-                    raise ValueError("duration value %s has higher precision than set precision %s" %
-                                     (self.duration, self.precision))
+                    raise ValueError(
+                        "all-day timespan duration must be at least one day"
+                    )
+                if not timedelta_nearly_zero(
+                    self.duration % TIMEDELTA_CACHE[self.precision]
+                ):
+                    raise ValueError(
+                        "duration value %s has higher precision than set precision %s"
+                        % (self.duration, self.precision)
+                    )
 
         else:
             if self.end_time is not None:
@@ -225,7 +313,7 @@ class Timespan(object):
         if begin is not None:
             suffix.append("begin:")
             if self.is_all_day():
-                suffix.append(begin.strftime('%Y-%m-%d'))
+                suffix.append(begin.strftime("%Y-%m-%d"))
             else:
                 suffix.append(str(begin))
 
@@ -236,7 +324,7 @@ class Timespan(object):
                 suffix.append("fixed")
             suffix.append(self._end_name() + ":")
             if self.is_all_day():
-                suffix.append(end.strftime('%Y-%m-%d'))
+                suffix.append(end.strftime("%Y-%m-%d"))
             else:
                 suffix.append(str(end))
 
@@ -251,7 +339,7 @@ class Timespan(object):
 
     def __str__(self) -> str:
         prefix, name, suffix = self.get_str_segments()
-        return "<%s>" % (" ".join(prefix + name + suffix))
+        return f"<{' '.join(prefix + name + suffix)}>"
 
     def __bool__(self):
         return self.begin_time is not None or self.end_time is not None
@@ -269,7 +357,9 @@ class Timespan(object):
         end = self.get_effective_end()
         if end is not None:
             end = ceil_datetime_to_midnight(end).replace(tzinfo=None)
-            if end == begin:  # we also add another day if the duration would be 0 otherwise
+            if (
+                end == begin
+            ):  # we also add another day if the duration would be 0 otherwise
                 end = end + TIMEDELTA_DAY
 
         if self.get_end_representation() == "duration":
@@ -292,7 +382,7 @@ class Timespan(object):
         elif target is None:
             return self.replace(end_time=None, duration=None)
         else:
-            raise ValueError("can't convert from representation %s to %s" % (current, target))
+            raise ValueError(f"can't convert from representation {current} to {target}")
 
     ####################################################################################################################
 
@@ -346,23 +436,26 @@ class Timespan(object):
     ####################################################################################################################
 
     @overload
-    def timespan_tuple(self, default: None = None, normalization: Normalization = None) -> NullableTimespanTuple:
+    def timespan_tuple(
+        self, default: None = None, normalization: Normalization = None
+    ) -> NullableTimespanTuple:
         ...
 
     @overload
-    def timespan_tuple(self, default: datetime, normalization: Normalization = None) -> TimespanTuple:
+    def timespan_tuple(
+        self, default: datetime, normalization: Normalization = None
+    ) -> TimespanTuple:
         ...
 
     def timespan_tuple(self, default=None, normalization=None):
         if normalization:
             return TimespanTuple(
                 normalization.normalize(self.get_begin() or default),
-                normalization.normalize(self.get_effective_end() or default)
+                normalization.normalize(self.get_effective_end() or default),
             )
         else:
             return TimespanTuple(
-                self.get_begin() or default,
-                self.get_effective_end() or default
+                self.get_begin() or default, self.get_effective_end() or default
             )
 
     def cmp_tuple(self) -> TimespanTuple:
@@ -371,45 +464,63 @@ class Timespan(object):
         Will  return a :class:`TimespanTuple` object.
         A nested tuple containing e.begin, e.end and e.name.
         """
-        return self.timespan_tuple(default=CMP_DATETIME_NONE_DEFAULT, normalization=CMP_NORMALIZATION)
+        return self.timespan_tuple(
+            default=CMP_DATETIME_NONE_DEFAULT, normalization=CMP_NORMALIZATION
+        )
 
     def __require_tuple_components(self, values, *required):
         for nr, (val, req) in enumerate(zip(values, required)):
             if req and val is None:
                 event = "this event" if nr < 2 else "other event"
                 prop = "begin" if nr % 2 == 0 else "end"
-                raise ValueError("%s has no %s time" % (event, prop))
+                raise ValueError(f"{event} has no {prop} time")
 
     def starts_within(self, other: "Timespan") -> bool:
-        first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
-        second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+        first = cast(
+            TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION)
+        )
+        second = cast(
+            TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION)
+        )
         self.__require_tuple_components(first + second, True, False, True, True)
 
         # the timespan doesn't include its end instant / day
         return second.begin <= first.begin < second.end
 
     def ends_within(self, other: "Timespan") -> bool:
-        first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
-        second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+        first = cast(
+            TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION)
+        )
+        second = cast(
+            TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION)
+        )
         self.__require_tuple_components(first + second, False, True, True, True)
 
         # the timespan doesn't include its end instant / day
         return second.begin <= first.end < second.end
 
     def intersects(self, other: "Timespan") -> bool:
-        first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
-        second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+        first = cast(
+            TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION)
+        )
+        second = cast(
+            TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION)
+        )
         self.__require_tuple_components(first + second, True, True, True, True)
 
         # the timespan doesn't include its end instant / day
-        return second.begin <= first.begin < second.end or \
-               second.begin <= first.end < second.end or \
-               first.begin <= second.begin < first.end or \
-               first.begin <= second.end < first.end
+        return (
+            second.begin <= first.begin < second.end
+            or second.begin <= first.end < second.end
+            or first.begin <= second.begin < first.end
+            or first.begin <= second.end < first.end
+        )
 
     def includes(self, other: Union["Timespan", datetime]) -> bool:
         if isinstance(other, datetime):
-            first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
+            first = cast(
+                TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION)
+            )
             other = CMP_NORMALIZATION.normalize(other)
             self.__require_tuple_components(first, True, True)
 
@@ -417,8 +528,12 @@ class Timespan(object):
             return first.begin <= other < first.end
 
         else:
-            first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
-            second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+            first = cast(
+                TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION)
+            )
+            second = cast(
+                TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION)
+            )
             self.__require_tuple_components(first + second, True, True, True, True)
 
             # the timespan doesn't include its end instant / day
@@ -427,8 +542,12 @@ class Timespan(object):
     __contains__ = includes
 
     def is_included_in(self, other: "Timespan") -> bool:
-        first = cast(TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION))
-        second = cast(TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION))
+        first = cast(
+            TimespanTuple, self.timespan_tuple(normalization=CMP_NORMALIZATION)
+        )
+        second = cast(
+            TimespanTuple, other.timespan_tuple(normalization=CMP_NORMALIZATION)
+        )
         self.__require_tuple_components(first + second, True, True, True, True)
 
         # the timespan doesn't include its end instant / day
@@ -464,7 +583,7 @@ class EventTimespan(Timespan):
         return "end"
 
     def validate(self):
-        super(EventTimespan, self).validate()
+        super().validate()
         if self.begin_time is None and self.end_time is not None:
             raise ValueError("event timespan without begin time can't have end time")
 
@@ -485,7 +604,8 @@ class TodoTimespan(Timespan):
 
     def timespan_tuple(self, default=None, normalization=None):
         # Todos compare by (due, begin) instead of (begin, end)
-        return tuple(reversed(
-            super(TodoTimespan, self).timespan_tuple(
-                default=default, normalization=normalization)
-        ))
+        return tuple(
+            reversed(
+                super().timespan_tuple(default=default, normalization=normalization)
+            )
+        )

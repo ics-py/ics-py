@@ -8,6 +8,7 @@ from ics.timezone import UTC
 
 SUMMARY = "test summary"
 
+
 @deterministic_event_data()
 @pytest.mark.parametrize(
     "begin,end,duration",
@@ -127,6 +128,3 @@ def test_within_and_includes() -> None:
 )
 def test_intersects(event1: Event, event2: Event, expect_intersects: bool) -> None:
     assert event2.intersects(event1) == expect_intersects
-
-
-

@@ -61,11 +61,8 @@ in ``.extra``:
 
     e.name == "Name of the event"
     e.extra == [
-        Container(
-            name="FOO",
-            ContentLine(name="BAR", value="MISC")
-        ),
-        ContentLine(name="THX", value="BYE")
+        Container(name="FOO", ContentLine(name="BAR", value="MISC")),
+        ContentLine(name="THX", value="BYE"),
     ]
 
 ``.extra`` is mutable so this means it works in reverse too.

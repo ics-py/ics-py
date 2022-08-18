@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # CAVEAT UTILITOR
 #
@@ -11,16 +10,11 @@
 # the file is generated.
 
 
-from __future__ import print_function, division, absolute_import, unicode_literals
-
 import sys
 
 from tatsu.buffering import Buffer
-from tatsu.parsing import Parser
-from tatsu.parsing import tatsumasu, leftrec, nomemo
-from tatsu.parsing import leftrec, nomemo  # noqa
-from tatsu.util import re, generic_main  # noqa
-
+from tatsu.parsing import Parser, leftrec, nomemo, tatsumasu  # noqa
+from tatsu.util import generic_main, re  # noqa
 
 KEYWORDS = {}  # type: ignore
 
@@ -34,10 +28,10 @@ class contentlineBuffer(Buffer):
         comments_re=None,
         eol_comments_re=None,
         ignorecase=None,
-        namechars='',
+        namechars="",
         **kwargs
     ):
-        super(contentlineBuffer, self).__init__(
+        super().__init__(
             text,
             whitespace=whitespace,
             nameguard=nameguard,
@@ -60,13 +54,13 @@ class contentlineParser(Parser):
         left_recursion=False,
         parseinfo=True,
         keywords=None,
-        namechars='',
+        namechars="",
         buffer_class=contentlineBuffer,
         **kwargs
     ):
         if keywords is None:
             keywords = KEYWORDS
-        super(contentlineParser, self).__init__(
+        super().__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -82,19 +76,19 @@ class contentlineParser(Parser):
 
     @tatsumasu()
     def _ALPHADIGIT_MINUS_PLUS_(self):  # noqa
-        self._pattern('[a-zA-Z0-9-]+')
+        self._pattern("[a-zA-Z0-9-]+")
 
     @tatsumasu()
     def _QSAFE_CHAR_STAR_(self):  # noqa
-        self._pattern('[^\\x00-\\x08\\x0A-\\x1F\\x22\\x7F]*')
+        self._pattern("[^\\x00-\\x08\\x0A-\\x1F\\x22\\x7F]*")
 
     @tatsumasu()
     def _SAFE_CHAR_STAR_(self):  # noqa
-        self._pattern('[^\\x00-\\x08\\x0A-\\x1F\\x22\\x2C\\x3A\\x3B\\x7F]*')
+        self._pattern("[^\\x00-\\x08\\x0A-\\x1F\\x22\\x2C\\x3A\\x3B\\x7F]*")
 
     @tatsumasu()
     def _VALUE_CHAR_STAR_(self):  # noqa
-        self._pattern('[^\\x00-\\x08\\x0A-\\x1F\\x7F]*')
+        self._pattern("[^\\x00-\\x08\\x0A-\\x1F\\x7F]*")
 
     @tatsumasu()
     def _DQUOTE_(self):  # noqa
@@ -103,57 +97,54 @@ class contentlineParser(Parser):
     @tatsumasu()
     def _start_(self):  # noqa
         self._contentline_()
-        self.name_last_node('@')
+        self.name_last_node("@")
         self._check_eof()
 
     @tatsumasu()
     def _full_(self):  # noqa
         self._contentline_()
-        self.add_last_node_to_name('@')
+        self.add_last_node_to_name("@")
 
         def block1():
-            self._pattern('(\\r?\\n)+')
+            self._pattern("(\\r?\\n)+")
             self._contentline_()
-            self.add_last_node_to_name('@')
+            self.add_last_node_to_name("@")
+
         self._closure(block1)
-        self._pattern('(\\r?\\n)*')
+        self._pattern("(\\r?\\n)*")
         self._check_eof()
 
     @tatsumasu()
     def _contentline_(self):  # noqa
         self._ALPHADIGIT_MINUS_PLUS_()
-        self.name_last_node('name')
+        self.name_last_node("name")
 
         def block1():
-            self._token(';')
+            self._token(";")
             self._param_()
-            self.add_last_node_to_name('params')
+            self.add_last_node_to_name("params")
+
         self._closure(block1)
-        self._token(':')
+        self._token(":")
         self._VALUE_CHAR_STAR_()
-        self.name_last_node('value')
-        self.ast._define(
-            ['name', 'value'],
-            ['params']
-        )
+        self.name_last_node("value")
+        self.ast._define(["name", "value"], ["params"])
 
     @tatsumasu()
     def _param_(self):  # noqa
         self._ALPHADIGIT_MINUS_PLUS_()
-        self.name_last_node('name')
-        self._token('=')
+        self.name_last_node("name")
+        self._token("=")
         self._param_value_()
-        self.add_last_node_to_name('values')
+        self.add_last_node_to_name("values")
 
         def block2():
-            self._token(',')
+            self._token(",")
             self._param_value_()
-            self.add_last_node_to_name('values')
+            self.add_last_node_to_name("values")
+
         self._closure(block2)
-        self.ast._define(
-            ['name'],
-            ['values']
-        )
+        self.ast._define(["name"], ["values"])
 
     @tatsumasu()
     def _param_value_(self):  # noqa
@@ -162,23 +153,20 @@ class contentlineParser(Parser):
                 self._DQUOTE_()
                 self._cut()
                 self._QSAFE_CHAR_STAR_()
-                self.name_last_node('value')
+                self.name_last_node("value")
                 self._DQUOTE_()
-                self._constant('true')
-                self.name_last_node('quoted')
+                self._constant("true")
+                self.name_last_node("quoted")
             with self._option():
                 self._SAFE_CHAR_STAR_()
-                self.name_last_node('value')
-                self._constant('false')
-                self.name_last_node('quoted')
-            self._error('no available options')
-        self.ast._define(
-            ['quoted', 'value'],
-            []
-        )
+                self.name_last_node("value")
+                self._constant("false")
+                self.name_last_node("quoted")
+            self._error("no available options")
+        self.ast._define(["quoted", "value"], [])
 
 
-class contentlineSemantics(object):
+class contentlineSemantics:
     def ALPHADIGIT_MINUS_PLUS(self, ast):  # noqa
         return ast
 
@@ -212,8 +200,8 @@ class contentlineSemantics(object):
 
 def main(filename, start=None, **kwargs):
     if start is None:
-        start = 'ALPHADIGIT_MINUS_PLUS'
-    if not filename or filename == '-':
+        start = "ALPHADIGIT_MINUS_PLUS"
+    if not filename or filename == "-":
         text = sys.stdin.read()
     else:
         with open(filename) as f:
@@ -222,14 +210,15 @@ def main(filename, start=None, **kwargs):
     return parser.parse(text, rule_name=start, filename=filename, **kwargs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import json
+
     from tatsu.util import asjson
 
-    ast = generic_main(main, contentlineParser, name='contentline')
-    print('AST:')
+    ast = generic_main(main, contentlineParser, name="contentline")
+    print("AST:")
     print(ast)
     print()
-    print('JSON:')
+    print("JSON:")
     print(json.dumps(asjson(ast), indent=2))
     print()

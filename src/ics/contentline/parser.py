@@ -1,21 +1,30 @@
 import re
 import warnings
-from typing import Iterator, Tuple, Union, List, Match, ClassVar, Iterable
+from typing import ClassVar, Iterable, Iterator, List, Match, Tuple, Union
 
 import attr
 
-from ics.contentline.container import Container, ContentLine, Patterns, ParseError, QuotedParamValue, unescape_param
+from ics.contentline.container import (
+    Container,
+    ContentLine,
+    ParseError,
+    Patterns,
+    QuotedParamValue,
+    unescape_param,
+)
 from ics.types import ContainerItem
 
 
-class ParserClass(object):
+class ParserClass:
     def string_to_containers(self, txt: str) -> Iterator[ContainerItem]:
-        return self.contentlines_to_containers(self.lines_to_contentlines(
-            self.unfold_lines(self.string_to_lines(txt))))
+        return self.contentlines_to_containers(
+            self.lines_to_contentlines(self.unfold_lines(self.string_to_lines(txt)))
+        )
 
     def lines_to_containers(self, lines: Iterable[str]) -> Iterator[ContainerItem]:
-        return self.contentlines_to_containers(self.lines_to_contentlines(
-            self.unfold_lines(lines)))
+        return self.contentlines_to_containers(
+            self.lines_to_contentlines(self.unfold_lines(lines))
+        )
 
     def string_to_lines(self, txt: str) -> Iterable[str]:
         # unicode newlines are interpreted as such by str.splitlines(), but not by the ics standard
@@ -31,17 +40,21 @@ class ParserClass(object):
                 continue  # ignore empty lines
             nl = re.search("[\r\n]", line)
             if nl:
-                raise ParseError("Line %s:%s is not properly split and contains a newline %s: %r"
-                                 % (line_nr, nl.start(), nl, line))
+                raise ParseError(
+                    "Line %s:%s is not properly split and contains a newline %s: %r"
+                    % (line_nr, nl.start(), nl, line)
+                )
             if not current_lines:
-                if line[0] in (' ', '\t'):
-                    raise ParseError("Line %s is a continuation (starts with space) without a preceding line: %r"
-                                     % (line_nr, line))
+                if line[0] in (" ", "\t"):
+                    raise ParseError(
+                        "Line %s is a continuation (starts with space) without a preceding line: %r"
+                        % (line_nr, line)
+                    )
                 else:
                     current_nr = line_nr
                     current_lines = [line]
             else:
-                if line[0] in (' ', '\t'):
+                if line[0] in (" ", "\t"):
                     current_lines.append(line[1:])
                 else:
                     yield current_nr, "".join(current_lines)
@@ -50,37 +63,44 @@ class ParserClass(object):
         if current_lines:
             yield current_nr, "".join(current_lines)
 
-    def contentlines_to_containers(self, tokenized_lines: Iterable[ContentLine]) -> Iterator[ContainerItem]:
+    def contentlines_to_containers(
+        self, tokenized_lines: Iterable[ContentLine]
+    ) -> Iterator[ContainerItem]:
         # tokenized_lines must be an iterator, so that Container.parse can consume/steal lines
         if not isinstance(tokenized_lines, Iterator):
             tokenized_lines = iter(tokenized_lines)
         for line in tokenized_lines:
-            if line.name == 'BEGIN':
+            if line.name == "BEGIN":
                 yield self.contentlines_to_container(line.value, tokenized_lines)
             else:
                 yield line
 
-    def contentlines_to_container(self, name: str, tokenized_lines: Iterable[ContentLine]) -> Container:
+    def contentlines_to_container(
+        self, name: str, tokenized_lines: Iterable[ContentLine]
+    ) -> Container:
         items: List[ContainerItem] = []
         if not name.isupper():
-            warnings.warn("Container 'BEGIN:%s' is not all-uppercase" % name)
+            warnings.warn(f"Container 'BEGIN:{name}' is not all-uppercase")
         for line in tokenized_lines:
-            if line.name == 'BEGIN':
-                items.append(self.contentlines_to_container(line.value, tokenized_lines))
-            elif line.name == 'END':
+            if line.name == "BEGIN":
+                items.append(
+                    self.contentlines_to_container(line.value, tokenized_lines)
+                )
+            elif line.name == "END":
                 if line.value.upper() != name.upper():
-                    raise ParseError(
-                        "Expected END:{}, got END:{}".format(name, line.value))
+                    raise ParseError(f"Expected END:{name}, got END:{line.value}")
                 if not name.isupper():
-                    warnings.warn("Container 'END:%s' is not all-uppercase" % name)
+                    warnings.warn(f"Container 'END:{name}' is not all-uppercase")
                 break
             else:
                 items.append(line)
         else:  # if break was not called
-            raise ParseError("Missing END:{}".format(name))
+            raise ParseError(f"Missing END:{name}")
         return Container(name, items)  # type: ignore[arg-type]
 
-    def lines_to_contentlines(self, lines: Iterable[Union[Tuple[int, str], str]]) -> Iterator[ContentLine]:
+    def lines_to_contentlines(
+        self, lines: Iterable[Union[Tuple[int, str], str]]
+    ) -> Iterator[ContentLine]:
         clp = ContentLineParser()
         for line in lines:
             if not isinstance(line, str):
@@ -91,7 +111,7 @@ class ParserClass(object):
 
 
 @attr.s(slots=True)
-class ContentLineParser(object):
+class ContentLineParser:
     line: str = attr.ib(default=None)
     line_nr: int = attr.ib(default=None)
     delims: Iterator[Match] = attr.ib(default=None)
@@ -116,13 +136,13 @@ class ContentLineParser(object):
         self.line_nr = line_nr
         self.delims = iter(re.finditer("[:;]", self.line))
         self.next_delim()
-        name = self.line[:self.delim.start()]
+        name = self.line[: self.delim.start()]
         self.cl = ContentLine(name, line_nr=self.line_nr)
 
         while True:
             # everything before delim.start() is already processed and we should start reading at delim.end()
             if self.delim.group() == ":":
-                self.cl.value = self.line[self.delim.end():]
+                self.cl.value = self.line[self.delim.end() :]
                 if self.always_check:
                     self.check_parsed_line()
                 return self.cl
@@ -137,14 +157,17 @@ class ContentLineParser(object):
             raise self.error("contains param without value", self.delim.end())
 
         # read comma-separated and possibly quoted param values
-        param_name = self.line[self.delim.end():param_delim]
+        param_name = self.line[self.delim.end() : param_delim]
         self.cl.params[param_name] = self.param_values = []
         self.param_value_start = param_delim + 1
         self.next_delim()  # proceed to delim after param value list
         has_further_param_value = True
         while has_further_param_value:
             if self.delim.start() <= self.param_value_start:
-                raise self.error("contains param with an empty value", (self.delim.start(), self.param_value_start))
+                raise self.error(
+                    "contains param with an empty value",
+                    (self.delim.start(), self.param_value_start),
+                )
 
             if self.line[self.param_value_start] == Patterns.DQUOTE:
                 has_further_param_value = self.parse_quoted_param_val()
@@ -156,8 +179,14 @@ class ContentLineParser(object):
         try:
             param_quote_stop = self.line.index(Patterns.DQUOTE, self.param_value_start)
         except ValueError:
-            raise self.error("contains param missing a closing quote", self.param_value_start)
-        self.param_values.append(QuotedParamValue(unescape_param(self.line[self.param_value_start:param_quote_stop])))
+            raise self.error(
+                "contains param missing a closing quote", self.param_value_start
+            )
+        self.param_values.append(
+            QuotedParamValue(
+                unescape_param(self.line[self.param_value_start : param_quote_stop])
+            )
+        )
 
         # reposition the delims sequence, skipping any delimiter until right after the closing quote
         self.param_value_start = param_quote_stop + 1
@@ -168,19 +197,27 @@ class ContentLineParser(object):
         if self.delim.start() == self.param_value_start:
             return False  # this was the last value for this param
         if self.line[self.param_value_start] == ",":
-            self.param_value_start += 1  # skip the comma and continue with the next param value
+            self.param_value_start += (
+                1  # skip the comma and continue with the next param value
+            )
             return True  # there's a next value following for this param
         else:
-            raise self.error("contains param with content trailing after closing quote",
-                             (self.param_value_start, self.delim.start()))
+            raise self.error(
+                "contains param with content trailing after closing quote",
+                (self.param_value_start, self.delim.start()),
+            )
 
     def parse_raw_param_val(self):
         param_comma = self.line.find(",", self.param_value_start, self.delim.start())
         if param_comma < 0:
-            self.param_values.append(unescape_param(self.line[self.param_value_start:self.delim.start()]))
+            self.param_values.append(
+                unescape_param(self.line[self.param_value_start : self.delim.start()])
+            )
             return False  # this was the last value for this param
         else:
-            self.param_values.append(unescape_param(self.line[self.param_value_start:param_comma]))
+            self.param_values.append(
+                unescape_param(self.line[self.param_value_start : param_comma])
+            )
             self.param_value_start = param_comma + 1
             return True  # there's a next value following for this param
 

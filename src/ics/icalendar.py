@@ -5,7 +5,7 @@ import attr
 from attr.validators import instance_of
 
 from ics.component import Component
-from ics.contentline import Container, string_to_containers, lines_to_containers
+from ics.contentline import Container, lines_to_containers, string_to_containers
 from ics.event import Event
 from ics.timeline import Timeline
 from ics.timespan import Normalization, NormalizationAction
@@ -14,14 +14,22 @@ from ics.todo import Todo
 
 @attr.s
 class CalendarAttrs(Component):
-    version: str = attr.ib(validator=instance_of(str), metadata={"ics_priority": 1000})  # default set by Calendar.DEFAULT_VERSION
-    prodid: str = attr.ib(validator=instance_of(str), metadata={"ics_priority": 900})  # default set by Calendar.DEFAULT_PRODID
+    version: str = attr.ib(
+        validator=instance_of(str), metadata={"ics_priority": 1000}
+    )  # default set by Calendar.DEFAULT_VERSION
+    prodid: str = attr.ib(
+        validator=instance_of(str), metadata={"ics_priority": 900}
+    )  # default set by Calendar.DEFAULT_PRODID
     scale: Optional[str] = attr.ib(default=None, metadata={"ics_priority": 800})
     method: Optional[str] = attr.ib(default=None, metadata={"ics_priority": 700})
     # CalendarTimezoneConverter has priority 600
 
-    events: List[Event] = attr.ib(factory=list, converter=list, metadata={"ics_priority": -100})
-    todos: List[Todo] = attr.ib(factory=list, converter=list, metadata={"ics_priority": -200})
+    events: List[Event] = attr.ib(
+        factory=list, converter=list, metadata={"ics_priority": -100}
+    )
+    todos: List[Todo] = attr.ib(
+        factory=list, converter=list, metadata={"ics_priority": -200}
+    )
 
 
 class Calendar(CalendarAttrs):
@@ -41,12 +49,12 @@ class Calendar(CalendarAttrs):
     DEFAULT_PRODID: ClassVar[str] = "ics.py 0.8.0-dev - http://git.io/lLljaA"
 
     def __init__(
-            self,
-            imports: Union[str, Container, None] = None,
-            events: Optional[Iterable[Event]] = None,
-            todos: Optional[Iterable[Todo]] = None,
-            creator: str = None,
-            **kwargs
+        self,
+        imports: Union[str, Container, None] = None,
+        events: Optional[Iterable[Event]] = None,
+        todos: Optional[Iterable[Todo]] = None,
+        creator: str = None,
+        **kwargs,
     ):
         """Initializes a new Calendar.
 
@@ -61,8 +69,10 @@ class Calendar(CalendarAttrs):
         if todos is None:
             todos = tuple()
         kwargs.setdefault("version", self.DEFAULT_VERSION)
-        kwargs.setdefault("prodid", creator if creator is not None else self.DEFAULT_PRODID)
-        super(Calendar, self).__init__(events=events, todos=todos, **kwargs)  # type: ignore[arg-type]
+        kwargs.setdefault(
+            "prodid", creator if creator is not None else self.DEFAULT_PRODID
+        )
+        super().__init__(events=events, todos=todos, **kwargs)  # type: ignore[arg-type]
         self.timeline = Timeline(self, None)
 
         if imports is not None:
@@ -76,14 +86,16 @@ class Calendar(CalendarAttrs):
                 try:
                     container = next(containers)
                     if not isinstance(container, Container):
-                        raise ValueError("can't populate from %s" % type(container))
+                        raise ValueError(f"can't populate from {type(container)}")
                     self.populate(container)
                 except StopIteration:
                     raise ValueError("string didn't contain any ics data")
                 try:
                     next(containers)
-                    raise ValueError("Multiple calendars in one file are not supported by this method."
-                                     "Use ics.Calendar.parse_multiple()")
+                    raise ValueError(
+                        "Multiple calendars in one file are not supported by this method."
+                        "Use ics.Calendar.parse_multiple()"
+                    )
                 except StopIteration:
                     pass
 
@@ -97,7 +109,7 @@ class Calendar(CalendarAttrs):
 
     @classmethod
     def parse_multiple(cls, string):
-        """"
+        """ "
         Parses an input string that may contain mutiple calendars
         and retruns a list of :class:`ics.event.Calendar`
         """
@@ -109,24 +121,36 @@ class Calendar(CalendarAttrs):
         ...
 
     @overload
-    def normalize(self, value: tzinfo, normalize_floating: NormalizationAction, normalize_with_tz: NormalizationAction):
+    def normalize(
+        self,
+        value: tzinfo,
+        normalize_floating: NormalizationAction,
+        normalize_with_tz: NormalizationAction,
+    ):
         ...
 
     def normalize(self, normalization, *args, **kwargs):
         if isinstance(normalization, Normalization):
             if args or kwargs:
-                raise ValueError("can't pass args or kwargs when a complete Normalization is given")
+                raise ValueError(
+                    "can't pass args or kwargs when a complete Normalization is given"
+                )
         else:
             normalization = Normalization(normalization, *args, **kwargs)
-        self.events = [e if e.all_day else normalization.normalize(e) for e in self.events]
-        self.todos = [e if e.all_day else normalization.normalize(e) for e in self.todos]
+        self.events = [
+            e if e.all_day else normalization.normalize(e) for e in self.events
+        ]
+        self.todos = [
+            e if e.all_day else normalization.normalize(e) for e in self.todos
+        ]
 
     def __str__(self) -> str:
         return "<Calendar with {} event{} and {} todo{}>".format(
             len(self.events),
             "" if len(self.events) == 1 else "s",
             len(self.todos),
-            "" if len(self.todos) == 1 else "s")
+            "" if len(self.todos) == 1 else "s",
+        )
 
     def __iter__(self) -> Iterator[str]:
         """Returns:

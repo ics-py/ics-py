@@ -3,7 +3,7 @@ from typing import Dict, Generic, Iterable, Type, TypeVar
 
 from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 __all__ = ["ValueConverter"]
 
@@ -33,11 +33,21 @@ class ValueConverter(Generic[T], abc.ABC):
         return ",".join(values)
 
     @abc.abstractmethod
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> T:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> T:
         ...
 
     @abc.abstractmethod
-    def serialize(self, value: T, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: T,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         ...
 
     def __str__(self):

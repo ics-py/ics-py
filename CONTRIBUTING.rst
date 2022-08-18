@@ -14,8 +14,49 @@ work.
 Style guide
 -----------
 
-* Code formatting: `TBD <https://github.com/ics-py/ics-py/issues/344>`_
-* Docstrings: `Google Python Style Guide <https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings>`_
+Pre-commit checks
+^^^^^^^^^^^^^^^
+
+`pre-commit <https://pre-commit.com>`_ is a framework for managing pre-commit
+hooks. These hooks help to identify simple issues before committing code for
+review. By checking for these issues before code review it allows the reviewer
+to focus on the change itself, and it can also help to reduce the number of CI
+runs.
+
+To use the tool, first install ``pre-commit`` and then the git hooks:
+
+.. console::
+
+    $ python -m pip install pre-commit
+    $ pre-commit install
+
+On the first commit ``pre-commit`` will install the hooks, these are
+installed in their own environments and will take a short while to
+install on the first run. Subsequent checks will be significantly faster.
+If an error is found an appropriate error message will be displayed.
+If the error was with ``black`` or ``isort`` then the tool will go ahead and
+fix them for you. Review the changes and re-stage for commit if you are happy
+with them.
+
+Code formatting
+^^^^^^^^^^^^^^^
+
+* All files should be formatted using the
+  `black <https://black.readthedocs.io/en/stable/>`_ auto-formatter. This will be
+  run by ``pre-commit`` if that is configured.
+* Use `isort <https://github.com/PyCQA/isort#readme>`_ to automate import sorting.
+  This will be run by ``pre-commit`` if that is configured.
+* String variable interpolation may use
+  %-formatting, f-strings or ``str.format`` as appropriate, with the goal of
+  maximizing code readability. In case of doubt, use f-strings.
+
+Docstrings
+^^^^^^^^^^
+
+The style to be used in docstrings is still discussed in
+`Issue 344 <https://github.com/ics-py/ics-py/issues/344>`_.
+In the meantime, you can take inspiration from the
+`Google Python Style Guide <https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings>`_.
 
 How to submit an issue
 ----------------------

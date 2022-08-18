@@ -2,7 +2,7 @@ import base64
 from typing import Type, Union
 from urllib.parse import urlparse
 
-from ics.types import ContextDict, EmptyContext, EmptyParams, ExtraParams, URL
+from ics.types import URL, ContextDict, EmptyContext, EmptyParams, ExtraParams
 from ics.valuetype.base import ValueConverter
 
 __all__ = [
@@ -11,12 +11,11 @@ __all__ = [
     "IntegerConverter",
     "FloatConverter",
     "URIConverter",
-    "CalendarUserAddressConverter"
+    "CalendarUserAddressConverter",
 ]
 
 
 class BinaryConverterClass(ValueConverter[bytes]):
-
     @property
     def ics_type(self) -> str:
         return "BINARY"
@@ -25,10 +24,20 @@ class BinaryConverterClass(ValueConverter[bytes]):
     def python_type(self) -> Type[bytes]:
         return bytes
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> bytes:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> bytes:
         return base64.b64decode(value)
 
-    def serialize(self, value: bytes, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: bytes,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         return base64.b64encode(value).decode("ascii")
 
 
@@ -37,7 +46,6 @@ ValueConverter.BY_TYPE[bytearray] = ValueConverter.BY_TYPE[bytes]
 
 
 class BooleanConverterClass(ValueConverter[bool]):
-
     @property
     def ics_type(self) -> str:
         return "BOOLEAN"
@@ -46,7 +54,12 @@ class BooleanConverterClass(ValueConverter[bool]):
     def python_type(self) -> Type[bool]:
         return bool
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> bool:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> bool:
         if value == "TRUE":
             return True
         elif value == "FALSE":
@@ -62,9 +75,14 @@ class BooleanConverterClass(ValueConverter[bool]):
             elif value in ["F", "N", "NO", "OFF", "0"]:
                 return False
             else:
-                raise ValueError("can't interpret '%s' as boolean" % value)
+                raise ValueError(f"can't interpret '{value}' as boolean")
 
-    def serialize(self, value: Union[bool, str], params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: Union[bool, str],
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         if isinstance(value, str):
             value = self.parse(value, params, context)
         if value:
@@ -77,7 +95,6 @@ BooleanConverter = BooleanConverterClass()
 
 
 class IntegerConverterClass(ValueConverter[int]):
-
     @property
     def ics_type(self) -> str:
         return "INTEGER"
@@ -86,10 +103,20 @@ class IntegerConverterClass(ValueConverter[int]):
     def python_type(self) -> Type[int]:
         return int
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> int:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> int:
         return int(value)
 
-    def serialize(self, value: int, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: int,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         return str(value)
 
 
@@ -97,7 +124,6 @@ IntegerConverter = IntegerConverterClass()
 
 
 class FloatConverterClass(ValueConverter[float]):
-
     @property
     def ics_type(self) -> str:
         return "FLOAT"
@@ -106,10 +132,20 @@ class FloatConverterClass(ValueConverter[float]):
     def python_type(self) -> Type[float]:
         return float
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> float:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> float:
         return float(value)
 
-    def serialize(self, value: float, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: float,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         return str(value)
 
 
@@ -128,10 +164,20 @@ class URIConverterClass(ValueConverter[URL]):
     def python_type(self) -> Type[URL]:
         return URL
 
-    def parse(self, value: str, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> URL:
+    def parse(
+        self,
+        value: str,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> URL:
         return urlparse(value)
 
-    def serialize(self, value: URL, params: ExtraParams = EmptyParams, context: ContextDict = EmptyContext) -> str:
+    def serialize(
+        self,
+        value: URL,
+        params: ExtraParams = EmptyParams,
+        context: ContextDict = EmptyContext,
+    ) -> str:
         if isinstance(value, str):
             return value
         else:
@@ -142,7 +188,6 @@ URIConverter = URIConverterClass()
 
 
 class CalendarUserAddressConverterClass(URIConverterClass):
-
     @property
     def ics_type(self) -> str:
         return "CAL-ADDRESS"

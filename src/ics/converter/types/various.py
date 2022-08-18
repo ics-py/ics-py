@@ -1,19 +1,27 @@
 import itertools
 import operator
-from typing import List, TYPE_CHECKING, Iterable, Optional, cast
+from typing import TYPE_CHECKING, Iterable, List, Optional, cast
 
 import attr
 import dateutil.rrule
 
-from ics import get_type_from_action, BaseAlarm, AudioAlarm, CustomAlarm, DisplayAlarm, EmailAlarm, NoneAlarm
+from ics import (
+    AudioAlarm,
+    BaseAlarm,
+    CustomAlarm,
+    DisplayAlarm,
+    EmailAlarm,
+    NoneAlarm,
+    get_type_from_action,
+)
 from ics.component import Component
 from ics.contentline import Container, ContentLine
 from ics.converter.base import AttributeConverter, GenericConverter, sort_converters
 from ics.converter.component import ComponentMeta
 from ics.rrule import rrule_to_ContentLine
-from ics.types import ContainerItem, ContextDict, copy_extra_params, ExtraParams
+from ics.types import ContainerItem, ContextDict, ExtraParams, copy_extra_params
 from ics.utils import one
-from ics.valuetype.datetime import DatetimeConverterMixin, DatetimeConverter
+from ics.valuetype.datetime import DatetimeConverter, DatetimeConverterMixin
 
 
 def unique_justseen(iterable, key=None):
@@ -25,7 +33,9 @@ class RecurrenceConverter(AttributeConverter):
     def filter_ics_names(self) -> List[str]:
         return ["RRULE", "RDATE", "EXRULE", "EXDATE", "DTSTART"]
 
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+    def populate(
+        self, component: Component, item: ContainerItem, context: ContextDict
+    ) -> bool:
         assert isinstance(item, ContentLine)
         key = (self, "lines")
         lines = context[key]
@@ -35,7 +45,9 @@ class RecurrenceConverter(AttributeConverter):
         return True
 
     def post_populate(self, component: Component, context: ContextDict):
-        lines_str = "".join(line.serialize(newline=True) for line in context.pop((self, "lines")))
+        lines_str = "".join(
+            line.serialize(newline=True) for line in context.pop((self, "lines"))
+        )
         # TODO only feed dateutil the params it likes, add the rest as extra
         tzinfos = context.get(DatetimeConverterMixin.CONTEXT_KEY_AVAILABLE_TZ, {})
         rrule = dateutil.rrule.rrulestr(lines_str, tzinfos=tzinfos, compatible=True)
@@ -48,7 +60,8 @@ class RecurrenceConverter(AttributeConverter):
         if not TYPE_CHECKING:
             assert isinstance(value, dateutil.rrule.rruleset)
         for rrule in itertools.chain(value._rrule, value._exrule):
-            if rrule._dtstart is None: continue
+            if rrule._dtstart is None:
+                continue
             # check that the rrule uses the same DTSTART as a possible Timespan(Converter)
             dtstart = context["DTSTART"]
             if dtstart:
@@ -66,11 +79,17 @@ class RecurrenceConverter(AttributeConverter):
             cl.name = "EXRULE"
             output.append(cl)
         for rdate in unique_justseen(sorted(value._rdate)):
-            output.append(ContentLine(name="RDATE", value=DatetimeConverter.serialize(rdate)))
+            output.append(
+                ContentLine(name="RDATE", value=DatetimeConverter.serialize(rdate))
+            )
         for exdate in unique_justseen(sorted(value._exdate)):
-            output.append(ContentLine(name="EXDATE", value=DatetimeConverter.serialize(exdate)))
+            output.append(
+                ContentLine(name="EXDATE", value=DatetimeConverter.serialize(exdate))
+            )
 
-    def post_serialize(self, component: Component, output: Container, context: ContextDict):
+    def post_serialize(
+        self, component: Component, output: Container, context: ContextDict
+    ):
         context.pop("DTSTART", None)
 
 
@@ -88,7 +107,9 @@ class AlarmActionConverter(GenericConverter):
     def filter_ics_names(self) -> List[str]:
         return ["ACTION"]
 
-    def populate(self, component: Component, item: ContainerItem, context: ContextDict) -> bool:
+    def populate(
+        self, component: Component, item: ContainerItem, context: ContextDict
+    ) -> bool:
         assert isinstance(item, ContentLine)
         assert issubclass(type(component), get_type_from_action(item.value))
         if item.params:
@@ -97,26 +118,38 @@ class AlarmActionConverter(GenericConverter):
 
     def serialize(self, component: Component, output: Container, context: ContextDict):
         assert isinstance(component, BaseAlarm)
-        output.append(ContentLine(
-            name="ACTION",
-            params=cast(ExtraParams, component.extra_params.get("ACTION", {})),
-            value=component.action))
+        output.append(
+            ContentLine(
+                name="ACTION",
+                params=cast(ExtraParams, component.extra_params.get("ACTION", {})),
+                value=component.action,
+            )
+        )
 
 
 class AlarmMeta(ComponentMeta):
     def find_converters(self) -> Iterable[GenericConverter]:
-        convs: List[GenericConverter] = [c for c in (
-            AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type)
-        ) if c is not None]
+        convs: List[GenericConverter] = [
+            c
+            for c in (
+                AttributeConverter.get_converter_for(a)
+                for a in attr.fields(self.component_type)
+            )
+            if c is not None
+        ]
         convs.append(AlarmActionConverter())
         return sort_converters(convs)
 
-    def load_instance(self, container: Container, context: Optional[ContextDict] = None):
-        clazz = get_type_from_action(one(
-            container["ACTION"],
-            too_short='VALARM must have exactly one ACTION!',
-            too_long='VALARM must have exactly one ACTION, but got {first!r}, {second!r}, and possibly more!'
-        ).value)
+    def load_instance(
+        self, container: Container, context: Optional[ContextDict] = None
+    ):
+        clazz = get_type_from_action(
+            one(
+                container["ACTION"],
+                too_short="VALARM must have exactly one ACTION!",
+                too_long="VALARM must have exactly one ACTION, but got {first!r}, {second!r}, and possibly more!",
+            ).value
+        )
         instance = clazz()
         ComponentMeta.BY_TYPE[clazz].populate_instance(instance, container, context)
         return instance

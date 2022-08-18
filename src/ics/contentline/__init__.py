@@ -1,6 +1,11 @@
 from typing import Iterable
 
-from ics.contentline.container import ParseError, QuotedParamValue, ContentLine, Container
+from ics.contentline.container import (
+    Container,
+    ContentLine,
+    ParseError,
+    QuotedParamValue,
+)
 from ics.contentline.parser import ParserClass
 from ics.types import ContainerItem
 from ics.utils import one
@@ -18,5 +23,14 @@ def lines_to_container(lines: Iterable[str]) -> ContainerItem:
     return one(lines_to_containers(lines))
 
 
-__all__ = ["ParseError", "QuotedParamValue", "ContentLine", "Container", "Parser",
-           "string_to_containers", "lines_to_containers", "string_to_container", "lines_to_container"]
+__all__ = [
+    "ParseError",
+    "QuotedParamValue",
+    "ContentLine",
+    "Container",
+    "Parser",
+    "string_to_containers",
+    "lines_to_containers",
+    "string_to_container",
+    "lines_to_container",
+]

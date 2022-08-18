@@ -53,7 +53,9 @@ fixture1 = [
     *fmt(vevent, tzid="Europe/Berlin"),
     "END:VCALENDAR",
 ]
-fixture2_tz = fmt(vtimezone, tzid="W. Europe Standard Time", offbig="+0200", offsmall="+0100")
+fixture2_tz = fmt(
+    vtimezone, tzid="W. Europe Standard Time", offbig="+0200", offsmall="+0100"
+)
 fixture2 = [
     "BEGIN:VCALENDAR",
     "PRODID:Tom",
@@ -101,9 +103,17 @@ def test_issue_181_timezone_ignored():
 
 
 def test_issue_188_timezone_dropped():
-    assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid=Timezone.from_tzid("Europe/Berlin").tzid) in Calendar(fixture1).serialize()
-    assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid="W. Europe Standard Time") in Calendar(fixture2).serialize()
-    assert "DTSTART;TZID={tzid}:20200121T070000".format(tzid="Europe/Berlin") in Calendar(fixture3).serialize()
+    assert (
+        f"DTSTART;TZID={Timezone.from_tzid('Europe/Berlin').tzid}:20200121T070000"
+        in Calendar(fixture1).serialize()
+    )
+    assert (
+        "DTSTART;TZID=W. Europe Standard Time:20200121T070000"
+        in Calendar(fixture2).serialize()
+    )
+    assert (
+        "DTSTART;TZID=Europe/Berlin:20200121T070000" in Calendar(fixture3).serialize()
+    )
 
     pacific = Timezone.from_tzid("US/Pacific")
     assert pacific.tzid.endswith("America/Los_Angeles")
@@ -112,13 +122,13 @@ def test_issue_188_timezone_dropped():
     event1.dtstamp = event1.dtstamp.replace(microsecond=0)
     ser1 = Calendar(events=[event1]).serialize()
     assert "DTSTART:20140101T000000Z" not in ser1
-    assert "DTSTART;TZID=%s:20140101T000000" % pacific.tzid in ser1
+    assert f"DTSTART;TZID={pacific.tzid}:20140101T000000" in ser1
 
     event2 = event1.clone()
     event2.begin = datetime(2014, 1, 1, 0, 0, 0, tzinfo=pacific)
     ser2 = Calendar(events=[event1]).serialize()
     assert "DTSTART:20140101T000000Z" not in ser2
-    assert "DTSTART;TZID=%s:20140101T000000" % pacific.tzid in ser2
+    assert f"DTSTART;TZID={pacific.tzid}:20140101T000000" in ser2
 
     assert event1 == event2
     assert event1.begin == event2.begin

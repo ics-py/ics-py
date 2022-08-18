@@ -1,13 +1,13 @@
-from typing import Dict, List, Any, TypeVar, Generic, Iterable
+from typing import Any, Dict, Generic, Iterable, List, TypeVar
 
 import attr
 
 from ics.utils import check_is_instance
 from ics.valuetype.base import ValueConverter
-from ics.valuetype.generic import URIConverter, BooleanConverter
+from ics.valuetype.generic import BooleanConverter, URIConverter
 from ics.valuetype.text import RawTextConverter
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 @attr.s(frozen=True)
@@ -25,7 +25,9 @@ class PersonProperty(Generic[T]):
         elif len(value) == 1:
             return self.converter.parse(value[0])
         else:
-            raise ValueError("Expected at most one value for property %r, got %r!" % (self.name, value))
+            raise ValueError(
+                f"Expected at most one value for property {self.name!r}, got {value!r}!"
+            )
 
     def __set__(self, instance: "Person", value: T):
         instance.extra[self.name] = [self.converter.serialize(value)]
@@ -53,7 +55,7 @@ class PersonMultiProperty(Generic[T]):
 
 
 @attr.s
-class PersonAttrs(object):
+class PersonAttrs:
     email: str = attr.ib()
     extra: Dict[str, List[str]] = attr.ib(factory=dict)
 
@@ -68,7 +70,7 @@ class Person(PersonAttrs):
             extra = dict()
         else:
             check_is_instance("extra", extra, dict)
-        super(Person, self).__init__(email, extra)
+        super().__init__(email, extra)
         for key, val in kwargs.items():
             setattr(self, key, val)
 
