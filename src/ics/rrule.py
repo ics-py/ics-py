@@ -23,8 +23,8 @@ def rrule_to_dict(self: dateutil.rrule.rrule):
         "freq": self._freq,  # type: ignore[attr-defined]
         "until": self._until,  # type: ignore[attr-defined]
         "wkst": self._wkst,  # type: ignore[attr-defined]
-        **self._original_rule,
-    }  # type: ignore[attr-defined]
+        **self._original_rule,  # type: ignore[attr-defined]
+    }
 
 
 def rrule_to_ContentLine(self: dateutil.rrule.rrule):
@@ -70,11 +70,11 @@ def rruleset_str(self: dateutil.rrule.rruleset):
 
 def rruleset_repr(self: dateutil.rrule.rruleset):
     return "rruleset(rrule={}, exrule={}, rdate={!r}, exdate={!r})".format(
-        self._rrule,
-        self._exrule,
-        self._rdate,
-        self._exdate,
-    )  # type: ignore[attr-defined]
+        self._rrule,  # type: ignore[attr-defined]
+        self._exrule,  # type: ignore[attr-defined]
+        self._rdate,  # type: ignore[attr-defined]
+        self._exdate,  # type: ignore[attr-defined]
+    )
 
 
 def rruleset_hash(self: dateutil.rrule.rruleset):
