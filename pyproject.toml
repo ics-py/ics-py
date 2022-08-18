@@ -61,3 +61,6 @@ checks = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.isort]
+profile = "black"
