@@ -86,9 +86,9 @@ jobs:
       - name: Build (again) the package
         run: python -m build
 
-      - name: Publish package 📦 to PyPI 🎉 (POC, using dev pypi for now)
+      - name: Publish package 📦 to PyPI 🎉
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          repository_url: https://pypi.org/legacy/
