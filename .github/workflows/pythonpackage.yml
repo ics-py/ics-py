@@ -71,9 +71,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Publish package 📦 to PyPI 🎉 (POC, using dev pypi for now)
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        repository_url: https://test.pypi.org/legacy/
+      - uses: actions/checkout@master
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install build dependencies
+        run: pip install build
+
+      - name: Build (again) the package
+        run: python -m build
+
+      - name: Publish package 📦 to PyPI 🎉 (POC, using dev pypi for now)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
