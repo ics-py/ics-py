@@ -1,0 +1,7 @@
+# This file contains SHA hashes of commits that should be ignored while running git-blame.
+# Use it by running `git config --global blame.ignoreRevsFile .git-blame-ignore-revs`
+
+# initial pre-commit run
+cc8a65bda8df0c90c30fdb69dee6372242868ed1
+# one-time run of flynt to remove legacy string formatting
+3bdc504bb8a3fe131ab1929deb8436cdb72322c8
