@@ -1,4 +1,5 @@
-from typing import ClassVar, Dict, List, Type, TypeVar, Union, Optional
+import copy
+from typing import ClassVar, Dict, List, Type, TypeVar, Union
 
 import attr
 from attr.validators import instance_of
@@ -33,11 +34,11 @@ class Component(RuntimeAttrValidation):
 
     def populate(self, container: Container):
         from ics.converter.context import ConverterContext
-        return ConverterContext.CURRENT().populate_instance(self, container)
+        return ConverterContext.CURRENT().populate(self, container)
 
     def to_container(self) -> Container:
         from ics.converter.context import ConverterContext
-        return ConverterContext.CURRENT().serialize_instance(self)
+        return ConverterContext.CURRENT().to_container(self)
 
     def serialize(self) -> str:
         return self.to_container().serialize()
@@ -64,4 +65,10 @@ class Component(RuntimeAttrValidation):
     def clone(self):
         """Returns an exact (shallow) copy of self"""
         # TODO deep copies?
-        return attr.evolve(self)
+        # XXX init=False attrs are not copied
+        clone = attr.evolve(self)
+        clone.extra = self.extra.clone()
+        if self.extra_params:
+            clone.extra_params = copy.deepcopy(self.extra_params)
+            # TODO think of how to copy (Component)ExtraParams, merge with copy_extra_params
+        return clone

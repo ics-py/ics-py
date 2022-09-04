@@ -72,8 +72,8 @@ class ConverterContext(object):
         conv = CURRENT_CONVERTER.get(None)
         if conv is None:
             conv = ConverterContext()
-            conv.initialize_default()
             CURRENT_CONVERTER.set(conv)
+            conv.initialize_default()
         return conv
 
     @sets_self_as_cur_converter
@@ -102,12 +102,24 @@ class ConverterContext(object):
         self.converters.clear()
 
         from ics.valuetype.base import ValueConverter
+        import ics.valuetype.datetime
+        import ics.valuetype.generic
+        import ics.valuetype.special
+        import ics.valuetype.text
+        __keep = [ics.valuetype.datetime, ics.valuetype.generic, ics.valuetype.special, ics.valuetype.text]
         for vc in ValueConverter.INSTANCES:
             self.converters[vc.python_type] = vc
 
         from ics import Calendar, Timespan, EventTimespan, TodoTimespan, NoneAlarm, EmailAlarm, DisplayAlarm, CustomAlarm, AudioAlarm, BaseAlarm, Timezone
-        from ics.converter.types.calendar import CalendarMeta
-        self.converters[Calendar] = CalendarMeta(Calendar)
+
+        from ics.converter.types.various import AlarmMeta, RecurrenceConverter
+        self.converters[dateutil.rrule.rruleset] = RecurrenceConverter
+        self.converters[BaseAlarm] = AlarmMeta(BaseAlarm)
+        self.converters[AudioAlarm] = AlarmMeta(AudioAlarm)
+        self.converters[CustomAlarm] = AlarmMeta(CustomAlarm)
+        self.converters[DisplayAlarm] = AlarmMeta(DisplayAlarm)
+        self.converters[EmailAlarm] = AlarmMeta(EmailAlarm)
+        self.converters[NoneAlarm] = AlarmMeta(NoneAlarm)
 
         from ics.converter.types.timespan import TimespanConverter
         self.converters[Timespan] = TimespanConverter
@@ -122,18 +134,15 @@ class ConverterContext(object):
         # self.converters[TimezoneDaylightObservance] = ImmutableComponentMeta(TimezoneDaylightObservance)
         self.converters[Timezone] = TimezoneMeta(Timezone)
 
-        from ics.converter.types.various import AlarmMeta, RecurrenceConverter
-        self.converters[dateutil.rrule.rruleset] = RecurrenceConverter
-        self.converters[BaseAlarm] = AlarmMeta(BaseAlarm)
-        self.converters[AudioAlarm] = AlarmMeta(AudioAlarm)
-        self.converters[CustomAlarm] = AlarmMeta(CustomAlarm)
-        self.converters[DisplayAlarm] = AlarmMeta(DisplayAlarm)
-        self.converters[EmailAlarm] = AlarmMeta(EmailAlarm)
-        self.converters[NoneAlarm] = AlarmMeta(NoneAlarm)
+        # prevent default ComponentMeta initialization, but build CalendarMeta last
+        self.converters[Calendar] = None
 
         for ct in Component.SUBTYPES:
             if ct not in self.converters:
                 self.converters[ct] = ComponentMeta(ct)
+
+        from ics.converter.types.calendar import CalendarMeta
+        self.converters[Calendar] = CalendarMeta(Calendar)
 
     ###############################################
 
@@ -196,8 +205,8 @@ class ComponentMeta(object):
     post_serialize_hooks: List[Callable] = field(init=False, factory=list)
 
     def __attrs_post_init__(self):
-        self.converter_lookup = defaultdict(list)
-        converters = sorted(filter(bool, self.find_attribute_converters(self.component_type)),
+        self.populate_lookup = defaultdict(list)
+        converters = sorted(filter(bool, self.find_attribute_converters()),
                             key=lambda c: c.priority, reverse=True)
         for converter in converters:
             if converter.priority >= 0:
@@ -205,7 +214,7 @@ class ComponentMeta(object):
             else:
                 self.serialize_order_post.append(converter)
             for name in converter.filter_ics_names:
-                self.converter_lookup[name].append(converter)
+                self.populate_lookup[name].append(converter)
             # ignore the hooks if they're the still the base-class no-ops
             if GenericConverter.post_populate not in (
                     converter.post_populate, getattr(converter.post_populate, "__func__", None)
@@ -216,18 +225,22 @@ class ComponentMeta(object):
             ):
                 self.post_serialize_hooks.append(converter.post_serialize)
 
+    @property
+    def converters(self):
+        return self.serialize_order_pre + self.serialize_order_post
+
     def __call__(self, attribute: Attribute) -> SubcomponentConverter:
         return SubcomponentConverter(attribute)
 
     def copy(self):
         return type(self)(self.component_type)
 
-    def find_attribute_converters(self, cls: Type[ComponentType]) -> Iterable[GenericConverter]:
+    def find_attribute_converters(self) -> Iterable[GenericConverter]:
         """
         Get a sorted list of all converters needed for instances of `component_type`.
         Override this method to modify the auto-discovered list of converters.
         """
-        return (ConverterContext.CURRENT().converter_for_attribute(a) for a in fields(cls))
+        return (ConverterContext.CURRENT().converter_for_attribute(a) for a in fields(self.component_type))
 
     def load_instance(self, container: Container):
         """

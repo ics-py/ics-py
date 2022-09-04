@@ -103,12 +103,9 @@ class AlarmActionConverter(GenericConverter):
 
 
 class AlarmMeta(ComponentMeta):
-    def find_converters(self) -> Iterable[GenericConverter]:
-        convs: List[GenericConverter] = [c for c in (
-            AttributeConverter.get_converter_for(a) for a in attr.fields(self.component_type)
-        ) if c is not None]
-        convs.append(AlarmActionConverter())
-        return sort_converters(convs)
+    def find_attribute_converters(self) -> Iterable[GenericConverter]:
+        yield from super().find_attribute_converters()
+        yield AlarmActionConverter()
 
     def load_instance(self, container: Container):
         clazz = get_type_from_action(one(
@@ -117,6 +114,6 @@ class AlarmMeta(ComponentMeta):
             too_long='VALARM must have exactly one ACTION, but got {first!r}, {second!r}, and possibly more!'
         ).value)
         instance = clazz()
-        ComponentMeta.BY_TYPE[clazz].populate_instance(instance, container, context)
+        ConverterContext.CURRENT().populate(instance, container)
         return instance
 

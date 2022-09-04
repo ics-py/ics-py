@@ -97,7 +97,7 @@ class Normalization(object):
         return action(value, replacement)
 
 
-# using datetime.min might lead to problems when doing timezone conversions / comparisions (e.g. by subtracting an 1 hour offset)
+# using datetime.min might lead to problems when doing timezone conversions / comparisons (e.g. by subtracting an 1-hour offset)
 CMP_DATETIME_NONE_DEFAULT = datetime(1900, 1, 1, 0, 0)
 CMP_NORMALIZATION = Normalization(normalize_floating=True, normalize_with_tz=False, replacement=tzlocal)
 
@@ -173,6 +173,8 @@ class Timespan(object):
                     raise ValueError("%s time value %s has higher precision than set precision %s" % (name, value, self.precision))
                 if value.tzinfo is not None:
                     raise ValueError("all-day timespan %s time %s can't have a timezone" % (name, value))
+        if self.precision not in ("day", "second"):
+            raise ValueError("precision %r must be either 'day' or 'second'" % self.precision)
 
         if self.begin_time is not None:
             validate_timeprecision(self.begin_time, "begin")

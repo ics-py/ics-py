@@ -228,7 +228,7 @@ class SubcomponentConverter(AttributeConverter):
 
     def populate(self, component: Component, item: ContainerItem) -> bool:
         assert isinstance(item, Container)
-        self.set_or_append_value(component, self.value_type.from_container(self.value_type, item))
+        self.set_or_append_value(component, self.value_type.from_container(item))
         return True
 
     def serialize(self, parent: Component, output: Container):

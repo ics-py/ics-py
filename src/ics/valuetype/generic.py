@@ -22,6 +22,9 @@ __all__ = [
 class BinaryConverter(ValueConverter[T], Generic[T]):
     value_type: Type[T]
 
+    def __attrs_post_init__(self):
+        ValueConverter.INSTANCES.append(self)
+
     @property
     def ics_type(self) -> str:
         return "BINARY"

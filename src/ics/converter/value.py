@@ -25,9 +25,10 @@ class ValueAttributeConverter(AttributeConverter):
     cur_component: Optional[Component] = field(init=False, default=None)
 
     def __attrs_post_init__(self):
+        super().__attrs_post_init__()
         from ics.converter.context import ConverterContext
         ctx = ConverterContext.CURRENT()
-        self.value_converters = [ctx.value_converter_for(vt) for vt in self.value_types]
+        self.value_converters = [ctx.converter_factory_for_type(vt, ValueConverter) for vt in self.value_types]
 
     @property
     def ics_name(self) -> str:
