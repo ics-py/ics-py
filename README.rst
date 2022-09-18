@@ -45,7 +45,7 @@ Quickstart
 
  c = Calendar()
  e = Event()
- e.summary = "My cool event"
+ e.name = "My cool event"
  e.description = "A meaningful description"
  e.begin = datetime.fromisoformat("2022-06-06T12:05:23+02:00")
  e.end = datetime.fromisoformat("2022-06-06T13:05:23+02:00")
