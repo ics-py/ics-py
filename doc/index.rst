@@ -49,12 +49,9 @@ Want to learn some details? Find here the relevant information.
 
 .. toctree::
    :maxdepth: 2
+   :glob:
 
-   explanation/icalender-format
-   explanation/limitations
-   explanation/howto
-   explanation/about
-
+   explanation/*
 
 Reference
 =========

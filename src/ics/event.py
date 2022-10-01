@@ -300,7 +300,7 @@ class Event(EventAttrs):
         Raises:
             ValueError: if `timespan` and any of `begin`, `end` or `duration`
              are specified at the same time,
-             or if validation of the timespan fails (see :method:`ics.timespan.Timespan.validate`).
+             or if validation of the timespan fails (see :meth:`ics.timespan.Timespan.validate`).
         """
         if (
             begin is not None or end is not None or duration is not None

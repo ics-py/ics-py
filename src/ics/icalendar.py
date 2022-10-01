@@ -38,8 +38,8 @@ class Calendar(CalendarAttrs):
 
     Attributes:
 
-        events: a list of `Event`s contained in the Calendar
-        todos: a list of `Todo`s contained in the Calendar
+        events: a list of `Event` contained in the Calendar
+        todos: a list of `Todo` contained in the Calendar
         timeline: a `Timeline` instance for iterating this Calendar in chronological order
 
     """
@@ -60,8 +60,8 @@ class Calendar(CalendarAttrs):
 
         Args:
             imports (**str**): data to be imported into the Calendar,
-            events (**Iterable[Event]**): `Event`s to be added to the calendar
-            todos (**Iterable[Todo]**): `Todo`s to be added to the calendar
+            events (**Iterable[Event]**): `Event` to be added to the calendar
+            todos (**Iterable[Todo]**): `Todo` to be added to the calendar
             creator (**string**): uid of the creator program.
         """
         if events is None:

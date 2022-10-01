@@ -1,3 +1,6 @@
+Event
+=====
+
 First, let’s import the latest version of ics.py :date:
 
 ::
