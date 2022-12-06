@@ -46,6 +46,8 @@ Error handling is recommended.
  print("Event '{}' started {}".format(e.summary, e.begin))
  # Event 'Workshop Git' started 2015-11-16 17:30:00+00:00
 
+.. Note:: You can verify the file formatting by using tests/samples/bulk_import.py
+
 Creating a new Calendar and Add Events
 --------------------------------------
 
