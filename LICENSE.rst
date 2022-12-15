@@ -1,6 +1,6 @@
 :orphan:
 
-.. _`apache2`:
+.. _`LICENSE`:
 
 ==============
 Apache License

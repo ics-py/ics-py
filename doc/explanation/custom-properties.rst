@@ -1,14 +1,4 @@
-.. _`advanced`:
-
-Advanced usage
-==============
-This page will present some more advanced usage of ics.py
-as well as some parts of the low level API.
-
-.. Low level constructs
-.. --------------------
-
-.. _`custom-property`:
+.. _`custom-properties`:
 
 Custom properties
 -----------------
@@ -75,8 +65,5 @@ if you desire)
 Low level API
 -------------
 
-.. autoclass:: ics.parse.Container
-    :members:
-
-.. autoclass:: ics.parse.ContentLine
+.. autoclass:: ics.contentline.container.Container
     :members:

@@ -15,7 +15,7 @@ Style guide
 -----------
 
 Pre-commit checks
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 `pre-commit <https://pre-commit.com>`_ is a framework for managing pre-commit
 hooks. These hooks help to identify simple issues before committing code for
@@ -25,7 +25,7 @@ runs.
 
 To use the tool, first install ``pre-commit`` and then the git hooks:
 
-.. console::
+.. code-block:: bash
 
     $ python -m pip install pre-commit
     $ pre-commit install
@@ -224,6 +224,7 @@ How to make a new release
    git push
 
 * Check GitHub and PyPi release pages for obvious errors
+
  * https://github.com/ics-py/ics-py/releases
  * https://pypi.org/project/ics/
 

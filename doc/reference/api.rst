@@ -18,7 +18,7 @@ Event
 Alarms
 ------
 
-.. autoclass:: ics.alarm.base.BaseAlarm
+.. autoclass:: ics.alarm.BaseAlarm
     :members:
     :special-members:
 
@@ -34,11 +34,11 @@ Alarms
     :members:
     :special-members:
 
-.. autoclass:: ics.alarm.none.NoneAlarm
+.. autoclass:: ics.alarm.NoneAlarm
     :members:
     :special-members:
 
-.. autoclass:: ics.alarm.custom.CustomAlarm
+.. autoclass:: ics.alarm.CustomAlarm
     :members:
     :special-members:
 
