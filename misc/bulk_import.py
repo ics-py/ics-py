@@ -1,8 +1,9 @@
+import argparse
 import os
 
 from ics import Calendar
 
-ICAL_DIRECTORY = "/path/to/ics/directory"
+ICAL_DIRECTORY = "/home/strobe/git/ics-py/failed-redacted"
 
 # https://github.com/ics-py/ics-py/discussions/278#discussioncomment-2023338
 def cal_from_file(
@@ -39,12 +40,35 @@ def cal_from_file(
     return Calendar("".join(buf))
 
 
-os.chdir(ICAL_DIRECTORY)
+def command_line():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("path", help="directory path of ical files to import")
+    args = parser.parse_args()
 
-for i in os.listdir():
+    if not os.path.exists(args.path):
+        raise Exception(f'Error: Path "{args.path}" not found')
+    elif not os.path.isdir(args.path):
+        raise Exception(f'Error: Path "{args.path}" is not a directory')
+
+    return args
+
+
+def main():
     try:
-        cal_from_file(i)
+        args = command_line()
     except Exception as e:
-        print(f"NOK: {i}, {e}")
-    else:
-        print(f"OK: {i}")
+        print(e)
+        exit(0)
+
+    os.chdir(args.path)
+
+    for i in os.listdir():
+        try:
+            cal_from_file(i)
+        except Exception as e:
+            print(f"NOK: {i}, {e}")
+        else:
+            print(f"OK: {i}")
+
+
+main()
