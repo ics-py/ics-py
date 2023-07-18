@@ -7,7 +7,7 @@ ics.py `0.8.0-dev0` : iCalendar for Humans
 `Documentation <http://icspy.readthedocs.org/>`_ (Read The Docs).
 
 
-.. image:: https://img.shields.io/github/license/ics-py/ics-py.svg
+.. image:: https://img.shields.io/pypi/l/ics
     :target: https://pypi.python.org/pypi/ics/
     :alt: Apache 2 License
 
@@ -58,6 +58,7 @@ Quickstart
 More examples are available in the
 `documentation <http://icspy.readthedocs.org/>`_.
 
+
 Documentation
 -------------
 
@@ -75,7 +76,6 @@ Contribute
 
 Contribution are welcome of course! For more information and how to setup, see
 `contributing <https://github.com/ics-py/ics-py/blob/master/CONTRIBUTING.rst>`_.
-
 
 
 Links
