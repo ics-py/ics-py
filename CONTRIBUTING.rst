@@ -89,13 +89,13 @@ Setting up the Development Environment
 
    git clone git@github.com:ics-py/ics-py.git
 
-* Install `Hatch <https://hatch.pypa.io/latest/>`_
+* Install `Hatch <https://hatch.pypa.io/latest/>`_ and `Tox <https://tox.wiki/en/latest/>`_
 
 .. code-block:: bash
 
    pip install hatch tox
 
-* Open shell
+* Open Hatch shell
 
 .. code-block:: bash
 
