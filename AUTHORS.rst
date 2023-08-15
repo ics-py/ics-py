@@ -11,6 +11,7 @@ Other contributors, listed alphabetically, are:
 * `@Azhrei <https://github.com/Azhrei>`_
 * `@ConnyOnny <https://github.com/ConnyOnny>`_
 * `@danieltellez <https://github.com/danieltellez>`_
+* `@dakalamin <https://github.com/dakalamin>`_
 * `@davidjb <https://github.com/davidjb>`_
 * `@etnarek <https://github.com/etnarek>`_
 * `@gbovyn <https://github.com/gbovyn>`_
