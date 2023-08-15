@@ -16,18 +16,17 @@ jobs:
       matrix:
         experimental: [false]
         python-version:
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
-          - "pypy-3.7"
+          - "3.12"
           - "pypy-3.8"
           - "pypy-3.9"
-        # include:
-        # - python-version: "3.12-dev"
-        #   experimental: true
-        #   experimental-format: (🧪)
+#        include:
+#          - python-version: "3.13"
+#            experimental: true
+#            experimental-format: (🧪)
 
     name: Test with Python ${{ matrix.python-version }} ${{ matrix.experimental-format }}
 
@@ -37,6 +36,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
     - name: Install tox
       run: python -m pip install --upgrade tox tox-gh-actions
     - name: Run tox
