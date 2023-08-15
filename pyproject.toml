@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ics"
-version = "0.8.0-dev0"
+version = "0.8.0.dev0"
 description = "Pythonic iCalendar (RFC 5545) Parser"
 authors = [
     { name = "Nikita Marchant", email = "nikita.marchant@gmail.com" },
