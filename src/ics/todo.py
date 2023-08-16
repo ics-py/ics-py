@@ -45,7 +45,7 @@ class Todo(TodoAttrs):
         due: DatetimeLike = None,
         duration: TimedeltaLike = None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         if (
             begin is not None or due is not None or duration is not None

@@ -29,7 +29,7 @@ class contentlineBuffer(Buffer):
         eol_comments_re=None,
         ignorecase=None,
         namechars="",
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             text,
@@ -39,7 +39,7 @@ class contentlineBuffer(Buffer):
             eol_comments_re=eol_comments_re,
             ignorecase=ignorecase,
             namechars=namechars,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -56,7 +56,7 @@ class contentlineParser(Parser):
         keywords=None,
         namechars="",
         buffer_class=contentlineBuffer,
-        **kwargs
+        **kwargs,
     ):
         if keywords is None:
             keywords = KEYWORDS
@@ -71,7 +71,7 @@ class contentlineParser(Parser):
             keywords=keywords,
             namechars=namechars,
             buffer_class=buffer_class,
-            **kwargs
+            **kwargs,
         )
 
     @tatsumasu()
