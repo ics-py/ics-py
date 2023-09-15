@@ -46,6 +46,7 @@ test = [
     "importlib_resources >= 1.4",
     "lipsum >= 0.1.2",
     "freezegun >= 1.2.1",
+    "setuptools >= 68.2.2",
 ]
 dev = [
     "bump2version >= 1.0.0",
