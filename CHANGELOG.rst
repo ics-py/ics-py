@@ -2,9 +2,13 @@
 Changelog
 =========
 
-Contains all notable changes to the code base.
-
 *Major releases are named in honor of influential women who shaped modern computer technology*
+
+All notable changes to this project will be documented in this file.
+
+The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_,
+and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
+
 
 ***************************
 0.8 (in dev) - Grace Hopper
@@ -14,40 +18,99 @@ Contains all notable changes to the code base.
 helping to devise UNIVAC I, the first commercial electronic computer and FLOW-MATIC on which COBOL was based*.
 
 This is a major release in the life of ics.py as it fixes a lot of long standing
-(design) issues with timespans, removes Arrow and introduces `attrs`.
+(design) issues with timespans, removes `arrow` and introduces `attrs`.
 Thank you @N-Coder for the huge work you put in this!
 
-Major changes:
- - Drop support for [EOL](https://devguide.python.org/versions/) Python 3.7
- - Add support for soon to be released Python 3.12
+What's new in 0.8?
+------------------
 
-In progress:
- - Remove Arrow
+**Lists instead of sets**
+
+`Calendar.events`, `Calendar.todos`, `Event.attendees` and `Event.alarms` are now all instances of `list` instead
+`set` in order to keep the order they had in the original ics file.
+Use `.append()` instead of `.add()` to insert new entries.
+Example:
+
+.. code-block:: python
+
+ c = Calendar()
+ e = Event()
+ e.summary = "My cool event"
+ c.events.append(e)
+
+**Serialization**
+
+`Calendar`, `Event`, ... have a new string / serialization behaviour:
+
+- `__repr__` returns a full, valid python representation, is fast and can't throw exceptions
+- `__str__` returns a short human-readable description, is fast and can't throw exceptions
+- `serialize` returns the full RFC5545 ics representation is string form, is still pretty fast and usually shouldn't
+  throw exceptions (except for when you pass in data that can't be serialized, this potentially includes old
+  `Arrow` instances)
+This means that for example to write a `Calendar` to a file, you should do something like:
+
+.. code-block:: python
+
+ c = ics.Calendar()
+ with open("my.ics", "w") as f:
+     f.write(c.serialize())
+
+**Removal of `arrow`**
+
+Our dependency on `arrow` is now removed. Please now exclusively use built-in `datetime` and `timedelta` instead.
+Example:
+
+.. code-block:: python
+
+ e = Event()
+ e.begin = datetime.fromisoformat("2022-06-06T12:05:23+02:00")
+ e.end = datetime(
+     year=2022,
+     month=6,
+     day=6,
+     hour=12,
+     minute=5,
+     second=23,
+     tzinfo=timezone(timedelta(seconds=7200)),
+ )
+
+Exhaustive list
+---------------
+
+**Added**
+ - Support for parsing and serializing timezones
+ - `Calendar` constructor / parse methods
+ - Support for soon to be released Python 3.12
+ - Dependency on `attrs`. `Calendar`, `Event`, ... are all now `attrs` classes.
+
+**Changed**
+ - New string / serialization behaviour (see above)
+ - Renamed `Event.name` to `Event.summary`
+ - Some attributes now have further validators that restrict which values they can be set to
+ - `Event.attendees` and `Event.organizer` now must be instances of the respective classes, plain strings with the e-mail
+   are no longer allowed
+ - To avoid user error, `extra` can now only contain nested `Container` and `ContentLine`, no plain strings
+ - The method `Event.has_end()` has been removed in favor if now property `Event.has_explicit_end` as any the RFC
+   says that every `Event` with a begin time has an end.
+
+**Removed**
+ - Support for `EOL <https://devguide.python.org/versions/>`_ Python 3.7
+ - Dependency on `arrow` (see above)
+ - `Calendar._timezones` attribute
+ - `Event.join()`
+
+**Fixed**
  - Fix all-day issues
- - Add attrs
  - Fix timezone issues
  - Fix SEQUENCE bug
- - Introduce Timespan
- - `arrow` was removed, use built-in `datetime` and `timedelta` instead
- - `events`, `todos`, `attendees` and `alarms` are now all lists instead of sets, as their contained types are not actually hashable and in order to keep the order they had in the file. Use `append` instead of `add` to insert new entries.
- - `attendees` and `organizer` now must be instances of the respective classes, plain strings with the e-mail are no longer allowed
- - `extra` can now only contain nested `Container` and `ContentLine`, no plain strings
- - some attributes now have further validators that restrict which values they can be set to, which might further change once we have configurable levels of strictness
- - `dtstamp` and `created` have been separated, `dtstamp` is the only one set automatically (hopefully more conforming with the RFC)
- - `Event.join` is hard to do right and now gone if nobody needs it (and is able to formulate a clear behaviour faced with floating events vs events in different timezones and also all-day events)
- - method `has_end()` -> property `has_explicit_end` as any Event with a begin time has an end
- - renamed `Event.name` to `Event.summary`
- - `ics.grammar.parse` has been shortened to `ics.grammar`.
+
+**Internal changes**
+ - `ics.grammar.parse` has been moved to `ics.grammar`.
  - The inner `Meta` classes were replaced by a single `NAME` class attribute
  - The `Component` conversion methods are now called `from_container` and `to_container`.
  - For `ContentLine`/`Container` there's now a `serialize` method to convert them to ics strings.
- - new to string / serialization behaviour:
-    - `__repr__` returns a full, valid python representation, is fast and can't throw exceptions
-    - `__str__` returns a short human-readable description, is fast and can't throw exceptions
-    - `serialize` returns the full ics representation, is still pretty fast and usually shouldn't throw exceptions (except for when you pass in data that can't be serialized, this potentially includes old `Arrow` instances)
- - new Calendar constructor / parse methods
- - remove the `Calendar._timezones` attribute
- - added support for parsing and serializing Timezones
+ - Introduced Timespan
+ - `dtstamp` and `created` have been separated, `dtstamp` is the only one set automatically
 
 *****
 0.7.2
@@ -56,7 +119,8 @@ In progress:
 This is a bugfix release.
 
 Bug fix:
- - Add a lower bound (`>=19.1.0`) on the required version of `attrs` `#353 <https://github.com/ics-py/ics-py/issues/353>`_ (bug introduced in 0.7.1)
+ - Add a lower bound (`>=19.1.0`) on the required version of
+   `attrs` `#353 <https://github.com/ics-py/ics-py/issues/353>`_ (bug introduced in 0.7.1)
 
 
 *****
@@ -75,7 +139,8 @@ Minor changes:
  - Backport optimizations for TatSu parser from 0.8
 
 Bug fix:
- - Fix "falsey" (`bool(x) is False`) alarm trigger (i.e. `timedelta(0)`) not being serialized `#269 <https://github.com/ics-py/ics-py/issues/269>`_
+ - Fix "falsey" (`bool(x) is False`) alarm trigger (i.e. `timedelta(0)`) not being serialized
+   `#269 <https://github.com/ics-py/ics-py/issues/269>`_
 
 Known bugs:
  - Missing lower bound on the required version of `attrs` (`>=19.1.0`) `#353 <https://github.com/ics-py/ics-py/issues/353>`_
