@@ -1,13 +1,12 @@
+import importlib.metadata
 import sys
-
-import pkg_resources
 
 import ics
 
 
 def test_version_matches():
-    dist = pkg_resources.get_distribution("ics")
-    print(repr(dist), dist.__dict__, sys.path, ics.__path__)
+    dist = importlib.metadata.distribution("ics")
+    print(dist.version, dist.__dict__, sys.path, ics.__path__)
     assert len(ics.__path__) == 1
     ics_path = ics.__path__[0]
     assert (
@@ -18,4 +17,4 @@ def test_version_matches():
             "Project sources should not be in PYTHONPATH when testing, conflicting entry: %s"
             % path
         )
-    assert pkg_resources.parse_version(ics.__version__) == dist.parsed_version
+    assert ics.__version__ == dist.version

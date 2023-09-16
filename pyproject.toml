@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ics"
-version = "0.8.0-dev0"
+version = "0.8.0.dev0"
 description = "Pythonic iCalendar (RFC 5545) Parser"
 authors = [
     { name = "Nikita Marchant", email = "nikita.marchant@gmail.com" },
@@ -23,14 +23,14 @@ classifiers = [
     'Programming Language :: Python',
     'Programming Language :: Python :: 3 :: Only',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
     'Typing :: Typed',
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "python-dateutil >= 2.8",
     "attrs >= 20.3",
@@ -46,6 +46,7 @@ test = [
     "importlib_resources >= 1.4",
     "lipsum >= 0.1.2",
     "freezegun >= 1.2.1",
+    "setuptools >= 68.2.2",
 ]
 dev = [
     "bump2version >= 1.0.0",

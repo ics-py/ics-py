@@ -111,7 +111,7 @@ Setting up the Development Environment
 
 .. code-block:: bash
 
-   hatch run tox
+       hatch run tox
 
 * List available einvironments
 

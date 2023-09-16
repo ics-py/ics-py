@@ -17,6 +17,10 @@ This is a major release in the life of ics.py as it fixes a lot of long standing
 (design) issues with timespans, removes Arrow and introduces `attrs`.
 Thank you @N-Coder for the huge work you put in this!
 
+Major changes:
+ - Drop support for [EOL](https://devguide.python.org/versions/) Python 3.7
+ - Add support for soon to be released Python 3.12
+
 In progress:
  - Remove Arrow
  - Fix all-day issues
