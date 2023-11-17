@@ -33,6 +33,7 @@ Other contributors, listed alphabetically, are:
 * `@Timic3 <https://github.com/Timic3>`_
 * `@tomschr <https://github.com/tomschr>`_
 * `@Trii <https://github.com/Trii>`_
+* `@vyper0016 <https://github.com/vyper0016>`_
 * `@zagnut007 <https://github.com/zagnut007>`_
 * `@zuphilip <https://github.com/zuphilip>`_
 
