@@ -34,7 +34,7 @@ class CalendarAttrs(Component):
 
 class Calendar(CalendarAttrs):
     """
-    Represents an unique RFC 5545 iCalendar.
+    Represents a unique RFC 5545 iCalendar.
 
     Attributes:
 
@@ -110,8 +110,8 @@ class Calendar(CalendarAttrs):
     @classmethod
     def parse_multiple(cls, string):
         """ "
-        Parses an input string that may contain mutiple calendars
-        and retruns a list of :class:`ics.event.Calendar`
+        Parses an input string that may contain multiple calendars
+        and returns a list of :class:`ics.event.Calendar`
         """
         containers = string_to_containers(string)
         return [cls(imports=c) for c in containers]
