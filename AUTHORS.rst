@@ -8,8 +8,8 @@ with the excellent help of `Niko Fink <https://github.com/N-Coder>`_.
 Other contributors, listed alphabetically, are:
 
 * `@aureooms <https://github.com/aureooms>`_
-* `@Azhrei <https://github.com/Azhrei>`_
 * `@azh412 <https://github.com/azh412>`_
+* `@Azhrei <https://github.com/Azhrei>`_
 * `@ConnyOnny <https://github.com/ConnyOnny>`_
 * `@danieltellez <https://github.com/danieltellez>`_
 * `@dakalamin <https://github.com/dakalamin>`_
