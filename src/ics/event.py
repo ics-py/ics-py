@@ -279,8 +279,13 @@ class Event(EventAttrs):
     a duration *or* end instant.
 
     Unsupported event attributes can be found in `event.extra`,
-    a :class:`ics.parse.Container`. You may add some by appending a
-    :class:`ics.parse.ContentLine` to `.extra`
+    a :class:`ics.Container`. You may add some by appending a
+    :class:`ics.ContentLine` to `.extra`
+
+    Example:
+
+        >>> event = ics.Event(summary="My cool event")
+        >>> event.extra.append(ics.ContentLine("FOO, {"BAR": ["1"]}, "YOLO")
     """
 
     NAME = "VEVENT"
