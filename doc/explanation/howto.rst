@@ -39,7 +39,7 @@ Known bugs
 Issues with all-day events
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The semantics of all-day events in the pyton API were badly defined
+The semantics of all-day events in the python API were badly defined
 in the early versions of ics.py and this led to incoherence and
 bugs. See this
 `GitHub thread <https://github.com/ics-py/ics-py/issues/155>`_
