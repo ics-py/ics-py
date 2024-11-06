@@ -53,7 +53,7 @@ class Calendar(CalendarAttrs):
         imports: Union[str, Container, None] = None,
         events: Optional[Iterable[Event]] = None,
         todos: Optional[Iterable[Todo]] = None,
-        creator: str = None,
+        creator: Optional[str] = None,
         **kwargs,
     ):
         """Initializes a new Calendar.
