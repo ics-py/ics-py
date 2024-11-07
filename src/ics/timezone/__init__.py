@@ -106,7 +106,9 @@ class TimezoneObservance(Component):
 
     tzname: Optional[str] = attr.ib(default=None)
     comment: Optional[str] = attr.ib(default=None)
-
+    dtstart: Optional[datetime.datetime] = attr.ib(
+        default=datetime.datetime(1970, 1, 1)
+    )
     is_dst: ClassVar[bool] = False
 
     @property
