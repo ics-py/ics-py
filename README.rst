@@ -11,6 +11,14 @@ ics.py `0.8.0.dev0` : iCalendar for Humans
     :target: https://pypi.python.org/pypi/ics/
     :alt: Apache 2 License
 
+.. note:: You are viewing the README for the current development version on the `main` branch.
+    To get the README for the current release, check out its `PyPi page <https://pypi.python.org/pypi/ics/>`_ and the `0.7 branch <https://github.com/ics-py/ics-py/tree/version-0.7>`_ of this repo.
+    
+    To install the current development version, you can either use the following pip command or use a (slightly older) `alpha release from PyPi <https://pypi.org/project/ics/0.8.0.dev0/>`_.
+
+    .. code-block:: bash
+
+        pip install git+https://github.com/ics-py/ics-py.git
 
 Ics.py is a pythonic and easy iCalendar library.
 Its goals are to read and write ics data in a developer friendly way.
@@ -52,7 +60,7 @@ Quickstart
  c.events.append(e)
  c
  # Calendar(extra=Container('VCALENDAR', []), extra_params={}, version='2.0', prodid='ics.py 0.8.0.dev0 - http://git.io/lLljaA', scale=None, method=None, events=[Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), end_time=None, duration=None, precision='second'), summary=None, uid='ed7975c7-01f1-42eb-bfc4-435afd76b33d@ed79.org', description=None, location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2022, 6, 6, 19, 28, 14, 575558, tzinfo=Timezone.from_tzid('UTC')), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])], todos=[])
- with open("my.ics", "w") as f:
+ with open("my.ics", "w", newline='') as f:
      f.write(c.serialize())
 
 More examples are available in the
@@ -82,6 +90,7 @@ Links
 -----
 * `rfc5545 <http://tools.ietf.org/html/rfc5545>`_
 * `Vulgarised RFC <http://www.kanzaki.com/docs/ical/>`_
+* Alternative Libraries: `icalendar <https://github.com/collective/icalendar>`_ and `ical <https://github.com/allenporter/ical>`_
 
 .. image:: http://i.imgur.com/KnSQg48.jpg
     :target: https://github.com/ics-py/ics-py
