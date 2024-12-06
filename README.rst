@@ -11,7 +11,8 @@ ics.py `0.8.0.dev0` : iCalendar for Humans
     :target: https://pypi.python.org/pypi/ics/
     :alt: Apache 2 License
 
-.. note:: You are viewing the README for the current development version on the `main` branch.
+.. pull-quote::
+    You are viewing the README for the current development version on the `main` branch.
     To get the README for the current release, check out its `PyPi page <https://pypi.python.org/pypi/ics/>`_ and the `0.7 branch <https://github.com/ics-py/ics-py/tree/version-0.7>`_ of this repo.
     
     To install the current development version, you can either use the following pip command or use a (slightly older) `alpha release from PyPi <https://pypi.org/project/ics/0.8.0.dev0/>`_.
