@@ -288,10 +288,10 @@ class Event(EventAttrs):
 
     def __init__(
         self,
-        summary: str = None,
-        begin: DatetimeLike = None,
-        end: DatetimeLike = None,
-        duration: TimedeltaLike = None,
+        summary: Optional[str] = None,
+        begin: Optional[DatetimeLike] = None,
+        end: Optional[DatetimeLike] = None,
+        duration: Optional[TimedeltaLike] = None,
         *args,
         **kwargs,
     ):
