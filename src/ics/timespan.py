@@ -437,13 +437,13 @@ class Timespan:
 
     @overload
     def timespan_tuple(
-        self, default: None = None, normalization: Normalization = None
+        self, default: None = None, normalization: Optional[Normalization] = None
     ) -> NullableTimespanTuple:
         ...
 
     @overload
     def timespan_tuple(
-        self, default: datetime, normalization: Normalization = None
+        self, default: datetime, normalization: Optional[Normalization] = None
     ) -> TimespanTuple:
         ...
 
