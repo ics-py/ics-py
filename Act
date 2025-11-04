@@ -1,0 +1,51 @@
+from ics import Calendar, Event
+from datetime import datetime, timedelta
+
+# Calendar setup
+cal = Calendar()
+
+# Study plan configuration
+start_date = datetime(2025, 11, 4, 17, 0)  # Nov 4, 2025 at 5:00 PM
+end_date = datetime(2025, 12, 12, 19, 0)  # End of last study session
+study_days = [0, 1, 2, 3, 4, 5]  # Monday=0 ... Saturday=5, Sunday=rest day
+duration = timedelta(hours=2)
+reminder_minutes = 15
+
+# Daily focus rotation (Mon-Sat)
+focus_rotation = ["Math", "English", "Reading", "Science", "Math", "Mixed Practice"]
+
+# Milestone tests
+milestones = {
+    datetime(2025, 11, 23): "Half-length ACT Practice Test (Math + English)",
+    datetime(2025, 11, 27): "Full-length ACT Practice Test #1",
+    datetime(2025, 12, 7): "Full-length ACT Practice Test #2",
+    datetime(2025, 12, 12): "Light Review Before Test Day"
+}
+
+# Generate events
+current_date = start_date
+while current_date.date() <= end_date.date():
+    if current_date.weekday() in study_days:
+        # Check if milestone
+        event_title = None
+        for milestone_date, milestone_name in milestones.items():
+            if milestone_date.date() == current_date.date():
+                event_title = milestone_name
+                break
+        if not event_title:
+            event_title = f"ACT {focus_rotation[current_date.weekday()]}"
+
+        e = Event()
+        e.name = event_title
+        e.begin = current_date
+        e.end = current_date + duration
+        e.alarms = [timedelta(minutes=-reminder_minutes)]
+        cal.events.add(e)
+
+    current_date += timedelta(days=1)
+
+# Save calendar file
+with open("ACT_Study_Schedule.ics", "w") as f:
+    f.writelines(cal.serialize())
+
+print("ACT_Study_Schedule.ics file has been generated.")
