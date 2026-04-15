@@ -29,6 +29,7 @@ Other contributors, listed alphabetically, are:
 * `@Philiptpp <https://github.com/Philiptpp>`_
 * `@prashnts <https://github.com/prashnts>`_
 * `@rkeilty <https://github.com/rkeilty>`_
+* `@s3bw <https://github.com/s3bw>`_
 * `@seants <https://github.com/seants>`_
 * `@tgamauf <https://github.com/tgamauf>`_
 * `@Timic3 <https://github.com/Timic3>`_

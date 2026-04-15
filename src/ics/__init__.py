@@ -1,6 +1,7 @@
 """
-   isort:skip_file
+isort:skip_file
 """
+
 from .alarm import *
 from .alarm import __all__ as all_alarms
 from .attendee import Attendee, Organizer
@@ -85,4 +86,4 @@ __all__ = [
     "__version__",
 ]
 
-__version__ = "0.8.0.dev0"
+__version__ = "0.8.0.dev1"

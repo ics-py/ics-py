@@ -84,18 +84,15 @@ CalendarEntryOrTimespanOrInstant = Union["CalendarEntryAttrs", "Timespan", datet
 
 
 @overload
-def get_timespan_if_calendar_entry(value: CalendarEntryOrTimespan) -> "Timespan":
-    ...
+def get_timespan_if_calendar_entry(value: CalendarEntryOrTimespan) -> "Timespan": ...
 
 
 @overload
-def get_timespan_if_calendar_entry(value: datetime) -> datetime:
-    ...
+def get_timespan_if_calendar_entry(value: datetime) -> datetime: ...
 
 
 @overload
-def get_timespan_if_calendar_entry(value: None) -> None:
-    ...
+def get_timespan_if_calendar_entry(value: None) -> None: ...
 
 
 def get_timespan_if_calendar_entry(value):
