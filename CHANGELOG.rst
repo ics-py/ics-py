@@ -80,7 +80,7 @@ Exhaustive list
 **Added**
  - Support for parsing and serializing timezones
  - `Calendar` constructor / parse methods
- - Support for soon to be released Python 3.12
+ - Support for Python 3.13 and 3.14
  - Dependency on `attrs`. `Calendar`, `Event`, ... are all now `attrs` classes.
 
 **Changed**
@@ -94,8 +94,9 @@ Exhaustive list
    says that every `Event` with a begin time has an end.
 
 **Removed**
- - Support for `EOL <https://devguide.python.org/versions/>`_ Python 3.7
+ - Support for `EOL <https://devguide.python.org/versions/>`_ Python 3.7, 3.8, and 3.9
  - Dependency on `arrow` (see above)
+ - Dependency on `lipsum` (test dependency replaced with inline strings)
  - `Calendar._timezones` attribute
  - `Event.join()`
 

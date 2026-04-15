@@ -2,7 +2,6 @@ import re
 import sys
 from datetime import timedelta
 
-import lipsum
 import pytest
 from hypothesis import assume, example, given, settings
 from hypothesis.core import Example
@@ -407,11 +406,23 @@ EMOJI = "\U0001f469\U0001f3fb\u200d\u2764\ufe0f\u200d\U0001f468\U0001f3ff"
 
 
 @given(inp=VALUE)
-@example(inp=lipsum.generate_sentences(2))
-@example(inp=lipsum.generate_paragraphs(1))
-@example(inp=lipsum.generate_paragraphs(2))
-@example(inp=lipsum.generate_paragraphs(10))
-@example(inp=lipsum.generate_paragraphs(100))
+@example(
+    inp="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+)
+@example(
+    inp="Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+)
+@example(
+    inp="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
+)
+@example(
+    inp="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.\n\n"
+    * 10
+)
+@example(
+    inp="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.\n\n"
+    * 100
+)
 @pytest.mark.usefixtures("contentline_any_wrap")
 @settings(deadline=timedelta(seconds=10))  # the long lipsum texts take some time
 def test_linefold(inp):
