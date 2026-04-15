@@ -9,9 +9,9 @@ Also, there are as many extensions to the RFC as there are implementations
 of iCalendar creators so it would be impossible to support every existing
 property.
 
-The way around this limitation is that every :class:`ics.parse.Container`
+The way around this limitation is that every :class:`~ics.Container`
 (:class:`~ics.Event`, :class:`~ics.Todo` and even :class:`~ics.Calendar`
-inherit from :class:`~ics.parse.Container`)
+inherit from :class:`~ics.Container`)
 has a ``.extra`` attribute.
 
 At parsing time, every property or container that is unknown to ics.py
@@ -44,7 +44,7 @@ something like this:  ::
     THX:BYE
   END:VEVENT
 
-It will result in an event that will have a :class:`ics.parse.Container`
+It will result in an event that will have a :class:`~ics.Container`
 in ``.extra``:
 
 .. code-block:: python
@@ -57,9 +57,9 @@ in ``.extra``:
 
 ``.extra`` is mutable so this means it works in reverse too.
 
-Just add some :class:`~ics.parse.Container` or
-:class:`ics.parse.ContentLine` and they will appear in the output too.
-(You can even mutate the values of a specific :class:`~ics.parse.ContentLine`
+Just add some :class:`~ics.Container` or
+:class:`~ics.ContentLine` and they will appear in the output too.
+(You can even mutate the values of a specific :class:`~ics.ContentLine`
 if you desire)
 
 Low level API
