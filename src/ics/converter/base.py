@@ -41,13 +41,11 @@ class GenericConverter(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def priority(self) -> int:
-        ...
+    def priority(self) -> int: ...
 
     @property
     @abc.abstractmethod
-    def filter_ics_names(self) -> List[str]:
-        ...
+    def filter_ics_names(self) -> List[str]: ...
 
     @abc.abstractmethod
     def populate(

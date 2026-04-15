@@ -7,13 +7,11 @@ class Geo(NamedTuple):
 
 
 @overload
-def make_geo(value: None) -> None:
-    ...
+def make_geo(value: None) -> None: ...
 
 
 @overload
-def make_geo(value: Union[Dict[str, float], Tuple[float, float]]) -> "Geo":
-    ...
+def make_geo(value: Union[Dict[str, float], Tuple[float, float]]) -> "Geo": ...
 
 
 def make_geo(value):

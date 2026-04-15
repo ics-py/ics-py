@@ -112,7 +112,7 @@ def unescape_param(string: str) -> str:
 
 
 class Patterns:
-    CONTROL = "\x00-\x08\x0A-\x1F\x7F"  # All the controls except HTAB
+    CONTROL = "\x00-\x08\x0a-\x1f\x7f"  # All the controls except HTAB
     DQUOTE = '"'
     LINEBREAK = "\r?\n|\r"
     LINEFOLD = "(" + LINEBREAK + ")[ \t]"
@@ -224,7 +224,7 @@ class Container(MutableSequence[ContainerItem]):
         items: Containers or ContentLines
     """
 
-    name: str = attr.ib(converter=str.upper, validator=validate_truthy)  # type:ignore
+    name: str = attr.ib(converter=str.upper, validator=validate_truthy)  # type: ignore
     data: List[ContainerItem] = attr.ib(
         converter=list,
         default=[],

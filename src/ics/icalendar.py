@@ -117,8 +117,7 @@ class Calendar(CalendarAttrs):
         return [cls(imports=c) for c in containers]
 
     @overload
-    def normalize(self, normalization: Normalization):
-        ...
+    def normalize(self, normalization: Normalization): ...
 
     @overload
     def normalize(
@@ -126,8 +125,7 @@ class Calendar(CalendarAttrs):
         value: tzinfo,
         normalize_floating: NormalizationAction,
         normalize_with_tz: NormalizationAction,
-    ):
-        ...
+    ): ...
 
     def normalize(self, normalization, *args, **kwargs):
         if isinstance(normalization, Normalization):

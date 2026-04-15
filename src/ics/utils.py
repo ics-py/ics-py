@@ -15,13 +15,11 @@ MAX_TIMEDELTA_NEARLY_ZERO = timedelta(seconds=1) / 2
 
 
 @overload
-def ensure_datetime(value: None) -> None:
-    ...
+def ensure_datetime(value: None) -> None: ...
 
 
 @overload
-def ensure_datetime(value: DatetimeLike) -> datetime:
-    ...
+def ensure_datetime(value: DatetimeLike) -> datetime: ...
 
 
 def ensure_datetime(value):
@@ -40,13 +38,11 @@ def ensure_datetime(value):
 
 
 @overload
-def ensure_timedelta(value: None) -> None:
-    ...
+def ensure_timedelta(value: None) -> None: ...
 
 
 @overload
-def ensure_timedelta(value: TimedeltaLike) -> timedelta:
-    ...
+def ensure_timedelta(value: TimedeltaLike) -> timedelta: ...
 
 
 def ensure_timedelta(value):
@@ -71,18 +67,15 @@ def timedelta_nearly_zero(td: timedelta) -> bool:
 
 
 @overload
-def floor_datetime_to_midnight(value: datetime) -> datetime:
-    ...
+def floor_datetime_to_midnight(value: datetime) -> datetime: ...
 
 
 @overload
-def floor_datetime_to_midnight(value: date) -> date:
-    ...
+def floor_datetime_to_midnight(value: date) -> date: ...
 
 
 @overload
-def floor_datetime_to_midnight(value: None) -> None:
-    ...
+def floor_datetime_to_midnight(value: None) -> None: ...
 
 
 def floor_datetime_to_midnight(value):
@@ -96,18 +89,15 @@ def floor_datetime_to_midnight(value):
 
 
 @overload
-def ceil_datetime_to_midnight(value: datetime) -> datetime:
-    ...
+def ceil_datetime_to_midnight(value: datetime) -> datetime: ...
 
 
 @overload
-def ceil_datetime_to_midnight(value: date) -> date:
-    ...
+def ceil_datetime_to_midnight(value: date) -> date: ...
 
 
 @overload
-def ceil_datetime_to_midnight(value: None) -> None:
-    ...
+def ceil_datetime_to_midnight(value: None) -> None: ...
 
 
 def ceil_datetime_to_midnight(value):

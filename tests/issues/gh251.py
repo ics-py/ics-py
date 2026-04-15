@@ -39,9 +39,7 @@ UID:{uid}
 DTSTAMP:{dtstamp}
 END:VEVENT
 END:VCALENDAR
-""".strip().replace(
-    "\n", "\r\n"
-)
+""".strip().replace("\n", "\r\n")
 
 
 def make_calendar() -> Calendar:

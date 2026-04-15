@@ -80,11 +80,22 @@ Exhaustive list
 **Added**
  - Support for parsing and serializing timezones
  - `Calendar` constructor / parse methods
+ - Support for Python 3.13 and 3.14
  - Support for soon to be released Python 3.12
+ - Full support for parsing and serializing VTIMEZONE components (DST transitions, timezone-aware datetimes,
+   automatic VTIMEZONE generation during serialization)
+ - Calendar-wide timezone operations: ``normalize()``, ``replace_timezone()``, and ``convert_timezone()``
+ - ``Calendar`` constructor now accepts ``imports``, ``events`` and ``todos`` parameters for one-liner creation
+ - Automatic content line wrapping at 75 characters during serialization, as required by RFC 5545
+ - ``ics.py`` version is now included in the ``PRODID`` field
+ - Support for Python 3.10, 3.11, 3.12, 3.13 and 3.14
  - Dependency on `attrs`. `Calendar`, `Event`, ... are all now `attrs` classes.
 
 **Changed**
  - New string / serialization behaviour (see above)
+ - Parsing is now much faster than in 0.7 thanks to a new hand-written regex-based ContentLine parser
+   replacing the TatSu PEG parser (`#244 <https://github.com/ics-py/ics-py/issues/244>`_,
+   `#247 <https://github.com/ics-py/ics-py/pull/247>`_). TatSu is no longer a runtime dependency.
  - Renamed `Event.name` to `Event.summary`
  - Some attributes now have further validators that restrict which values they can be set to
  - `Event.attendees` and `Event.organizer` now must be instances of the respective classes, plain strings with the e-mail
@@ -92,25 +103,61 @@ Exhaustive list
  - To avoid user error, `extra` can now only contain nested `Container` and `ContentLine`, no plain strings
  - The method `Event.has_end()` has been removed in favor if now property `Event.has_explicit_end` as any the RFC
    says that every `Event` with a begin time has an end.
+ - `Event` equality is now based on all attributes including `.uid`
+   (`#313 <https://github.com/ics-py/ics-py/issues/313>`_)
 
 **Removed**
- - Support for `EOL <https://devguide.python.org/versions/>`_ Python 3.7
+ - Support for `EOL <https://devguide.python.org/versions/>`_ Python 3.7, 3.8, and 3.9
  - Dependency on `arrow` (see above)
+ - Dependency on `lipsum` (test dependency replaced with inline strings)
  - `Calendar._timezones` attribute
  - `Event.join()`
+ - Support for `EOL <https://devguide.python.org/versions/>`_ Python 3.6, 3.7, 3.8 and 3.9
+ - Runtime dependency on `arrow` (see above)
+ - Runtime dependency on `TatSu` (now only used in tests)
+ - ``Calendar._timezones`` attribute
+ - ``Event.join()``
 
 **Fixed**
- - Fix all-day issues
- - Fix timezone issues
- - Fix SEQUENCE bug
+ - All-day event off-by-one and normalization issues
+   (`#92 <https://github.com/ics-py/ics-py/issues/92>`_,
+   `#155 <https://github.com/ics-py/ics-py/issues/155>`_,
+   `#173 <https://github.com/ics-py/ics-py/issues/173>`_,
+   `#300 <https://github.com/ics-py/ics-py/pull/300>`_)
+ - Timezone parsing and serialization issues
+   (`#129 <https://github.com/ics-py/ics-py/issues/129>`_,
+   `#161 <https://github.com/ics-py/ics-py/issues/161>`_,
+   `#249 <https://github.com/ics-py/ics-py/issues/249>`_)
+ - SEQUENCE property handling in VTIMEZONE
+   (`#115 <https://github.com/ics-py/ics-py/issues/115>`_)
+ - Alarm and attendee/organizer conversion bugs
+ - Serialization of falsey values (e.g. ``timedelta(0)`` alarm triggers)
+   (`#269 <https://github.com/ics-py/ics-py/issues/269>`_)
 
 **Internal changes**
- - `ics.grammar.parse` has been moved to `ics.grammar`.
- - The inner `Meta` classes were replaced by a single `NAME` class attribute
- - The `Component` conversion methods are now called `from_container` and `to_container`.
- - For `ContentLine`/`Container` there's now a `serialize` method to convert them to ics strings.
- - Introduced Timespan
- - `dtstamp` and `created` have been separated, `dtstamp` is the only one set automatically
+ - ``ics.grammar`` has been replaced by ``ics.contentline`` (new parser module)
+ - The inner ``Meta`` classes were replaced by a single ``NAME`` class attribute
+ - The ``Component`` conversion methods are now called ``from_container`` and ``to_container``
+ - For ``ContentLine``/``Container`` there's now a ``serialize`` method to convert them to ics strings
+ - Introduced ``Timespan`` for representing event/todo begin/end/duration
+ - ``dtstamp`` and ``created`` have been separated, ``dtstamp`` is the only one set automatically
+ - New build system (hatch instead of poetry)
+ - The codebase is now formatted with Black, isort and pyupgrade
+
+*****
+0.7.3
+*****
+
+This is a bugfix release.
+
+Bug fix:
+ - Pin ``tatsu`` to ``<5.16.0`` to fix compatibility with Python 3.11 and earlier. ``tatsu`` 5.16+ uses the ``type`` keyword (Python 3.12+) which causes a ``SyntaxError`` on older Python versions `#439 <https://github.com/ics-py/ics-py/issues/439>`_
+
+CI:
+ - Test on Python 3.10 through 3.14
+ - Replace deprecated ``python setup.py test`` with ``pytest``
+ - Drop obsolete ``pytest-flakes`` and ``pytest-pep8`` plugins incompatible with Python 3.10+
+
 
 *****
 0.7.2

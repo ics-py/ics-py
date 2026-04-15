@@ -58,21 +58,17 @@ class Normalization:
     )
 
     @overload
-    def normalize(self, value: "Timespan") -> "Timespan":
-        ...
+    def normalize(self, value: "Timespan") -> "Timespan": ...
 
     # pyflakes < 2.2 reports 'redefinition of unused' for overloaded class members
     @overload
-    def normalize(self, value: DatetimeLike) -> datetime:
-        ...
+    def normalize(self, value: DatetimeLike) -> datetime: ...
 
     @overload
-    def normalize(self, value: CalendarEntryT) -> CalendarEntryT:
-        ...
+    def normalize(self, value: CalendarEntryT) -> CalendarEntryT: ...
 
     @overload
-    def normalize(self, value: None) -> None:
-        ...
+    def normalize(self, value: None) -> None: ...
 
     def normalize(self, value):
         """
@@ -438,14 +434,12 @@ class Timespan:
     @overload
     def timespan_tuple(
         self, default: None = None, normalization: Normalization = None
-    ) -> NullableTimespanTuple:
-        ...
+    ) -> NullableTimespanTuple: ...
 
     @overload
     def timespan_tuple(
         self, default: datetime, normalization: Normalization = None
-    ) -> TimespanTuple:
-        ...
+    ) -> TimespanTuple: ...
 
     def timespan_tuple(self, default=None, normalization=None):
         if normalization:
