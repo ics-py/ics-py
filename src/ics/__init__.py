@@ -1,6 +1,7 @@
 """
-   isort:skip_file
+isort:skip_file
 """
+
 from .alarm import *
 from .alarm import __all__ as all_alarms
 from .attendee import Attendee, Organizer

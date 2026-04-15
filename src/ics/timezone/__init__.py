@@ -29,13 +29,11 @@ __all__ = [
 
 
 @overload
-def ensure_utc(value: None) -> None:
-    ...
+def ensure_utc(value: None) -> None: ...
 
 
 @overload
-def ensure_utc(value: DatetimeLike) -> datetime.datetime:
-    ...
+def ensure_utc(value: DatetimeLike) -> datetime.datetime: ...
 
 
 def ensure_utc(value):
@@ -50,13 +48,11 @@ def now_in_utc() -> datetime.datetime:
 
 
 @overload
-def is_utc(value: datetime.datetime) -> bool:
-    ...
+def is_utc(value: datetime.datetime) -> bool: ...
 
 
 @overload
-def is_utc(value: datetime.tzinfo) -> bool:
-    ...
+def is_utc(value: datetime.tzinfo) -> bool: ...
 
 
 def is_utc(value):
