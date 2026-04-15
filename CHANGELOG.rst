@@ -7,6 +7,21 @@ Contains all notable changes to the code base.
 *Major releases are named in honor of influential women who shaped modern computer technology*
 
 *****
+0.7.3
+*****
+
+This is a bugfix release.
+
+Bug fix:
+ - Pin ``tatsu`` to ``<5.16.0`` to fix compatibility with Python 3.11 and earlier. ``tatsu`` 5.16+ uses the ``type`` keyword (Python 3.12+) which causes a ``SyntaxError`` on older Python versions `#439 <https://github.com/ics-py/ics-py/issues/439>`_
+
+CI:
+ - Test on Python 3.10 through 3.14
+ - Replace deprecated ``python setup.py test`` with ``pytest``
+ - Drop obsolete ``pytest-flakes`` and ``pytest-pep8`` plugins incompatible with Python 3.10+
+
+
+*****
 0.7.2
 *****
 
