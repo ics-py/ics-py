@@ -72,7 +72,7 @@ Time and date are represented as :class:`datetime` objects and can be expressed 
      second=23,
      tzinfo=timezone(timedelta(seconds=7200)),
  )
- c.events.append(e)
+ c.events.add(e)
  c
  # Calendar(extra=Container('VCALENDAR', []), extra_params={}, version='2.0', prodid='ics.py 0.8.0-dev - http://git.io/lLljaA', scale=None, method=None, events=[Event(extra=Container('VEVENT', []), extra_params={}, timespan=EventTimespan(begin_time=datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), end_time=datetime.datetime(2022, 6, 6, 12, 5, 23, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))), duration=None, precision='second'), summary='My cool event', uid='e10e6921-5838-4dab-9467-fffcb8091cc3@e10e.org', description='A meaningful description', location=None, url=None, status=None, created=None, last_modified=None, dtstamp=datetime.datetime(2022, 6, 30, 12, 41, 24, 624188, tzinfo=Timezone.from_tzid('UTC')), alarms=[], attach=[], classification=None, transparent=None, organizer=None, geo=None, attendees=[], categories=[])], todos=[])
 
